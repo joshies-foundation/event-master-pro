@@ -1,1 +1,10 @@
-<p>login-page works!</p>
+<form
+  class="flex flex-column gap-2"
+  action="#"
+  (ngSubmit)="onSubmit($event)"
+  [formGroup]="form"
+>
+  <input type="text" pInputText placeholder="Username" />
+  <input type="password" pInputText placeholder="Password" />
+  <p-button label="Login" styleClass="w-full" type="submit" />
+</form>
