@@ -4,46 +4,36 @@ import { AuthService } from './auth.service';
 import { User } from '@supabase/supabase-js';
 import { map, take } from 'rxjs';
 
-type Redirect = string | unknown[];
+type RedirectUrl = string;
 
-type CanFunction = (user: User | undefined) => true | Redirect;
+type RedirectFunction = (user?: User) => true | RedirectUrl;
 
-type Guard = {
-  canActivate: CanActivateFn[];
-  data: { canFn: CanFunction };
-};
+function createAuthGuardFromRedirectFunction(
+  redirectFn: RedirectFunction,
+): CanActivateFn {
+  return () => {
+    const auth = inject(AuthService);
+    const router = inject(Router);
 
-const authGuard: CanActivateFn = (route) => {
-  const auth = inject(AuthService);
-  const router = inject(Router);
+    return auth.user$.pipe(
+      take(1),
+      map(redirectFn),
+      map((can) => {
+        if (can === true) {
+          return can;
+        } else if (Array.isArray(can)) {
+          return router.createUrlTree(can);
+        } else {
+          return router.parseUrl(can);
+        }
+      }),
+    );
+  };
+}
 
-  const canFn = route.data['canFn'] as CanFunction;
+export const redirectUnauthorizedToLoginPage =
+  createAuthGuardFromRedirectFunction((user) => !!user || '/login');
 
-  return auth.user$.pipe(
-    take(1),
-    map(canFn),
-    map((can) => {
-      if (can === true) {
-        return can;
-      } else if (Array.isArray(can)) {
-        return router.createUrlTree(can);
-      } else {
-        return router.parseUrl(can);
-      }
-    }),
-  );
-};
-
-export const redirectUnauthorizedToLoginPage: Guard = {
-  canActivate: [authGuard],
-  data: {
-    canFn: (user: User | undefined) => !!user || '/login',
-  },
-};
-
-export const redirectLoggedInToHomePage: Guard = {
-  canActivate: [authGuard],
-  data: {
-    canFn: (user: User | undefined) => (!!user && '/') || true,
-  },
-};
+export const redirectLoggedInToHomePage = createAuthGuardFromRedirectFunction(
+  (user) => (!!user && '/') || true,
+);

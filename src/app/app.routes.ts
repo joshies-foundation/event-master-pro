@@ -9,7 +9,7 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./auth/feature/login-page/login-page.component'),
-    ...redirectLoggedInToHomePage,
+    canActivate: [redirectLoggedInToHomePage],
   },
   {
     path: '',
@@ -17,6 +17,6 @@ export const routes: Routes = [
       import(
         './shell/feature/logged-in-app-shell/logged-in-app-shell.component'
       ),
-    ...redirectUnauthorizedToLoginPage,
+    canActivate: [redirectUnauthorizedToLoginPage],
   },
 ];
