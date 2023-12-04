@@ -1,9 +1,22 @@
 import { Routes } from '@angular/router';
-import { LoginPageComponent } from './auth/login-page/login-page.component';
+import {
+  redirectLoggedInToHomePage,
+  redirectUnauthorizedToLoginPage,
+} from './auth/data-access/auth.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
-    component: LoginPageComponent,
+    loadComponent: () =>
+      import('./auth/feature/login-page/login-page.component'),
+    ...redirectLoggedInToHomePage,
+  },
+  {
+    path: '',
+    loadComponent: () =>
+      import(
+        './shell/feature/logged-in-app-shell/logged-in-app-shell.component'
+      ),
+    ...redirectUnauthorizedToLoginPage,
   },
 ];

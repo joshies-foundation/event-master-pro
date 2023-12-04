@@ -1,3 +1,54 @@
 @import 'primeng/resources/themes/lara-light-blue/theme.css';
 @import 'primeng/resources/primeng.css';
 @import 'primeflex/primeflex.css';
+
+$systemFont: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+  'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+
+:root {
+  font-family: $systemFont;
+  --font-family: $systemFont;
+  font-feature-settings: 'tnum';
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  overscroll-behavior: contain;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+// disable selecting text not in a text box
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before,
+input[type='submit'] {
+  user-select: none;
+  cursor: default !important;
+}
+
+.p-card {
+  .p-card-content {
+    padding: 0;
+  }
+}
+
+p-tabmenu {
+  .p-tabmenu {
+    .p-tabmenu-nav {
+      .p-tabmenuitem {
+        .p-menuitem-link {
+          padding: 1rem;
+        }
+      }
+    }
+  }
+}

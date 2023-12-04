@@ -1,0 +1,34 @@
+<div class="h-full flex flex-column justify-content-center align-items-center">
+  <div class="flex-1 w-full text-5xl pr-6 pb-6 bounce-1">
+    <span>🍄</span>
+  </div>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="w-full max-w-30rem flex flex-column gap-3 px-3"
+  >
+    <input
+      pInputText
+      type="text"
+      placeholder="Username"
+      [formControl]="form.controls.username"
+    />
+    <input
+      pInputText
+      type="password"
+      placeholder="Password"
+      [formControl]="form.controls.password"
+    />
+    <p-button
+      styleClass="w-full"
+      type="submit"
+      [disabled]="!form.valid"
+      label="Log In"
+    />
+  </form>
+
+  <div class="flex-1 w-full text-5xl pr-6 pb-6 bounce-2">
+    <span>🦷</span>
+  </div>
+</div>

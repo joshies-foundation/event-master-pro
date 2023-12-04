@@ -1,0 +1,7 @@
+<main class="min-h-full px-3 pt-4 main-padding-bottom flex flex-column">
+  <router-outlet />
+  <p>
+    User ID: <code>{{ user()?.id }}</code>
+  </p>
+  <p-button label="Log Out" (onClick)="logOut()" />
+</main>

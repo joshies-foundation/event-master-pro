@@ -1,0 +1,45 @@
+@keyframes moveX {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@keyframes moveY {
+  from {
+    top: 0;
+  }
+  to {
+    top: 100%;
+  }
+}
+
+.bounce-1 {
+  position: relative;
+
+  span {
+    animation-name: moveX, moveY;
+    animation-duration: 4.3s, 1.8s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: linear;
+
+    position: relative;
+  }
+}
+
+.bounce-2 {
+  position: relative;
+
+  span {
+    animation-name: moveX, moveY;
+    animation-duration: 2.4s, 3.7s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate-reverse, alternate;
+    animation-timing-function: linear;
+
+    position: relative;
+  }
+}
