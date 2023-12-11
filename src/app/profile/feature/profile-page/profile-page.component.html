@@ -1,0 +1,79 @@
+<!-- Header -->
+<h1 class="mt-0 flex justify-content-between align-items-center">
+  Profile
+
+  <!-- Refresh Button -->
+  <i
+    tabindex="0"
+    class="pi pi-refresh text-700 font-bold text-xl"
+    (click)="reloadApp()"
+    (keyup.enter)="reloadApp()"
+  ></i>
+</h1>
+
+@if (viewModel(); as vm) {
+  <div class="flex justify-content-center my-5 align-items-baseline">
+    <!-- Avatar -->
+    <img
+      [src]="vm.user.avatar_url"
+      alt=""
+      class="w-10rem h-10rem border-circle block"
+    />
+
+    <!-- Choose Image Button -->
+    <i
+      tabindex="0"
+      class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-700"
+      (click)="avatarFileInput.click()"
+      (keyup.enter)="avatarFileInput.click()"
+    ></i>
+
+    <!-- Hidden File Input -->
+    <input
+      #avatarFileInput
+      hidden
+      type="file"
+      accept="image/*"
+      (change)="onAvatarImageSelect($event)"
+    />
+  </div>
+
+  <!-- Display Name -->
+  <p>
+    <strong class="mr-2">Display Name:</strong> {{ vm.user.display_name }}
+
+    <!-- Edit Button -->
+    <i
+      tabindex="0"
+      class="pi pi-pencil text-700 p-2 ml-1"
+      (click)="promptChangeDisplayName(vm.user.id, vm.user.display_name)"
+      (keyup.enter)="promptChangeDisplayName(vm.user.id, vm.user.display_name)"
+    ></i>
+  </p>
+
+  <!-- Login Username -->
+  <p class="mt-0 mb-6">
+    <strong class="mr-2">Login Username:</strong> {{ vm.loginUsername }}
+  </p>
+} @else {
+  <!-- Loading Skeleton -->
+  <p-skeleton
+    width="10rem"
+    height="10.2rem"
+    styleClass="border-circle mx-auto my-5"
+  />
+  <p-skeleton width="100%" height="4rem" styleClass="mb-6" />
+}
+
+<!-- Sign Out Button -->
+<p-button
+  (onClick)="confirmSignOut()"
+  label="Sign Out"
+  styleClass="p-button-danger p-button-text block mx-auto mt-4"
+/>
+
+<!-- Last Updated -->
+<p class="pt-4 text-400 text-xs text-center">
+  <!-- This value is replaced with the current date in the npm "prebuild" script -->
+  Last updated: {{ 0 | date: 'medium' }}
+</p>

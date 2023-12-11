@@ -14,9 +14,19 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import(
-        './shell/feature/logged-in-app-shell/logged-in-app-shell.component'
-      ),
+      import('./shell/feature/logged-in-app-shell.component'),
     canActivate: [redirectUnauthorizedToLoginPage],
+    canActivateChild: [redirectUnauthorizedToLoginPage],
+    children: [
+      {
+        path: 'profile',
+        loadChildren: () => import('./profile/feature/lib.routes'),
+      },
+      {
+        path: '**',
+        pathMatch: 'full',
+        redirectTo: 'profile',
+      },
+    ],
   },
 ];

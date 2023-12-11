@@ -14,7 +14,7 @@
 [//]: # '<br />'
 
 <p align="center">
-  <img alt="EventMaster Pro Logo" height="320" src="https://colinaw.com/assets/images/logos/emp.svg" />
+  <img alt="EventMaster Pro Logo" height="200" width="100%" src="https://colinaw.com/assets/images/logos/emp.svg" />
 </p>
 
 ## About
@@ -23,9 +23,9 @@ Forget the admin, and focus on the games. EventMaster Pro saves you hours of man
 
 ### Technology Stack
 
-[![Angular](https://img.shields.io/badge/angular-%23DD0031.svg?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev/)
+[![Angular](https://img.shields.io/badge/angular-%23DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 ## Getting Started
 

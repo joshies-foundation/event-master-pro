@@ -8,18 +8,23 @@
     (ngSubmit)="onSubmit()"
     class="w-full max-w-30rem flex flex-column gap-3 px-3"
   >
+    <!-- Username -->
     <input
       pInputText
       type="text"
       placeholder="Username"
       [formControl]="form.controls.username"
     />
+
+    <!-- Password -->
     <input
       pInputText
       type="password"
       placeholder="Password"
       [formControl]="form.controls.password"
     />
+
+    <!-- Log In Button -->
     <p-button
       styleClass="w-full"
       type="submit"

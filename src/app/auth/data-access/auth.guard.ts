@@ -6,10 +6,10 @@ import { map, take } from 'rxjs';
 
 type RedirectUrl = string;
 
-type RedirectFunction = (user?: User) => true | RedirectUrl;
+type RedirectFn = (user?: User) => true | RedirectUrl;
 
 function createAuthGuardFromRedirectFunction(
-  redirectFn: RedirectFunction,
+  redirectFn: RedirectFn,
 ): CanActivateFn {
   return () => {
     const auth = inject(AuthService);
@@ -18,15 +18,9 @@ function createAuthGuardFromRedirectFunction(
     return auth.user$.pipe(
       take(1),
       map(redirectFn),
-      map((can) => {
-        if (can === true) {
-          return can;
-        } else if (Array.isArray(can)) {
-          return router.createUrlTree(can);
-        } else {
-          return router.parseUrl(can);
-        }
-      }),
+      map((trueOrRedirect) =>
+        trueOrRedirect === true ? true : router.parseUrl(trueOrRedirect),
+      ),
     );
   };
 }

@@ -1,8 +1,10 @@
-import { inject, Injectable, Signal } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { SupabaseClient, User } from '@supabase/supabase-js';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { concat, from, map, Observable, shareReplay } from 'rxjs';
 import { Router } from '@angular/router';
+import { showMessageOnError } from '../../shared/util/supabase-helpers';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +12,7 @@ import { Router } from '@angular/router';
 export class AuthService {
   private readonly supabase = inject(SupabaseClient);
   private readonly router = inject(Router);
+  private readonly messageService = inject(MessageService);
 
   // we need user$ as an Observable for the auth guard to work
   readonly user$: Observable<User | undefined> = concat(
@@ -25,24 +28,31 @@ export class AuthService {
 
   readonly user: Signal<User | undefined> = toSignal(this.user$);
 
-  async signIn(username: string, password: string): Promise<void> {
-    try {
-      await this.supabase.auth.signInWithPassword({
+  readonly loginUsername = computed(
+    () => this.user()?.email?.split('@')[0] ?? 'Unknown',
+  );
+
+  signIn(username: string, password: string): void {
+    showMessageOnError(
+      this.supabase.auth.signInWithPassword({
         email: username + '@joshies.app',
         password,
-      });
-      await this.router.navigate(['/']);
-    } catch (err) {
-      alert('Nope');
-    }
+      }),
+      this.messageService,
+    ).then(({ error }) => {
+      if (!error) {
+        void this.router.navigate(['/']);
+      }
+    });
   }
 
-  async signOut(): Promise<void> {
-    try {
-      await this.supabase.auth.signOut();
-      await this.router.navigate(['/login']);
-    } catch (err) {
-      alert(err);
-    }
+  signOut(): void {
+    showMessageOnError(this.supabase.auth.signOut(), this.messageService).then(
+      ({ error }) => {
+        if (!error) {
+          void this.router.navigate(['/login']);
+        }
+      },
+    );
   }
 }
