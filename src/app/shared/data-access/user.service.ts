@@ -42,7 +42,7 @@ export class UserService {
     await showMessageOnError(
       this.supabase
         .from(UserService.UserTable)
-        .update({ display_name3: newDisplayName })
+        .update({ display_name: newDisplayName })
         .eq('id', userId),
       this.messageService,
       'Cannot update display name',
