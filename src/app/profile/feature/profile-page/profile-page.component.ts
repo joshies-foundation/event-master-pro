@@ -40,7 +40,7 @@ export default class ProfilePageComponent {
 
   onAvatarImageSelect(event: Event): void {
     void this.userService.setAvatar(
-      (event.target as HTMLInputElement).files?.[0]!,
+      (event.target as HTMLInputElement).files![0],
     );
   }
 

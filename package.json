@@ -11,11 +11,19 @@
     "test": "ng test",
     "format": "prettier --write .",
     "lint": "ng lint",
+    "lint-staged": "lint-staged",
     "generate-db-types": "supabase gen types typescript --project-id 'hqomdxggwvkmaovkytld' --schema public > src/app/shared/util/schema.ts"
   },
   "private": true,
   "prettier": {
     "singleQuote": true
+  },
+  "pre-commit": [
+    "lint-staged"
+  ],
+  "lint-staged": {
+    "*.{ts,js,tsx,jsx,css,scss,sass,json,md,yml,yaml,html}": "prettier --write",
+    "*.ts": "eslint --fix"
   },
   "dependencies": {
     "@angular/animations": "^17.0.5",
@@ -53,6 +61,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "lint-staged": "^15.2.0",
+    "pre-commit": "^1.2.2",
     "prettier": "^3.1.0",
     "typescript": "~5.2.2"
   }
