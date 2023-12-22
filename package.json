@@ -10,7 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "format": "prettier --write .",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "generate-db-types": "supabase gen types typescript --project-id 'hqomdxggwvkmaovkytld' --schema public > src/app/shared/util/schema.ts"
   },
   "private": true,
   "prettier": {

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
@@ -21,6 +22,10 @@ import { SkeletonModule } from 'primeng/skeleton';
 export default class ProfilePageComponent {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+
+  constructor() {
+    effect(() => console.log(this.userService.allUsers()));
+  }
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({

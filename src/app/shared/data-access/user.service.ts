@@ -2,6 +2,8 @@ import { computed, inject, Injectable } from '@angular/core';
 import {
   realtimeUpdatesFromTableAsSignal,
   showMessageOnError,
+  StorageBucket,
+  Table,
 } from '../util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { AuthService } from '../../auth/data-access/auth.service';
@@ -9,27 +11,15 @@ import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/error-helpers';
 import { resizeImage } from '../util/image-helpers';
 
-export interface User {
-  id: string;
-  display_name: string;
-  avatar_url: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private static readonly UserTable = 'user';
-  private static readonly AvatarsBucket = 'avatars';
-
   private readonly supabase = inject(SupabaseClient);
   private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
 
-  readonly allUsers = realtimeUpdatesFromTableAsSignal<User>(
-    UserService.UserTable,
-    this.supabase,
-  );
+  readonly allUsers = realtimeUpdatesFromTableAsSignal(Table.User);
 
   readonly user = computed(() =>
     this.allUsers().find((user) => user.id === this.authService.user()?.id),
@@ -41,7 +31,7 @@ export class UserService {
   ): Promise<void> {
     await showMessageOnError(
       this.supabase
-        .from(UserService.UserTable)
+        .from(Table.User)
         .update({ display_name: newDisplayName })
         .eq('id', userId),
       this.messageService,
@@ -54,7 +44,7 @@ export class UserService {
     const uploadPath = `${this.authService.loginUsername()}/${Date.now()}.webp`;
 
     const { data: uploadData, error: uploadError } = await this.supabase.storage
-      .from(UserService.AvatarsBucket)
+      .from(StorageBucket.Avatars)
       .upload(uploadPath, resizedImage);
 
     if (uploadError) {
@@ -63,13 +53,13 @@ export class UserService {
     }
 
     const avatarUrl = this.supabase.storage
-      .from(UserService.AvatarsBucket)
+      .from(StorageBucket.Avatars)
       .getPublicUrl(uploadData?.path).data.publicUrl;
 
-    const { data: updateData, error: updateError } = await this.supabase
-      .from(UserService.UserTable)
+    const { error: updateError } = await this.supabase
+      .from(Table.User)
       .update({ avatar_url: avatarUrl })
-      .eq('id', this.user()?.id);
+      .eq('id', this.user()?.id ?? '');
 
     if (updateError) {
       showErrorMessage(updateError.message, this.messageService);

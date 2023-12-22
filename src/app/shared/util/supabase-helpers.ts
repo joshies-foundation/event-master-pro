@@ -1,33 +1,73 @@
 import {
+  PostgrestSingleResponse,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   RealtimePostgresChangesPayload,
   SupabaseClient,
 } from '@supabase/supabase-js';
 import { from, map, Observable, scan, startWith, switchMap } from 'rxjs';
-import { Signal } from '@angular/core';
+import { Signal, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from './error-helpers';
+import { Database, Tables } from './schema';
 
-export function realtimeUpdatesFromTable<Model extends { id: string | number }>(
-  tableName: string,
-  supabase: SupabaseClient,
-): Observable<Model[]> {
-  const initialValue$: Observable<Model[]> = from(
-    supabase.from(tableName).select('*'),
-  ).pipe(map((response) => response.data as Model[]));
+export enum Table {
+  User = 'user',
+}
+
+export enum StorageBucket {
+  Avatars = 'avatars',
+}
+
+type TableOrView =
+  | keyof Database['public']['Tables']
+  | keyof Database['public']['Views'];
+
+type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'in';
+
+type Filter<T extends TableOrView> = `${Exclude<
+  keyof Tables<T>,
+  symbol
+>}=${FilterOperator}.${string}`;
+
+export function realtimeUpdatesFromTable<
+  T extends TableOrView,
+  Model extends Tables<T>,
+>(table: T, filter?: Filter<T>): Observable<Model[]> {
+  const supabase = inject<SupabaseClient<Database>>(SupabaseClient);
+  let initialQuery$: Observable<PostgrestSingleResponse<Model[]>>;
+
+  if (filter) {
+    const [, filterColumn, filterOperator, filterValue] =
+      filter.match(/^(.+)=([^.]+)\.(.+)$/)!;
+
+    initialQuery$ = from(
+      supabase
+        .from(table)
+        .select('*')
+        .filter(filterColumn, filterOperator, filterValue)
+        .returns<Model[]>(),
+    );
+  } else {
+    initialQuery$ = from(supabase.from(table).select('*').returns<Model[]>());
+  }
+
+  const initialValue$: Observable<Model[]> = initialQuery$.pipe(
+    map((response) => response.data!),
+  );
 
   const changes$ = new Observable<RealtimePostgresChangesPayload<Model>>(
     (subscriber) => ({
       unsubscribe: supabase
-        .channel(`${tableName}-table-changes`)
+        .channel(`${table}-table-changes`)
         .on<Model>(
           REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
           {
             event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
             schema: 'public',
-            table: tableName,
+            table,
+            filter,
           },
           (payload) => subscriber.next(payload),
         )
@@ -74,28 +114,28 @@ export function realtimeUpdatesFromTable<Model extends { id: string | number }>(
 }
 
 export function realtimeUpdatesFromTableAsSignal<
-  Model extends { id: string | number },
->(tableName: string, supabase: SupabaseClient): Signal<Model[]> {
-  return toSignal(realtimeUpdatesFromTable(tableName, supabase), {
+  T extends TableOrView,
+  Model extends Tables<T>,
+>(table: T, filter?: Filter<T>): Signal<Model[]> {
+  return toSignal(realtimeUpdatesFromTable(table, filter), {
     initialValue: [],
   });
 }
 
-export function showMessageOnError<T>(
+export async function showMessageOnError<T>(
   promise: PromiseLike<T>,
   messageService: MessageService,
   message?: string,
-): PromiseLike<T> {
-  return promise.then((response) => {
-    const error = (response as { error?: { message?: string } }).error;
+): Promise<T> {
+  const response = await promise;
+  const error = (response as { error?: { message?: string } }).error;
 
-    if (error) {
-      showErrorMessage(
-        message ?? error.message ?? 'Please try again later',
-        messageService,
-      );
-    }
+  if (error) {
+    showErrorMessage(
+      message ?? error.message ?? 'Please try again later',
+      messageService,
+    );
+  }
 
-    return response;
-  });
+  return response;
 }
