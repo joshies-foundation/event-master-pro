@@ -1,0 +1,58 @@
+<div class="flex flex-column gap-1">
+  @if (field.type !== FormFieldType.Submit) {
+    <label [for]="field.name">{{ field.label }}</label>
+  }
+
+  @switch (field.type) {
+    @case (FormFieldType.Text) {
+      <input
+        [id]="field.name | lowercase"
+        [name]="field.name | lowercase"
+        [placeholder]="field.placeholder"
+        type="text"
+        pInputText
+        [formControl]="field.control"
+        [ngClass]="field.styleClass"
+      />
+    }
+    @case (FormFieldType.Number) {
+      <input
+        [id]="field.name | lowercase"
+        [name]="field.name | lowercase"
+        [placeholder]="field.placeholder"
+        type="number"
+        pInputText
+        [formControl]="field.control"
+        [ngClass]="field.styleClass"
+      />
+    }
+    @case (FormFieldType.Dropdown) {
+      <p-dropdown
+        [inputId]="field.name"
+        [name]="field.name"
+        [placeholder]="field.placeholder"
+        [options]="field.options"
+        [formControl]="field.control"
+        [optionLabel]="field.optionLabel"
+        [optionValue]="field.optionValue"
+        [styleClass]="'w-full ' + (field.styleClass ?? '')"
+      />
+    }
+    @case (FormFieldType.Submit) {
+      <p-button
+        type="submit"
+        [styleClass]="
+          'mt-2 block ' +
+          (['left', 'center'].includes(field.position) ? 'mr-auto ' : '') +
+          (['right', 'center'].includes(field.position)
+            ? 'ml-auto '
+            : 'w-full ') +
+          (field.styleClass ?? '')
+        "
+        [disabled]="formDisabled() || formGroup.invalid"
+        [label]="field.label"
+        [loading]="field.loading ?? false"
+      />
+    }
+  }
+</div>

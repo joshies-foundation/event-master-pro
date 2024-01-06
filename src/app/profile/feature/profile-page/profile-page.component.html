@@ -17,7 +17,7 @@
     <img
       [src]="vm.user.avatar_url"
       alt=""
-      class="w-10rem h-10rem border-circle block"
+      class="w-10rem h-10rem border-circle block bg-gray-200"
     />
 
     <!-- Choose Image Button -->
@@ -55,6 +55,18 @@
   <p class="mt-0 mb-6">
     <strong class="mr-2">Login Username:</strong> {{ vm.loginUsername }}
   </p>
+
+  <!-- Enable Push Notifications Button -->
+  @if (vm.pushNotificationsAreEnabled) {
+    <p class="font-bold">Push Notifications Subscription:</p>
+    <pre>{{ vm.pushNotificationsSubscription | json }}</pre>
+  } @else {
+    <p-button
+      (onClick)="enablePushNotifications(vm.user.id)"
+      label="Enable Push Notifications"
+      styleClass="block mx-auto mt-4"
+    />
+  }
 } @else {
   <!-- Loading Skeleton -->
   <p-skeleton
@@ -69,7 +81,9 @@
 <p-button
   (onClick)="confirmSignOut()"
   label="Sign Out"
-  styleClass="p-button-danger p-button-text block mx-auto mt-4"
+  severity="danger"
+  [text]="true"
+  styleClass="block mx-auto mt-4"
 />
 
 <!-- Last Updated -->

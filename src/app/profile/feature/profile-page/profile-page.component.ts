@@ -2,35 +2,36 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { UserService } from '../../../shared/data-access/user.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
-import { DatePipe } from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import { SkeletonModule } from 'primeng/skeleton';
+import { NotificationsService } from '../../../shared/data-access/notifications.service';
 
 @Component({
   selector: 'joshies-profile-page',
   standalone: true,
-  imports: [ButtonModule, DatePipe, SkeletonModule],
+  imports: [ButtonModule, DatePipe, SkeletonModule, JsonPipe],
   templateUrl: './profile-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ProfilePageComponent {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
-
-  constructor() {
-    effect(() => console.log(this.userService.allUsers()));
-  }
+  private readonly notificationsService = inject(NotificationsService);
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       user: this.userService.user(),
       loginUsername: this.authService.loginUsername(),
+      pushNotificationsSubscription:
+        this.notificationsService.pushNotificationsSubscription(),
+      pushNotificationsAreEnabled:
+        this.notificationsService.pushNotificationsAreEnabled(),
     }),
   );
 
@@ -57,6 +58,10 @@ export default class ProfilePageComponent {
     }
 
     void this.userService.updateDisplayName(userId, newDisplayName);
+  }
+
+  async enablePushNotifications(userId: string): Promise<void> {
+    await this.notificationsService.enablePushNotifications(userId);
   }
 
   confirmSignOut(): void {

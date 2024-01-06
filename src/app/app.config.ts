@@ -1,23 +1,37 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  isDevMode,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { routes } from './app.routes';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from 'environment';
 import { MessageService } from 'primeng/api';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideServiceWorker } from '@angular/service-worker';
+import { provideSupabase } from './custom-providers';
+import { HttpClientModule } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // router
     provideRouter(routes),
-    {
-      provide: SupabaseClient,
-      useValue: createClient(
-        environment.supabase.url,
-        environment.supabase.key,
-      ),
-    },
+
+    // supabase
+    provideSupabase(),
+
+    // animations
+    provideAnimations(),
+
+    // PrimeNG services
     MessageService,
-    importProvidersFrom(BrowserAnimationsModule),
+
+    // service worker
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+
+    // other
+    importProvidersFrom(HttpClientModule),
   ],
 };

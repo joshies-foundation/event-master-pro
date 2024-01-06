@@ -1,0 +1,14 @@
+<form
+  [formGroup]="form.formGroup"
+  (ngSubmit)="form.onSubmit($event)"
+  [ngClass]="form.styleClass"
+  class="flex flex-column gap-3"
+>
+  @for (field of form.fields(); track field.name) {
+    <joshies-form-field
+      [field]="field"
+      [formGroup]="form.formGroup"
+      [formDisabled]="form.disabled?.() ?? false"
+    />
+  }
+</form>

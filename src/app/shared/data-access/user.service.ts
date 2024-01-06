@@ -65,4 +65,14 @@ export class UserService {
       showErrorMessage(updateError.message, this.messageService);
     }
   }
+
+  async addNotificationToken(userId: string, token: string): Promise<void> {
+    await showMessageOnError(
+      this.supabase
+        .from(Table.User)
+        .update({ tokens: `tokens || '{"${token}"}'` })
+        .eq('id', userId),
+      this.messageService,
+    );
+  }
 }

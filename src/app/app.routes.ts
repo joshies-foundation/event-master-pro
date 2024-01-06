@@ -19,6 +19,10 @@ export const routes: Routes = [
     canActivateChild: [redirectUnauthorizedToLoginPage],
     children: [
       {
+        path: 'notifications',
+        loadChildren: () => import('./notifications/feature/lib.routes'),
+      },
+      {
         path: 'profile',
         loadChildren: () => import('./profile/feature/lib.routes'),
       },
