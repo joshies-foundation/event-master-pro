@@ -21,8 +21,9 @@ export class UserService {
 
   readonly allUsers = realtimeUpdatesFromTableAsSignal(Table.User);
 
-  readonly user = computed(() =>
-    this.allUsers().find((user) => user.id === this.authService.user()?.id),
+  readonly user = computed(
+    () =>
+      this.allUsers().find((user) => user.id === this.authService.user()!.id)!,
   );
 
   async updateDisplayName(
@@ -73,6 +74,14 @@ export class UserService {
         .update({ tokens: `tokens || '{"${token}"}'` })
         .eq('id', userId),
       this.messageService,
+    );
+  }
+
+  async updateScore(userId: string, score: number): Promise<void> {
+    await showMessageOnError(
+      this.supabase.from(Table.User).update({ score }).eq('id', userId),
+      this.messageService,
+      'Cannot update score',
     );
   }
 }

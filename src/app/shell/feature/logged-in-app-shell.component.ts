@@ -28,11 +28,11 @@ export default class LoggedInAppShellComponent {
       href: '/rules',
       iconClass: 'pi pi-book',
     },
-    {
-      text: 'Notifications',
-      href: '/notifications',
-      iconClass: 'pi pi-bell',
-    },
+    // {
+    //   text: 'Notifications',
+    //   href: '/notifications',
+    //   iconClass: 'pi pi-bell',
+    // },
     {
       text: 'Profile',
       href: '/profile',
