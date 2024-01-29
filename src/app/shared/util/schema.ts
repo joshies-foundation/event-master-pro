@@ -9,21 +9,62 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      game_master: {
+        Row: {
+          id: number | null;
+          user_id: string;
+        };
+        Insert: {
+          id?: number | null;
+          user_id: string;
+        };
+        Update: {
+          id?: number | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'game_master_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'user';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      rules: {
+        Row: {
+          id: number;
+          rules: string;
+        };
+        Insert: {
+          id?: number;
+          rules?: string;
+        };
+        Update: {
+          id?: number;
+          rules?: string;
+        };
+        Relationships: [];
+      };
       user: {
         Row: {
           avatar_url: string;
           display_name: string;
           id: string;
+          score: number;
         };
         Insert: {
           avatar_url?: string;
           display_name?: string;
           id: string;
+          score?: number;
         };
         Update: {
           avatar_url?: string;
           display_name?: string;
           id?: string;
+          score?: number;
         };
         Relationships: [];
       };

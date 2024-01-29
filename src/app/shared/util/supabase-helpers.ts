@@ -15,6 +15,8 @@ import { Database, Tables } from './schema';
 export enum Table {
   User = 'user',
   UserNotificationsSubscription = 'user_notifications_subscription',
+  GameMaster = 'game_master',
+  Rules = 'rules',
 }
 
 export enum StorageBucket {
