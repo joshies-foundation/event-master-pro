@@ -2,7 +2,7 @@
   "name": "Event Master Pro",
   "short_name": "Event Master Pro",
   "theme_color": "#fff",
-  "background_color": "#fafafa",
+  "background_color": "#fff",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
