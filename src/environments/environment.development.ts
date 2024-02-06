@@ -8,5 +8,5 @@ export const environment = {
     key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhxb21keGdnd3ZrbWFvdmt5dGxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg4ODYxNTMsImV4cCI6MjAxNDQ2MjE1M30.2_GVvyk2pJFWouqBCP3dPWfEbSi_OMpHHTzAR0zryoQ',
   },
   vapidPublicKey:
-    'BMdS18yZcRu2--92l4Y6V9GPCBStNdCKjIwQEobiUchbQJTdPGZLV5tM9RzNG-sVItOjtTfuhETRo57xNr8ND-k',
+    'BH1snV0pt9ZbfWNxKvMjkuh1vELvWjg5VaFxw5ITY0eS1bG86ZdQp7wmlfQU8MjXmPftj7qtUBExEhHEqm2VgaM',
 };

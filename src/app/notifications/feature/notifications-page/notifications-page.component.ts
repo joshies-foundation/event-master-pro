@@ -115,27 +115,27 @@ export default class NotificationsPageComponent {
     ),
   );
 
-  sendNotification(): void {
+  async sendNotification(): Promise<void> {
     this.sending.set(true);
-    this.notificationService
-      .sendNotification(this.formGroup.getRawValue())
-      .subscribe({
-        complete: () => {
-          this.sending.set(false);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Notification Sent',
-          });
-        },
-        error: () => {
-          this.sending.set(false);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Notification failed to send',
-          });
-        },
+
+    const { error } = await this.notificationService.sendNotification(
+      this.formGroup.getRawValue(),
+    );
+
+    this.sending.set(false);
+
+    if (error) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Notification failed to send',
       });
+    } else {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Notification Sent',
+      });
+    }
   }
 }

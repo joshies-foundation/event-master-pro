@@ -1,6 +1,6 @@
 import { Injectable, inject, computed } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
-import { map, Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { environment } from 'environment';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
@@ -64,11 +64,11 @@ export class NotificationsService {
     );
   }
 
-  sendNotification(notification: {
+  async sendNotification(notification: {
     recipient: string;
     title: string;
     body: string;
-  }): Observable<void> {
-    return this.http.post<undefined>('/api/notification', { notification });
+  }): Promise<{ data: unknown; error: unknown }> {
+    return this.supabase.functions.invoke('push', { body: notification });
   }
 }
