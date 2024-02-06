@@ -8,7 +8,7 @@ import { TableModule } from 'primeng/table';
 import { UserService } from '../../../shared/data-access/user.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
-import { GameMasterService } from '../../../shared/data-access/game-master.service';
+import { PlayerService } from '../../../shared/data-access/player.service';
 
 @Component({
   selector: 'joshies-rankings-page',
@@ -19,17 +19,18 @@ import { GameMasterService } from '../../../shared/data-access/game-master.servi
 })
 export default class RankingsPageComponent {
   private readonly userService = inject(UserService);
-  private readonly gameMasterService = inject(GameMasterService);
+  private readonly playerService = inject(PlayerService);
 
-  readonly userIsGameMaster = this.gameMasterService.userIsGameMaster;
+  readonly userIsGameMaster = this.userService.userIsGameMaster;
 
   private scoreUpdates: Record<string, NodeJS.Timeout> = {};
 
-  readonly rankings = computed(() =>
-    this.userService
-      .allUsers()
-      .sort((user1, user2) => user2.score - user1.score)
-      .map((user, index) => ({ ...user, rank: index + 1 })),
+  readonly rankings = computed(
+    () =>
+      this.playerService
+        .players()
+        ?.sort((player1, player2) => player2.score - player1.score)
+        .map((player, index) => ({ ...player, rank: index + 1 })),
   );
 
   updateScore(userId: string, score: number): void {

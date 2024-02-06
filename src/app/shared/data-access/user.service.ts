@@ -10,6 +10,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/error-helpers';
 import { resizeImage } from '../util/image-helpers';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,12 +19,20 @@ export class UserService {
   private readonly supabase = inject(SupabaseClient);
   private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
+  private readonly sessionService = inject(SessionService);
 
-  readonly allUsers = realtimeUpdatesFromTableAsSignal(Table.User);
+  readonly allUsers = realtimeUpdatesFromTableAsSignal(
+    this.supabase,
+    Table.User,
+  );
 
   readonly user = computed(
     () =>
       this.allUsers().find((user) => user.id === this.authService.user()!.id)!,
+  );
+
+  readonly userIsGameMaster = computed(
+    () => this.user().id === this.sessionService.gameMasterUserId(),
   );
 
   async updateDisplayName(

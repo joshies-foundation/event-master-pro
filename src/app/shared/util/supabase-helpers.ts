@@ -6,8 +6,8 @@ import {
   SupabaseClient,
 } from '@supabase/supabase-js';
 import { from, map, Observable, scan, startWith, switchMap } from 'rxjs';
-import { Signal, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from './error-helpers';
 import { Database, Tables } from './schema';
@@ -15,7 +15,9 @@ import { Database, Tables } from './schema';
 export enum Table {
   User = 'user',
   UserNotificationsSubscription = 'user_notifications_subscription',
-  GameMaster = 'game_master',
+  ActiveSession = 'active_session',
+  Session = 'session',
+  Player = 'player',
   Rules = 'rules',
 }
 
@@ -29,7 +31,7 @@ type TableOrView =
 
 type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'in';
 
-type Filter<T extends TableOrView> = `${Exclude<
+export type Filter<T extends TableOrView> = `${Exclude<
   keyof Tables<T>,
   symbol
 >}=${FilterOperator}.${string}`;
@@ -37,8 +39,11 @@ type Filter<T extends TableOrView> = `${Exclude<
 export function realtimeUpdatesFromTable<
   T extends TableOrView,
   Model extends Tables<T>,
->(table: T, filter?: Filter<T>): Observable<Model[]> {
-  const supabase = inject<SupabaseClient<Database>>(SupabaseClient);
+>(
+  supabase: SupabaseClient<Database>,
+  table: T,
+  filter?: Filter<T>,
+): Observable<Model[]> {
   let initialQuery$: Observable<PostgrestSingleResponse<Model[]>>;
 
   if (filter) {
@@ -119,10 +124,28 @@ export function realtimeUpdatesFromTable<
 export function realtimeUpdatesFromTableAsSignal<
   T extends TableOrView,
   Model extends Tables<T>,
->(table: T, filter?: Filter<T>): Signal<Model[]> {
-  return toSignal(realtimeUpdatesFromTable(table, filter), {
-    initialValue: [],
-  });
+>(
+  supabase: SupabaseClient<Database>,
+  table: T,
+  filter?: Signal<Filter<T>> | Filter<T>,
+): Signal<Model[]> {
+  if (typeof filter === 'string' || filter === undefined) {
+    return toSignal(
+      realtimeUpdatesFromTable<T, Model>(supabase, table, filter),
+      {
+        initialValue: [],
+      },
+    );
+  }
+
+  return toSignal(
+    toObservable(filter).pipe(
+      switchMap((filter) =>
+        realtimeUpdatesFromTable<T, Model>(supabase, table, filter),
+      ),
+    ),
+    { initialValue: [] },
+  );
 }
 
 export async function showMessageOnError<T>(

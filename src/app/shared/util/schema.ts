@@ -6,27 +6,66 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
-      game_master: {
+      active_session: {
         Row: {
-          id: number | null;
+          id: number;
+          session_id: number | null;
+        };
+        Insert: {
+          id?: number;
+          session_id?: number | null;
+        };
+        Update: {
+          id?: number;
+          session_id?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'active_session_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      player: {
+        Row: {
+          enabled: boolean;
+          id: number;
+          score: number;
+          session_id: number;
           user_id: string;
         };
         Insert: {
-          id?: number | null;
+          enabled?: boolean;
+          id?: number;
+          score?: number;
+          session_id: number;
           user_id: string;
         };
         Update: {
-          id?: number | null;
+          enabled?: boolean;
+          id?: number;
+          score?: number;
+          session_id?: number;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: 'game_master_user_id_fkey';
+            foreignKeyName: 'player_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'player_user_id_fkey';
             columns: ['user_id'];
-            isOneToOne: true;
+            isOneToOne: false;
             referencedRelation: 'user';
             referencedColumns: ['id'];
           },
@@ -46,6 +85,38 @@ export interface Database {
           rules?: string;
         };
         Relationships: [];
+      };
+      session: {
+        Row: {
+          end_date: string;
+          game_master_user_id: string;
+          id: number;
+          name: string;
+          start_date: string;
+        };
+        Insert: {
+          end_date?: string;
+          game_master_user_id: string;
+          id?: number;
+          name?: string;
+          start_date?: string;
+        };
+        Update: {
+          end_date?: string;
+          game_master_user_id?: string;
+          id?: number;
+          name?: string;
+          start_date?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'session_game_master_user_id_fkey';
+            columns: ['game_master_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       user: {
         Row: {
@@ -108,7 +179,7 @@ export interface Database {
       [_ in never]: never;
     };
   };
-}
+};
 
 export type Tables<
   PublicTableNameOrOptions extends
