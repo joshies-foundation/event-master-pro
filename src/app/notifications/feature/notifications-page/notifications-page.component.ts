@@ -15,10 +15,7 @@ import { NotificationsService } from '../../../shared/data-access/notifications.
 import { MessageService } from 'primeng/api';
 import { Form, FormComponent } from '../../../shared/ui/form/form.component';
 import { FormFieldType } from '../../../shared/ui/form-field/form-field.component';
-import { Table } from '../../../shared/util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { from } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-notifications-page',
@@ -91,30 +88,6 @@ export default class NotificationsPageComponent {
     ]),
   };
 
-  //   const dbTable = Table.UserNotificationsSubscription;
-  //   const dbColumn = 'notifications_subscription';
-  //   const whereColumn = 'user_id';
-  //
-  //   console.log(
-  //   'Grabbing',
-  //   dbColumn,
-  //   'from table',
-  //   dbTable,
-  //   'where',
-  //   whereColumn,
-  //   '=',
-  //   recipient,
-  // );
-
-  readonly data = toSignal(
-    from(
-      this.supabase
-        .from(Table.UserNotificationsSubscription)
-        .select('notifications_subscription')
-        .eq('user_id', 'be62a737-ed9f-4e88-8e74-ee8310131818'),
-    ),
-  );
-
   async sendNotification(): Promise<void> {
     this.sending.set(true);
 
@@ -125,17 +98,17 @@ export default class NotificationsPageComponent {
     this.sending.set(false);
 
     if (error) {
-      this.messageService.add({
+      return this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Notification failed to send',
       });
-    } else {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Notification Sent',
-      });
     }
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Notification Sent',
+    });
   }
 }

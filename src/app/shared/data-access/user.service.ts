@@ -67,16 +67,6 @@ export class UserService {
     }
   }
 
-  async addNotificationToken(userId: string, token: string): Promise<void> {
-    await showMessageOnError(
-      this.supabase
-        .from(Table.User)
-        .update({ tokens: `tokens || '{"${token}"}'` })
-        .eq('id', userId),
-      this.messageService,
-    );
-  }
-
   async updateScore(userId: string, score: number): Promise<void> {
     await showMessageOnError(
       this.supabase.from(Table.User).update({ score }).eq('id', userId),

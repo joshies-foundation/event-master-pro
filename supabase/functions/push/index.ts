@@ -1,31 +1,44 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import {
   ApplicationServerKeys,
   generatePushHTTPRequest,
   setWebCrypto,
-} from '../vendor/webpush-webcrypto/webpush.js';
+} from '../_vendor/webpush-webcrypto/webpush.js';
 
 interface Payload {
   recipient: string;
   title: string;
   body: string;
-  icon: string;
 }
 
-setWebCrypto(crypto);
+interface Subscription {
+  endpoint: string;
+  keys: {
+    p256dh: string;
+    auth: string;
+  };
+}
+
+interface VapidDetails {
+  publicKey: string;
+  privateKey: string;
+  subject: string;
+}
+
+const userNotificationsSubscriptionTable = 'user_notifications_subscription';
+const notificationsSubscriptionColumn = 'notifications_subscription';
+const userIdColumn = 'user_id';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL'),
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
 );
 
-const vapidDetails = {
+const vapidDetails: VapidDetails = {
   subject: Deno.env.get('VAPID_SUBJECT'),
   publicKey: Deno.env.get('VAPID_PUBLIC_KEY'),
   privateKey: Deno.env.get('VAPID_PRIVATE_KEY'),
 };
-
-const keys = await ApplicationServerKeys.fromJSON(vapidDetails);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,83 +47,84 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req: Request) => {
-  // This is needed if you're planning to invoke your function from a browser.
+  // return CORS headers for OPTIONS requests - needed when invoking function from a browser.
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
 
+  // extract request payload
   const payload = (await req.json()) as Payload;
+  console.log('Received notification payload:', payload);
+  const { recipient, title, body } = payload;
 
-  console.log('Received Notification Payload:', payload);
+  if (!recipient) {
+    return new Response('No recipient provided', { status: 400 });
+  }
 
-  const { recipient, title, body, icon } = payload;
+  if (!(title || body)) {
+    return new Response('No title or body provided', { status: 400 });
+  }
 
-  const dbTable = 'user_notifications_subscription';
-  const dbColumn = 'notifications_subscription';
-  const whereColumn = 'user_id';
-
+  // get recipient notification subscriptions from database
   console.log(
-    'Grabbing',
-    dbColumn,
-    'from table',
-    dbTable,
-    'where',
-    whereColumn,
-    '=',
-    recipient,
+    `Grabbing ${notificationsSubscriptionColumn} from table ${userNotificationsSubscriptionTable} where ${userIdColumn} = ${recipient}`,
   );
 
   const { data } = await supabase
-    .from(dbTable)
-    .select(dbColumn)
-    .eq(whereColumn, recipient)
-    .single();
+    .from(userNotificationsSubscriptionTable)
+    .select(notificationsSubscriptionColumn)
+    .eq(userIdColumn, recipient);
 
-  console.log('Data:', data);
+  if (!data?.length) {
+    return new Response(
+      `No notifications subscriptions found for user ID ${recipient}`,
+      { status: 500 },
+    );
+  }
 
-  const subscription = data![dbColumn];
+  const subscriptions = data.map((row) => row[notificationsSubscriptionColumn]);
 
-  console.log('Subscription:', subscription);
+  console.log(`Found ${subscriptions.length} subscriptions.`);
 
+  // build notification payload
   const notification = {
-    notification: { title, body, icon },
+    notification: { title, body },
   };
 
   console.log('Sending notification:', notification);
 
-  const {
-    headers,
-    body: requestBody,
-    endpoint,
-  } = await generatePushHTTPRequest({
-    applicationServerKeys: keys,
-    payload: JSON.stringify(notification),
-    target: subscription,
-    adminContact: 'mailto:admin@joshies.app',
-    ttl: 60,
-    urgency: 'low',
-  });
+  // send notification to each subscription
+  await Promise.all(
+    subscriptions.map((subscription) => {
+      console.log('To subscription:', subscription);
+      return sendNotification(vapidDetails, subscription, notification);
+    }),
+  );
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers,
-    body: requestBody,
-  });
-
-  console.log(response);
-  console.log(await response.json());
-
-  return new Response(response.body, { ...response, headers: corsHeaders });
+  return new Response(null, { status: 201, headers: corsHeaders });
 });
 
-/* To invoke locally:
+async function sendNotification(
+  vapidDetails: VapidDetails,
+  subscription: Subscription,
+  payload: unknown,
+): Promise<Response> {
+  setWebCrypto(crypto);
 
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
+  const applicationServerKeys =
+    await ApplicationServerKeys.fromJSON(vapidDetails);
 
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/push' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
+  const { headers, body, endpoint } = await generatePushHTTPRequest({
+    applicationServerKeys,
+    payload: JSON.stringify(payload),
+    target: subscription,
+    adminContact: vapidDetails.subject,
+    ttl: 24 * 60 * 60, // 24 hours
+  });
 
-*/
+  return fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body,
+  });
+}

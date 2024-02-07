@@ -6,8 +6,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/error-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { FunctionsResponse } from '@supabase/functions-js';
 import { showMessageOnError, Table } from '../util/supabase-helpers';
-import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,6 @@ export class NotificationsService {
   private readonly messageService = inject(MessageService);
   private readonly supabase = inject(SupabaseClient);
   private readonly swPush = inject(SwPush);
-  private readonly http = inject(HttpClient);
 
   readonly pushNotificationsSubscription = toSignal(this.swPush.subscription, {
     initialValue: null,
@@ -68,7 +67,7 @@ export class NotificationsService {
     recipient: string;
     title: string;
     body: string;
-  }): Promise<{ data: unknown; error: unknown }> {
+  }): Promise<FunctionsResponse<null>> {
     return this.supabase.functions.invoke('push', { body: notification });
   }
 }
