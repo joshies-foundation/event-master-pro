@@ -1,9 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
-import {
-  ApplicationServerKeys,
-  generatePushHTTPRequest,
-  setWebCrypto,
-} from '../_vendor/webpush-webcrypto/webpush.js';
+import { corsHeaders } from '../_shared/cors.ts';
+import { supabaseAdmin } from '../_shared/supabase-admin.ts';
+import { sendNotification } from '../_shared/web-push.ts';
 
 interface Payload {
   recipient: string;
@@ -11,40 +8,9 @@ interface Payload {
   body: string;
 }
 
-interface Subscription {
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-}
-
-interface VapidDetails {
-  publicKey: string;
-  privateKey: string;
-  subject: string;
-}
-
 const userNotificationsSubscriptionTable = 'user_notifications_subscription';
 const notificationsSubscriptionColumn = 'notifications_subscription';
 const userIdColumn = 'user_id';
-
-const supabase = createClient(
-  Deno.env.get('SUPABASE_URL'),
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
-);
-
-const vapidDetails: VapidDetails = {
-  subject: Deno.env.get('VAPID_SUBJECT'),
-  publicKey: Deno.env.get('VAPID_PUBLIC_KEY'),
-  privateKey: Deno.env.get('VAPID_PRIVATE_KEY'),
-};
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-};
 
 Deno.serve(async (req: Request) => {
   // return CORS headers for OPTIONS requests - needed when invoking function from a browser.
@@ -70,7 +36,7 @@ Deno.serve(async (req: Request) => {
     `Grabbing ${notificationsSubscriptionColumn} from table ${userNotificationsSubscriptionTable} where ${userIdColumn} = ${recipient}`,
   );
 
-  const { data } = await supabase
+  const { data } = await supabaseAdmin
     .from(userNotificationsSubscriptionTable)
     .select(notificationsSubscriptionColumn)
     .eq(userIdColumn, recipient);
@@ -97,34 +63,9 @@ Deno.serve(async (req: Request) => {
   await Promise.all(
     subscriptions.map((subscription) => {
       console.log('To subscription:', subscription);
-      return sendNotification(vapidDetails, subscription, notification);
+      return sendNotification(subscription, notification);
     }),
   );
 
   return new Response(null, { status: 201, headers: corsHeaders });
 });
-
-async function sendNotification(
-  vapidDetails: VapidDetails,
-  subscription: Subscription,
-  payload: unknown,
-): Promise<Response> {
-  setWebCrypto(crypto);
-
-  const applicationServerKeys =
-    await ApplicationServerKeys.fromJSON(vapidDetails);
-
-  const { headers, body, endpoint } = await generatePushHTTPRequest({
-    applicationServerKeys,
-    payload: JSON.stringify(payload),
-    target: subscription,
-    adminContact: vapidDetails.subject,
-    ttl: 24 * 60 * 60, // 24 hours
-  });
-
-  return fetch(endpoint, {
-    method: 'POST',
-    headers,
-    body,
-  });
-}
