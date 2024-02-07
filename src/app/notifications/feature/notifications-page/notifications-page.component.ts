@@ -5,31 +5,20 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
+import { FormBuilder, Validators } from '@angular/forms';
 import { UserService } from '../../../shared/data-access/user.service';
-import { DropdownModule } from 'primeng/dropdown';
-import { JsonPipe, KeyValuePipe, LowerCasePipe } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
 import { NotificationsService } from '../../../shared/data-access/notifications.service';
 import { MessageService } from 'primeng/api';
 import { Form, FormComponent } from '../../../shared/ui/form/form.component';
-import { FormFieldType } from '../../../shared/ui/form-field/form-field.component';
-import { SupabaseClient } from '@supabase/supabase-js';
+import {
+  FormField,
+  FormFieldType,
+} from '../../../shared/ui/form-field/form-field.component';
 
 @Component({
   selector: 'joshies-notifications-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    InputTextModule,
-    DropdownModule,
-    KeyValuePipe,
-    LowerCasePipe,
-    ButtonModule,
-    FormComponent,
-    JsonPipe,
-  ],
+  imports: [FormComponent],
   templateUrl: './notifications-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -38,22 +27,21 @@ export default class NotificationsPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly notificationService = inject(NotificationsService);
   private readonly messageService = inject(MessageService);
-  private readonly supabase = inject(SupabaseClient);
 
-  readonly users = this.userService.allUsers;
-  readonly sending = signal(false);
-
-  readonly formGroup = this.formBuilder.nonNullable.group({
+  private readonly formGroup = this.formBuilder.nonNullable.group({
     recipient: ['', Validators.required],
     title: ['', Validators.required],
     body: ['', Validators.required],
   });
 
+  readonly users = this.userService.allUsers;
+  readonly sending = signal(false);
+
   readonly form: Form = {
     formGroup: this.formGroup,
     onSubmit: () => this.sendNotification(),
     disabled: this.sending,
-    fields: computed(() => [
+    fields: computed((): FormField[] => [
       {
         label: 'Recipient',
         name: 'recipient',
@@ -82,7 +70,6 @@ export default class NotificationsPageComponent {
         name: 'submit',
         label: 'Send Notification',
         type: FormFieldType.Submit,
-        position: 'full',
         loading: this.sending(),
       },
     ]),

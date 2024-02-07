@@ -2,14 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   Input,
-  signal,
   Signal,
 } from '@angular/core';
 import {
   FormField,
   FormFieldComponent,
 } from '../form-field/form-field.component';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
 export interface Form {
@@ -23,11 +22,10 @@ export interface Form {
 @Component({
   selector: 'joshies-form',
   standalone: true,
-  imports: [FormFieldComponent, FormsModule, ReactiveFormsModule, NgClass],
+  imports: [FormFieldComponent, ReactiveFormsModule, NgClass],
   templateUrl: './form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormComponent {
   @Input({ required: true }) form!: Form;
-  protected readonly signal = signal;
 }

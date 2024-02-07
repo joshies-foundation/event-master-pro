@@ -10,12 +10,7 @@ import {
   Input,
 } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { LowerCasePipe, NgClass } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -57,7 +52,7 @@ export type FormField = {
   | {
       type: FormFieldType.Submit;
       loading?: boolean;
-      position: 'left' | 'right' | 'center' | 'full';
+      position?: 'left' | 'right' | 'center' | 'full';
     }
 );
 
@@ -66,7 +61,6 @@ export type FormField = {
   standalone: true,
   imports: [
     DropdownModule,
-    FormsModule,
     InputTextModule,
     LowerCasePipe,
     ReactiveFormsModule,
@@ -106,11 +100,6 @@ export class FormFieldComponent implements AfterViewInit {
     // react to the form becoming valid/invalid
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        if (this.field.type === FormFieldType.Submit) {
-          this.cd.detectChanges();
-          return;
-        }
-      });
+      .subscribe(() => this.cd.detectChanges());
   }
 }

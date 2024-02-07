@@ -43,10 +43,9 @@
         type="submit"
         [styleClass]="
           'mt-2 block ' +
-          (['left', 'center'].includes(field.position) ? 'mr-auto ' : '') +
-          (['right', 'center'].includes(field.position)
-            ? 'ml-auto '
-            : 'w-full ') +
+          (['left', 'center'].includes(field.position!) ? 'mr-auto ' : ' ') +
+          (['right', 'center'].includes(field.position!) ? 'ml-auto ' : ' ') +
+          (['full', undefined].includes(field.position!) ? 'w-full ' : ' ') +
           (field.styleClass ?? '')
         "
         [disabled]="formDisabled() || formGroup.invalid"
