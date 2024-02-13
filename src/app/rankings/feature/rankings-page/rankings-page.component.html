@@ -1,36 +1,63 @@
 <!-- Header -->
 <h1 class="mt-0">Rankings</h1>
 
-<!-- Rankings Table -->
-<p-table [value]="rankings()" [tableStyle]="{ 'min-width': '100%' }">
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Rank</th>
-      <th>Player</th>
-      <th>Score</th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-ranking>
-    <tr>
-      <td class="text-center">{{ ranking.rank }}</td>
-      <td>{{ ranking.display_name }}</td>
-      <td>
-        @if (userIsGameMaster()) {
-          <p-inputNumber
-            #scoreInput
-            [ngModel]="ranking.score"
-            (ngModelChange)="updateScore(ranking.id, $event)"
-            [showButtons]="true"
-            buttonLayout="horizontal"
-            [step]="1"
-            incrementButtonIcon="pi pi-plus"
-            decrementButtonIcon="pi pi-minus"
-            inputStyleClass="w-full"
-          />
-        } @else {
-          {{ ranking.score }}
-        }
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+@if (viewModel(); as vm) {
+  @if (!vm.thereIsAnActiveSession) {
+    <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
+  } @else {
+    <!-- Rankings Table -->
+    <p-table [value]="vm.rankings!" [tableStyle]="{ 'min-width': '100%' }">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Score</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ranking>
+        <tr
+          [ngClass]="{
+            'font-semibold bg-yellow-100': ranking.player_id === vm.userPlayerId
+          }"
+        >
+          <td class="text-center">
+            @if (ranking.rankEmoji) {
+              {{ ranking.rankEmoji }}
+            } @else {
+              {{ ranking.rank | number }}
+            }
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2 -py-2">
+              <img
+                [ngSrc]="ranking.avatar_url"
+                width="32"
+                height="32"
+                class="border-circle bg-gray-200"
+              />
+              {{ ranking.display_name }}
+            </div>
+          </td>
+          <td class="text-right">
+            @if (vm.userIsGameMaster) {
+              <p-inputNumber
+                [ngModel]="ranking.score"
+                (ngModelChange)="updateScore(ranking.id, $event)"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                [step]="1"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                inputStyleClass="w-full"
+              />
+            } @else {
+              {{ ranking.score | number }}
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+} @else {
+  <p-skeleton width="100%" height="25rem" />
+}

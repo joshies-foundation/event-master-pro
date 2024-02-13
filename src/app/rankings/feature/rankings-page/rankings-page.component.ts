@@ -5,44 +5,77 @@ import {
   inject,
 } from '@angular/core';
 import { TableModule } from 'primeng/table';
-import { UserService } from '../../../shared/data-access/user.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
 import { PlayerService } from '../../../shared/data-access/player.service';
+import { SkeletonModule } from 'primeng/skeleton';
+import {
+  undefinedUntilAllPropertiesAreDefined,
+  withAllDefined,
+} from '../../../shared/util/signal-helpers';
+import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
+import { SessionService } from '../../../shared/data-access/session.service';
 
 @Component({
   selector: 'joshies-rankings-page',
   standalone: true,
-  imports: [TableModule, InputNumberModule, FormsModule],
+  imports: [
+    TableModule,
+    InputNumberModule,
+    FormsModule,
+    SkeletonModule,
+    DecimalPipe,
+    NgClass,
+    NgOptimizedImage,
+  ],
   templateUrl: './rankings-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RankingsPageComponent {
-  private readonly userService = inject(UserService);
+  private readonly sessionService = inject(SessionService);
   private readonly playerService = inject(PlayerService);
 
-  readonly userIsGameMaster = this.userService.userIsGameMaster;
+  private scoreUpdates: Record<number, NodeJS.Timeout> = {};
 
-  private scoreUpdates: Record<string, NodeJS.Timeout> = {};
-
-  readonly rankings = computed(
-    () =>
-      this.playerService
-        .players()
-        ?.sort((player1, player2) => player2.score - player1.score)
-        .map((player, index) => ({ ...player, rank: index + 1 })),
+  private readonly rankings = computed(() =>
+    withAllDefined({ players: this.playerService.players() }, ({ players }) =>
+      players
+        ? players
+            .sort((player1, player2) => player2.score - player1.score)
+            .map((player, index, players) => ({
+              player_id: player.player_id,
+              display_name: player.display_name,
+              score: player.score,
+              avatar_url: player.avatar_url,
+              rank: index + 1,
+              rankEmoji:
+                index === 0
+                  ? '👑'
+                  : index === players.length - 1
+                    ? '💩'
+                    : undefined,
+            }))
+        : null,
+    ),
   );
 
-  updateScore(userId: string, score: number): void {
-    if (this.scoreUpdates[userId]) {
-      clearTimeout(this.scoreUpdates[userId]);
+  readonly viewModel = computed(() =>
+    undefinedUntilAllPropertiesAreDefined({
+      thereIsAnActiveSession: this.sessionService.thereIsAnActiveSession(),
+      rankings: this.rankings(),
+      userIsGameMaster: this.playerService.userIsGameMaster(),
+      userPlayerId: this.playerService.userPlayerId(),
+    }),
+  );
+
+  updateScore(playerId: number, score: number): void {
+    if (this.scoreUpdates[playerId]) {
+      clearTimeout(this.scoreUpdates[playerId]);
     }
 
-    const timerId = setTimeout(() => {
-      this.userService.updateScore(userId, score);
-      delete this.scoreUpdates[userId];
+    this.scoreUpdates[playerId] = setTimeout(() => {
+      this.playerService.updateScore(playerId, score);
+      delete this.scoreUpdates[playerId];
     }, 2000);
-
-    this.scoreUpdates[userId] = timerId;
   }
 }

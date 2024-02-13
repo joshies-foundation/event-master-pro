@@ -3,19 +3,20 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { UserService } from '../../../shared/data-access/user.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { SkeletonModule } from 'primeng/skeleton';
 import { NotificationsService } from '../../../shared/data-access/notifications.service';
 
 @Component({
   selector: 'joshies-profile-page',
   standalone: true,
-  imports: [ButtonModule, DatePipe, SkeletonModule, JsonPipe],
+  imports: [ButtonModule, DatePipe, SkeletonModule],
   templateUrl: './profile-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -24,14 +25,15 @@ export default class ProfilePageComponent {
   private readonly userService = inject(UserService);
   private readonly notificationsService = inject(NotificationsService);
 
+  private readonly updatedAvatarLoading = signal(false);
+
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       user: this.userService.user(),
       loginUsername: this.authService.loginUsername(),
-      pushNotificationsSubscription:
-        this.notificationsService.pushNotificationsSubscription(),
       pushNotificationsAreEnabled:
         this.notificationsService.pushNotificationsAreEnabled(),
+      updatedAvatarLoading: this.updatedAvatarLoading(),
     }),
   );
 
@@ -39,10 +41,15 @@ export default class ProfilePageComponent {
     location.reload();
   }
 
-  onAvatarImageSelect(event: Event): void {
-    void this.userService.setAvatar(
+  async onAvatarImageSelect(event: Event): Promise<void> {
+    this.updatedAvatarLoading.set(true);
+
+    await this.userService.setAvatar(
       (event.target as HTMLInputElement).files![0],
     );
+
+    // delay removing loading skeleton to give app enough time to pull new image url from database
+    setTimeout(() => this.updatedAvatarLoading.set(false), 150);
   }
 
   promptChangeDisplayName(userId: string, currentDisplayName: string): void {

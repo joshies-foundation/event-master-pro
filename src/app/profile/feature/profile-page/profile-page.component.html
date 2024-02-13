@@ -13,20 +13,26 @@
 
 @if (viewModel(); as vm) {
   <div class="flex justify-content-center my-5 align-items-baseline">
-    <!-- Avatar -->
-    <img
-      [src]="vm.user.avatar_url"
-      alt=""
-      class="w-10rem h-10rem border-circle block bg-gray-200"
-    />
+    @if (vm.updatedAvatarLoading) {
+      <!-- Updating Avatar Loading Skeleton -->
+      <p-skeleton height="10rem" width="10rem" styleClass="border-circle" />
+      <i tabindex="0" class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-300"></i>
+    } @else {
+      <!-- Avatar -->
+      <img
+        [src]="vm.updatedAvatarLoading ? '' : vm.user.avatar_url"
+        alt=""
+        class="w-10rem h-10rem border-circle block bg-gray-200"
+      />
 
-    <!-- Choose Image Button -->
-    <i
-      tabindex="0"
-      class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-700"
-      (click)="avatarFileInput.click()"
-      (keyup.enter)="avatarFileInput.click()"
-    ></i>
+      <!-- Choose Image Button -->
+      <i
+        tabindex="0"
+        class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-700"
+        (click)="avatarFileInput.click()"
+        (keyup.enter)="avatarFileInput.click()"
+      ></i>
+    }
 
     <!-- Hidden File Input -->
     <input
@@ -57,10 +63,7 @@
   </p>
 
   <!-- Enable Push Notifications Button -->
-  @if (vm.pushNotificationsAreEnabled) {
-    <p class="font-bold">Push Notifications Subscription:</p>
-    <pre>{{ vm.pushNotificationsSubscription | json }}</pre>
-  } @else {
+  @if (!vm.pushNotificationsAreEnabled) {
     <p-button
       (onClick)="enablePushNotifications(vm.user.id)"
       label="Enable Push Notifications"

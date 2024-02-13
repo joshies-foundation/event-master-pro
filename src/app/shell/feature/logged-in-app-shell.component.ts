@@ -8,7 +8,10 @@ import { FooterLinkModel } from '../ui/footer-link/footer-link.component';
   standalone: true,
   imports: [RouterOutlet, FooterComponent],
   template: `
-    <main class="min-h-full px-3 pt-4 main-padding-bottom flex flex-column">
+    <main
+      class="min-h-full px-3 pt-4 main-padding-bottom flex flex-column"
+      style="padding-bottom: 6rem"
+    >
       <router-outlet />
     </main>
 

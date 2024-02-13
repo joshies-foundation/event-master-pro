@@ -1,13 +1,13 @@
-import { Injectable, inject, computed } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
-import { map, Observable } from 'rxjs';
+import { map, Observable, shareReplay, startWith } from 'rxjs';
 import { environment } from 'environment';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/error-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { showMessageOnError, Table } from '../util/supabase-helpers';
 import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -18,12 +18,14 @@ export class NotificationsService {
   private readonly swPush = inject(SwPush);
   private readonly http = inject(HttpClient);
 
-  readonly pushNotificationsSubscription = toSignal(this.swPush.subscription, {
-    initialValue: null,
-  });
+  readonly pushNotificationsAreEnabled$ = this.swPush.subscription.pipe(
+    map((subscription) => !!subscription),
+    startWith(false),
+    shareReplay(1),
+  );
 
-  readonly pushNotificationsAreEnabled = computed(
-    () => !!this.pushNotificationsSubscription(),
+  readonly pushNotificationsAreEnabled = toSignal(
+    this.pushNotificationsAreEnabled$,
   );
 
   constructor() {

@@ -3,7 +3,7 @@ type KeyValueObject = Record<string, unknown>;
 function propertiesAreAllDefined<T extends KeyValueObject>(
   obj: Partial<T>,
 ): obj is T {
-  return Object.keys(obj).every((key) => obj[key] !== undefined);
+  return Object.values(obj).every((value) => value !== undefined);
 }
 
 export function undefinedUntilAllPropertiesAreDefined<T extends KeyValueObject>(
@@ -13,15 +13,16 @@ export function undefinedUntilAllPropertiesAreDefined<T extends KeyValueObject>(
 }
 
 export function withAllDefined<
-  SignalsType extends KeyValueObject,
-  CallbackReturnType,
+  DependenciesType extends KeyValueObject,
+  ComputationReturnType,
 >(
-  signals: Partial<SignalsType>,
-  callback: (inputs: SignalsType) => CallbackReturnType,
-): CallbackReturnType | undefined {
-  const inputs = undefinedUntilAllPropertiesAreDefined(signals);
+  dependencies: Partial<DependenciesType>,
+  computation: (definedDependencies: DependenciesType) => ComputationReturnType,
+): ComputationReturnType | undefined {
+  const dependenciesOrUndefined =
+    undefinedUntilAllPropertiesAreDefined(dependencies);
 
-  if (!inputs) return;
+  if (!dependenciesOrUndefined) return;
 
-  return callback(inputs);
+  return computation(dependenciesOrUndefined);
 }

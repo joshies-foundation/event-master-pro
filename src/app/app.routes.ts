@@ -37,7 +37,7 @@ export const routes: Routes = [
       {
         path: '**',
         pathMatch: 'full',
-        redirectTo: 'profile',
+        redirectTo: 'rankings',
       },
     ],
   },

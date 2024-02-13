@@ -1,10 +1,13 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Filter,
-  realtimeUpdatesFromTableAsSignal,
+  realtimeUpdatesFromTable,
   Table,
 } from '../util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { map, of, shareReplay } from 'rxjs';
+import { whenNotNull } from '../util/rxjs-helpers';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -12,34 +15,36 @@ import { SupabaseClient } from '@supabase/supabase-js';
 export class SessionService {
   private readonly supabase = inject(SupabaseClient);
 
-  private readonly activeSessionRecords = realtimeUpdatesFromTableAsSignal(
+  private readonly activeSessionId$ = realtimeUpdatesFromTable(
     this.supabase,
     Table.ActiveSession,
+  ).pipe(
+    map((activeSessionRecords) => activeSessionRecords[0].session_id),
+    shareReplay(1),
   );
 
-  private readonly activeSessionId = computed(
-    () => this.activeSessionRecords()[0]?.session_id,
+  readonly thereIsAnActiveSession$ = this.activeSessionId$.pipe(
+    map((activeSessionId) => activeSessionId !== null),
+    shareReplay(1),
   );
 
-  private readonly sessionRecords = realtimeUpdatesFromTableAsSignal(
-    this.supabase,
-    Table.Session,
-    computed(() => `id=eq.${this.activeSessionId()}` as Filter<Table.Session>),
+  readonly thereIsAnActiveSession = toSignal(this.thereIsAnActiveSession$);
+
+  readonly session$ = this.activeSessionId$.pipe(
+    whenNotNull((activeSessionId) =>
+      realtimeUpdatesFromTable(
+        this.supabase,
+        Table.Session,
+        `id=eq.${activeSessionId}` as Filter<Table.Session>,
+      ).pipe(map((sessionRecords) => sessionRecords[0])),
+    ),
+    shareReplay(1),
   );
 
-  readonly session = computed(() => this.sessionRecords()?.[0]);
+  readonly session = toSignal(this.session$);
 
-  readonly gameMasterUserId = computed(
-    () => this.session().game_master_user_id,
+  readonly gameMasterUserId$ = this.session$.pipe(
+    whenNotNull((session) => of(session!.game_master_user_id)),
+    shareReplay(1),
   );
-
-  // private readonly allGameMasters = realtimeUpdatesFromTableAsSignal(
-  //   Table.GameMaster,
-  // );
-
-  // readonly gameMasterUserId = computed(() => this.allGameMasters()[0].user_id);
-
-  // readonly userIsGameMaster = computed(
-  //   () => this.userService.user().id === this.gameMasterUserId(),
-  // );
 }

@@ -123,19 +123,16 @@ export type Database = {
           avatar_url: string;
           display_name: string;
           id: string;
-          score: number;
         };
         Insert: {
           avatar_url?: string;
           display_name?: string;
           id: string;
-          score?: number;
         };
         Update: {
           avatar_url?: string;
           display_name?: string;
           id?: string;
-          score?: number;
         };
         Relationships: [];
       };

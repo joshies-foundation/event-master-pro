@@ -1,26 +1,109 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
-  Filter,
-  realtimeUpdatesFromTableAsSignal,
+  realtimeUpdatesFromTable,
+  showMessageOnError,
   Table,
 } from '../util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { SessionService } from './session.service';
+import { MessageService } from 'primeng/api';
+import { combineLatest, map, of, shareReplay, switchMap } from 'rxjs';
+import { defined, whenNotNull } from '../util/rxjs-helpers';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../auth/data-access/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlayerService {
   private readonly supabase = inject(SupabaseClient);
+  private readonly authService = inject(AuthService);
   private readonly sessionService = inject(SessionService);
+  private readonly messageService = inject(MessageService);
 
-  readonly players = realtimeUpdatesFromTableAsSignal(
-    this.supabase,
-    Table.Player,
-    computed(
-      () =>
-        `session_id=eq.${this.sessionService.session()
-          ?.id}` as Filter<Table.Player>,
+  readonly playersWithoutDisplayNames$ = this.sessionService.session$.pipe(
+    whenNotNull((session) =>
+      realtimeUpdatesFromTable(
+        this.supabase,
+        Table.Player,
+        `session_id=eq.${session.id}`,
+      ),
     ),
+    shareReplay(1),
   );
+
+  readonly playersIncludingDisabled$ = this.playersWithoutDisplayNames$.pipe(
+    whenNotNull((players) =>
+      realtimeUpdatesFromTable(
+        this.supabase,
+        Table.User,
+        `id=in.(${players.map((player) => player.user_id)})`,
+      ).pipe(
+        map((users) =>
+          players.map((player) => {
+            const user = users.find((user) => user.id === player.user_id)!;
+            return {
+              player_id: player.id,
+              user_id: user.id,
+              score: player.score,
+              enabled: player.enabled,
+              display_name: user.display_name,
+              avatar_url: user.avatar_url,
+            };
+          }),
+        ),
+      ),
+    ),
+    shareReplay(1),
+  );
+
+  readonly playersIncludingDisabled = toSignal(this.playersIncludingDisabled$);
+
+  readonly players$ = this.playersIncludingDisabled$.pipe(
+    whenNotNull((players) => of(players.filter((player) => player.enabled))),
+    shareReplay(1),
+  );
+
+  readonly players = toSignal(this.players$);
+
+  readonly userPlayer$ = this.authService.user$.pipe(
+    defined(),
+    switchMap((authUser) =>
+      this.playersIncludingDisabled$.pipe(
+        whenNotNull((players) =>
+          of(players.find((player) => player.user_id === authUser.id)!),
+        ),
+      ),
+    ),
+    shareReplay(1),
+  );
+
+  readonly userPlayer = toSignal(this.userPlayer$);
+
+  readonly userPlayerId$ = this.userPlayer$.pipe(
+    map((userPlayer) => userPlayer?.player_id ?? null),
+  );
+
+  readonly userPlayerId = toSignal(this.userPlayerId$);
+
+  readonly userIsGameMaster$ = combineLatest({
+    userPlayer: this.userPlayer$,
+    gameMasterUserId: this.sessionService.gameMasterUserId$,
+  }).pipe(
+    map(
+      ({ userPlayer, gameMasterUserId }) =>
+        userPlayer?.user_id === gameMasterUserId,
+    ),
+    shareReplay(1),
+  );
+
+  readonly userIsGameMaster = toSignal(this.userIsGameMaster$);
+
+  async updateScore(playerId: number, score: number): Promise<void> {
+    await showMessageOnError(
+      this.supabase.from(Table.Player).update({ score }).eq('id', playerId),
+      this.messageService,
+      'Cannot update score',
+    );
+  }
 }

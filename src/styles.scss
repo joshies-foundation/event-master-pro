@@ -7,9 +7,8 @@ $systemFont: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
   'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 
 :root {
-  font-family: $systemFont;
   --font-family: $systemFont;
-  font-feature-settings: 'tnum';
+  --font-feature-settings: 'tnum';
 }
 
 html,
@@ -20,6 +19,8 @@ body {
   min-width: 100%;
   min-height: 100%;
   overscroll-behavior: contain;
+  font-family: var(--font-family);
+  font-feature-settings: var(--font-feature-settings);
 }
 
 * {

@@ -16,7 +16,7 @@ export interface Form {
   formGroup: FormGroup;
   onSubmit: (event: SubmitEvent) => unknown;
   disabled?: Signal<boolean>;
-  fields: Signal<FormField[]>;
+  fields: Signal<FormField[] | undefined>;
   styleClass?: string;
 }
 

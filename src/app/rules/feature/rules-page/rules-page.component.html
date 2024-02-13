@@ -1,7 +1,12 @@
 <!-- Header -->
 <h1 class="mt-0">Rules</h1>
 
-<!-- Rules -->
-<pre style="font-family: var(--font-family); white-space: pre-wrap">{{
-  rules()
-}}</pre>
+@if (rules(); as rules) {
+  <!-- Rules -->
+  <pre style="font-family: var(--font-family); white-space: pre-wrap">{{
+    rules
+  }}</pre>
+} @else {
+  <!-- Loading Skeleton -->
+  <p-skeleton width="100%" height="25rem" />
+}

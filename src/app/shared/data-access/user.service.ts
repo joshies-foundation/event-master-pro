@@ -1,6 +1,6 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
-  realtimeUpdatesFromTableAsSignal,
+  realtimeUpdatesFromTable,
   showMessageOnError,
   StorageBucket,
   Table,
@@ -10,7 +10,9 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/error-helpers';
 import { resizeImage } from '../util/image-helpers';
-import { SessionService } from './session.service';
+import { map } from 'rxjs';
+import { whenNotUndefined } from '../util/rxjs-helpers';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -19,21 +21,22 @@ export class UserService {
   private readonly supabase = inject(SupabaseClient);
   private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
-  private readonly sessionService = inject(SessionService);
 
-  readonly allUsers = realtimeUpdatesFromTableAsSignal(
-    this.supabase,
-    Table.User,
+  readonly user$ = this.authService.user$.pipe(
+    whenNotUndefined((authUser) =>
+      realtimeUpdatesFromTable(
+        this.supabase,
+        Table.User,
+        `id=eq.${authUser.id}`,
+      ).pipe(map((userRecords) => userRecords[0])),
+    ),
   );
 
-  readonly user = computed(
-    () =>
-      this.allUsers().find((user) => user.id === this.authService.user()!.id)!,
-  );
+  readonly user = toSignal(this.user$);
 
-  readonly userIsGameMaster = computed(
-    () => this.user().id === this.sessionService.gameMasterUserId(),
-  );
+  // temporary - for test notifications page
+  readonly allUsers$ = realtimeUpdatesFromTable(this.supabase, Table.User);
+  readonly allUsers = toSignal(this.allUsers$);
 
   async updateDisplayName(
     userId: string,
@@ -74,23 +77,5 @@ export class UserService {
     if (updateError) {
       showErrorMessage(updateError.message, this.messageService);
     }
-  }
-
-  async addNotificationToken(userId: string, token: string): Promise<void> {
-    await showMessageOnError(
-      this.supabase
-        .from(Table.User)
-        .update({ tokens: `tokens || '{"${token}"}'` })
-        .eq('id', userId),
-      this.messageService,
-    );
-  }
-
-  async updateScore(userId: string, score: number): Promise<void> {
-    await showMessageOnError(
-      this.supabase.from(Table.User).update({ score }).eq('id', userId),
-      this.messageService,
-      'Cannot update score',
-    );
   }
 }

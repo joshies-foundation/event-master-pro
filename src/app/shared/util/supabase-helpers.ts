@@ -66,9 +66,9 @@ export function realtimeUpdatesFromTable<
   );
 
   const changes$ = new Observable<RealtimePostgresChangesPayload<Model>>(
-    (subscriber) => ({
-      unsubscribe: supabase
-        .channel(`${table}-table-changes`)
+    (subscriber) => {
+      const subscription = supabase
+        .channel(`${table}-table-changes-${Math.random()}`)
         .on<Model>(
           REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
           {
@@ -79,8 +79,12 @@ export function realtimeUpdatesFromTable<
           },
           (payload) => subscriber.next(payload),
         )
-        .subscribe().unsubscribe,
-    }),
+        .subscribe();
+
+      return function unsubscribe() {
+        subscription?.unsubscribe();
+      };
+    },
   );
 
   return initialValue$.pipe(
@@ -127,7 +131,7 @@ export function realtimeUpdatesFromTableAsSignal<
 >(
   supabase: SupabaseClient<Database>,
   table: T,
-  filter?: Signal<Filter<T>> | Filter<T>,
+  filter?: Signal<Filter<T> | undefined> | Filter<T>,
 ): Signal<Model[]> {
   if (typeof filter === 'string' || filter === undefined) {
     return toSignal(
@@ -140,6 +144,7 @@ export function realtimeUpdatesFromTableAsSignal<
 
   return toSignal(
     toObservable(filter).pipe(
+      // filterOperator((filter) => filter !== undefined),
       switchMap((filter) =>
         realtimeUpdatesFromTable<T, Model>(supabase, table, filter),
       ),

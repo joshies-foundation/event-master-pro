@@ -1,6 +1,10 @@
 <!-- Header -->
 <h1 class="mt-0">Send Notifications</h1>
 
-<joshies-form [form]="form" />
-
-<pre>{{ data() | json }}</pre>
+@if (form.fields()) {
+  <!-- Form -->
+  <joshies-form [form]="form" />
+} @else {
+  <!-- Loading Skeleton -->
+  <p-skeleton width="100%" height="19rem" />
+}

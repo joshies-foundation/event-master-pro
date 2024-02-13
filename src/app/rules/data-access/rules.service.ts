@@ -1,9 +1,11 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Table,
-  realtimeUpdatesFromTableAsSignal,
+  realtimeUpdatesFromTable,
 } from '../../shared/util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { map, shareReplay } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +13,10 @@ import { SupabaseClient } from '@supabase/supabase-js';
 export class RulesService {
   private readonly supabase = inject(SupabaseClient);
 
-  private readonly allRules = realtimeUpdatesFromTableAsSignal(
-    this.supabase,
-    Table.Rules,
+  readonly rules$ = realtimeUpdatesFromTable(this.supabase, Table.Rules).pipe(
+    map((rulesRecords) => rulesRecords[0].rules),
+    shareReplay(1),
   );
 
-  readonly rules = computed(() => this.allRules()[0].rules);
+  readonly rules = toSignal(this.rules$);
 }
