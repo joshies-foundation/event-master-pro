@@ -27,6 +27,10 @@ export const routes: Routes = [
         loadChildren: () => import('./rules/feature/lib.routes'),
       },
       {
+        path: 'session',
+        loadChildren: () => import('./session/feature/lib.routes'),
+      },
+      {
         path: 'notifications',
         loadChildren: () => import('./notifications/feature/lib.routes'),
       },

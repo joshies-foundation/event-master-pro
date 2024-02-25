@@ -38,6 +38,31 @@
         [styleClass]="'w-full ' + (field.styleClass ?? '')"
       />
     }
+    @case (FormFieldType.MultiSelect) {
+      <p-multiSelect
+        [inputId]="field.name"
+        [name]="field.name"
+        [placeholder]="field.placeholder"
+        [options]="field.options"
+        [formControl]="field.control"
+        [optionLabel]="field.optionLabel"
+        [optionValue]="field.optionValue"
+        [display]="field.useChips ? 'chip' : ''"
+        [styleClass]="'w-full ' + (field.styleClass ?? '')"
+      />
+    }
+    @case (FormFieldType.Calendar) {
+      <p-calendar
+        [inputId]="field.name"
+        [name]="field.name"
+        [placeholder]="field.placeholder"
+        [formControl]="field.control"
+        [minDate]="field.minDate"
+        [maxDate]="field.maxDate"
+        [selectionMode]="field.selectionMode ?? 'single'"
+        [styleClass]="'w-full ' + (field.styleClass ?? '')"
+      />
+    }
     @case (FormFieldType.Submit) {
       <p-button
         type="submit"

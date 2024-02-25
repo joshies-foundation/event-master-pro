@@ -38,7 +38,7 @@
     "@supabase/supabase-js": "^2.39.2",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
-    "primeng": "^17.4.0",
+    "primeng": "^17.8.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.6.2",
     "zone.js": "~0.14.2"

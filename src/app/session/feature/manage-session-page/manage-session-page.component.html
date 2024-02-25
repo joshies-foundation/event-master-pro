@@ -1,0 +1,54 @@
+<!-- Header -->
+<h1 class="mt-0">Manage Session</h1>
+
+<h4>Enable/Disable Players</h4>
+
+@if (players(); as players) {
+  <!-- Player Table -->
+  <p-table [value]="players" [tableStyle]="{ 'min-width': '100%' }">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Player</th>
+        <th class="text-center">Enabled</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-player>
+      <tr>
+        <td>
+          <div class="flex align-items-center gap-2 -py-2">
+            <img
+              [ngSrc]="player.avatar_url"
+              width="32"
+              height="32"
+              class="border-circle bg-gray-200"
+              alt=""
+            />
+            {{ player.display_name }}
+          </div>
+        </td>
+        <td class="text-center">
+          <p-inputSwitch
+            [ngModel]="player.enabled"
+            (onChange)="
+              onEnableToggleClick(
+                player.player_id,
+                player.display_name,
+                player.enabled
+              )
+            "
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+} @else {
+  <p-skeleton width="100%" height="25rem" />
+}
+
+<!-- Sign Out Button -->
+<p-button
+  (onClick)="endSession()"
+  label="End Session"
+  severity="danger"
+  styleClass="block w-full mt-4"
+/>

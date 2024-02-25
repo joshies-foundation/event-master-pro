@@ -1,0 +1,60 @@
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { TableModule } from 'primeng/table';
+import { PlayerService } from '../../../shared/data-access/player.service';
+import { NgOptimizedImage } from '@angular/common';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { FormsModule } from '@angular/forms';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ButtonModule } from 'primeng/button';
+import { SessionService } from '../../../shared/data-access/session.service';
+import { showErrorMessage } from '../../../shared/util/error-helpers';
+import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'joshies-manage-session-page',
+  standalone: true,
+  imports: [
+    TableModule,
+    NgOptimizedImage,
+    InputSwitchModule,
+    FormsModule,
+    SkeletonModule,
+    ButtonModule,
+  ],
+  templateUrl: './manage-session-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export default class ManageSessionPageComponent {
+  private readonly playerService = inject(PlayerService);
+  private readonly sessionService = inject(SessionService);
+  private readonly messageService = inject(MessageService);
+  private readonly router = inject(Router);
+
+  readonly players = this.playerService.playersIncludingDisabled;
+
+  onEnableToggleClick(
+    playerId: number,
+    displayName: string,
+    playerIsEnabled: boolean,
+  ): void {
+    this.playerService.setEnabled(playerId, displayName, !playerIsEnabled);
+  }
+
+  async endSession(): Promise<void> {
+    const confirmationPassword = 'FUCK';
+    const response = prompt(
+      `End session? Type ${confirmationPassword} below to end this session.`,
+    );
+
+    if (response === confirmationPassword) {
+      await this.sessionService.endSession();
+      this.router.navigateByUrl('/');
+    } else if (response !== null) {
+      showErrorMessage(
+        `You didn't enter ${confirmationPassword}, dummy`,
+        this.messageService,
+      );
+    }
+  }
+}

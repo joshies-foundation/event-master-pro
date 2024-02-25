@@ -7,7 +7,14 @@ import {
 import { SupabaseClient } from '@supabase/supabase-js';
 import { SessionService } from './session.service';
 import { MessageService } from 'primeng/api';
-import { combineLatest, map, of, shareReplay, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  of,
+  shareReplay,
+  switchMap,
+} from 'rxjs';
 import { defined, whenNotNull } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../auth/data-access/auth.service';
@@ -32,16 +39,26 @@ export class PlayerService {
     shareReplay(1),
   );
 
-  readonly playersIncludingDisabled$ = this.playersWithoutDisplayNames$.pipe(
+  private readonly playerUsers$ = this.playersWithoutDisplayNames$.pipe(
+    distinctUntilChanged(
+      (previous, current) => previous?.length === current?.length,
+    ),
     whenNotNull((players) =>
       realtimeUpdatesFromTable(
         this.supabase,
         Table.User,
         `id=in.(${players.map((player) => player.user_id)})`,
-      ).pipe(
+      ),
+    ),
+    shareReplay(1),
+  );
+
+  readonly playersIncludingDisabled$ = this.playersWithoutDisplayNames$.pipe(
+    whenNotNull((players) =>
+      this.playerUsers$.pipe(
         map((users) =>
           players.map((player) => {
-            const user = users.find((user) => user.id === player.user_id)!;
+            const user = users!.find((user) => user.id === player.user_id)!;
             return {
               player_id: player.id,
               user_id: user.id,
@@ -104,6 +121,18 @@ export class PlayerService {
       this.supabase.from(Table.Player).update({ score }).eq('id', playerId),
       this.messageService,
       'Cannot update score',
+    );
+  }
+
+  async setEnabled(
+    playerId: number,
+    displayName: string,
+    enabled: boolean,
+  ): Promise<void> {
+    await showMessageOnError(
+      this.supabase.from(Table.Player).update({ enabled }).eq('id', playerId),
+      this.messageService,
+      `Cannot ${enabled ? 'disable' : 'enable'} ${displayName}`,
     );
   }
 }

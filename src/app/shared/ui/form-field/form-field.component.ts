@@ -20,11 +20,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { LowerCasePipe, NgClass } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CalendarModule } from 'primeng/calendar';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 export enum FormFieldType {
   Text,
   Number,
   Dropdown,
+  MultiSelect,
+  Calendar,
   Submit,
 }
 
@@ -53,6 +57,21 @@ export type FormField = {
           optionLabel: string;
           optionValue: string;
         }
+      | {
+          type: FormFieldType.MultiSelect;
+          useChips?: boolean;
+          options: object[];
+          optionLabel: string;
+          optionValue: string;
+        }
+      | {
+          type: FormFieldType.Calendar;
+          minDate: Date;
+          maxDate: Date;
+          selectionMode?: 'multiple' | 'range' | 'single';
+          touchUi?: boolean;
+          inline?: boolean;
+        }
     ))
   | {
       type: FormFieldType.Submit;
@@ -72,9 +91,22 @@ export type FormField = {
     ReactiveFormsModule,
     ButtonModule,
     NgClass,
+    CalendarModule,
+    MultiSelectModule,
   ],
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // styles: `::ng-deep p-multiselect .p-multiselect-label{
+  //     display: flex;
+  //     flex-wrap: wrap;
+  //     align-items: flex-start;
+  //     justify-content: flex-start;
+  //     gap: 0;
+  // }
+
+  // ::ng-deep p-multiselect .p-multiselect-token{
+  //     margin-bottom: .5rem
+  // }`,
 })
 export class FormFieldComponent implements AfterViewInit {
   @Input({ required: true }) field!: FormField;
@@ -85,6 +117,7 @@ export class FormFieldComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly FormFieldType = FormFieldType;
+  protected readonly Date = Date;
 
   private readonly enableAndDisableFieldEffect = effect(() => {
     if (this.field.type === FormFieldType.Submit) {
