@@ -42,7 +42,7 @@
             @if (vm.userIsGameMaster) {
               <p-inputNumber
                 [ngModel]="ranking.score"
-                (ngModelChange)="updateScore(ranking.id, $event)"
+                (ngModelChange)="updateScore(ranking.player_id, $event)"
                 [showButtons]="true"
                 buttonLayout="horizontal"
                 [step]="1"
