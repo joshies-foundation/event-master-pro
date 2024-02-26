@@ -17,6 +17,7 @@ import {
 } from 'rxjs';
 import {
   defined,
+  distinctUntilIdChanged,
   whenAllValuesNotNull,
   whenNotNull,
 } from '../util/rxjs-helpers';
@@ -33,6 +34,7 @@ export class PlayerService {
   private readonly messageService = inject(MessageService);
 
   readonly playersWithoutDisplayNames$ = this.sessionService.session$.pipe(
+    distinctUntilIdChanged(),
     whenNotNull((session) =>
       realtimeUpdatesFromTable(
         this.supabase,
@@ -93,7 +95,7 @@ export class PlayerService {
     switchMap((authUser) =>
       this.playersIncludingDisabled$.pipe(
         whenNotNull((players) =>
-          of(players.find((player) => player.user_id === authUser.id)!),
+          of(players.find((player) => player.user_id === authUser.id) ?? null),
         ),
       ),
     ),

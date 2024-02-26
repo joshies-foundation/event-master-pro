@@ -7,7 +7,10 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { map, shareReplay } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SessionService } from '../../shared/data-access/session.service';
-import { whenNotNull } from '../../shared/util/rxjs-helpers';
+import {
+  distinctUntilIdChanged,
+  whenNotNull,
+} from '../../shared/util/rxjs-helpers';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +20,7 @@ export class RulesService {
   private readonly sessionService = inject(SessionService);
 
   readonly rules$ = this.sessionService.session$.pipe(
+    distinctUntilIdChanged(),
     whenNotNull((session) =>
       realtimeUpdatesFromTable(
         this.supabase,

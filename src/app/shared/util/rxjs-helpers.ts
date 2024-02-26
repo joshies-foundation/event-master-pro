@@ -1,4 +1,12 @@
-import { filter, ObservableInput, of, OperatorFunction, switchMap } from 'rxjs';
+import {
+  distinctUntilChanged,
+  filter,
+  MonoTypeOperatorFunction,
+  ObservableInput,
+  of,
+  OperatorFunction,
+  switchMap,
+} from 'rxjs';
 
 export function defined<T>(): OperatorFunction<T | null | undefined, T> {
   return filter((value): value is T => value !== undefined && value !== null);
@@ -36,3 +44,11 @@ export function whenNotUndefined<T, O extends ObservableInput<unknown>>(
 }
 
 type ObservedValueOf<O> = O extends ObservableInput<infer T> ? T : never;
+
+export function distinctUntilIdChanged<
+  T extends { id: string | number } | null | undefined,
+>(): MonoTypeOperatorFunction<T> {
+  return distinctUntilChanged<T>(
+    (previous, current) => previous?.id === current?.id,
+  );
+}

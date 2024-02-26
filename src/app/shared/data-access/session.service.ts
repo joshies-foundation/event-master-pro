@@ -7,7 +7,7 @@ import {
 } from '../util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { map, of, shareReplay } from 'rxjs';
-import { whenNotNull } from '../util/rxjs-helpers';
+import { distinctUntilIdChanged, whenNotNull } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { showErrorMessage } from '../util/error-helpers';
 import { MessageService } from 'primeng/api';
@@ -48,6 +48,7 @@ export class SessionService {
   readonly session = toSignal(this.session$);
 
   readonly gameMasterUserId$ = this.session$.pipe(
+    distinctUntilIdChanged(),
     whenNotNull((session) => of(session!.game_master_user_id)),
     shareReplay(1),
   );
