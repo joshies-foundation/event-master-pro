@@ -66,8 +66,8 @@ export type FormField = {
         }
       | {
           type: FormFieldType.Calendar;
-          minDate: Date;
-          maxDate: Date;
+          minDate?: Date;
+          maxDate?: Date;
           selectionMode?: 'multiple' | 'range' | 'single';
           touchUi?: boolean;
           inline?: boolean;
@@ -96,17 +96,6 @@ export type FormField = {
   ],
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // styles: `::ng-deep p-multiselect .p-multiselect-label{
-  //     display: flex;
-  //     flex-wrap: wrap;
-  //     align-items: flex-start;
-  //     justify-content: flex-start;
-  //     gap: 0;
-  // }
-
-  // ::ng-deep p-multiselect .p-multiselect-token{
-  //     margin-bottom: .5rem
-  // }`,
 })
 export class FormFieldComponent implements AfterViewInit {
   @Input({ required: true }) field!: FormField;
@@ -117,19 +106,21 @@ export class FormFieldComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly FormFieldType = FormFieldType;
-  protected readonly Date = Date;
 
-  private readonly enableAndDisableFieldEffect = effect(() => {
-    if (this.field.type === FormFieldType.Submit) {
-      return;
-    }
+  private readonly enableAndDisableFieldEffect = effect(
+    () => {
+      if (this.field.type === FormFieldType.Submit) {
+        return;
+      }
 
-    if (this.formDisabled() || this.field.disabled) {
-      this.field.control.disable();
-    } else {
-      this.field.control.enable();
-    }
-  });
+      if (this.formDisabled() || this.field.disabled) {
+        this.field.control.disable();
+      } else {
+        this.field.control.enable();
+      }
+    },
+    { allowSignalWrites: true },
+  );
 
   ngAfterViewInit() {
     if (this.field.type !== FormFieldType.Submit) {

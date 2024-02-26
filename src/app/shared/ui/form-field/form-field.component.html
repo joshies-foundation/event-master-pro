@@ -57,9 +57,11 @@
         [name]="field.name"
         [placeholder]="field.placeholder"
         [formControl]="field.control"
-        [minDate]="field.minDate"
-        [maxDate]="field.maxDate"
+        [minDate]="field.minDate!"
+        [maxDate]="field.maxDate!"
         [selectionMode]="field.selectionMode ?? 'single'"
+        [touchUI]="field.touchUi"
+        [inline]="field.inline!"
         [styleClass]="'w-full ' + (field.styleClass ?? '')"
       />
     }

@@ -16,6 +16,8 @@ import { UserService } from '../../../shared/data-access/user.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SessionService } from '../../../shared/data-access/session.service';
 import { Router } from '@angular/router';
+import { map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-create-session-page',
@@ -24,7 +26,7 @@ import { Router } from '@angular/router';
   templateUrl: './create-session-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class CreateSessionPageComponent {
+export class CreateSessionPageComponent {
   private readonly userService = inject(UserService);
   private readonly sessionService = inject(SessionService);
   private readonly formBuilder = inject(FormBuilder);
@@ -41,6 +43,13 @@ export default class CreateSessionPageComponent {
     ],
     players: [[] as string[], Validators.required],
   });
+
+  private readonly numPlayersSelected = toSignal(
+    this.formGroup.controls.players.valueChanges.pipe(
+      map((players) => players.length),
+    ),
+    { initialValue: 0 },
+  );
 
   readonly form: Form = {
     formGroup: this.formGroup,
@@ -63,12 +72,12 @@ export default class CreateSessionPageComponent {
             placeholder: 'Date Range',
             type: FormFieldType.Calendar,
             minDate: new Date(),
-            maxDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
             selectionMode: 'range',
+            touchUi: true,
             control: this.formGroup.controls.dateRange,
           },
           {
-            label: 'Players',
+            label: `Players (${this.numPlayersSelected()})`,
             name: 'players',
             placeholder: 'Players',
             type: FormFieldType.MultiSelect,
