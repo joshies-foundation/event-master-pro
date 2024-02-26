@@ -61,7 +61,7 @@ export default class RankingsPageComponent {
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
-      thereIsAnActiveSession: this.sessionService.thereIsAnActiveSession(),
+      session: this.sessionService.session(),
       rankings: this.rankings(),
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userPlayerId: this.playerService.userPlayerId(),
