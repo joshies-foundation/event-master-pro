@@ -56,17 +56,17 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'player_session_id_fkey';
-            columns: ['session_id'];
-            isOneToOne: false;
-            referencedRelation: 'session';
-            referencedColumns: ['id'];
-          },
-          {
             foreignKeyName: 'player_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'user';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'public_player_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
             referencedColumns: ['id'];
           },
         ];
@@ -75,16 +75,27 @@ export type Database = {
         Row: {
           id: number;
           rules: string;
+          session_id: number;
         };
         Insert: {
           id?: number;
           rules?: string;
+          session_id: number;
         };
         Update: {
           id?: number;
           rules?: string;
+          session_id?: number;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'public_rules_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: true;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       session: {
         Row: {
