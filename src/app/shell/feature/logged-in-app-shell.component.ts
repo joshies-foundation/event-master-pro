@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../ui/footer/footer.component';
 import { FooterLinkModel } from '../ui/footer-link/footer-link.component';
+import { SessionService } from '../../shared/data-access/session.service';
+import { PlayerService } from '../../shared/data-access/player.service';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
@@ -15,12 +22,21 @@ import { FooterLinkModel } from '../ui/footer-link/footer-link.component';
       <router-outlet />
     </main>
 
-    <joshies-footer [footerLinks]="footerLinks" />
+    <joshies-footer [footerLinks]="footerLinks()" />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoggedInAppShellComponent {
-  readonly footerLinks: FooterLinkModel[] = [
+  private readonly sessionService = inject(SessionService);
+  private readonly playerService = inject(PlayerService);
+
+  private readonly showSessionTab = computed(
+    () =>
+      this.sessionService.session() === null ||
+      this.playerService.userIsGameMaster(),
+  );
+
+  readonly footerLinks = computed((): FooterLinkModel[] => [
     {
       text: 'Rankings',
       href: '/rankings',
@@ -31,11 +47,15 @@ export default class LoggedInAppShellComponent {
       href: '/rules',
       iconClass: 'pi pi-book',
     },
-    {
-      text: 'Session',
-      href: '/session',
-      iconClass: 'pi pi-wrench',
-    },
+    ...(this.showSessionTab()
+      ? [
+          {
+            text: 'Session',
+            href: '/session',
+            iconClass: 'pi pi-wrench',
+          },
+        ]
+      : []),
     // {
     //   text: 'Notifications',
     //   href: '/notifications',
@@ -46,5 +66,5 @@ export default class LoggedInAppShellComponent {
       href: '/profile',
       iconClass: 'pi pi-user',
     },
-  ];
+  ]);
 }

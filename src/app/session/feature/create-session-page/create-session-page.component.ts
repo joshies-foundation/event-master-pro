@@ -15,7 +15,6 @@ import { withAllDefined } from '../../../shared/util/signal-helpers';
 import { UserService } from '../../../shared/data-access/user.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SessionService } from '../../../shared/data-access/session.service';
-import { Router } from '@angular/router';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -30,7 +29,6 @@ export class CreateSessionPageComponent {
   private readonly userService = inject(UserService);
   private readonly sessionService = inject(SessionService);
   private readonly formBuilder = inject(FormBuilder);
-  private readonly router = inject(Router);
 
   readonly allUsers = this.userService.allUsers;
   readonly creatingSession = signal(false);
@@ -116,6 +114,6 @@ export class CreateSessionPageComponent {
       playerUserIds,
     );
 
-    this.router.navigateByUrl('/');
+    this.creatingSession.set(false);
   }
 }

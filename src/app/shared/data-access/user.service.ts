@@ -10,7 +10,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/error-helpers';
 import { resizeImage } from '../util/image-helpers';
-import { map } from 'rxjs';
+import { map, shareReplay } from 'rxjs';
 import { whenNotUndefined } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -30,6 +30,7 @@ export class UserService {
         `id=eq.${authUser.id}`,
       ).pipe(map((userRecords) => userRecords[0])),
     ),
+    shareReplay(1),
   );
 
   readonly user = toSignal(this.user$);

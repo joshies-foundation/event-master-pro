@@ -10,6 +10,23 @@ export function whenNotNull<T, O extends ObservableInput<unknown>>(
   return switchMap((x: T | null) => (x === null ? of(null) : whenNotNull(x)));
 }
 
+type NonNullableProperties<T> = {
+  [K in keyof T]: NonNullable<T[K]>;
+};
+
+export function whenAllValuesNotNull<
+  T extends Record<string, unknown>,
+  O extends ObservableInput<unknown>,
+>(
+  whenNotNull: (value: NonNullableProperties<T>) => O,
+): OperatorFunction<T, ObservedValueOf<O> | null> {
+  return switchMap((obj: T) =>
+    Object.values(obj).some((value) => value === null)
+      ? of(null)
+      : whenNotNull(obj as NonNullableProperties<T>),
+  );
+}
+
 export function whenNotUndefined<T, O extends ObservableInput<unknown>>(
   whenNotUndefined: (value: T) => O,
 ): OperatorFunction<T | undefined, ObservedValueOf<O> | undefined> {

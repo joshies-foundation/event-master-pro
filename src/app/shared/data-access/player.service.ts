@@ -15,7 +15,11 @@ import {
   shareReplay,
   switchMap,
 } from 'rxjs';
-import { defined, whenNotNull } from '../util/rxjs-helpers';
+import {
+  defined,
+  whenAllValuesNotNull,
+  whenNotNull,
+} from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../auth/data-access/auth.service';
 
@@ -53,22 +57,23 @@ export class PlayerService {
     shareReplay(1),
   );
 
-  readonly playersIncludingDisabled$ = this.playersWithoutDisplayNames$.pipe(
-    whenNotNull((players) =>
-      this.playerUsers$.pipe(
-        map((users) =>
-          players.map((player) => {
-            const user = users!.find((user) => user.id === player.user_id)!;
-            return {
-              player_id: player.id,
-              user_id: user.id,
-              score: player.score,
-              enabled: player.enabled,
-              display_name: user.display_name,
-              avatar_url: user.avatar_url,
-            };
-          }),
-        ),
+  readonly playersIncludingDisabled$ = combineLatest({
+    players: this.playersWithoutDisplayNames$,
+    users: this.playerUsers$,
+  }).pipe(
+    whenAllValuesNotNull(({ players, users }) =>
+      of(
+        players.map((player) => {
+          const user = users.find((user) => user.id === player.user_id)!;
+          return {
+            player_id: player.id,
+            user_id: user.id,
+            score: player.score,
+            enabled: player.enabled,
+            display_name: user.display_name,
+            avatar_url: user.avatar_url,
+          };
+        }),
       ),
     ),
     shareReplay(1),
@@ -99,18 +104,16 @@ export class PlayerService {
 
   readonly userPlayerId$ = this.userPlayer$.pipe(
     map((userPlayer) => userPlayer?.player_id ?? null),
+    shareReplay(1),
   );
 
   readonly userPlayerId = toSignal(this.userPlayerId$);
 
   readonly userIsGameMaster$ = combineLatest({
-    userPlayer: this.userPlayer$,
+    user: this.authService.user$,
     gameMasterUserId: this.sessionService.gameMasterUserId$,
   }).pipe(
-    map(
-      ({ userPlayer, gameMasterUserId }) =>
-        userPlayer?.user_id === gameMasterUserId,
-    ),
+    map(({ user, gameMasterUserId }) => user?.id === gameMasterUserId),
     shareReplay(1),
   );
 

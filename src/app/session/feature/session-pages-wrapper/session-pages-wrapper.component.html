@@ -1,0 +1,16 @@
+@switch (page()) {
+  @case (SessionPage.CreateSessionPage) {
+    <joshies-create-session-page />
+  }
+  @case (SessionPage.ManageSessionPage) {
+    <joshies-manage-session-page />
+  }
+  @case (SessionPage.AccessDenied) {
+    <h1 class="mt-0 text-red-700">Access Denied</h1>
+    <p>Only the GM can manage this session.</p>
+  }
+  @default {
+    <p-skeleton height="3rem" styleClass="mb-4" />
+    <p-skeleton height="25rem" />
+  }
+}

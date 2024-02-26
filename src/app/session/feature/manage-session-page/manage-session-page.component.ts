@@ -9,7 +9,6 @@ import { ButtonModule } from 'primeng/button';
 import { SessionService } from '../../../shared/data-access/session.service';
 import { showErrorMessage } from '../../../shared/util/error-helpers';
 import { MessageService } from 'primeng/api';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'joshies-manage-session-page',
@@ -25,11 +24,10 @@ import { Router } from '@angular/router';
   templateUrl: './manage-session-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ManageSessionPageComponent {
+export class ManageSessionPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly sessionService = inject(SessionService);
   private readonly messageService = inject(MessageService);
-  private readonly router = inject(Router);
 
   readonly players = this.playerService.playersIncludingDisabled;
 
@@ -49,7 +47,6 @@ export default class ManageSessionPageComponent {
 
     if (response === confirmationPassword) {
       await this.sessionService.endSession();
-      this.router.navigateByUrl('/');
     } else if (response !== null) {
       showErrorMessage(
         `You didn't enter ${confirmationPassword}, dummy`,
