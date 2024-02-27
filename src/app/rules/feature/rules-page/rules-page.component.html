@@ -3,9 +3,17 @@
 
 @if (rules(); as rules) {
   <!-- Rules -->
-  <pre style="font-family: var(--font-family); white-space: pre-wrap">{{
+  <!-- <pre style="font-family: var(--font-family); white-space: pre-wrap">{{
     rules
-  }}</pre>
+  }}</pre> -->
+  <!-- <p-editor [ngModel]="text" [style]="{ height: '590px' }"></p-editor> -->
+  @if (form.fields()) {
+    <!-- Form -->
+    <joshies-form [form]="form" />
+  } @else {
+    <!-- Loading Skeleton -->
+    <p-skeleton width="100%" height="19rem" />
+  }
 } @else if (rules() === null) {
   <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
 } @else {

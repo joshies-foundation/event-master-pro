@@ -22,12 +22,14 @@ import { ButtonModule } from 'primeng/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { EditorModule } from 'primeng/editor';
 
 export enum FormFieldType {
   Text,
   Number,
   Dropdown,
   MultiSelect,
+  Editor,
   Calendar,
   Submit,
 }
@@ -65,6 +67,11 @@ export type FormField = {
           optionValue: string;
         }
       | {
+          type: FormFieldType.Editor;
+          defaultValue?: string;
+          height: string;
+        }
+      | {
           type: FormFieldType.Calendar;
           minDate?: Date;
           maxDate?: Date;
@@ -93,6 +100,7 @@ export type FormField = {
     NgClass,
     CalendarModule,
     MultiSelectModule,
+    EditorModule,
   ],
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

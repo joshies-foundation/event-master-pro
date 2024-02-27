@@ -51,6 +51,14 @@
         [styleClass]="'w-full ' + (field.styleClass ?? '')"
       />
     }
+    @case (FormFieldType.Editor) {
+      <p-editor
+        [id]="field.name | lowercase"
+        [placeholder]="field.placeholder"
+        [formControl]="field.control"
+        [style]="{ height: field.height }"
+      />
+    }
     @case (FormFieldType.Calendar) {
       <p-calendar
         [inputId]="field.name"
