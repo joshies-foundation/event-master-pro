@@ -57,6 +57,11 @@
         [placeholder]="field.placeholder"
         [formControl]="field.control"
         [style]="{ height: field.height }"
+        [modules]="{
+          clipboard: {
+            matchVisual: false
+          }
+        }"
       />
     }
     @case (FormFieldType.Calendar) {

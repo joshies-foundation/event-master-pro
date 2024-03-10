@@ -53,3 +53,13 @@ p-tabmenu {
     }
   }
 }
+
+p-editor {
+  .ql-container {
+    font-family: var(--font-family);
+  }
+}
+
+.blur-background {
+  backdrop-filter: blur(0.75rem);
+}

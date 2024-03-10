@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
@@ -33,5 +33,7 @@ export const appConfig: ApplicationConfig = {
 
     // other
     importProvidersFrom(HttpClientModule),
+
+    ConfirmationService,
   ],
 };

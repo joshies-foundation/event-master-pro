@@ -10,9 +10,9 @@ import {
   standalone: true,
   imports: [CommonModule, FooterLinkComponent],
   templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
   @Input({ required: true }) footerLinks!: FooterLinkModel[];
+  @Input({ required: true }) disabled = false;
 }

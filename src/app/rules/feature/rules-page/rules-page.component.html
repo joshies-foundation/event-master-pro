@@ -1,22 +1,50 @@
 <!-- Header -->
-<h1 class="mt-0">Rules</h1>
+<h1
+  class="mt-0 flex justify-content-between align-items-start fixed top-0 left-0 pt-4 pb-1 w-full h-5rem bg-white"
+  [ngClass]="pagePaddingXCssClass"
+>
+  Rules
 
-@if (rules(); as rules) {
-  <!-- Rules -->
-  <!-- <pre style="font-family: var(--font-family); white-space: pre-wrap">{{
-    rules
-  }}</pre> -->
-  <!-- <p-editor [ngModel]="text" [style]="{ height: '590px' }"></p-editor> -->
-  @if (form.fields()) {
-    <!-- Form -->
-    <joshies-form [form]="form" />
-  } @else {
-    <!-- Loading Skeleton -->
-    <p-skeleton width="100%" height="19rem" />
+  @if (viewModel(); as vm) {
+    @if (vm.userIsGameMaster) {
+      @if (vm.editMode) {
+        <!-- Cancel Button -->
+        <p-button
+          label="Cancel"
+          [text]="true"
+          severity="danger"
+          (onClick)="confirmCancel()"
+        />
+      } @else {
+        <!-- Edit Button -->
+        <i
+          tabindex="0"
+          class="pi pi-pencil text-700 p-2 ml-1"
+          (click)="enableEditor()"
+          (keyup.enter)="enableEditor()"
+        ></i>
+      }
+    }
   }
-} @else if (rules() === null) {
-  <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
+</h1>
+<div class="h-4rem"></div>
+
+@if (viewModel(); as vm) {
+  @if (vm.rules) {
+    @if (vm.editMode) {
+      <!-- Form -->
+      <joshies-form [form]="vm.form" />
+    } @else {
+      <!-- Rules -->
+      <div [innerHTML]="vm.rules"></div>
+    }
+  } @else if (vm.rules === null) {
+    <!-- No active session -->
+    <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
+  }
 } @else {
   <!-- Loading Skeleton -->
   <p-skeleton width="100%" height="25rem" />
 }
+
+<p-confirmDialog styleClass="m-3" />
