@@ -56,6 +56,11 @@ export default class LoggedInAppShellComponent {
           },
         ]
       : []),
+    {
+      text: 'Analytics',
+      href: '/analytics',
+      iconClass: 'pi pi-chart-bar',
+    },
     // {
     //   text: 'Notifications',
     //   href: '/notifications',

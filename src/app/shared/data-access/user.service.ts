@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Signal } from '@angular/core';
 import {
   realtimeUpdatesFromTable,
   showMessageOnError,
@@ -10,34 +10,38 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/error-helpers';
 import { resizeImage } from '../util/image-helpers';
-import { map, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { whenNotUndefined } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Database } from '../util/schema';
+import { UserModel } from '../util/supabase-types';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private readonly supabase = inject(SupabaseClient);
+  private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
 
-  readonly user$ = this.authService.user$.pipe(
-    whenNotUndefined((authUser) =>
-      realtimeUpdatesFromTable(
-        this.supabase,
-        Table.User,
-        `id=eq.${authUser.id}`,
-      ).pipe(map((userRecords) => userRecords[0])),
-    ),
-    shareReplay(1),
-  );
+  readonly user$: Observable<UserModel | undefined> =
+    this.authService.user$.pipe(
+      whenNotUndefined((authUser) =>
+        realtimeUpdatesFromTable(
+          this.supabase,
+          Table.User,
+          `id=eq.${authUser.id}`,
+        ).pipe(map((userRecords) => userRecords[0])),
+      ),
+      shareReplay(1),
+    );
 
-  readonly user = toSignal(this.user$);
+  readonly user: Signal<UserModel | undefined> = toSignal(this.user$);
 
   // temporary - for test notifications page
-  readonly allUsers$ = realtimeUpdatesFromTable(this.supabase, Table.User);
-  readonly allUsers = toSignal(this.allUsers$);
+  // readonly allUsers$: Observable<UserModel[] | undefined> =
+  //   realtimeUpdatesFromTable(this.supabase, Table.User);
+  // readonly allUsers: Signal<UserModel[] | undefined> = toSignal(this.allUsers$);
 
   async updateDisplayName(
     userId: string,

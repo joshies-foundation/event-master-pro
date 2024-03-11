@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject } from '@angular/core';
 import {
   Filter,
   realtimeUpdatesFromTable,
@@ -6,48 +6,54 @@ import {
   Table,
 } from '../util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { map, of, shareReplay } from 'rxjs';
+import { Observable, map, of, shareReplay } from 'rxjs';
 import { distinctUntilIdChanged, whenNotNull } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { showErrorMessage } from '../util/error-helpers';
 import { MessageService } from 'primeng/api';
+import { SessionModel } from '../util/supabase-types';
+import { Database } from '../util/schema';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SessionService {
-  private readonly supabase = inject(SupabaseClient);
+  private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly messageService = inject(MessageService);
 
-  private readonly activeSessionId$ = realtimeUpdatesFromTable(
-    this.supabase,
-    Table.ActiveSession,
-  ).pipe(
-    map((activeSessionRecords) => activeSessionRecords[0].session_id),
-    shareReplay(1),
+  private readonly activeSessionId$: Observable<number | null> =
+    realtimeUpdatesFromTable(this.supabase, Table.ActiveSession).pipe(
+      map((activeSessionRecords) => activeSessionRecords[0].session_id),
+      shareReplay(1),
+    );
+
+  readonly thereIsAnActiveSession$: Observable<boolean> =
+    this.activeSessionId$.pipe(
+      map((activeSessionId) => activeSessionId !== null),
+      shareReplay(1),
+    );
+
+  readonly thereIsAnActiveSession: Signal<boolean | undefined> = toSignal(
+    this.thereIsAnActiveSession$,
   );
 
-  readonly thereIsAnActiveSession$ = this.activeSessionId$.pipe(
-    map((activeSessionId) => activeSessionId !== null),
-    shareReplay(1),
+  readonly session$: Observable<SessionModel | null> =
+    this.activeSessionId$.pipe(
+      whenNotNull((activeSessionId) =>
+        realtimeUpdatesFromTable(
+          this.supabase,
+          Table.Session,
+          `id=eq.${activeSessionId}` as Filter<Table.Session>,
+        ).pipe(map((sessionRecords) => sessionRecords[0])),
+      ),
+      shareReplay(1),
+    );
+
+  readonly session: Signal<SessionModel | null | undefined> = toSignal(
+    this.session$,
   );
 
-  readonly thereIsAnActiveSession = toSignal(this.thereIsAnActiveSession$);
-
-  readonly session$ = this.activeSessionId$.pipe(
-    whenNotNull((activeSessionId) =>
-      realtimeUpdatesFromTable(
-        this.supabase,
-        Table.Session,
-        `id=eq.${activeSessionId}` as Filter<Table.Session>,
-      ).pipe(map((sessionRecords) => sessionRecords[0])),
-    ),
-    shareReplay(1),
-  );
-
-  readonly session = toSignal(this.session$);
-
-  readonly gameMasterUserId$ = this.session$.pipe(
+  readonly gameMasterUserId$: Observable<string | null> = this.session$.pipe(
     distinctUntilIdChanged(),
     whenNotNull((session) => of(session!.game_master_user_id)),
     shareReplay(1),
@@ -66,8 +72,8 @@ export class SessionService {
       .insert({
         name: sessionName,
         game_master_user_id: gameMasterUserId,
-        start_date: startDate,
-        end_date: endDate,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
       })
       .select();
 

@@ -8,13 +8,14 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { showMessageOnError, Table } from '../util/supabase-helpers';
 import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Database, Json } from '../util/schema';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationsService {
   private readonly messageService = inject(MessageService);
-  private readonly supabase = inject(SupabaseClient);
+  private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly swPush = inject(SwPush);
   private readonly http = inject(HttpClient);
 
@@ -55,12 +56,12 @@ export class NotificationsService {
 
   async saveUserNotificationsSubscription(
     userId: string,
-    notificationsSubscriptions: object,
+    pushSubscription: PushSubscription,
   ): Promise<void> {
     await showMessageOnError(
       this.supabase.from(Table.UserNotificationsSubscription).insert({
         user_id: userId,
-        notifications_subscription: notificationsSubscriptions,
+        notifications_subscription: pushSubscription as unknown as Json,
       }),
       this.messageService,
     );

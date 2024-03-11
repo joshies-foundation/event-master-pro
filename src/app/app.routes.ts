@@ -31,6 +31,10 @@ export const routes: Routes = [
         loadChildren: () => import('./session/feature/lib.routes'),
       },
       {
+        path: 'analytics',
+        loadChildren: () => import('./analytics/feature/analytics.routes'),
+      },
+      {
         path: 'notifications',
         loadChildren: () => import('./notifications/feature/lib.routes'),
       },

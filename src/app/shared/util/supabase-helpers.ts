@@ -21,23 +21,29 @@ export enum Table {
   Rules = 'rules',
 }
 
+export enum View {
+  LifetimeUserStats = 'lifetime_user_stats',
+}
+
+export enum Function {
+  GetAllScoresFromSession = 'get_all_scores_from_session',
+}
+
 export enum StorageBucket {
   Avatars = 'avatars',
 }
 
-type TableOrView =
-  | keyof Database['public']['Tables']
-  | keyof Database['public']['Views'];
+type TableName = keyof Database['public']['Tables'];
 
 type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'in';
 
-export type Filter<T extends TableOrView> = `${Exclude<
+export type Filter<T extends TableName> = `${Exclude<
   keyof Tables<T>,
   symbol
 >}=${FilterOperator}.${string}`;
 
 export function realtimeUpdatesFromTable<
-  T extends TableOrView,
+  T extends TableName,
   Model extends Tables<T>,
 >(
   supabase: SupabaseClient<Database>,
@@ -126,7 +132,7 @@ export function realtimeUpdatesFromTable<
 }
 
 export function realtimeUpdatesFromTableAsSignal<
-  T extends TableOrView,
+  T extends TableName,
   Model extends Tables<T>,
 >(
   supabase: SupabaseClient<Database>,

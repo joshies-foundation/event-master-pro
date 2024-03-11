@@ -1,0 +1,23 @@
+@if (analyticsPreviousResolvedData.previousSessions; as previousSessions) {
+  <p-dropdown
+    [options]="previousSessions"
+    [ngModel]="analyticsPreviousResolvedData.mostRecentSessionId"
+    optionLabel="name"
+    optionValue="id"
+    styleClass="w-full mb-3"
+    placeholder="Select a previous session"
+  />
+}
+
+@if (viewModel(); as vm) {
+  @if (vm.previousSessionPlayers; as previousSessionPlayers) {
+    <joshies-rankings-table
+      [players]="previousSessionPlayers"
+      [userId]="vm.userId"
+    />
+  } @else {
+    <p class="mt-6 pt-6 text-center text-500 font-italic">
+      No previous sessions
+    </p>
+  }
+}
