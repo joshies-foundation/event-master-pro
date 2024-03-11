@@ -74,17 +74,17 @@ export type Database = {
       rules: {
         Row: {
           id: number;
-          rules: string;
+          rules: string | null;
           session_id: number;
         };
         Insert: {
           id?: number;
-          rules?: string;
+          rules?: string | null;
           session_id: number;
         };
         Update: {
           id?: number;
-          rules?: string;
+          rules?: string | null;
           session_id?: number;
         };
         Relationships: [
@@ -175,10 +175,33 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      lifetime_user_stats: {
+        Row: {
+          avatar_url: string | null;
+          average_score: number | null;
+          display_name: string | null;
+          lifetime_score: number | null;
+          num_sessions: number | null;
+          user_id: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'player_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Functions: {
-      [_ in never]: never;
+      get_all_scores_from_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Record<string, unknown>[];
+      };
     };
     Enums: {
       [_ in never]: never;

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { SupabaseClient, User } from '@supabase/supabase-js';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -12,17 +12,17 @@ import {
 import { Router } from '@angular/router';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { MessageService } from 'primeng/api';
+import { Database } from '../../shared/util/schema';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly supabase = inject(SupabaseClient);
+  private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
 
-  // we need user$ as an Observable for the auth guard to work
-  readonly user$ = concat(
+  readonly user$: Observable<User | undefined> = concat(
     from(this.supabase.auth.getSession()).pipe(
       map((session) => session.data.session?.user),
     ),
@@ -36,9 +36,11 @@ export class AuthService {
     shareReplay(1),
   );
 
-  readonly user = toSignal(this.user$);
+  readonly user: Signal<User | undefined> = toSignal(this.user$);
 
-  readonly loginUsername = computed(() => this.user()?.email?.split('@')[0]);
+  readonly loginUsername: Signal<string | undefined> = computed(
+    () => this.user()?.email?.split('@')[0],
+  );
 
   signIn(username: string, password: string): void {
     showMessageOnError(

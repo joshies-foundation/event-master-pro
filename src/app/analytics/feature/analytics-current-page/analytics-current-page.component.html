@@ -1,0 +1,7 @@
+@if (viewModel(); as vm) {
+  <!-- Rankings Table -->
+  <joshies-rankings-table [players]="vm.players!" [userId]="vm.userId" />
+} @else {
+  <!-- Loading Skeleton -->
+  <p-skeleton height="25rem" />
+}

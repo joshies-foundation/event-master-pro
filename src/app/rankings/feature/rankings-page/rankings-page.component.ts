@@ -9,16 +9,17 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import {
-  undefinedUntilAllPropertiesAreDefined,
-  withAllDefined,
-} from '../../../shared/util/signal-helpers';
+import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { SessionService } from '../../../shared/data-access/session.service';
+import { RankingsTableComponent } from '../../../shared/ui/rankings-table/rankings-table.component';
+import { AuthService } from '../../../auth/data-access/auth.service';
 
 @Component({
   selector: 'joshies-rankings-page',
   standalone: true,
+  templateUrl: './rankings-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TableModule,
     InputNumberModule,
@@ -27,44 +28,22 @@ import { SessionService } from '../../../shared/data-access/session.service';
     DecimalPipe,
     NgClass,
     NgOptimizedImage,
+    RankingsTableComponent,
   ],
-  templateUrl: './rankings-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RankingsPageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly playerService = inject(PlayerService);
+  private readonly authService = inject(AuthService);
 
   private scoreUpdates: Record<number, NodeJS.Timeout> = {};
-
-  private readonly rankings = computed(() =>
-    withAllDefined({ players: this.playerService.players() }, ({ players }) =>
-      players
-        ? players
-            .sort((player1, player2) => player2.score - player1.score)
-            .map((player, index, players) => ({
-              player_id: player.player_id,
-              display_name: player.display_name,
-              score: player.score,
-              avatar_url: player.avatar_url,
-              rank: index + 1,
-              rankEmoji:
-                index === 0
-                  ? '👑'
-                  : index === players.length - 1
-                    ? '💩'
-                    : undefined,
-            }))
-        : null,
-    ),
-  );
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       session: this.sessionService.session(),
-      rankings: this.rankings(),
+      players: this.playerService.players()!,
       userIsGameMaster: this.playerService.userIsGameMaster(),
-      userPlayerId: this.playerService.userPlayerId(),
+      userId: this.authService.user()?.id,
     }),
   );
 
