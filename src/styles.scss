@@ -13,9 +13,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
   min-width: 100%;
-  min-height: 100%;
+  min-height: calc(100% + env(safe-area-inset-top));
   overscroll-behavior: contain;
   font-family: var(--font-family);
   font-feature-settings: var(--font-feature-settings);

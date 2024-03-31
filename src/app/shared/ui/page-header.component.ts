@@ -18,7 +18,7 @@ import { fromEvent, map } from 'rxjs';
   template: `
     <!-- Small Header Container -->
     <div
-      class="h-4rem  mt-0 flex justify-content-between align-items-center fixed top-0 left-0 mb-0 pt-4 pb-2 w-full z-1 border-bottom-1"
+      class="h-5.5rem  mt-0 flex justify-content-between align-items-center fixed top-0 left-0 mb-0 pt-6 pb-2 w-full z-1 border-bottom-1"
       [ngClass]="[pagePaddingXCssClass, smallHeaderContainerDynamicClasses()]"
     >
       <!-- Small Header -->
@@ -84,7 +84,7 @@ export class PageHeaderComponent {
   );
 
   readonly spacerDynamicClasses = computed(() =>
-    this.alwaysSmall() ? 'h-3.5rem' : 'h-2.5rem',
+    this.alwaysSmall() ? 'h-3rem' : 'h-4rem',
   );
 }
 
