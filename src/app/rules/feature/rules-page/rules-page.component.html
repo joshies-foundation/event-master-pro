@@ -1,15 +1,11 @@
 <!-- Header -->
-<h1
-  class="mt-0 flex justify-content-between align-items-start fixed top-0 left-0 pt-4 pb-1 w-full h-5rem bg-white z-1"
-  [ngClass]="pagePaddingXCssClass"
->
-  Rules
-
+<joshies-page-header headerText="Rules">
   @if (viewModel(); as vm) {
     @if (vm.userIsGameMaster) {
       @if (vm.editMode) {
         <!-- Cancel Button -->
         <p-button
+          class="ml-auto"
           label="Cancel"
           [text]="true"
           severity="danger"
@@ -19,15 +15,14 @@
         <!-- Edit Button -->
         <i
           tabindex="0"
-          class="pi pi-pencil text-700 p-2 ml-1"
-          (click)="enableEditor()"
-          (keyup.enter)="enableEditor()"
+          class="pi pi-pencil text-700 p-2 ml-auto"
+          (click)="enterEditMode()"
+          (keyup.enter)="enterEditMode()"
         ></i>
       }
     }
   }
-</h1>
-<div class="h-4rem"></div>
+</joshies-page-header>
 
 @if (viewModel(); as vm) {
   @if (vm.rules) {
@@ -36,7 +31,7 @@
       <joshies-form [form]="vm.form" />
     } @else {
       <!-- Rules -->
-      <div [innerHTML]="vm.rules"></div>
+      <div [innerHTML]="vm.rules" class="content"></div>
     }
   } @else if (vm.rules === null) {
     <!-- No active session -->

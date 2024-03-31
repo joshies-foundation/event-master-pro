@@ -3,7 +3,7 @@ import {
   Component,
   computed,
   inject,
-  Input,
+  input,
 } from '@angular/core';
 import { Tables } from '../../../shared/util/schema';
 import { View } from '../../../shared/util/supabase-helpers';
@@ -29,9 +29,8 @@ import { PostgrestResponse } from '@supabase/supabase-js';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AnalyticsLifetimePageComponent {
-  @Input() readonly lifetimeResultsQueryResult!: PostgrestResponse<
-    Tables<View.LifetimeUserStats>
-  >; // route resolver param
+  readonly lifetimeResultsQueryResult =
+    input.required<PostgrestResponse<Tables<View.LifetimeUserStats>>>(); // route resolver param
 
   private readonly authService = inject(AuthService);
 

@@ -1,14 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
-  signal,
   Signal,
+  input,
 } from '@angular/core';
 import {
   FormField,
   FormFieldComponent,
-} from '../form-field/form-field.component';
+} from './form-field/form-field.component';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
@@ -24,10 +23,24 @@ export interface Form {
   selector: 'joshies-form',
   standalone: true,
   imports: [FormFieldComponent, FormsModule, ReactiveFormsModule, NgClass],
-  templateUrl: './form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <form
+      [formGroup]="form().formGroup"
+      (ngSubmit)="form().onSubmit($event)"
+      [ngClass]="form().styleClass"
+      class="flex flex-column gap-3"
+    >
+      @for (field of form().fields(); track field.name) {
+        <joshies-form-field
+          [field]="field"
+          [formGroup]="form().formGroup"
+          [formDisabled]="form().disabled?.() ?? false"
+        />
+      }
+    </form>
+  `,
 })
 export class FormComponent {
-  @Input({ required: true }) form!: Form;
-  protected readonly signal = signal;
+  form = input.required<Form>();
 }

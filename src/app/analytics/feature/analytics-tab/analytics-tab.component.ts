@@ -1,3 +1,4 @@
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { MenuItem } from 'primeng/api';
@@ -5,7 +6,7 @@ import { MenuItem } from 'primeng/api';
 @Component({
   selector: 'joshies-analytics-tab',
   standalone: true,
-  imports: [TabMenuModule],
+  imports: [PageHeaderComponent, TabMenuModule],
   templateUrl: './analytics-tab.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

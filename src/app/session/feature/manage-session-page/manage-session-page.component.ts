@@ -9,10 +9,13 @@ import { ButtonModule } from 'primeng/button';
 import { SessionService } from '../../../shared/data-access/session.service';
 import { showErrorMessage } from '../../../shared/util/error-helpers';
 import { MessageService } from 'primeng/api';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'joshies-manage-session-page',
   standalone: true,
+  templateUrl: './manage-session-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TableModule,
     NgOptimizedImage,
@@ -20,9 +23,8 @@ import { MessageService } from 'primeng/api';
     FormsModule,
     SkeletonModule,
     ButtonModule,
+    PageHeaderComponent,
   ],
-  templateUrl: './manage-session-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageSessionPageComponent {
   private readonly playerService = inject(PlayerService);

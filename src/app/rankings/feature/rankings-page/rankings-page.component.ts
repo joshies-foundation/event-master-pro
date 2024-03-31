@@ -1,3 +1,4 @@
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -21,6 +22,7 @@ import { AuthService } from '../../../auth/data-access/auth.service';
   templateUrl: './rankings-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    PageHeaderComponent,
     TableModule,
     InputNumberModule,
     FormsModule,

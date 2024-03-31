@@ -4,9 +4,9 @@ import {
   Component,
   computed,
   inject,
-  Input,
   Signal,
   viewChild,
+  input,
 } from '@angular/core';
 import { AnalyticsService } from '../../data-access/analytics.service';
 import { AuthService } from '../../../auth/data-access/auth.service';
@@ -27,8 +27,8 @@ import { AnalyticsPreviousResolvedData } from '../../data-access/previous-sessio
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AnalyticsPreviousPageComponent implements AfterViewInit {
-  @Input()
-  readonly analyticsPreviousResolvedData!: AnalyticsPreviousResolvedData; // route resolver param
+  readonly analyticsPreviousResolvedData =
+    input.required<AnalyticsPreviousResolvedData>(); // route resolver param
 
   private readonly analyticsService = inject(AnalyticsService);
   private readonly authService = inject(AuthService);
@@ -49,7 +49,7 @@ export default class AnalyticsPreviousPageComponent implements AfterViewInit {
             this.analyticsService.getAllScoresFromSession(event.value),
           ),
           startWith(
-            this.analyticsPreviousResolvedData.mostRecentSessionPlayers,
+            this.analyticsPreviousResolvedData().mostRecentSessionPlayers,
           ),
         );
       }),

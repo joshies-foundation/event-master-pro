@@ -9,20 +9,26 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../../shared/data-access/user.service';
 import { NotificationsService } from '../../../shared/data-access/notifications.service';
 import { MessageService } from 'primeng/api';
-import { Form, FormComponent } from '../../../shared/ui/form/form.component';
+import { Form, FormComponent } from '../../../shared/ui/form.component';
 import {
   FormField,
   FormFieldType,
 } from '../../../shared/ui/form-field/form-field.component';
 import { withAllDefined } from '../../../shared/util/signal-helpers';
 import { SkeletonModule } from 'primeng/skeleton';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'joshies-notifications-page',
   standalone: true,
-  imports: [ReactiveFormsModule, FormComponent, SkeletonModule],
   templateUrl: './notifications-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    ReactiveFormsModule,
+    FormComponent,
+    SkeletonModule,
+    PageHeaderComponent,
+  ],
 })
 export default class NotificationsPageComponent {
   private readonly userService = inject(UserService);

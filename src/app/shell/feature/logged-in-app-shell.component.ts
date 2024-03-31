@@ -5,8 +5,8 @@ import {
   inject,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { FooterComponent } from '../ui/footer/footer.component';
-import { FooterLinkModel } from '../ui/footer-link/footer-link.component';
+import { FooterComponent } from './footer.component';
+import { FooterLinkModel } from '../ui/footer-link.component';
 import { SessionService } from '../../shared/data-access/session.service';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { FooterService } from '../../shared/data-access/footer.service';
@@ -18,13 +18,7 @@ import { pagePaddingXCssClass } from '../../shared/util/css-helpers';
   standalone: true,
   imports: [RouterOutlet, FooterComponent, NgClass],
   template: `
-    <main
-      class="min-h-full px-3 pt-4 main-padding-bottom flex flex-column"
-      [ngClass]="pagePaddingXCssClass"
-      style="padding-bottom: 6rem"
-    >
-      <router-outlet />
-    </main>
+    <router-outlet />
 
     <joshies-footer
       [footerLinks]="footerLinks()"

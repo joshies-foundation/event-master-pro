@@ -12,13 +12,14 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/sign
 import { DatePipe } from '@angular/common';
 import { SkeletonModule } from 'primeng/skeleton';
 import { NotificationsService } from '../../../shared/data-access/notifications.service';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'joshies-profile-page',
   standalone: true,
-  imports: [ButtonModule, DatePipe, SkeletonModule],
   templateUrl: './profile-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ButtonModule, DatePipe, SkeletonModule, PageHeaderComponent],
 })
 export default class ProfilePageComponent {
   private readonly authService = inject(AuthService);

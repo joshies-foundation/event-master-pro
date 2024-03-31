@@ -3,11 +3,9 @@
 @import 'primeflex/primeflex.css';
 @import 'primeicons/primeicons.css';
 
-$systemFont: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-  'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-
 :root {
-  --font-family: $systemFont;
+  --font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   --font-feature-settings: 'tnum';
 }
 
@@ -54,12 +52,74 @@ p-tabmenu {
   }
 }
 
+.content {
+  * {
+    margin-top: 0;
+  }
+}
+
 p-editor {
   .ql-container {
     font-family: var(--font-family);
+    font-size: unset;
+  }
+
+  .ql-editor {
+    p,
+    ol,
+    ul,
+    pre,
+    blockquote,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.content,
+.p-editor-container .p-editor-content .ql-editor {
+  color: unset;
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    color: #444;
   }
 }
 
 .blur-background {
   backdrop-filter: blur(0.75rem);
+}
+
+// round corners of table header
+.p-datatable .p-datatable-thead > tr > {
+  th {
+    &:first-child {
+      border-top-left-radius: 0.5rem;
+    }
+    &:last-child {
+      border-top-right-radius: 0.5rem;
+    }
+  }
+}
+
+@for $i from 0 through 29 {
+  $name: $i + \.5;
+  $value: $i + 0.5;
+
+  .h-#{$name}rem {
+    height: #{$value}rem;
+  }
+
+  .w-#{$name}rem {
+    width: #{$value}rem;
+  }
 }

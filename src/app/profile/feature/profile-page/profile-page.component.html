@@ -1,15 +1,13 @@
 <!-- Header -->
-<h1 class="mt-0 flex justify-content-between align-items-center">
-  Profile
-
+<joshies-page-header headerText="Profile">
   <!-- Refresh Button -->
   <i
     tabindex="0"
-    class="pi pi-refresh text-700 font-bold text-xl"
+    class="pi pi-refresh text-700 font-bold text-xl ml-auto"
     (click)="reloadApp()"
     (keyup.enter)="reloadApp()"
   ></i>
-</h1>
+</joshies-page-header>
 
 @if (viewModel(); as vm) {
   <div class="flex justify-content-center my-5 align-items-baseline">

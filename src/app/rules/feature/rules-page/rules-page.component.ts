@@ -1,3 +1,4 @@
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,10 +9,17 @@ import {
 } from '@angular/core';
 import { RulesService } from '../../data-access/rules.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { EditorModule } from 'primeng/editor';
-import { FormBuilder, FormsModule, Validators } from '@angular/forms';
-import { Form, FormComponent } from '../../../shared/ui/form/form.component';
-import { FormFieldType } from '../../../shared/ui/form-field/form-field.component';
+import {
+  FormBuilder,
+  FormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
+import { Form, FormComponent } from '../../../shared/ui/form.component';
+import {
+  FormField,
+  FormFieldType,
+} from '../../../shared/ui/form-field/form-field.component';
 import { SessionService } from '../../../shared/data-access/session.service';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -22,14 +30,21 @@ import { pagePaddingXCssClass } from '../../../shared/util/css-helpers';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 
+function valueIsNot(invalidValue: string): ValidatorFn {
+  return (control) =>
+    control.value === invalidValue
+      ? { invalidValue: `Value is invalid` }
+      : null;
+}
+
 @Component({
   selector: 'joshies-rules-page',
   standalone: true,
   templateUrl: './rules-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    PageHeaderComponent,
     SkeletonModule,
-    EditorModule,
     FormsModule,
     FormComponent,
     ButtonModule,
@@ -52,32 +67,36 @@ export default class RulesPageComponent {
 
   private readonly formGroup = computed(() =>
     this.formBuilder.nonNullable.group({
-      rules: [this.rules() ?? '', Validators.required],
+      rules: [
+        this.rules() ?? '',
+        [Validators.required, valueIsNot(this.rules() ?? '')],
+      ],
     }),
   );
 
-  private readonly form: Form = {
-    formGroup: this.formGroup(),
-    onSubmit: () => this.saveRules(),
-    disabled: this.savingRules,
-    fields: computed(() => [
-      {
-        name: 'rules',
-        label: '',
-        height: '510px',
-        placeholder: 'Enter Rules Here',
-        type: FormFieldType.Editor,
-        control: this.formGroup().controls.rules,
-      },
-      {
-        name: 'submit',
-        label: 'Save Rules',
-        type: FormFieldType.Submit,
-        position: 'full',
-        loading: this.savingRules(),
-      },
-    ]),
-  };
+  private readonly form = computed(
+    (): Form => ({
+      formGroup: this.formGroup(),
+      onSubmit: () => this.saveRules(),
+      disabled: this.savingRules,
+      fields: computed((): FormField[] => [
+        {
+          name: 'rules',
+          label: '',
+          placeholder: 'Enter Rules Here',
+          type: FormFieldType.Editor,
+          control: this.formGroup().controls.rules,
+        },
+        {
+          name: 'submit',
+          label: 'Save Rules',
+          type: FormFieldType.Submit,
+          position: 'full',
+          loading: this.savingRules(),
+        },
+      ]),
+    }),
+  );
 
   private readonly disableFooterEffect = effect(
     () =>
@@ -94,8 +113,7 @@ export default class RulesPageComponent {
       editMode: this.editMode(),
       userIsGameMaster: this.playerService.userIsGameMaster(),
       rules: this.rules(),
-      form: this.form,
-      formFields: this.form.fields,
+      form: this.form(),
     }),
   );
 
@@ -108,15 +126,16 @@ export default class RulesPageComponent {
     await this.rulesService.saveRules(activeSessionId, rulesHtml ?? '');
 
     this.savingRules.set(false);
-    this.disableEditor();
+    this.cancelChanges();
   }
 
-  enableEditor(): void {
+  enterEditMode(): void {
     this.editMode.set(true);
   }
 
-  disableEditor(): void {
+  cancelChanges(): void {
     this.editMode.set(false);
+    this.formGroup().reset();
   }
 
   confirmCancel(): void {
@@ -128,7 +147,7 @@ export default class RulesPageComponent {
       acceptIcon: 'none',
       rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
-      accept: () => this.disableEditor(),
+      accept: () => this.cancelChanges(),
     });
   }
 }

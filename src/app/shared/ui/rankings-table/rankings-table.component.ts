@@ -2,11 +2,9 @@ import { CommonModule, NgClass, NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
   computed,
   input,
+  output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -29,10 +27,10 @@ import { PlayerWithUserInfo } from '../../data-access/player.service';
 })
 export class RankingsTableComponent {
   players = input.required<PlayerWithUserInfo[]>();
-  @Input({ required: true }) userId!: string | null;
-  @Input() editable = false;
+  userId = input.required<string | null>();
+  editable = input(false);
 
-  @Output() private readonly scoreUpdate = new EventEmitter<{
+  scoreUpdate = output<{
     playerId: number;
     score: number;
   }>();

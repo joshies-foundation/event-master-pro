@@ -1,7 +1,7 @@
-@if (analyticsPreviousResolvedData.previousSessions; as previousSessions) {
+@if (analyticsPreviousResolvedData().previousSessions; as previousSessions) {
   <p-dropdown
     [options]="previousSessions"
-    [ngModel]="analyticsPreviousResolvedData.mostRecentSessionId"
+    [ngModel]="analyticsPreviousResolvedData().mostRecentSessionId"
     optionLabel="name"
     optionValue="id"
     styleClass="w-full mb-3"

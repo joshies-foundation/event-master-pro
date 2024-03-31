@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  Renderer2,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
+import { pagePaddingXCssClass } from './shared/util/css-helpers';
 
 @Component({
   selector: 'joshies-root',
@@ -16,4 +23,10 @@ import { ToastModule } from 'primeng/toast';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  private readonly renderer = inject(Renderer2);
+
+  ngOnInit(): void {
+    this.renderer.addClass(document.body, pagePaddingXCssClass);
+  }
+}

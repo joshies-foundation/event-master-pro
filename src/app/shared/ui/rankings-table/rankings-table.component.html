@@ -10,7 +10,7 @@
   <ng-template pTemplate="body" let-ranking>
     <tr
       [ngClass]="{
-        'font-semibold bg-yellow-100': ranking.user_id === userId
+        'font-semibold bg-yellow-100': ranking.user_id === userId()
       }"
     >
       <td class="text-center">
@@ -33,7 +33,7 @@
         </div>
       </td>
       <td class="text-right">
-        @if (editable) {
+        @if (editable()) {
           <p-inputNumber
             [ngModel]="ranking.score"
             (ngModelChange)="onScoreUpdate(ranking.player_id, $event)"

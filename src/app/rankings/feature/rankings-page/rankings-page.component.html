@@ -1,12 +1,12 @@
 @if (viewModel(); as vm) {
   @if (!vm.session) {
     <!-- Header -->
-    <h1 class="mt-0">Rankings</h1>
+    <joshies-page-header headerText="Rankings" />
 
     <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
   } @else {
     <!-- Header -->
-    <h1 class="mt-0">{{ vm.session.name }}</h1>
+    <joshies-page-header [headerText]="vm.session.name" />
 
     <!-- Rankings Table -->
     <joshies-rankings-table

@@ -10,20 +10,21 @@ import {
   FormField,
   FormFieldType,
 } from '../../../shared/ui/form-field/form-field.component';
-import { Form, FormComponent } from '../../../shared/ui/form/form.component';
+import { Form, FormComponent } from '../../../shared/ui/form.component';
 import { withAllDefined } from '../../../shared/util/signal-helpers';
 import { UserService } from '../../../shared/data-access/user.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SessionService } from '../../../shared/data-access/session.service';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 
 @Component({
   selector: 'joshies-create-session-page',
   standalone: true,
-  imports: [FormComponent, SkeletonModule],
   templateUrl: './create-session-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormComponent, SkeletonModule, PageHeaderComponent],
 })
 export class CreateSessionPageComponent {
   private readonly userService = inject(UserService);

@@ -7,7 +7,6 @@ import {
   effect,
   inject,
   input,
-  Input,
 } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import {
@@ -69,7 +68,6 @@ export type FormField = {
       | {
           type: FormFieldType.Editor;
           defaultValue?: string;
-          height: string;
         }
       | {
           type: FormFieldType.Calendar;
@@ -106,9 +104,9 @@ export type FormField = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent implements AfterViewInit {
-  @Input({ required: true }) field!: FormField;
-  @Input({ required: true }) formGroup!: FormGroup;
-  readonly formDisabled = input.required<boolean>();
+  field = input.required<FormField>();
+  formGroup = input.required<FormGroup>();
+  formDisabled = input.required<boolean>();
 
   private readonly cd = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
@@ -117,32 +115,29 @@ export class FormFieldComponent implements AfterViewInit {
 
   private readonly enableAndDisableFieldEffect = effect(
     () => {
-      if (this.field.type === FormFieldType.Submit) {
+      const field = this.field();
+
+      if (field.type === FormFieldType.Submit) {
         return;
       }
 
-      if (this.formDisabled() || this.field.disabled) {
-        this.field.control.disable();
+      if (this.formDisabled() || field.disabled) {
+        field.control.disable();
       } else {
-        this.field.control.enable();
+        field.control.enable();
       }
     },
     { allowSignalWrites: true },
   );
 
   ngAfterViewInit() {
-    if (this.field.type !== FormFieldType.Submit) {
+    if (this.field().type !== FormFieldType.Submit) {
       return;
     }
 
     // react to the form becoming valid/invalid
-    this.formGroup.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        if (this.field.type === FormFieldType.Submit) {
-          this.cd.detectChanges();
-          return;
-        }
-      });
+    this.formGroup()
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.cd.detectChanges());
   }
 }
