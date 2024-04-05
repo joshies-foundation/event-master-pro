@@ -5,7 +5,7 @@ import {
   inject,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { FooterComponent } from './footer.component';
+import { FooterComponent } from '../ui/footer.component';
 import { FooterLinkModel } from '../ui/footer-link.component';
 import { SessionService } from '../../shared/data-access/session.service';
 import { PlayerService } from '../../shared/data-access/player.service';

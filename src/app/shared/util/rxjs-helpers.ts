@@ -2,6 +2,7 @@ import {
   distinctUntilChanged,
   filter,
   MonoTypeOperatorFunction,
+  Observable,
   ObservableInput,
   of,
   OperatorFunction,
@@ -51,4 +52,15 @@ export function distinctUntilIdChanged<
   return distinctUntilChanged<T>(
     (previous, current) => previous?.id === current?.id,
   );
+}
+
+export function notifyOnMutation(
+  target: Node,
+  options: MutationObserverInit,
+): Observable<void> {
+  return new Observable((subscriber) => {
+    const mutation = new MutationObserver(() => subscriber.next());
+    mutation.observe(target, options);
+    return () => mutation.disconnect();
+  });
 }

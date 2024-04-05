@@ -3,17 +3,13 @@ import {
   Component,
   booleanAttribute,
   computed,
-  inject,
   input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FooterLinkComponent,
-  FooterLinkModel,
-} from '../ui/footer-link.component';
+import { FooterLinkComponent, FooterLinkModel } from './footer-link.component';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { delay, filter, fromEvent, map, merge } from 'rxjs';
-import { NavigationEnd, Router } from '@angular/router';
+import { fromEvent, map, merge } from 'rxjs';
+import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
 
 @Component({
   selector: 'joshies-footer',
@@ -46,16 +42,11 @@ export class FooterComponent {
   footerLinks = input.required<FooterLinkModel[]>();
   disabled = input(false, { transform: booleanAttribute });
 
-  private readonly router = inject(Router);
-
   private readonly isScrolledToBottom = toSignal(
     merge(
       fromEvent(document, 'scroll'),
       fromEvent(window, 'resize'),
-      this.router.events.pipe(
-        filter((e) => e instanceof NavigationEnd),
-        delay(0),
-      ),
+      notifyOnMutation(document.body, { childList: true, subtree: true }),
     ).pipe(map(pageIsScrolledToBottom)),
     { initialValue: pageIsScrolledToBottom() },
   );
