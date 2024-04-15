@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -11,13 +10,14 @@ import {
 import { AnalyticsService } from '../../data-access/analytics.service';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { Dropdown, DropdownModule } from 'primeng/dropdown';
-import { of, ReplaySubject, startWith, switchMap } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { startWith, switchMap } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { PlayerWithUserInfo } from '../../../shared/data-access/player.service';
 import { RankingsTableComponent } from '../../../shared/ui/rankings-table/rankings-table.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsPreviousResolvedData } from '../../data-access/previous-sessions.resolver';
+import { nullWhenUndefinedElse } from '../../../shared/util/rxjs-helpers';
 
 @Component({
   selector: 'joshies-analytics-previous-page',
@@ -26,33 +26,30 @@ import { AnalyticsPreviousResolvedData } from '../../data-access/previous-sessio
   templateUrl: './analytics-previous-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class AnalyticsPreviousPageComponent implements AfterViewInit {
+export default class AnalyticsPreviousPageComponent {
   readonly analyticsPreviousResolvedData =
     input.required<AnalyticsPreviousResolvedData>(); // route resolver param
 
   private readonly analyticsService = inject(AnalyticsService);
   private readonly authService = inject(AuthService);
 
-  private readonly viewReady = new ReplaySubject<true>(1);
-  private readonly dropdown = viewChild(Dropdown);
+  private readonly dropdown = viewChild.required(Dropdown);
+  private readonly dropdown$ = toObservable(this.dropdown);
 
   private readonly previousSessionPlayers: Signal<
     PlayerWithUserInfo[] | null | undefined
   > = toSignal(
-    this.viewReady.pipe(
-      switchMap(() => {
-        const dropdown = this.dropdown();
-        if (!dropdown) return of(null);
-
-        return dropdown.onChange.pipe(
+    this.dropdown$.pipe(
+      nullWhenUndefinedElse((dropdown) =>
+        dropdown.onChange.pipe(
           switchMap((event) =>
             this.analyticsService.getAllScoresFromSession(event.value),
           ),
           startWith(
             this.analyticsPreviousResolvedData().mostRecentSessionPlayers,
           ),
-        );
-      }),
+        ),
+      ),
     ),
   );
 
@@ -65,9 +62,5 @@ export default class AnalyticsPreviousPageComponent implements AfterViewInit {
 
   getAllScoresFromSession(sessionId: number) {
     return this.analyticsService.getAllScoresFromSession(sessionId);
-  }
-
-  ngAfterViewInit(): void {
-    this.viewReady.next(true);
   }
 }

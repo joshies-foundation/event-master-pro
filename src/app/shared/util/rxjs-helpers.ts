@@ -44,6 +44,14 @@ export function whenNotUndefined<T, O extends ObservableInput<unknown>>(
   );
 }
 
+export function nullWhenUndefinedElse<T, O extends ObservableInput<unknown>>(
+  whenNotUndefined: (value: T) => O,
+): OperatorFunction<T | undefined, ObservedValueOf<O> | null> {
+  return switchMap((x: T | undefined) =>
+    x === undefined ? of(null) : whenNotUndefined(x),
+  );
+}
+
 type ObservedValueOf<O> = O extends ObservableInput<infer T> ? T : never;
 
 export function distinctUntilIdChanged<
