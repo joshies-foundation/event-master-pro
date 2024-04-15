@@ -1,4 +1,3 @@
-@import 'primeng/resources/themes/lara-light-blue/theme.css';
 @import 'primeng/resources/primeng.css';
 @import 'primeflex/primeflex.css';
 @import 'primeicons/primeicons.css';
@@ -18,6 +17,10 @@ body {
   overscroll-behavior: contain;
   font-family: var(--font-family);
   font-feature-settings: var(--font-feature-settings);
+}
+
+body {
+  background-color: var(--surface-card);
 }
 
 * {
@@ -90,7 +93,7 @@ p-editor {
 
   h2 {
     font-size: 1.25rem;
-    color: #444;
+    color: var(--surface-600);
   }
 }
 
@@ -120,5 +123,39 @@ p-editor {
 
   .w-#{$name}rem {
     width: #{$value}rem;
+  }
+}
+
+@for $i from 1 through 9 {
+  .surface-alpha-#{$i}0 {
+    background-color: color-mix(
+      in srgb,
+      var(--surface-0) ($i * 10%),
+      transparent
+    );
+  }
+}
+
+// ~~~ Classes that are different in light vs. dark mode ~~~
+
+.bg-header-footer-alpha {
+  background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
+}
+
+.bg-highlight {
+  background-color: var(--yellow-100);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-header-footer-alpha {
+    background-color: color-mix(
+      in srgb,
+      color-mix(in srgb, var(--surface-100) 50%, var(--surface-0)) 90%,
+      transparent
+    );
+  }
+
+  .bg-highlight {
+    background-color: var(--yellow-900);
   }
 }

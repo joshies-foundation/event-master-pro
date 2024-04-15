@@ -18,7 +18,7 @@ import { fromEvent, map } from 'rxjs';
   template: `
     <!-- Small Header Container -->
     <div
-      class="h-5.5rem  mt-0 flex justify-content-between align-items-center fixed top-0 left-0 mb-0 pt-6 pb-2 w-full z-1 border-bottom-1"
+      class="h-5.5rem  mt-0 flex justify-content-between align-items-center fixed top-0 left-0 mb-0 pt-6 pb-2 w-full z-2 border-bottom-1"
       [ngClass]="[pagePaddingXCssClass, smallHeaderContainerDynamicClasses()]"
     >
       <!-- Small Header -->
@@ -30,7 +30,7 @@ import { fromEvent, map } from 'rxjs';
       </p>
 
       <!-- Other Header Content -->
-      <div class="z-2 flex w-full">
+      <div class="z-3 flex w-full">
         <ng-content />
       </div>
     </div>
@@ -75,8 +75,8 @@ export class PageHeaderComponent {
 
   readonly smallHeaderContainerDynamicClasses = computed(() =>
     this.inSmallMode() && this.pageIsScrolledBeyondTop()
-      ? 'border-200 blur-background bg-white-alpha-80'
-      : 'border-transparent bg-white',
+      ? 'border-100 blur-background bg-header-footer-alpha'
+      : 'border-transparent surface-0',
   );
 
   readonly largeHeaderDynamicClasses = computed(() =>

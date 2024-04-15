@@ -1,11 +1,14 @@
 import {
   distinctUntilChanged,
   filter,
+  fromEvent,
+  map,
   MonoTypeOperatorFunction,
   Observable,
   ObservableInput,
   of,
   OperatorFunction,
+  startWith,
   switchMap,
 } from 'rxjs';
 
@@ -71,4 +74,12 @@ export function notifyOnMutation(
     mutation.observe(target, options);
     return () => mutation.disconnect();
   });
+}
+
+export function observeMediaQuery(query: string): Observable<boolean> {
+  const mediaQuery = window.matchMedia(query);
+  return fromEvent<MediaQueryList>(mediaQuery, 'change').pipe(
+    startWith(mediaQuery),
+    map((list: MediaQueryList) => list.matches),
+  );
 }

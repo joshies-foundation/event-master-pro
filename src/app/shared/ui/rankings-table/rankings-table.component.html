@@ -10,7 +10,7 @@
   <ng-template pTemplate="body" let-ranking>
     <tr
       [ngClass]="{
-        'font-semibold bg-yellow-100': ranking.user_id === userId()
+        'font-semibold bg-highlight': ranking.user_id === userId()
       }"
     >
       <td class="text-center">

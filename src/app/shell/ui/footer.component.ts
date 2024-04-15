@@ -23,7 +23,7 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
     <!-- Disabled Cover -->
     @if (disabled()) {
       <div
-        class="bg-white-alpha-60 w-full h-5rem fixed z-5 bottom-0 left-0"
+        class="surface-alpha-70 w-full h-5rem fixed z-5 bottom-0 left-0"
       ></div>
     }
 
@@ -54,7 +54,7 @@ export class FooterComponent {
   readonly dynamicClasses = computed(() =>
     this.isScrolledToBottom()
       ? 'border-transparent'
-      : 'border-200 blur-background bg-white-alpha-80',
+      : 'border-100 blur-background bg-header-footer-alpha',
   );
 
   readonly largeHeaderDynamicClasses = computed(() =>

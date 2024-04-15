@@ -16,6 +16,16 @@
     <link rel="icon" type="image/x-icon" href="/assets/icons/icon-72x72.png" />
     <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#fff" />
+    <link
+      rel="stylesheet"
+      href="theme-light.css"
+      media="not (prefers-color-scheme: dark)"
+    />
+    <link
+      rel="stylesheet"
+      href="theme-dark.css"
+      media="(prefers-color-scheme: dark)"
+    />
   </head>
   <body class="min-h-full py-4 flex flex-column overflow-scroll">
     <joshies-root class="h-full w-full block" />
