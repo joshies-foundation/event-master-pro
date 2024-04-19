@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { from, map, Observable, of, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import { PostgrestResponse, SupabaseClient } from '@supabase/supabase-js';
 import { Function, Table, View } from '../../shared/util/supabase-helpers';
 import { SessionService } from '../../shared/data-access/session.service';
@@ -24,17 +24,16 @@ export class AnalyticsService {
     return this.sessionService.session$.pipe(
       distinctUntilIdChanged(),
       switchMap((session) => {
-        if (session === null) {
-          return of([]);
-        }
+        let query = this.supabase.from(Table.Session).select('id, name');
 
-        return from(
-          this.supabase
-            .from(Table.Session)
-            .select('id, name')
-            .filter('id', 'neq', session.id)
-            .order('id', { ascending: false }),
-        ).pipe(map((response) => (response.data ? response.data : [])));
+        // if there is an active session, filter out the active session
+        query = session ? query.filter('id', 'neq', session.id) : query;
+
+        query = query.order('id', { ascending: false });
+
+        return from(query).pipe(
+          map((response) => (response.data ? response.data : [])),
+        );
       }),
     );
   }
