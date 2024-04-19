@@ -15,7 +15,7 @@ import { Database, Tables } from './schema';
 export enum Table {
   User = 'user',
   UserNotificationsSubscription = 'user_notifications_subscription',
-  ActiveSession = 'active_session',
+  GameState = 'game_state',
   Session = 'session',
   Player = 'player',
   Rules = 'rules',

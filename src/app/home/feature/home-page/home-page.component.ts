@@ -2,6 +2,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   ChangeDetectionStrategy,
   Component,
+  Signal,
   computed,
   inject,
 } from '@angular/core';
@@ -11,15 +12,21 @@ import { FormsModule } from '@angular/forms';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
-import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
+import {
+  DatePipe,
+  DecimalPipe,
+  NgClass,
+  NgOptimizedImage,
+} from '@angular/common';
 import { SessionService } from '../../../shared/data-access/session.service';
 import { RankingsTableComponent } from '../../../shared/ui/rankings-table/rankings-table.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
+import { GameStateService } from '../../../shared/data-access/game-state.service';
 
 @Component({
-  selector: 'joshies-rankings-page',
+  selector: 'joshies-home-page',
   standalone: true,
-  templateUrl: './rankings-page.component.html',
+  templateUrl: './home-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
@@ -31,14 +38,31 @@ import { AuthService } from '../../../auth/data-access/auth.service';
     NgClass,
     NgOptimizedImage,
     RankingsTableComponent,
+    DatePipe,
   ],
 })
-export default class RankingsPageComponent {
+export default class HomePageComponent {
   private readonly sessionService = inject(SessionService);
+  private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly authService = inject(AuthService);
 
-  private scoreUpdates: Record<number, NodeJS.Timeout> = {};
+  private readonly scoreUpdates: Record<number, NodeJS.Timeout> = {};
+
+  private readonly happeningNowMessage: Signal<string> = computed(
+    () =>
+      `We're in round <strong>${this.gameStateService.roundNumber()}</strong> of <strong>${this.sessionService.session()?.num_rounds}</strong>.`,
+  );
+
+  private readonly upNextMessage: Signal<string> = computed(() => {
+    const currentlyInLastRound =
+      this.gameStateService.roundNumber() ===
+      this.sessionService.session()?.num_rounds;
+
+    return currentlyInLastRound
+      ? `This is the last round! Give it all you've got.`
+      : `Up next is round <strong>${(this.gameStateService.roundNumber() ?? 0) + 1}</strong> of <strong>${this.sessionService.session()?.num_rounds}.</strong>`;
+  });
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
@@ -46,6 +70,8 @@ export default class RankingsPageComponent {
       players: this.playerService.players()!,
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userId: this.authService.user()?.id,
+      happeningNowMessage: this.happeningNowMessage(),
+      upNextMessage: this.upNextMessage(),
     }),
   );
 

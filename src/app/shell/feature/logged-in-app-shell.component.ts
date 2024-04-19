@@ -44,9 +44,9 @@ export default class LoggedInAppShellComponent {
 
   readonly footerLinks = computed((): FooterLinkModel[] => [
     {
-      text: 'Rankings',
-      href: '/rankings',
-      iconClass: 'pi pi-star',
+      text: 'Home',
+      href: '/home',
+      iconClass: 'pi pi-home',
     },
     {
       text: 'Rules',

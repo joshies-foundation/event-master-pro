@@ -1,10 +1,11 @@
 import { Tables } from './schema';
+import { Table, View } from './supabase-helpers';
 
-export type ActiveSessionModel = Tables<'active_session'>;
-export type PlayerModel = Tables<'player'>;
-export type RulesModel = Tables<'rules'>;
-export type SessionModel = Tables<'session'>;
-export type UserModel = Tables<'user'>;
+export type GameStateModel = Tables<Table.GameState>;
+export type PlayerModel = Tables<Table.Player>;
+export type RulesModel = Tables<Table.Rules>;
+export type SessionModel = Tables<Table.Session>;
+export type UserModel = Tables<Table.User>;
 export type UserNotificationsSubscriptionModel =
-  Tables<'user_notifications_subscription'>;
-export type LifetimeUserStatsModel = Tables<'lifetime_user_stats'>;
+  Tables<Table.UserNotificationsSubscription>;
+export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;

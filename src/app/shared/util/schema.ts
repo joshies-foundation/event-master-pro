@@ -9,17 +9,20 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      active_session: {
+      game_state: {
         Row: {
           id: number;
+          round_number: number | null;
           session_id: number | null;
         };
         Insert: {
           id?: number;
+          round_number?: number | null;
           session_id?: number | null;
         };
         Update: {
           id?: number;
+          round_number?: number | null;
           session_id?: number | null;
         };
         Relationships: [

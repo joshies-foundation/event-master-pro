@@ -1,0 +1,56 @@
+@if (viewModel(); as vm) {
+  @if (!vm.session) {
+    <!-- Header -->
+    <joshies-page-header headerText="Home" />
+
+    <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
+  } @else {
+    <!-- Header -->
+    <joshies-page-header [headerText]="vm.session.name" />
+
+    <!-- Date Range -->
+    <h3 class="-mt-3 mb-6 text-400">
+      {{ vm.session.start_date | date: 'longDate' }} -
+      {{ vm.session.end_date | date: 'longDate' }}
+    </h3>
+
+    <!-- Happening Now -->
+    <h2 class="mb-0">👀 Happening Now</h2>
+    <div class="card mt-2 mb-5">
+      <p class="mt-0" [innerHTML]="vm.happeningNowMessage"></p>
+    </div>
+
+    <!-- Up Next -->
+    <h2 class="mb-0">🔮 Up Next</h2>
+    <div class="card mt-2 mb-6">
+      <p class="mt-0" [innerHTML]="vm.upNextMessage"></p>
+    </div>
+
+    <!-- Rankings Table -->
+    <h2 class="mb-1">🏆 Current Rankings</h2>
+    <joshies-rankings-table
+      [players]="vm.players"
+      [editable]="vm.userIsGameMaster"
+      [userId]="vm.userId"
+      (scoreUpdate)="updateScore($event.playerId, $event.score)"
+    />
+  }
+} @else {
+  <div class="h-4rem"></div>
+
+  <!-- Header -->
+  <p-skeleton height="2.5rem" styleClass="mb-2" />
+  <p-skeleton height="1.5rem" styleClass="mb-6" />
+
+  <!-- Happening Now -->
+  <p-skeleton height="2rem" width="13rem" styleClass="mb-2" />
+  <p-skeleton height="2.7rem" styleClass="mb-5" />
+
+  <!-- Up Next -->
+  <p-skeleton height="2rem" width="8rem" styleClass="mb-2" />
+  <p-skeleton height="2.7rem" styleClass="mb-6" />
+
+  <!-- Current Rankings -->
+  <p-skeleton height="2rem" width="14rem" styleClass="mb-2" />
+  <p-skeleton height="25rem" />
+}

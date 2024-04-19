@@ -19,8 +19,8 @@ export const routes: Routes = [
     canActivateChild: [redirectUnauthorizedToLoginPage],
     children: [
       {
-        path: 'rankings',
-        loadChildren: () => import('./rankings/feature/lib.routes'),
+        path: 'home',
+        loadChildren: () => import('./home/feature/lib.routes'),
       },
       {
         path: 'rules',
@@ -45,7 +45,7 @@ export const routes: Routes = [
       {
         path: '**',
         pathMatch: 'full',
-        redirectTo: 'rankings',
+        redirectTo: 'home',
       },
     ],
   },

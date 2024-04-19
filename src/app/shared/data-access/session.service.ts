@@ -13,32 +13,18 @@ import { showErrorMessage } from '../util/error-helpers';
 import { MessageService } from 'primeng/api';
 import { SessionModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
+import { GameStateService } from './game-state.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SessionService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
+  private readonly gameStateService = inject(GameStateService);
   private readonly messageService = inject(MessageService);
 
-  private readonly activeSessionId$: Observable<number | null> =
-    realtimeUpdatesFromTable(this.supabase, Table.ActiveSession).pipe(
-      map((activeSessionRecords) => activeSessionRecords[0].session_id),
-      shareReplay(1),
-    );
-
-  readonly thereIsAnActiveSession$: Observable<boolean> =
-    this.activeSessionId$.pipe(
-      map((activeSessionId) => activeSessionId !== null),
-      shareReplay(1),
-    );
-
-  readonly thereIsAnActiveSession: Signal<boolean | undefined> = toSignal(
-    this.thereIsAnActiveSession$,
-  );
-
   readonly session$: Observable<SessionModel | null> =
-    this.activeSessionId$.pipe(
+    this.gameStateService.sessionId$.pipe(
       whenNotNull((activeSessionId) =>
         realtimeUpdatesFromTable(
           this.supabase,
@@ -140,7 +126,7 @@ export class SessionService {
 
     // update the active session table with this sessions id
     const { error: updateActiveSessionError } = await this.supabase
-      .from(Table.ActiveSession)
+      .from(Table.GameState)
       .update({
         session_id: sessionId,
       })
@@ -158,7 +144,7 @@ export class SessionService {
   async endSession(): Promise<void> {
     showMessageOnError(
       this.supabase
-        .from(Table.ActiveSession)
+        .from(Table.GameState)
         .update({
           session_id: null,
         })
