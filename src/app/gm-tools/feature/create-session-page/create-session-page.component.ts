@@ -41,6 +41,7 @@ export class CreateSessionPageComponent {
       Validators.required,
     ],
     players: [[] as string[], Validators.required],
+    numRounds: [10, Validators.required],
   });
 
   private readonly numPlayersSelected = toSignal(
@@ -76,6 +77,16 @@ export class CreateSessionPageComponent {
             control: this.formGroup.controls.dateRange,
           },
           {
+            label: 'Number of Rounds',
+            name: 'num-rounds',
+            placeholder: 'Number of Rounds',
+            type: FormFieldType.Number,
+            min: 1,
+            max: 100,
+            showButtons: true,
+            control: this.formGroup.controls.numRounds,
+          },
+          {
             label: `Players (${this.numPlayersSelected()})`,
             name: 'players',
             placeholder: 'Players',
@@ -101,17 +112,21 @@ export class CreateSessionPageComponent {
   private async createSession(): Promise<void> {
     this.creatingSession.set(true);
 
-    const sessionName = this.formGroup.getRawValue().sessionName;
+    const formValue = this.formGroup.getRawValue();
+
+    const { sessionName, numRounds, players: playerUserIds } = formValue;
+
+    const startDate = formValue.dateRange[0];
+    const endDate = formValue.dateRange[1];
+
     const gameMasterUserId = this.userService.user()!.id;
-    const startDate = this.formGroup.getRawValue().dateRange[0];
-    const endDate = this.formGroup.getRawValue().dateRange[0];
-    const playerUserIds = this.formGroup.getRawValue().players;
 
     await this.sessionService.createSession(
       sessionName,
       gameMasterUserId,
       startDate,
       endDate,
+      numRounds,
       playerUserIds,
     );
 

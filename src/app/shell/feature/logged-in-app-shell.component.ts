@@ -34,7 +34,7 @@ export default class LoggedInAppShellComponent {
 
   readonly pagePaddingXCssClass = pagePaddingXCssClass;
 
-  private readonly showSessionTab = computed(
+  private readonly showGmToolsTab = computed(
     () =>
       this.sessionService.session() === null ||
       this.playerService.userIsGameMaster(),
@@ -53,11 +53,11 @@ export default class LoggedInAppShellComponent {
       href: '/rules',
       iconClass: 'pi pi-book',
     },
-    ...(this.showSessionTab()
+    ...(this.showGmToolsTab()
       ? [
           {
-            text: 'Session',
-            href: '/session',
+            text: 'GM Tools',
+            href: '/gm-tools',
             iconClass: 'pi pi-wrench',
           },
         ]

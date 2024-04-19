@@ -27,8 +27,8 @@ export const routes: Routes = [
         loadChildren: () => import('./rules/feature/lib.routes'),
       },
       {
-        path: 'session',
-        loadChildren: () => import('./session/feature/lib.routes'),
+        path: 'gm-tools',
+        loadChildren: () => import('./gm-tools/feature/lib.routes'),
       },
       {
         path: 'analytics',

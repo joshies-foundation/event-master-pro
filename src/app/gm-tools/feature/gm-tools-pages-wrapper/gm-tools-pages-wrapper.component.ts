@@ -10,28 +10,28 @@ import { ManageSessionPageComponent } from '../manage-session-page/manage-sessio
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { SkeletonModule } from 'primeng/skeleton';
 
-enum SessionPage {
+enum GmToolsPage {
   CreateSessionPage,
   ManageSessionPage,
   AccessDenied,
 }
 
 @Component({
-  selector: 'joshies-session-pages-wrapper',
+  selector: 'joshies-gm-tools-pages-wrapper',
   standalone: true,
   imports: [
     CreateSessionPageComponent,
     ManageSessionPageComponent,
     SkeletonModule,
   ],
-  templateUrl: './session-pages-wrapper.component.html',
+  templateUrl: './gm-tools-pages-wrapper.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class SessionPagesWrapperComponent {
+export default class GmToolsPagesWrapperComponent {
   private readonly sessionService = inject(SessionService);
   private readonly playerService = inject(PlayerService);
 
-  readonly page = computed((): SessionPage | undefined => {
+  readonly page = computed((): GmToolsPage | undefined => {
     // wait until data has finished loading
     if (
       this.sessionService.session() === undefined ||
@@ -42,17 +42,17 @@ export default class SessionPagesWrapperComponent {
 
     // show create page when there is no active session
     if (this.sessionService.session() === null) {
-      return SessionPage.CreateSessionPage;
+      return GmToolsPage.CreateSessionPage;
     }
 
     // show manage page with user is game master
     if (this.playerService.userIsGameMaster()) {
-      return SessionPage.ManageSessionPage;
+      return GmToolsPage.ManageSessionPage;
     }
 
     // show access denied when neither of the above conditions are true (user is not GM of session)
-    return SessionPage.AccessDenied;
+    return GmToolsPage.AccessDenied;
   });
 
-  protected readonly SessionPage = SessionPage;
+  protected readonly GmToolsPage = GmToolsPage;
 }

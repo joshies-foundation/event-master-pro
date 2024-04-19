@@ -17,14 +17,20 @@
         />
       }
       @case (FormFieldType.Number) {
-        <input
+        <p-inputNumber
           [id]="field.name | lowercase"
           [name]="field.name | lowercase"
           [placeholder]="field.placeholder"
-          type="number"
-          pInputText
+          [showButtons]="field.showButtons"
+          [buttonLayout]="field.buttonLayout ?? 'horizontal'"
+          [step]="field.step ?? 1"
+          [incrementButtonIcon]="field.incrementButtonIcon ?? 'pi pi-plus'"
+          [decrementButtonIcon]="field.decrementButtonIcon ?? 'pi pi-minus'"
+          [min]="field.min"
+          [max]="field.max"
+          [mode]="field.mode ?? 'decimal'"
           [formControl]="field.control"
-          [ngClass]="field.styleClass"
+          [styleClass]="'w-full ' + (field.styleClass ?? '')"
         />
       }
       @case (FormFieldType.Dropdown) {

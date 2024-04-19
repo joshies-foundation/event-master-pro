@@ -22,6 +22,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { EditorModule } from 'primeng/editor';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 export enum FormFieldType {
   Text,
@@ -51,6 +52,15 @@ export type FormField = {
       | {
           type: FormFieldType.Number;
           defaultValue?: number;
+          showButtons?: boolean;
+          step?: number;
+          buttonLayout?: 'stacked' | 'horizontal' | 'vertical';
+          incrementButtonIcon?: string;
+          decrementButtonIcon?: string;
+          min?: number;
+          max?: number;
+          mode?: 'decimal' | 'currency';
+          currency?: string;
         }
       | {
           type: FormFieldType.Dropdown;
@@ -99,6 +109,7 @@ export type FormField = {
     CalendarModule,
     MultiSelectModule,
     EditorModule,
+    InputNumberModule,
   ],
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -64,6 +64,7 @@ export class SessionService {
     gameMasterUserId: string,
     startDate: Date,
     endDate: Date,
+    numRounds: number,
     playerUserIds: string[],
   ): Promise<void> {
     // add a row to the session table with this session's parameters
@@ -74,6 +75,7 @@ export class SessionService {
         game_master_user_id: gameMasterUserId,
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
+        num_rounds: numRounds,
       })
       .select();
 
