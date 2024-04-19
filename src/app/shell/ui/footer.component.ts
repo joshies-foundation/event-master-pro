@@ -29,7 +29,7 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
 
     <!-- Footer -->
     <nav
-      class="w-full h-5rem border-top-1 flex justify-between fixed bottom-0 left-0 pb-4 text-center"
+      class="w-full h-5rem border-top-1 flex justify-between fixed z-4 bottom-0 left-0 pb-4 text-center"
       [ngClass]="dynamicClasses()"
     >
       @for (footerLink of footerLinks(); track footerLink.href) {

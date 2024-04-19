@@ -18,7 +18,7 @@ import { fromEvent, map } from 'rxjs';
   template: `
     <!-- Small Header Container -->
     <div
-      class="h-5.5rem  mt-0 flex justify-content-between align-items-center fixed top-0 left-0 mb-0 pt-6 pb-2 w-full z-2 border-bottom-1"
+      class="h-5.5rem  mt-0 flex justify-content-between align-items-center fixed top-0 left-0 mb-0 pt-6 pb-2 w-full z-4 border-bottom-1"
       [ngClass]="[pagePaddingXCssClass, smallHeaderContainerDynamicClasses()]"
     >
       <!-- Small Header -->
@@ -30,7 +30,7 @@ import { fromEvent, map } from 'rxjs';
       </p>
 
       <!-- Other Header Content -->
-      <div class="z-3 flex w-full">
+      <div class="z-5 flex w-full">
         <ng-content />
       </div>
     </div>
