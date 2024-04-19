@@ -9,25 +9,31 @@
     <joshies-page-header [headerText]="vm.session.name" />
 
     <!-- Date Range -->
-    <h3 class="-mt-3 mb-6 text-400">
+    <p class="-mt-3 mb-6 text-400">
       {{ vm.session.start_date | date: 'longDate' }} -
       {{ vm.session.end_date | date: 'longDate' }}
-    </h3>
+    </p>
 
     <!-- Happening Now -->
-    <h2 class="mb-0">👀 Happening Now</h2>
-    <div class="card mt-2 mb-5">
+    <h3 class="mb-0">
+      <i class="pi pi-star text-primary mr-2"></i> Happening Now
+    </h3>
+    <div class="card mt-2 mb-6">
       <p class="mt-0" [innerHTML]="vm.happeningNowMessage"></p>
     </div>
 
     <!-- Up Next -->
-    <h2 class="mb-0">🔮 Up Next</h2>
+    <h3 class="mb-0">
+      <i class="pi pi-arrow-circle-right text-primary mr-2"></i> Up Next
+    </h3>
     <div class="card mt-2 mb-6">
       <p class="mt-0" [innerHTML]="vm.upNextMessage"></p>
     </div>
 
     <!-- Rankings Table -->
-    <h2 class="mb-1">🏆 Current Rankings</h2>
+    <h3 class="pt-2 mb-2">
+      <i class="pi pi-trophy text-primary mr-2"></i> Current Rankings
+    </h3>
     <joshies-rankings-table
       [players]="vm.players"
       [editable]="vm.userIsGameMaster"
@@ -39,18 +45,19 @@
   <div class="h-4rem"></div>
 
   <!-- Header -->
-  <p-skeleton height="2.5rem" styleClass="mb-2" />
-  <p-skeleton height="1.5rem" styleClass="mb-6" />
+  <p-skeleton height="2.25rem" styleClass="mb-2" />
+  <p-skeleton height="1.25rem" styleClass="mb-6" />
 
   <!-- Happening Now -->
-  <p-skeleton height="2rem" width="13rem" styleClass="mb-2" />
-  <p-skeleton height="2.7rem" styleClass="mb-5" />
+  <p-skeleton height="1.5rem" width="10.5rem" styleClass="mb-2" />
+  <p-skeleton height="2.7rem" styleClass="mb-6" />
 
   <!-- Up Next -->
-  <p-skeleton height="2rem" width="8rem" styleClass="mb-2" />
+  <p-skeleton height="1.5rem" width="6.5rem" styleClass="mb-2" />
   <p-skeleton height="2.7rem" styleClass="mb-6" />
 
   <!-- Current Rankings -->
-  <p-skeleton height="2rem" width="14rem" styleClass="mb-2" />
+  <div class="h-0.5rem"></div>
+  <p-skeleton height="1.7rem" width="11.5rem" styleClass="mb-2" />
   <p-skeleton height="25rem" />
 }
