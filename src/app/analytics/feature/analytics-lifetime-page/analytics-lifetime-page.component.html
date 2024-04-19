@@ -24,7 +24,7 @@
     <ng-template pTemplate="body" let-row>
       <tr
         [ngClass]="{
-          'font-semibold bg-yellow-100': row.user_id === userId()
+          'font-semibold bg-highlight': row.user_id === userId()
         }"
       >
         <td pFrozenColumn>
