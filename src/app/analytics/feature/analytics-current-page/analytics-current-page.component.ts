@@ -23,7 +23,7 @@ export default class AnalyticsCurrentPageComponent {
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
-      players: this.playerService.players()!,
+      players: this.playerService.players(),
       userId: this.authService.user()?.id,
     }),
   );

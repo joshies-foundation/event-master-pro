@@ -1,6 +1,10 @@
 @if (viewModel(); as vm) {
-  <!-- Rankings Table -->
-  <joshies-rankings-table [players]="vm.players!" [userId]="vm.userId" />
+  @if (vm.players; as players) {
+    <!-- Rankings Table -->
+    <joshies-rankings-table [players]="players" [userId]="vm.userId" />
+  } @else {
+    <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
+  }
 } @else {
   <!-- Loading Skeleton -->
   <p-skeleton height="25rem" />
