@@ -8,14 +8,12 @@ const gmToolsRoutes: Routes = [
   },
   {
     path: 'finish-round',
-    loadComponent: () =>
-      import('./finish-round-page/finish-round-page.component'),
+    loadComponent: () => import('./finish-round-page.component'),
     data: { animation: 1 },
   },
   {
     path: 'disable-players',
-    loadComponent: () =>
-      import('./disable-players-page/disable-players-page.component'),
+    loadComponent: () => import('./disable-players-page.component'),
     data: { animation: 1 },
   },
   {

@@ -9,22 +9,35 @@ import { FormBuilder, Validators } from '@angular/forms';
 import {
   FormField,
   FormFieldType,
-} from '../../../shared/ui/form-field/form-field.component';
-import { Form, FormComponent } from '../../../shared/ui/form.component';
-import { withAllDefined } from '../../../shared/util/signal-helpers';
-import { UserService } from '../../../shared/data-access/user.service';
+} from '../../shared/ui/form-field/form-field.component';
+import { Form, FormComponent } from '../../shared/ui/form.component';
+import { withAllDefined } from '../../shared/util/signal-helpers';
+import { UserService } from '../../shared/data-access/user.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { SessionService } from '../../../shared/data-access/session.service';
+import { SessionService } from '../../shared/data-access/session.service';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 
 @Component({
   selector: 'joshies-create-session-page',
   standalone: true,
-  templateUrl: './create-session-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormComponent, SkeletonModule, PageHeaderComponent],
+  template: `
+    <!-- Header -->
+    <joshies-page-header headerText="Create Session" />
+
+    @if (form.fields()) {
+      <!-- Form -->
+      <joshies-form [form]="form" />
+    } @else {
+      <!-- Loading Skeleton -->
+      <div class="h-4rem"></div>
+      <p-skeleton height="2.25rem" styleClass="mb-4" />
+      <p-skeleton width="100%" height="19rem" />
+    }
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateSessionPageComponent {
   private readonly userService = inject(UserService);
@@ -40,12 +53,12 @@ export class CreateSessionPageComponent {
       [new Date(), new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)],
       Validators.required,
     ],
-    players: [[] as string[], Validators.required],
+    playerUserIds: [[] as string[], Validators.required],
     numRounds: [10, Validators.required],
   });
 
   private readonly numPlayersSelected = toSignal(
-    this.formGroup.controls.players.valueChanges.pipe(
+    this.formGroup.controls.playerUserIds.valueChanges.pipe(
       map((players) => players.length),
     ),
     { initialValue: 0 },
@@ -95,7 +108,7 @@ export class CreateSessionPageComponent {
             optionLabel: 'display_name',
             optionValue: 'id',
             useChips: true,
-            control: this.formGroup.controls.players,
+            control: this.formGroup.controls.playerUserIds,
           },
           {
             name: 'submit',
@@ -114,7 +127,7 @@ export class CreateSessionPageComponent {
 
     const formValue = this.formGroup.getRawValue();
 
-    const { sessionName, numRounds, players: playerUserIds } = formValue;
+    const { sessionName, numRounds, playerUserIds } = formValue;
 
     const startDate = formValue.dateRange[0];
     const endDate = formValue.dateRange[1];

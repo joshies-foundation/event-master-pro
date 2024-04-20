@@ -8,6 +8,7 @@
       "schematics": {
         "@schematics/angular:component": {
           "changeDetection": "OnPush",
+          "inlineTemplate": true,
           "skipTests": true,
           "style": "none"
         },
