@@ -19,6 +19,7 @@ import { pagePaddingXCssClass } from './shared/util/css-helpers';
     <p-toast
       [breakpoints]="{ '420px': { width: '95vw' } }"
       position="top-center"
+      styleClass="mt-4"
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -15,24 +15,29 @@
     </p>
 
     <!-- Happening Now -->
-    <h3 class="mb-0">
-      <i class="pi pi-star text-primary mr-2"></i> Happening Now
-    </h3>
-    <div class="card mt-2 mb-6">
-      <p class="mt-0" [innerHTML]="vm.happeningNowMessage"></p>
-    </div>
+    <joshies-card
+      headerText="Happening Now"
+      headerIconClass="pi pi-star text-primary mr-2"
+      padded
+      class="mb-6"
+    >
+      <p class="m-0" [innerHTML]="vm.happeningNowMessage"></p>
+    </joshies-card>
 
     <!-- Up Next -->
-    <h3 class="mb-0">
-      <i class="pi pi-arrow-circle-right text-primary mr-2"></i> Up Next
-    </h3>
-    <div class="card mt-2 mb-6">
-      <p class="mt-0" [innerHTML]="vm.upNextMessage"></p>
-    </div>
+    <joshies-card
+      headerText="Up Next"
+      headerIconClass="pi pi-arrow-circle-right text-primary mr-2"
+      padded
+      class="mb-6"
+    >
+      <p class="m-0" [innerHTML]="vm.upNextMessage"></p>
+    </joshies-card>
 
     <!-- Rankings Table -->
     <h3 class="pt-2 mb-2">
-      <i class="pi pi-trophy text-primary mr-2"></i> Current Rankings
+      <i class="pi pi-trophy text-primary mr-2"></i>
+      Current Rankings
     </h3>
     <joshies-rankings-table
       [players]="vm.players"

@@ -5,4 +5,6 @@
 <p-tabMenu [model]="tabs" styleClass="mb-3" />
 
 <!-- Child Pages -->
-<router-outlet />
+<div class="relative" [@routeAnimations]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet" />
+</div>

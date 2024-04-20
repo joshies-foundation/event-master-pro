@@ -1,3 +1,4 @@
+import { CardComponent } from '../../../shared/ui/card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   ChangeDetectionStrategy,
@@ -29,6 +30,7 @@ import { GameStateService } from '../../../shared/data-access/game-state.service
   templateUrl: './home-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CardComponent,
     PageHeaderComponent,
     TableModule,
     InputNumberModule,

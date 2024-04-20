@@ -1,11 +1,15 @@
 <!-- Header -->
-<joshies-page-header headerText="Manage Session" />
-
-<h4 class="mt-0">Enable/Disable Players</h4>
+<joshies-page-header headerText="Disable Players" alwaysSmall>
+  <joshies-header-link
+    text="GM Tools"
+    routerLink=".."
+    chevronDirection="left"
+  />
+</joshies-page-header>
 
 @if (players(); as players) {
   <!-- Player Table -->
-  <p-table [value]="players" [tableStyle]="{ 'min-width': '100%' }">
+  <p-table [value]="players" styleClass="mt-4">
     <ng-template pTemplate="header">
       <tr>
         <th>Player</th>
@@ -42,13 +46,5 @@
     </ng-template>
   </p-table>
 } @else {
-  <p-skeleton width="100%" height="25rem" />
+  <p-skeleton width="100%" height="30rem" styleClass="mt-4" />
 }
-
-<!-- Sign Out Button -->
-<p-button
-  (onClick)="endSession()"
-  label="End Session"
-  severity="danger"
-  styleClass="block w-full mt-4"
-/>

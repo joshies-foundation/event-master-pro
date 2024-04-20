@@ -101,21 +101,6 @@ p-editor {
   backdrop-filter: blur(0.75rem);
 }
 
-.card {
-  background-color: var(--surface-50);
-  padding: 0.85rem 1rem;
-  border-radius: 0.75rem;
-  margin: 1rem 0;
-
-  :first-child {
-    margin-top: 0;
-  }
-
-  :last-child {
-    margin-bottom: 0;
-  }
-}
-
 // round corners of table header
 .p-datatable .p-datatable-thead > tr > {
   th {
@@ -165,7 +150,7 @@ p-editor {
   .bg-header-footer-alpha {
     background-color: color-mix(
       in srgb,
-      color-mix(in srgb, var(--surface-100) 50%, var(--surface-0)) 90%,
+      color-mix(in srgb, var(--surface-50) 60%, var(--surface-0)) 80%,
       transparent
     );
   }

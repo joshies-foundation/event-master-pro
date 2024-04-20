@@ -11,6 +11,7 @@ const analyticsRoutes: Routes = [
         path: 'current',
         loadComponent: () =>
           import('./analytics-current-page/analytics-current-page.component'),
+        data: { animation: 0 },
       },
       {
         path: 'previous',
@@ -19,6 +20,7 @@ const analyticsRoutes: Routes = [
         resolve: {
           analyticsPreviousResolvedData: previousSessionsResolver,
         },
+        data: { animation: 1 },
       },
       {
         path: 'lifetime',
@@ -27,6 +29,7 @@ const analyticsRoutes: Routes = [
         resolve: {
           lifetimeResultsQueryResult: lifetimeStatsResolver,
         },
+        data: { animation: 2 },
       },
       {
         path: '**',

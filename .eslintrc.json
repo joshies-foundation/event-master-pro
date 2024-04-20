@@ -32,7 +32,8 @@
             "prefix": "joshies",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/no-host-metadata-property": "off"
       }
     },
     {
