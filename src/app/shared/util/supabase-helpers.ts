@@ -9,7 +9,7 @@ import { from, map, Observable, scan, startWith, switchMap } from 'rxjs';
 import { Signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
-import { showErrorMessage } from './error-helpers';
+import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 
 export enum Table {
@@ -17,6 +17,7 @@ export enum Table {
   UserNotificationsSubscription = 'user_notifications_subscription',
   GameState = 'game_state',
   Session = 'session',
+  Transaction = 'transaction',
   Player = 'player',
   Rules = 'rules',
 }
@@ -27,6 +28,7 @@ export enum View {
 
 export enum Function {
   GetAllScoresFromSession = 'get_all_scores_from_session',
+  EndRound = 'end_round',
 }
 
 export enum StorageBucket {

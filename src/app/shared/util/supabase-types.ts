@@ -5,6 +5,7 @@ export type GameStateModel = Tables<Table.GameState>;
 export type PlayerModel = Tables<Table.Player>;
 export type RulesModel = Tables<Table.Rules>;
 export type SessionModel = Tables<Table.Session>;
+export type TransactionModel = Tables<Table.Transaction>;
 export type UserModel = Tables<Table.User>;
 export type UserNotificationsSubscriptionModel =
   Tables<Table.UserNotificationsSubscription>;

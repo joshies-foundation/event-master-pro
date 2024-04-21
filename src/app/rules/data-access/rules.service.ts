@@ -11,9 +11,9 @@ import {
   distinctUntilIdChanged,
   whenNotNull,
 } from '../../shared/util/rxjs-helpers';
-import { showErrorMessage } from '../../shared/util/error-helpers';
+import { showErrorMessage } from '../../shared/util/message-helpers';
 import { MessageService } from 'primeng/api';
-import { showSuccessMessage } from '../../shared/util/status-helpers';
+import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { Database } from '../../shared/util/schema';
 
 @Injectable({

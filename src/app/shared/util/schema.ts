@@ -255,6 +255,12 @@ export type Database = {
       };
     };
     Functions: {
+      end_round: {
+        Args: {
+          score_changes: Json;
+        };
+        Returns: undefined;
+      };
       get_all_scores_from_session: {
         Args: {
           sessionid: number;

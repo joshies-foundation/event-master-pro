@@ -159,6 +159,14 @@ $sizeVariants: (
   background-color: var(--yellow-100);
 }
 
+.text-green {
+  color: var(--green-700);
+}
+
+.text-red {
+  color: var(--red-700);
+}
+
 @media (prefers-color-scheme: dark) {
   .bg-header-footer-alpha {
     background-color: color-mix(
@@ -170,5 +178,13 @@ $sizeVariants: (
 
   .bg-highlight {
     background-color: var(--yellow-900);
+  }
+
+  .text-green {
+    color: var(--green-300);
+  }
+
+  .text-red {
+    color: var(--red-300);
   }
 }

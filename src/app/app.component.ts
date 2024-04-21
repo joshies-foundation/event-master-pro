@@ -17,9 +17,10 @@ import { pagePaddingXCssClass } from './shared/util/css-helpers';
   template: `
     <router-outlet />
     <p-toast
+      [life]="5000"
       [breakpoints]="{ '420px': { width: '95vw' } }"
       position="top-center"
-      styleClass="mt-4"
+      styleClass="mt-5"
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

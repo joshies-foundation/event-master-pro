@@ -4,12 +4,13 @@ import {
   realtimeUpdatesFromTable,
   showMessageOnError,
   Table,
+  Function,
 } from '../util/supabase-helpers';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { Observable, map, of, shareReplay } from 'rxjs';
 import { distinctUntilIdChanged, whenNotNull } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { showErrorMessage } from '../util/error-helpers';
+import { showErrorMessage } from '../util/message-helpers';
 import { MessageService } from 'primeng/api';
 import { SessionModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
@@ -152,5 +153,14 @@ export class SessionService {
       this.messageService,
       'Unable to end session.',
     );
+  }
+
+  async endRound(
+    roundNumber: number,
+    playerScoreChanges: Record<string, number>,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.EndRound, {
+      score_changes: { roundNumber, playerScoreChanges },
+    });
   }
 }

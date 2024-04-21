@@ -12,6 +12,11 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 1 },
   },
   {
+    path: 'finish-round/review',
+    loadComponent: () => import('./review-score-changes-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
+  {
     path: 'disable-players',
     loadComponent: () => import('./disable-players-page.component'),
     data: { pageAnimationLayer: 1 },

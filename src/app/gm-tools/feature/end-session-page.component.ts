@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { SessionService } from '../../shared/data-access/session.service';
-import { showErrorMessage } from '../../shared/util/error-helpers';
+import { showErrorMessage } from '../../shared/util/message-helpers';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 

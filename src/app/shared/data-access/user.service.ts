@@ -8,7 +8,7 @@ import {
 import { SupabaseClient } from '@supabase/supabase-js';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { MessageService } from 'primeng/api';
-import { showErrorMessage } from '../util/error-helpers';
+import { showErrorMessage } from '../util/message-helpers';
 import { resizeImage } from '../util/image-helpers';
 import { map, Observable, shareReplay } from 'rxjs';
 import { whenNotUndefined } from '../util/rxjs-helpers';

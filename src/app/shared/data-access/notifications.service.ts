@@ -3,7 +3,7 @@ import { SwPush } from '@angular/service-worker';
 import { map, Observable, shareReplay, startWith } from 'rxjs';
 import { environment } from 'environment';
 import { MessageService } from 'primeng/api';
-import { showErrorMessage } from '../util/error-helpers';
+import { showErrorMessage } from '../util/message-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { showMessageOnError, Table } from '../util/supabase-helpers';
 import { HttpClient } from '@angular/common/http';
