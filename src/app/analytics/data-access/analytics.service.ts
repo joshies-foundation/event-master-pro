@@ -6,7 +6,10 @@ import { SessionService } from '../../shared/data-access/session.service';
 import { distinctUntilIdChanged } from '../../shared/util/rxjs-helpers';
 import { PlayerWithUserInfo } from '../../shared/data-access/player.service';
 import { Database } from '../../shared/util/schema';
-import { LifetimeUserStatsModel } from '../../shared/util/supabase-types';
+import {
+  LifetimeUserStatsModel,
+  TransactionModel,
+} from '../../shared/util/supabase-types';
 
 export interface IdAndName {
   id: number;
@@ -57,5 +60,17 @@ export class AnalyticsService {
     PostgrestResponse<LifetimeUserStatsModel>
   > {
     return from(this.supabase.from(View.LifetimeUserStats).select('*'));
+  }
+
+  getTransactionsForPlayer(
+    playerId: number,
+  ): Observable<PostgrestResponse<TransactionModel>> {
+    return from(
+      this.supabase
+        .from(Table.Transaction)
+        .select('*')
+        .eq('player_id', playerId)
+        .order('id', { ascending: false }),
+    );
   }
 }

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { lifetimeStatsResolver } from '../data-access/lifetime-stats.resolver';
 import { previousSessionsResolver } from '../data-access/previous-sessions.resolver';
+import { transactionsResolver } from '../data-access/transactions.resolver';
 
 const analyticsRoutes: Routes = [
   {
@@ -8,10 +9,18 @@ const analyticsRoutes: Routes = [
     loadComponent: () => import('./analytics-tab.component'),
     children: [
       {
+        path: 'transactions',
+        loadComponent: () => import('./transactions-page.component'),
+        resolve: {
+          transactionsResponse: transactionsResolver,
+        },
+        data: { pageTabIndex: 0 },
+      },
+      {
         path: 'current',
         loadComponent: () =>
           import('./analytics-current-page/analytics-current-page.component'),
-        data: { pageTabIndex: 0 },
+        data: { pageTabIndex: 1 },
       },
       {
         path: 'previous',
@@ -20,7 +29,7 @@ const analyticsRoutes: Routes = [
         resolve: {
           analyticsPreviousResolvedData: previousSessionsResolver,
         },
-        data: { pageTabIndex: 1 },
+        data: { pageTabIndex: 2 },
       },
       {
         path: 'lifetime',
@@ -29,12 +38,12 @@ const analyticsRoutes: Routes = [
         resolve: {
           lifetimeResultsQueryResult: lifetimeStatsResolver,
         },
-        data: { pageTabIndex: 2 },
+        data: { pageTabIndex: 3 },
       },
       {
         path: '**',
         pathMatch: 'full',
-        redirectTo: 'current',
+        redirectTo: 'transactions',
       },
     ],
   },

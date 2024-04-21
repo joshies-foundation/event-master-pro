@@ -38,6 +38,10 @@ export default class AnalyticsTabComponent {
 
   readonly tabs: MenuItem[] = [
     {
+      label: 'Transactions',
+      routerLink: '/analytics/transactions',
+    },
+    {
       label: 'Current',
       routerLink: '/analytics/current',
     },
