@@ -5,13 +5,13 @@ import { previousSessionsResolver } from '../data-access/previous-sessions.resol
 const analyticsRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./analytics-tab/analytics-tab.component'),
+    loadComponent: () => import('./analytics-tab.component'),
     children: [
       {
         path: 'current',
         loadComponent: () =>
           import('./analytics-current-page/analytics-current-page.component'),
-        data: { animation: 0 },
+        data: { pageTabIndex: 0 },
       },
       {
         path: 'previous',
@@ -20,7 +20,7 @@ const analyticsRoutes: Routes = [
         resolve: {
           analyticsPreviousResolvedData: previousSessionsResolver,
         },
-        data: { animation: 1 },
+        data: { pageTabIndex: 1 },
       },
       {
         path: 'lifetime',
@@ -29,7 +29,7 @@ const analyticsRoutes: Routes = [
         resolve: {
           lifetimeResultsQueryResult: lifetimeStatsResolver,
         },
-        data: { animation: 2 },
+        data: { pageTabIndex: 2 },
       },
       {
         path: '**',

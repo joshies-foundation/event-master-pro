@@ -29,15 +29,19 @@ const layerCommonStyles: Record<string, string | number> = {
 
 function addLayer(): AnimationMetadata[] {
   return [
-    query(':leave', style({ display: 'block' })),
+    query(':leave', style({ display: 'block' }), { optional: true }),
     query(
       ':enter',
       [
         style({
           ...layerCommonStyles,
           transform: 'translate3d(100%, 0, 0)',
+          opacity: 0,
         }),
-        animate(`250ms ease-out`, style({ transform: 'translate3d(0, 0, 0)' })),
+        animate(
+          `200ms cubic-bezier(.1,.25,.25,1)`,
+          style({ transform: 'translate3d(0, 0, 0)', opacity: 1 }),
+        ),
       ],
       { optional: true },
     ),
@@ -52,42 +56,54 @@ function removeLayer(): AnimationMetadata[] {
         style({
           ...layerCommonStyles,
           transform: 'translate3d(0, 0, 0)',
+          opacity: 1,
         }),
-        animate('200ms', style({ transform: 'translate3d(100%, 0, 0)' })),
+        animate(
+          '100ms',
+          style({ transform: 'translate3d(100%, 0, 0)', opacity: 0.6 }),
+        ),
       ],
       { optional: true },
     ),
-    query(':enter', style('*')),
+    query(':enter', style('*'), { optional: true }),
   ];
 }
 
 function slideFrom(direction: 'left' | 'right'): AnimationMetadata[] {
   return [
     group([
-      query(':leave', [
-        style({
-          ...slideCommonStyles,
-          transform: `translate3d(0, 0, 0)`,
-        }),
-        animate(
-          '200ms ease-out',
+      query(
+        ':leave',
+        [
           style({
-            transform: `translate3d(calc(${direction === 'left' ? '100% + ' + pagePaddingXCssAmount : '-100% - ' + pagePaddingXCssAmount}), 0, 0)`,
-          }),
-        ),
-      ]),
-      query(':enter', [
-        style({
-          ...slideCommonStyles,
-          transform: `translate3d(calc(${direction === 'left' ? '-100% - ' + pagePaddingXCssAmount : '100% + ' + pagePaddingXCssAmount}), 0, 0)`,
-        }),
-        animate(
-          '200ms ease-out',
-          style({
+            ...slideCommonStyles,
             transform: `translate3d(0, 0, 0)`,
           }),
-        ),
-      ]),
+          animate(
+            '200ms ease-out',
+            style({
+              transform: `translate3d(calc(${direction === 'left' ? '100% + ' + pagePaddingXCssAmount : '-100% - ' + pagePaddingXCssAmount}), 0, 0)`,
+            }),
+          ),
+        ],
+        { optional: true },
+      ),
+      query(
+        ':enter',
+        [
+          style({
+            ...slideCommonStyles,
+            transform: `translate3d(calc(${direction === 'left' ? '-100% - ' + pagePaddingXCssAmount : '100% + ' + pagePaddingXCssAmount}), 0, 0)`,
+          }),
+          animate(
+            '200ms ease-out',
+            style({
+              transform: `translate3d(0, 0, 0)`,
+            }),
+          ),
+        ],
+        { optional: true },
+      ),
     ]),
   ];
 }
