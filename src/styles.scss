@@ -113,16 +113,24 @@ p-editor {
   }
 }
 
+$sizeVariants: (
+  \.25: 0.25,
+  \.5: 0.5,
+  \.75: 0.75,
+);
+
 @for $i from 0 through 29 {
-  $name: $i + \.5;
-  $value: $i + 0.5;
+  @each $n, $v in $sizeVariants {
+    $name: $i + $n;
+    $value: $i + $v;
 
-  .h-#{$name}rem {
-    height: #{$value}rem;
-  }
+    .h-#{$name}rem {
+      height: #{$value}rem;
+    }
 
-  .w-#{$name}rem {
-    width: #{$value}rem;
+    .w-#{$name}rem {
+      width: #{$value}rem;
+    }
   }
 }
 
