@@ -34,7 +34,7 @@ import {
 } from '../../shared/util/local-storage-helpers';
 
 @Component({
-  selector: 'joshies-finish-round-page',
+  selector: 'joshies-end-round-page',
   standalone: true,
   imports: [
     PageHeaderComponent,
@@ -47,7 +47,7 @@ import {
     ButtonModule,
   ],
   template: `
-    <joshies-page-header headerText="Finish Round" alwaysSmall>
+    <joshies-page-header headerText="End Round" alwaysSmall>
       <joshies-header-link
         text="GM Tools"
         routerLink=".."
@@ -125,7 +125,7 @@ import {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class FinishRoundPageComponent {
+export default class EndRoundPageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly sessionService = inject(SessionService);
   private readonly playerService = inject(PlayerService);

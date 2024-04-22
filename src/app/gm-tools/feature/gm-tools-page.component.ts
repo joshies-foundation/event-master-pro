@@ -18,9 +18,9 @@ import { RouterLink } from '@angular/router';
 export default class GmToolsPageComponent {
   readonly roundLinks: CardLinkModel[] = [
     {
-      text: 'Finish Round & Tally Points',
+      text: 'End Round & Tally Points',
       iconClass: 'pi pi-check-circle bg-green-500',
-      routerLink: './finish-round',
+      routerLink: './end-round',
     },
   ];
 

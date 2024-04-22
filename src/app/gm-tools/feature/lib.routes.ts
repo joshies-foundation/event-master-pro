@@ -7,12 +7,12 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 0 },
   },
   {
-    path: 'finish-round',
-    loadComponent: () => import('./finish-round-page.component'),
+    path: 'end-round',
+    loadComponent: () => import('./end-round-page.component'),
     data: { pageAnimationLayer: 1 },
   },
   {
-    path: 'finish-round/review',
+    path: 'end-round/review',
     loadComponent: () => import('./review-score-changes-page.component'),
     data: { pageAnimationLayer: 2 },
   },
