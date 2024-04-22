@@ -27,45 +27,79 @@ const layerCommonStyles: Record<string, string | number> = {
   padding: `${pagePaddingYCssAmount} ${pagePaddingXCssAmount}`,
 };
 
+const addLayerAnimationTiming = '200ms cubic-bezier(.1,.25,.25,1)';
+const removeLayerAnimationTiming = '100ms';
+
 function addLayer(): AnimationMetadata[] {
   return [
-    query(':leave', style({ display: 'block' }), { optional: true }),
-    query(
-      ':enter',
-      [
-        style({
-          ...layerCommonStyles,
-          transform: 'translate3d(100%, 0, 0)',
-          opacity: 0,
-        }),
-        animate(
-          `200ms cubic-bezier(.1,.25,.25,1)`,
-          style({ transform: 'translate3d(0, 0, 0)', opacity: 1 }),
-        ),
-      ],
-      { optional: true },
-    ),
+    group([
+      query(
+        ':leave',
+        [
+          style({
+            ...layerCommonStyles,
+            transform: 'translate3d(0, 0, 0)',
+          }),
+          animate(
+            addLayerAnimationTiming,
+            style({ transform: 'translate3d(-20%, 0, 0)' }),
+          ),
+        ],
+        { optional: true },
+      ),
+      query(
+        ':enter',
+        [
+          style({
+            ...layerCommonStyles,
+            transform: 'translate3d(100%, 0, 0)',
+            opacity: 0,
+          }),
+          animate(
+            addLayerAnimationTiming,
+            style({ transform: 'translate3d(0, 0, 0)', opacity: 1 }),
+          ),
+        ],
+        { optional: true },
+      ),
+    ]),
   ];
 }
 
 function removeLayer(): AnimationMetadata[] {
   return [
-    query(
-      ':leave',
-      [
-        style({
-          ...layerCommonStyles,
-          transform: 'translate3d(0, 0, 0)',
-          opacity: 1,
-        }),
-        animate(
-          '100ms',
-          style({ transform: 'translate3d(100%, 0, 0)', opacity: 0.6 }),
-        ),
-      ],
-      { optional: true },
-    ),
-    query(':enter', style('*'), { optional: true }),
+    group([
+      query(
+        ':leave',
+        [
+          style({
+            ...layerCommonStyles,
+            transform: 'translate3d(0, 0, 0)',
+            opacity: 1,
+            ['z-index']: 10,
+          }),
+          animate(
+            removeLayerAnimationTiming,
+            style({ transform: 'translate3d(100%, 0, 0)', opacity: 0.6 }),
+          ),
+        ],
+        { optional: true },
+      ),
+      query(
+        ':enter',
+        [
+          style({
+            ...layerCommonStyles,
+            transform: 'translate3d(-20%, 0, 0)',
+          }),
+          animate(
+            removeLayerAnimationTiming,
+            style({ transform: 'translate3d(0%, 0, 0)' }),
+          ),
+        ],
+        { optional: true },
+      ),
+    ]),
   ];
 }
 
