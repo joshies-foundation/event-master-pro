@@ -8,7 +8,7 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { Router } from '@angular/router';
-import { KeyValuePipe, NgOptimizedImage } from '@angular/common';
+import { DecimalPipe, KeyValuePipe, NgOptimizedImage } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
@@ -36,6 +36,7 @@ import { showMessageOnError } from '../../shared/util/supabase-helpers';
     NgOptimizedImage,
     SkeletonModule,
     ButtonModule,
+    DecimalPipe,
   ],
   template: `
     <joshies-page-header headerText="Review Score Changes" alwaysSmall>
@@ -69,6 +70,7 @@ import { showMessageOnError } from '../../shared/util/supabase-helpers';
         </ng-template>
         <ng-template pTemplate="body" let-player>
           <tr>
+            <!-- Player -->
             <td pFrozenColumn>
               <div class="flex align-items-center gap-2 -py-2">
                 <img
@@ -81,16 +83,23 @@ import { showMessageOnError } from '../../shared/util/supabase-helpers';
                 {{ player.display_name }}
               </div>
             </td>
-            <td class="text-right text-400">{{ player.score }}</td>
+            <!-- Before -->
+            <td class="text-right text-400">
+              {{ player.score | number }}
+            </td>
+            <!-- Change -->
             <td
               class="text-right font-semibold"
               [class.text-red]="player.change < 0"
               [class.text-green]="player.change > 0"
               [class.text-500]="!player.change"
             >
-              {{ (player.change > 0 ? '+' : '') + player.change }}
+              {{ (player.change > 0 ? '+' : '') + (player.change | number) }}
             </td>
-            <td class="text-right font-semibold">{{ player.new_score }}</td>
+            <!-- After -->
+            <td class="text-right font-semibold">
+              {{ player.new_score | number }}
+            </td>
           </tr>
         </ng-template>
       </p-table>
