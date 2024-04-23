@@ -1,17 +1,41 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+} from '@angular/core';
 import { TransactionModel } from '../../shared/util/supabase-types';
 import { TableModule } from 'primeng/table';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { PostgrestResponse } from '@supabase/supabase-js';
+import { AnalyticsService } from '../data-access/analytics.service';
+import { SkeletonModule } from 'primeng/skeleton';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 
 @Component({
   selector: 'joshies-transactions-page',
   standalone: true,
-  imports: [TableModule, DatePipe, DecimalPipe],
+  imports: [
+    TableModule,
+    DatePipe,
+    DecimalPipe,
+    SkeletonModule,
+    PageHeaderComponent,
+    HeaderLinkComponent,
+  ],
   template: `
-    @if (transactionsResponse(); as transactionsResponse) {
-      @if (transactionsResponse.data?.length) {
-        <p-table [value]="transactionsResponse.data!">
+    <joshies-page-header headerText="Transactions" alwaysSmall>
+      <joshies-header-link
+        text="Analytics"
+        routerLink=".."
+        chevronDirection="left"
+      />
+    </joshies-page-header>
+
+    @if (transactions(); as transactions) {
+      @if (transactions.length > 0) {
+        <p-table [value]="transactions" styleClass="mt-5">
           <ng-template pTemplate="body" let-transaction>
             <tr>
               <td>
@@ -39,15 +63,27 @@ import { PostgrestResponse } from '@supabase/supabase-js';
           No transactions yet
         </p>
       }
-    } @else {
+    } @else if (transactions() === null) {
       <p class="mt-6 pt-6 text-center text-500 font-italic">
         No active session
       </p>
+    } @else {
+      <!-- Loading Skeleton -->
+      @for (i of [1, 2, 3, 4, 5, 6]; track i; let first = $first) {
+        <p-skeleton
+          height="3.5rem"
+          [styleClass]="'mb-2' + (first ? ' mt-5' : '')"
+        />
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class TransactionsPageComponent {
+  private readonly analyticsService = inject(AnalyticsService);
+
+  readonly transactions = this.analyticsService.transactions;
+
   readonly transactionsResponse =
     input.required<PostgrestResponse<TransactionModel> | null>();
 }

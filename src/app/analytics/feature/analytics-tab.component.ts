@@ -1,65 +1,54 @@
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Signal,
-  inject,
-  viewChild,
-} from '@angular/core';
-import { TabMenuModule } from 'primeng/tabmenu';
-import { MenuItem } from 'primeng/api';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { slidePages } from '../../route-animations';
-import { Router, RouterOutlet } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-helpers';
+import { CardLinkModel } from '../../shared/ui/card-link.component';
+import { CardComponent } from '../../shared/ui/card.component';
 
 @Component({
   selector: 'joshies-analytics-tab',
   standalone: true,
-  imports: [PageHeaderComponent, TabMenuModule],
+  imports: [PageHeaderComponent, CardComponent],
   template: `
     <!-- Header -->
     <joshies-page-header headerText="Analytics" />
 
-    <!-- Tabs -->
-    <p-tabMenu [model]="tabs" styleClass="mb-3" />
+    <!-- This Session -->
+    <joshies-card headerText="This Session" [links]="thisSessionLinks" />
 
-    <!-- Child Pages -->
-    <div class="relative" [@routeAnimations]="pageTabIndex()">
-      <router-outlet />
-    </div>
+    <!-- Previous Session -->
+    <joshies-card
+      headerText="Previous Sessions"
+      [links]="previousSessionsLinks"
+    />
   `,
   animations: [slidePages],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AnalyticsTabComponent {
-  private readonly router = inject(Router);
-  private readonly routerOutlet = viewChild.required(RouterOutlet);
-
-  readonly tabs: MenuItem[] = [
+  readonly thisSessionLinks: CardLinkModel[] = [
     {
-      label: 'Transactions',
-      routerLink: '/analytics/transactions',
+      iconClass: 'pi pi-list bg-green-500',
+      text: 'Point Transactions',
+      subtext: "Every time you've gained or lost points",
+      routerLink: './transactions',
     },
     {
-      label: 'Current',
-      routerLink: '/analytics/current',
-    },
-    {
-      label: 'Previous',
-      routerLink: '/analytics/previous',
-    },
-    {
-      label: 'Lifetime',
-      routerLink: '/analytics/lifetime',
+      iconClass: 'pi pi-trophy bg-yellow-500',
+      text: 'Current Rankings',
+      routerLink: './current-rankings',
     },
   ];
 
-  readonly pageTabIndex: Signal<number | undefined> = toSignal(
-    preventGlitchySwipeBackAnimation(
-      this.router,
-      this.routerOutlet,
-      'pageTabIndex',
-    ),
-  );
+  readonly previousSessionsLinks: CardLinkModel[] = [
+    {
+      iconClass: 'pi pi-trophy bg-orange-500',
+      text: 'Previous Session Rankings',
+      routerLink: './previous-rankings',
+    },
+    {
+      iconClass: 'pi pi-table bg-purple-500',
+      text: 'Lifetime Score Statistics',
+      routerLink: './lifetime-stats',
+    },
+  ];
 }
