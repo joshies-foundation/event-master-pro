@@ -87,11 +87,11 @@ export default class ComparePointsOverTimePageComponent {
   );
 
   readonly data: Signal<ChartData> = computed(() => ({
-    labels: Array.from({ length: this.numRounds() }, (_, i) => i + 1),
+    labels: Array.from(Array(this.numRounds() + 1).keys()),
     datasets:
-      this.playerRoundScoresResponse()?.data?.map((playerRoundScore) => ({
-        label: playerRoundScore.display_name,
-        data: playerRoundScore.scores,
+      this.playerRoundScoresResponse()?.data?.map((player) => ({
+        label: player.display_name,
+        data: [0, ...player.scores],
         fill: false,
         tension: 0.4,
       })) ?? [],
