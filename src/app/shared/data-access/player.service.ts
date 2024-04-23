@@ -3,8 +3,9 @@ import {
   realtimeUpdatesFromTable,
   showMessageOnError,
   Table,
+  Function,
 } from '../util/supabase-helpers';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { SessionService } from './session.service';
 import { MessageService } from 'primeng/api';
 import {
@@ -150,12 +151,24 @@ export class PlayerService {
     this.userIsGameMaster$,
   );
 
-  async updateScore(playerId: number, score: number): Promise<void> {
-    await showMessageOnError(
-      this.supabase.from(Table.Player).update({ score }).eq('id', playerId),
-      this.messageService,
-      'Cannot update score',
-    );
+  async overridePointsAdd(
+    playerId: number,
+    numPointsToAdd: number,
+    comment: string,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.OverridePoints, {
+      data: { playerId, change: numPointsToAdd, comment, replace: false },
+    });
+  }
+
+  async overridePointsReplace(
+    playerId: number,
+    newScore: number,
+    comment: string,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.OverridePoints, {
+      data: { playerId, change: newScore, comment, replace: true },
+    });
   }
 
   async setEnabled(

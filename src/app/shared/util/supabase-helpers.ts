@@ -29,6 +29,7 @@ export enum View {
 export enum Function {
   GetAllScoresFromSession = 'get_all_scores_from_session',
   EndRound = 'end_round',
+  OverridePoints = 'override_points',
 }
 
 export enum StorageBucket {

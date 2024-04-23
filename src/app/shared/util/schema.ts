@@ -267,6 +267,12 @@ export type Database = {
         };
         Returns: Record<string, unknown>[];
       };
+      override_points: {
+        Args: {
+          data: Json;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;

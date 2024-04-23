@@ -17,6 +17,17 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 2 },
   },
   {
+    path: 'override-points',
+    loadComponent: () =>
+      import('./override-points-choose-player-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'override-points/:playerId',
+    loadComponent: () => import('./override-points-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
+  {
     path: 'disable-players',
     loadComponent: () => import('./disable-players-page.component'),
     data: { pageAnimationLayer: 1 },

@@ -4,36 +4,63 @@ import {
   Component,
   computed,
   input,
-  output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
-import { PlayerWithUserInfo } from '../../data-access/player.service';
+import { PlayerWithUserInfo } from '../data-access/player.service';
 
 @Component({
   selector: 'joshies-rankings-table',
   standalone: true,
-  imports: [
-    CommonModule,
-    TableModule,
-    NgClass,
-    InputNumberModule,
-    FormsModule,
-    NgOptimizedImage,
-  ],
-  templateUrl: './rankings-table.component.html',
+  imports: [CommonModule, TableModule, NgClass, FormsModule, NgOptimizedImage],
+  template: `
+    <!-- Rankings Table -->
+    <p-table [value]="rankings()">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th class="text-right">Score</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ranking>
+        <tr
+          [ngClass]="{
+            'font-semibold bg-highlight': ranking.user_id === userId()
+          }"
+        >
+          <td class="text-center">
+            @if (ranking.rankEmoji) {
+              {{ ranking.rankEmoji }}
+            } @else {
+              {{ ranking.rank | number }}
+            }
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2 -py-2">
+              <img
+                [ngSrc]="ranking.avatar_url"
+                alt=""
+                width="32"
+                height="32"
+                class="border-circle surface-100"
+              />
+              {{ ranking.display_name }}
+            </div>
+          </td>
+          <td class="text-right">
+            {{ ranking.score | number }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RankingsTableComponent {
   players = input.required<PlayerWithUserInfo[]>();
   userId = input.required<string | null>();
   editable = input(false);
-
-  scoreUpdate = output<{
-    playerId: number;
-    score: number;
-  }>();
 
   readonly rankings = computed(() => {
     const sortedPlayers = this.players()
@@ -64,8 +91,4 @@ export class RankingsTableComponent {
       };
     });
   });
-
-  onScoreUpdate(playerId: number, score: number): void {
-    this.scoreUpdate.emit({ playerId, score });
-  }
 }

@@ -43,7 +43,6 @@
       [players]="vm.players"
       [editable]="vm.userIsGameMaster"
       [userId]="vm.userId"
-      (scoreUpdate)="updateScore($event.playerId, $event.score)"
     />
   }
 } @else {

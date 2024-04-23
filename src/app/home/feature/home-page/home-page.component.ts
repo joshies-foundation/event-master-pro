@@ -20,7 +20,7 @@ import {
   NgOptimizedImage,
 } from '@angular/common';
 import { SessionService } from '../../../shared/data-access/session.service';
-import { RankingsTableComponent } from '../../../shared/ui/rankings-table/rankings-table.component';
+import { RankingsTableComponent } from '../../../shared/ui/rankings-table.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { GameStateService } from '../../../shared/data-access/game-state.service';
 
@@ -76,15 +76,4 @@ export default class HomePageComponent {
       upNextMessage: this.upNextMessage(),
     }),
   );
-
-  updateScore(playerId: number, score: number): void {
-    if (this.scoreUpdates[playerId]) {
-      clearTimeout(this.scoreUpdates[playerId]);
-    }
-
-    this.scoreUpdates[playerId] = setTimeout(() => {
-      this.playerService.updateScore(playerId, score);
-      delete this.scoreUpdates[playerId];
-    }, 2000);
-  }
 }
