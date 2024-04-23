@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { lifetimeStatsResolver } from '../data-access/lifetime-stats.resolver';
 import { previousSessionsResolver } from '../data-access/previous-sessions.resolver';
+import { playerRoundScoresResolver } from '../data-access/player-round-scores.resolver';
 
 const analyticsRoutes: Routes = [
   {
@@ -16,6 +17,14 @@ const analyticsRoutes: Routes = [
   {
     path: 'current-rankings',
     loadComponent: () => import('./current-rankings-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'points-over-time',
+    loadComponent: () => import('./compare-points-over-time-page.component'),
+    resolve: {
+      playerRoundScoresResponse: playerRoundScoresResolver,
+    },
     data: { pageAnimationLayer: 1 },
   },
   {

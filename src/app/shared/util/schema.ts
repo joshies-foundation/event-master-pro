@@ -267,6 +267,17 @@ export type Database = {
         };
         Returns: Record<string, unknown>[];
       };
+      get_player_round_scores_from_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: {
+          player_id: number;
+          display_name: string;
+          avatar_url: string;
+          scores: number[];
+        }[];
+      };
       override_points: {
         Args: {
           data: Json;

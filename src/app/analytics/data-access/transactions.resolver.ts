@@ -4,7 +4,7 @@ import { AnalyticsService } from './analytics.service';
 import { TransactionModel } from '../../shared/util/supabase-types';
 import { PostgrestResponse } from '@supabase/supabase-js';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { of, switchMap } from 'rxjs';
+import { whenNotNull } from '../../shared/util/rxjs-helpers';
 
 export const transactionsResolver: ResolveFn<
   PostgrestResponse<TransactionModel> | null
@@ -13,10 +13,8 @@ export const transactionsResolver: ResolveFn<
   const analyticsService = inject(AnalyticsService);
 
   return playerService.userPlayer$.pipe(
-    switchMap((player) =>
-      player
-        ? analyticsService.getTransactionsForPlayer(player.player_id)
-        : of(null),
+    whenNotNull((player) =>
+      analyticsService.getTransactionsForPlayer(player.player_id),
     ),
   );
 };

@@ -1,6 +1,10 @@
 import { inject, Injectable, Signal } from '@angular/core';
-import { from, map, Observable, switchMap } from 'rxjs';
-import { PostgrestResponse, SupabaseClient } from '@supabase/supabase-js';
+import { distinctUntilChanged, from, map, Observable, switchMap } from 'rxjs';
+import {
+  PostgrestResponse,
+  PostgrestSingleResponse,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 import {
   Function,
   realtimeUpdatesFromTable,
@@ -19,6 +23,7 @@ import {
 import { Database } from '../../shared/util/schema';
 import {
   LifetimeUserStatsModel,
+  GetPlayerRoundScoreFunctionReturnType,
   TransactionModel,
 } from '../../shared/util/supabase-types';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -38,6 +43,7 @@ export class AnalyticsService {
 
   readonly transactions$: Observable<TransactionModel[] | null> =
     this.playerService.userPlayer$.pipe(
+      distinctUntilChanged((a, b) => a?.player_id === b?.player_id),
       whenNotNull((player) =>
         realtimeUpdatesFromTable(
           this.supabase,
@@ -98,6 +104,18 @@ export class AnalyticsService {
         .select('*')
         .eq('player_id', playerId)
         .order('id', { ascending: false }),
+    );
+  }
+
+  getPlayerRoundScoresFromSession(
+    sessionId: number,
+  ): Observable<
+    PostgrestSingleResponse<GetPlayerRoundScoreFunctionReturnType>
+  > {
+    return from(
+      this.supabase.rpc(Function.GetPlayerRoundScoresFromSession, {
+        sessionid: sessionId,
+      }),
     );
   }
 }

@@ -19,6 +19,7 @@ export enum Table {
   Session = 'session',
   Transaction = 'transaction',
   Player = 'player',
+  PlayerRoundScore = 'player_round_score',
   Rules = 'rules',
 }
 
@@ -28,6 +29,7 @@ export enum View {
 
 export enum Function {
   GetAllScoresFromSession = 'get_all_scores_from_session',
+  GetPlayerRoundScoresFromSession = 'get_player_round_scores_from_session',
   EndRound = 'end_round',
   OverridePoints = 'override_points',
 }

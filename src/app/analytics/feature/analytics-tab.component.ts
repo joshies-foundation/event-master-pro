@@ -27,6 +27,11 @@ import { CardComponent } from '../../shared/ui/card.component';
 export default class AnalyticsTabComponent {
   readonly thisSessionLinks: CardLinkModel[] = [
     {
+      iconClass: 'pi pi-chart-line bg-blue-500',
+      text: 'Compare Points Over Time',
+      routerLink: './points-over-time',
+    },
+    {
       iconClass: 'pi pi-list bg-green-500',
       text: 'Point Transactions',
       subtext: "Every time you've gained or lost points",
