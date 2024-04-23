@@ -9,6 +9,7 @@
         "@schematics/angular:component": {
           "changeDetection": "OnPush",
           "inlineTemplate": true,
+          "flat": true,
           "skipTests": true,
           "style": "none"
         },
@@ -16,22 +17,28 @@
           "skipTests": true
         },
         "@schematics/angular:directive": {
-          "skipTests": true
+          "skipTests": true,
+          "flat": true
         },
         "@schematics/angular:guard": {
-          "skipTests": true
+          "skipTests": true,
+          "flat": true
         },
         "@schematics/angular:interceptor": {
-          "skipTests": true
+          "skipTests": true,
+          "flat": true
         },
         "@schematics/angular:pipe": {
-          "skipTests": true
+          "skipTests": true,
+          "flat": true
         },
         "@schematics/angular:resolver": {
-          "skipTests": true
+          "skipTests": true,
+          "flat": true
         },
         "@schematics/angular:service": {
-          "skipTests": true
+          "skipTests": true,
+          "flat": true
         }
       },
       "root": "",
