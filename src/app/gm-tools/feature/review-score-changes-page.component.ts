@@ -78,7 +78,7 @@ import { showMessageOnError } from '../../shared/util/supabase-helpers';
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle bg-gray-200"
+                  class="border-circle surface-100"
                 />
                 {{ player.display_name }}
               </div>

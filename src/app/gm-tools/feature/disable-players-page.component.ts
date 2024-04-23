@@ -51,7 +51,7 @@ import { RouterLink } from '@angular/router';
                   [ngSrc]="player.avatar_url"
                   width="32"
                   height="32"
-                  class="border-circle bg-gray-200"
+                  class="border-circle surface-100"
                   alt=""
                 />
                 {{ player.display_name }}
