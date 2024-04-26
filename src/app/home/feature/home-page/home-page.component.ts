@@ -23,6 +23,16 @@ import { SessionService } from '../../../shared/data-access/session.service';
 import { RankingsTableComponent } from '../../../shared/ui/rankings-table.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { GameStateService } from '../../../shared/data-access/game-state.service';
+import { Observable, concat, map, of, takeWhile, timer } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { whenNotNull } from '../../../shared/util/rxjs-helpers';
+
+interface Countdown {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
 
 @Component({
   selector: 'joshies-home-page',
@@ -42,14 +52,15 @@ import { GameStateService } from '../../../shared/data-access/game-state.service
     RankingsTableComponent,
     DatePipe,
   ],
+  host: {
+    class: 'h-full',
+  },
 })
 export default class HomePageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly authService = inject(AuthService);
-
-  private readonly scoreUpdates: Record<number, NodeJS.Timeout> = {};
 
   private readonly happeningNowMessage: Signal<string> = computed(
     () =>
@@ -66,6 +77,34 @@ export default class HomePageComponent {
       : `Up next is round <strong>${(this.gameStateService.roundNumber() ?? 0) + 1}</strong> of <strong>${this.sessionService.session()?.num_rounds}.</strong>`;
   });
 
+  private readonly countdown$: Observable<Countdown | null> =
+    this.sessionService.session$.pipe(
+      whenNotNull((session) =>
+        concat(
+          timer(0, 1000).pipe(
+            map(
+              () =>
+                (new Date(session.start_date).getTime() - Date.now()) / 1000,
+            ),
+            takeWhile((secondsRemaining) => secondsRemaining >= 0),
+            map(
+              (secondsRemaining): Countdown => ({
+                days: Math.floor(secondsRemaining / (3600 * 24)),
+                hours: Math.floor((secondsRemaining % (3600 * 24)) / 3600),
+                minutes: Math.floor((secondsRemaining % 3600) / 60),
+                seconds: Math.floor(secondsRemaining % 60),
+              }),
+            ),
+          ),
+          of(null),
+        ),
+      ),
+    );
+
+  private readonly countdown: Signal<Countdown | null | undefined> = toSignal(
+    this.countdown$,
+  );
+
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       session: this.sessionService.session(),
@@ -74,6 +113,7 @@ export default class HomePageComponent {
       userId: this.authService.user()?.id,
       happeningNowMessage: this.happeningNowMessage(),
       upNextMessage: this.upNextMessage(),
+      countdown: this.countdown(),
     }),
   );
 }
