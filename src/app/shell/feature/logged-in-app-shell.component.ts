@@ -24,7 +24,7 @@ import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-he
   imports: [RouterOutlet, FooterComponent, NgClass, JsonPipe],
   template: `
     <!-- Pages -->
-    <div [@routeAnimations]="pageAnimationLayer()">
+    <div [@routeAnimations]="pageAnimationLayer()" class="flex-1">
       <router-outlet />
     </div>
 
@@ -35,6 +35,9 @@ import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-he
     />
   `,
   animations: [layerPages],
+  host: {
+    class: 'h-full flex flex-column',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoggedInAppShellComponent {
