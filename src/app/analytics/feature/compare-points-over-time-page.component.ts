@@ -80,6 +80,11 @@ export default class ComparePointsOverTimePageComponent {
         },
       },
     },
+    elements: {
+      point: {
+        hitRadius: 8,
+      },
+    },
   };
 
   private readonly numRounds = computed(
