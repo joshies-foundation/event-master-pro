@@ -60,12 +60,6 @@ export default class LoggedInAppShellComponent {
     ),
   );
 
-  private readonly showGmToolsTab = computed(
-    () =>
-      this.sessionService.session() === null ||
-      this.playerService.userIsGameMaster(),
-  );
-
   readonly footerLinks = computed((): FooterLinkModel[] => [
     {
       text: 'Home',
@@ -77,7 +71,7 @@ export default class LoggedInAppShellComponent {
       href: '/rules',
       iconClass: 'pi pi-book',
     },
-    ...(this.showGmToolsTab()
+    ...(this.playerService.userIsGameMaster()
       ? [
           {
             text: 'GM Tools',

@@ -35,6 +35,11 @@ export default class GmToolsPageComponent {
       iconClass: 'pi pi-user-edit bg-orange-500',
       routerLink: './disable-players',
     },
+    {
+      text: 'Make Someone Else the GM',
+      iconClass: 'pi pi-crown bg-yellow-500',
+      routerLink: './change-gm',
+    },
   ];
 
   readonly sessionLinks: CardLinkModel[] = [

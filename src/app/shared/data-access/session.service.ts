@@ -7,8 +7,8 @@ import {
   Function,
 } from '../util/supabase-helpers';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
-import { Observable, map, of, shareReplay } from 'rxjs';
-import { distinctUntilIdChanged, whenNotNull } from '../util/rxjs-helpers';
+import { Observable, map, shareReplay } from 'rxjs';
+import { whenNotNull } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { showErrorMessage } from '../util/message-helpers';
 import { MessageService } from 'primeng/api';
@@ -38,12 +38,6 @@ export class SessionService {
 
   readonly session: Signal<SessionModel | null | undefined> = toSignal(
     this.session$,
-  );
-
-  readonly gameMasterUserId$: Observable<string | null> = this.session$.pipe(
-    distinctUntilIdChanged(),
-    whenNotNull((session) => of(session!.game_master_user_id)),
-    shareReplay(1),
   );
 
   async createSession(

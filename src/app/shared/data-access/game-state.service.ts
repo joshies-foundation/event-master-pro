@@ -1,9 +1,13 @@
 import { Injectable, Signal, inject } from '@angular/core';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from 'primeng/api';
 import { Observable, distinctUntilChanged, map, shareReplay } from 'rxjs';
 import { Database } from '../util/schema';
-import { Table, realtimeUpdatesFromTable } from '../util/supabase-helpers';
+import {
+  Table,
+  realtimeUpdatesFromTable,
+  showMessageOnError,
+} from '../util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GameStateModel } from '../util/supabase-types';
 
@@ -35,6 +39,10 @@ export class GameStateService {
     this.gameState$,
     'round_number',
   );
+  readonly gameMasterUserId$: Observable<string> = createSelector(
+    this.gameState$,
+    'game_master_user_id',
+  );
 
   // signals
   readonly gameState: Signal<GameStateModel | undefined> = toSignal(
@@ -49,6 +57,21 @@ export class GameStateService {
   readonly roundNumber: Signal<number | null | undefined> = toSignal(
     this.roundNumber$,
   );
+  readonly gameMasterUserId: Signal<string | undefined> = toSignal(
+    this.gameMasterUserId$,
+  );
+
+  changeGameMaster(
+    newGmUserId: string,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return showMessageOnError(
+      this.supabase
+        .from(Table.GameState)
+        .update({ game_master_user_id: newGmUserId })
+        .eq('id', 1),
+      this.messageService,
+    );
+  }
 }
 
 function createSelector<

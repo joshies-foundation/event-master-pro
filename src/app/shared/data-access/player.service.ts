@@ -27,6 +27,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { PlayerModel, UserModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
+import { GameStateService } from './game-state.service';
 
 export interface PlayerWithUserInfo {
   player_id: number;
@@ -44,6 +45,7 @@ export class PlayerService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly authService = inject(AuthService);
   private readonly sessionService = inject(SessionService);
+  private readonly gameStateService = inject(GameStateService);
   private readonly messageService = inject(MessageService);
 
   readonly playersWithoutDisplayNames$: Observable<PlayerModel[] | null> =
@@ -135,13 +137,9 @@ export class PlayerService {
     shareReplay(1),
   );
 
-  readonly userPlayerId: Signal<number | null | undefined> = toSignal(
-    this.userPlayerId$,
-  );
-
   readonly userIsGameMaster$: Observable<boolean> = combineLatest({
     user: this.authService.user$,
-    gameMasterUserId: this.sessionService.gameMasterUserId$,
+    gameMasterUserId: this.gameStateService.gameMasterUserId$,
   }).pipe(
     map(({ user, gameMasterUserId }) => user?.id === gameMasterUserId),
     shareReplay(1),

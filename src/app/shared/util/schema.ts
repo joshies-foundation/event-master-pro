@@ -11,16 +11,19 @@ export type Database = {
     Tables: {
       game_state: {
         Row: {
+          game_master_user_id: string;
           id: number;
           round_number: number | null;
           session_id: number | null;
         };
         Insert: {
+          game_master_user_id: string;
           id?: number;
           round_number?: number | null;
           session_id?: number | null;
         };
         Update: {
+          game_master_user_id?: string;
           id?: number;
           round_number?: number | null;
           session_id?: number | null;
@@ -31,6 +34,13 @@ export type Database = {
             columns: ['session_id'];
             isOneToOne: false;
             referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'game_state_game_master_user_id_fkey';
+            columns: ['game_master_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user';
             referencedColumns: ['id'];
           },
         ];
@@ -132,7 +142,6 @@ export type Database = {
       session: {
         Row: {
           end_date: string;
-          game_master_user_id: string;
           id: number;
           name: string;
           num_rounds: number;
@@ -140,7 +149,6 @@ export type Database = {
         };
         Insert: {
           end_date?: string;
-          game_master_user_id: string;
           id?: number;
           name?: string;
           num_rounds: number;
@@ -148,21 +156,12 @@ export type Database = {
         };
         Update: {
           end_date?: string;
-          game_master_user_id?: string;
           id?: number;
           name?: string;
           num_rounds?: number;
           start_date?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: 'session_game_master_user_id_fkey';
-            columns: ['game_master_user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user';
-            referencedColumns: ['id'];
-          },
-        ];
+        Relationships: [];
       };
       transaction: {
         Row: {

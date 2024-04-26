@@ -33,6 +33,11 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 1 },
   },
   {
+    path: 'change-gm',
+    loadComponent: () => import('./change-gm-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
     path: 'end-session',
     loadComponent: () => import('./end-session-page.component'),
     data: { pageAnimationLayer: 1 },
