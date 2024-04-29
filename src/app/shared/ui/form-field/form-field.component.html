@@ -129,6 +129,9 @@
           [selectionMode]="field.selectionMode ?? 'single'"
           [touchUI]="field.touchUi"
           [inline]="field.inline!"
+          [showTime]="field.showTime ?? false"
+          [timeOnly]="field.timeOnly ?? false"
+          hourFormat="12"
           [styleClass]="'w-full ' + (field.styleClass ?? '')"
         />
       }

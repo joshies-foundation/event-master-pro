@@ -18,18 +18,31 @@ import { SessionService } from '../../shared/data-access/session.service';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'joshies-create-session-page',
   standalone: true,
-  imports: [FormComponent, SkeletonModule, PageHeaderComponent],
+  imports: [
+    FormComponent,
+    SkeletonModule,
+    PageHeaderComponent,
+    HeaderLinkComponent,
+  ],
   template: `
     <!-- Header -->
-    <joshies-page-header headerText="Create Session" />
+    <joshies-page-header headerText="Create Session" alwaysSmall>
+      <joshies-header-link
+        text="GM Tools"
+        chevronDirection="left"
+        routerLink=".."
+      />
+    </joshies-page-header>
 
     @if (form.fields()) {
       <!-- Form -->
-      <joshies-form [form]="form" />
+      <joshies-form [form]="form" class="block mt-5" />
     } @else {
       <!-- Loading Skeleton -->
       <div class="h-4rem"></div>
@@ -39,10 +52,11 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateSessionPageComponent {
+export default class CreateSessionPageComponent {
   private readonly userService = inject(UserService);
   private readonly sessionService = inject(SessionService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   readonly allUsers = this.userService.allUsers;
   readonly creatingSession = signal(false);
@@ -53,6 +67,7 @@ export class CreateSessionPageComponent {
       [new Date(), new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)],
       Validators.required,
     ],
+    startTime: [new Date(), Validators.required],
     playerUserIds: [[] as string[], Validators.required],
     numRounds: [10, Validators.required],
   });
@@ -88,6 +103,16 @@ export class CreateSessionPageComponent {
             selectionMode: 'range',
             touchUi: true,
             control: this.formGroup.controls.dateRange,
+          },
+          {
+            label: 'Start Time (for countdown clock)',
+            name: 'start-time',
+            placeholder: 'Start Time',
+            type: FormFieldType.Calendar,
+            touchUi: true,
+            showTime: true,
+            timeOnly: true,
+            control: this.formGroup.controls.startTime,
           },
           {
             label: 'Number of Rounds',
@@ -127,22 +152,33 @@ export class CreateSessionPageComponent {
 
     const formValue = this.formGroup.getRawValue();
 
-    const { sessionName, numRounds, playerUserIds } = formValue;
+    const { sessionName, numRounds, playerUserIds, startTime } = formValue;
 
     const startDate = formValue.dateRange[0];
     const endDate = formValue.dateRange[1];
 
-    const gameMasterUserId = this.userService.user()!.id;
+    // set the startDate's time to startTime
+    startDate.setHours(startTime.getHours(), startTime.getMinutes(), 0);
 
-    await this.sessionService.createSession(
+    // fix time zones
+    startDate.setMinutes(
+      startDate.getMinutes() - startDate.getTimezoneOffset(),
+    );
+    endDate.setMinutes(endDate.getMinutes() - endDate.getTimezoneOffset());
+
+    const { error } = await this.sessionService.createSession(
       sessionName,
-      gameMasterUserId,
       startDate,
       endDate,
       numRounds,
-      playerUserIds,
+      playerUserIds.map((id) => Number(id)),
     );
 
-    this.creatingSession.set(false);
+    if (error) {
+      this.creatingSession.set(false);
+      return;
+    }
+
+    this.router.navigate(['/']);
   }
 }

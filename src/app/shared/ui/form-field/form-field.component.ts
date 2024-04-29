@@ -86,6 +86,8 @@ export type FormField = {
           selectionMode?: 'multiple' | 'range' | 'single';
           touchUi?: boolean;
           inline?: boolean;
+          showTime?: boolean;
+          timeOnly?: boolean;
         }
     ))
   | {
