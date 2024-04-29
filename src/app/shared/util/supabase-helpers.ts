@@ -28,10 +28,18 @@ export enum View {
 }
 
 export enum Function {
+  CreateSession = 'create_session',
+  EndRound = 'end_round',
   GetAllScoresFromSession = 'get_all_scores_from_session',
   GetPlayerRoundScoresFromSession = 'get_player_round_scores_from_session',
-  EndRound = 'end_round',
   OverridePoints = 'override_points',
+  StartSessionEarly = 'start_session_early',
+}
+
+export enum SessionStatus {
+  NotStarted = 'not_started',
+  InProgress = 'in_progress',
+  Finished = 'finished',
 }
 
 export enum StorageBucket {

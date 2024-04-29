@@ -6,6 +6,7 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./gm-tools-page.component'),
     data: { pageAnimationLayer: 0 },
   },
+  // round
   {
     path: 'end-round',
     loadComponent: () => import('./end-round-page.component'),
@@ -16,6 +17,7 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./review-score-changes-page.component'),
     data: { pageAnimationLayer: 2 },
   },
+  // players
   {
     path: 'override-points',
     loadComponent: () =>
@@ -28,8 +30,13 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 2 },
   },
   {
-    path: 'disable-players',
-    loadComponent: () => import('./disable-players-page.component'),
+    path: 'edit-profiles',
+    loadComponent: () => import('./edit-player-profiles-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'edit-permissions',
+    loadComponent: () => import('./edit-player-permissions-page.component'),
     data: { pageAnimationLayer: 1 },
   },
   {
@@ -37,9 +44,15 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./change-gm-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+  // session
   {
     path: 'create-session',
     loadComponent: () => import('./create-session-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'start-session-early',
+    loadComponent: () => import('./start-session-early-page.component'),
     data: { pageAnimationLayer: 1 },
   },
   {

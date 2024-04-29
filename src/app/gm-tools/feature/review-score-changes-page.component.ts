@@ -166,6 +166,6 @@ export default class ReviewScoreChangesPageComponent {
 
     removeRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
     showSuccessMessage('Scores saved successfully!', this.messageService);
-    this.router.navigate(['/home']);
+    this.router.navigate(['/']);
   }
 }

@@ -15,18 +15,21 @@ export type Database = {
           id: number;
           round_number: number | null;
           session_id: number | null;
+          session_status: Database['public']['Enums']['session_status'];
         };
         Insert: {
           game_master_user_id: string;
           id?: number;
           round_number?: number | null;
           session_id?: number | null;
+          session_status?: Database['public']['Enums']['session_status'];
         };
         Update: {
           game_master_user_id?: string;
           id?: number;
           round_number?: number | null;
           session_id?: number | null;
+          session_status?: Database['public']['Enums']['session_status'];
         };
         Relationships: [
           {
@@ -185,21 +188,32 @@ export type Database = {
           player_id?: number;
           timestamp?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'transaction_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       user: {
         Row: {
           avatar_url: string;
+          can_edit_profile: boolean;
           display_name: string;
           id: string;
         };
         Insert: {
           avatar_url?: string;
+          can_edit_profile?: boolean;
           display_name?: string;
           id: string;
         };
         Update: {
           avatar_url?: string;
+          can_edit_profile?: boolean;
           display_name?: string;
           id?: string;
         };
@@ -254,9 +268,20 @@ export type Database = {
       };
     };
     Functions: {
+      create_session: {
+        Args: {
+          session_name: string;
+          session_start_date: string;
+          session_end_date: string;
+          num_rounds: number;
+          player_user_ids: number[];
+        };
+        Returns: undefined;
+      };
       end_round: {
         Args: {
-          score_changes: Json;
+          _round_number: number;
+          player_score_changes: Json;
         };
         Returns: undefined;
       };
@@ -283,9 +308,15 @@ export type Database = {
         };
         Returns: undefined;
       };
+      start_session_early: {
+        Args: {
+          now: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
-      [_ in never]: never;
+      session_status: 'not_started' | 'in_progress' | 'finished';
     };
     CompositeTypes: {
       [_ in never]: never;

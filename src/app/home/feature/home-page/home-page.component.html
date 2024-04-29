@@ -29,7 +29,7 @@
     <joshies-page-header [headerText]="vm.session.name" />
 
     <!-- Date Range -->
-    <p class="-mt-3 mb-6 text-400">
+    <p class="-mt-3 text-400">
       {{ vm.session.start_date | date: 'longDate' }} -
       {{ vm.session.end_date | date: 'longDate' }}
     </p>
@@ -39,46 +39,53 @@
       headerText="Happening Now"
       headerIconClass="pi pi-star text-primary mr-2"
       padded
-      class="mb-6"
     >
       <p class="m-0" [innerHTML]="vm.happeningNowMessage"></p>
     </joshies-card>
 
-    <!-- Up Next -->
-    <joshies-card
-      headerText="Up Next"
-      headerIconClass="pi pi-arrow-circle-right text-primary mr-2"
-      padded
-      class="mb-6"
-    >
-      <p class="m-0" [innerHTML]="vm.upNextMessage"></p>
-    </joshies-card>
+    @if (vm.upNextMessage) {
+      <!-- Up Next -->
+      <joshies-card
+        headerText="Up Next"
+        headerIconClass="pi pi-arrow-circle-right text-primary mr-2"
+        padded
+      >
+        <p class="m-0" [innerHTML]="vm.upNextMessage"></p>
+      </joshies-card>
+    }
 
-    <!-- Rankings Table -->
-    <h3 class="pt-2 mb-2">
-      <i class="pi pi-trophy text-primary mr-2"></i>
-      Current Rankings
-    </h3>
-    <joshies-rankings-table
-      [players]="vm.players"
-      [editable]="vm.userIsGameMaster"
-      [userId]="vm.userId"
-    />
+    @if (vm.sessionHasNotStarted && vm.userIsGameMaster) {
+      <p-button
+        severity="success"
+        [label]="'Start ' + vm.session.name + '!'"
+        styleClass="w-full"
+        (onClick)="startSession()"
+      />
+    }
+
+    @if (vm.showRankingsTable) {
+      <!-- Rankings Table -->
+      <h3 class="pt-2 mb-2">
+        <i class="pi pi-trophy text-primary mr-2"></i>
+        {{ vm.rankingsTableHeader }}
+      </h3>
+      <joshies-rankings-table [players]="vm.players" [userId]="vm.userId" />
+    }
   }
 } @else {
   <div class="h-4rem"></div>
 
   <!-- Header -->
   <p-skeleton height="2.25rem" styleClass="mb-2" />
-  <p-skeleton height="1.25rem" styleClass="mb-6" />
+  <p-skeleton height="1.25rem" styleClass="mb-4" />
 
   <!-- Happening Now -->
   <p-skeleton height="1.5rem" width="10.5rem" styleClass="mb-2" />
-  <p-skeleton height="2.7rem" styleClass="mb-6" />
+  <p-skeleton height="2.7rem" styleClass="mb-4" />
 
   <!-- Up Next -->
   <p-skeleton height="1.5rem" width="6.5rem" styleClass="mb-2" />
-  <p-skeleton height="2.7rem" styleClass="mb-6" />
+  <p-skeleton height="2.7rem" styleClass="mb-4" />
 
   <!-- Current Rankings -->
   <div class="h-0.5rem"></div>

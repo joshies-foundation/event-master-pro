@@ -60,7 +60,6 @@ import { PlayerWithUserInfo } from '../data-access/player.service';
 export class RankingsTableComponent {
   players = input.required<PlayerWithUserInfo[]>();
   userId = input.required<string | null>();
-  editable = input(false);
 
   readonly rankings = computed(() => {
     const sortedPlayers = this.players()

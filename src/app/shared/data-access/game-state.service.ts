@@ -1,15 +1,16 @@
-import { Injectable, Signal, inject } from '@angular/core';
+import { Injectable, Signal, computed, inject } from '@angular/core';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from 'primeng/api';
 import { Observable, distinctUntilChanged, map, shareReplay } from 'rxjs';
 import { Database } from '../util/schema';
 import {
+  SessionStatus,
   Table,
   realtimeUpdatesFromTable,
   showMessageOnError,
 } from '../util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { GameStateModel } from '../util/supabase-types';
+import { GameStateModel, SessionStatusType } from '../util/supabase-types';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +36,10 @@ export class GameStateService {
     map((activeSessionId) => activeSessionId !== null),
     shareReplay(1),
   );
+  readonly sessionStatus$: Observable<SessionStatusType> = createSelector(
+    this.gameState$,
+    'session_status',
+  );
   readonly roundNumber$: Observable<number | null> = createSelector(
     this.gameState$,
     'round_number',
@@ -54,11 +59,26 @@ export class GameStateService {
   readonly thereIsAnActiveSession: Signal<boolean | undefined> = toSignal(
     this.thereIsAnActiveSession$,
   );
+  readonly sessionStatus: Signal<SessionStatusType | undefined> = toSignal(
+    this.sessionStatus$,
+  );
   readonly roundNumber: Signal<number | null | undefined> = toSignal(
     this.roundNumber$,
   );
   readonly gameMasterUserId: Signal<string | undefined> = toSignal(
     this.gameMasterUserId$,
+  );
+
+  readonly sessionHasNotStarted = computed(
+    () => this.sessionStatus() === SessionStatus.NotStarted,
+  );
+
+  readonly sessionIsInProgress = computed(
+    () => this.sessionStatus() === SessionStatus.InProgress,
+  );
+
+  readonly sessionIsFinished = computed(
+    () => this.sessionStatus() === SessionStatus.Finished,
   );
 
   changeGameMaster(

@@ -1,4 +1,4 @@
-import { Database, Tables } from './schema';
+import { Database, Enums, Tables } from './schema';
 import { Table, View, Function } from './supabase-helpers';
 
 type PublicSchema = Database[Extract<keyof Database, 'public'>];
@@ -40,6 +40,9 @@ export type UserNotificationsSubscriptionModel =
 
 // views
 export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;
+
+// enums
+export type SessionStatusType = Enums<'session_status'>;
 
 // functions
 export type GetPlayerRoundScoreFunctionReturnType =

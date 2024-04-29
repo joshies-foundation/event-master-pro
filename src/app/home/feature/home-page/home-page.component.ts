@@ -6,6 +6,7 @@ import {
   Signal,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -26,6 +27,13 @@ import { GameStateService } from '../../../shared/data-access/game-state.service
 import { Observable, concat, map, of, takeWhile, timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../../../shared/util/rxjs-helpers';
+import {
+  SessionStatus,
+  showMessageOnError,
+} from '../../../shared/util/supabase-helpers';
+import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
+import { showSuccessMessage } from '../../../shared/util/message-helpers';
 
 interface Countdown {
   days: number;
@@ -39,6 +47,9 @@ interface Countdown {
   standalone: true,
   templateUrl: './home-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'h-full',
+  },
   imports: [
     CardComponent,
     PageHeaderComponent,
@@ -51,23 +62,39 @@ interface Countdown {
     NgOptimizedImage,
     RankingsTableComponent,
     DatePipe,
+    ButtonModule,
   ],
-  host: {
-    class: 'h-full',
-  },
 })
 export default class HomePageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly authService = inject(AuthService);
+  private readonly messageService = inject(MessageService);
 
-  private readonly happeningNowMessage: Signal<string> = computed(
-    () =>
-      `We're in round <strong>${this.gameStateService.roundNumber()}</strong> of <strong>${this.sessionService.session()?.num_rounds}</strong>.`,
-  );
+  protected readonly SessionStatus = SessionStatus;
 
-  private readonly upNextMessage: Signal<string> = computed(() => {
+  private readonly happeningNowMessage: Signal<string> = computed(() => {
+    switch (this.gameStateService.sessionStatus()) {
+      case SessionStatus.NotStarted:
+        return `Get ready for ${this.sessionService.session()?.name}!`;
+
+      case SessionStatus.Finished:
+        return `That's a wrap on ${this.sessionService.session()?.name}! Congratulations, ${this.playerService.players()?.sort((a, b) => b.score - a.score)[0].display_name}! 🥳`;
+
+      case SessionStatus.InProgress:
+        return `We're in round <strong>${this.gameStateService.roundNumber()}</strong> of <strong>${this.sessionService.session()?.num_rounds}</strong>.`;
+
+      default:
+        return "I'm gonna be honest. I have no idea what's going on right now.";
+    }
+  });
+
+  private readonly upNextMessage: Signal<string | null> = computed(() => {
+    if (!this.gameStateService.sessionIsInProgress()) {
+      return null;
+    }
+
     const currentlyInLastRound =
       this.gameStateService.roundNumber() ===
       this.sessionService.session()?.num_rounds;
@@ -76,6 +103,16 @@ export default class HomePageComponent {
       ? `This is the last round! Give it all you've got.`
       : `Up next is round <strong>${(this.gameStateService.roundNumber() ?? 0) + 1}</strong> of <strong>${this.sessionService.session()?.num_rounds}.</strong>`;
   });
+
+  private readonly showRankingsTable = computed(
+    () => this.gameStateService.sessionStatus() !== SessionStatus.NotStarted,
+  );
+
+  private readonly rankingsTableHeader = computed(() =>
+    this.gameStateService.sessionIsInProgress()
+      ? 'Current Rankings'
+      : 'Final Rankings',
+  );
 
   private readonly countdown$: Observable<Countdown | null> =
     this.sessionService.session$.pipe(
@@ -108,6 +145,9 @@ export default class HomePageComponent {
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       session: this.sessionService.session(),
+      showRankingsTable: this.showRankingsTable(),
+      rankingsTableHeader: this.rankingsTableHeader(),
+      sessionHasNotStarted: this.gameStateService.sessionHasNotStarted(),
       players: this.playerService.players()!,
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userId: this.authService.user()?.id,
@@ -116,4 +156,22 @@ export default class HomePageComponent {
       countdown: this.countdown(),
     }),
   );
+
+  readonly sessionStarting = signal(false);
+
+  async startSession(): Promise<void> {
+    this.sessionStarting.set(true);
+
+    const { error } = await showMessageOnError(
+      this.sessionService.startSession(),
+      this.messageService,
+    );
+
+    if (error) {
+      this.sessionStarting.set(false);
+      return;
+    }
+
+    showSuccessMessage('Session started!', this.messageService);
+  }
 }

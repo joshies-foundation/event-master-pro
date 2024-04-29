@@ -11,7 +11,7 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
 @Component({
   selector: 'joshies-card',
   standalone: true,
-  imports: [NgClass, RouterLink, CardLinkComponent],
+  imports: [NgClass, RouterLink, CardLinkComponent, RouterLink],
   template: `
     @if (headerText()) {
       <h3 class="mt-4 mb-2">

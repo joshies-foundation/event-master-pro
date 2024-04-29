@@ -136,7 +136,7 @@ export default class ChangeGmPageComponent {
           `${newGmUser.display_name} is the new GM`,
           this.messageService,
         );
-        this.router.navigate(['/home']);
+        this.router.navigate(['/']);
       },
     });
   }

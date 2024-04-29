@@ -1,7 +1,15 @@
 import { CardLinkModel } from '../../shared/ui/card-link.component';
 import { CardComponent } from '../../shared/ui/card.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Signal,
+} from '@angular/core';
+import { GameStateService } from '../../shared/data-access/game-state.service';
+import { SessionStatus } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-gm-tools-pages-wrapper',
@@ -9,20 +17,31 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   imports: [CardComponent, PageHeaderComponent],
   template: `
     <joshies-page-header headerText="GM Tools" />
-    <joshies-card headerText="Round" [links]="roundLinks" />
+
+    @if (roundLinks(); as roundLinks) {
+      <joshies-card headerText="Round" [links]="roundLinks" />
+    }
+
     <joshies-card headerText="Players" [links]="playersLinks" />
-    <joshies-card headerText="Session" [links]="sessionLinks" />
+
+    <joshies-card headerText="Session" [links]="sessionLinks()" />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class GmToolsPageComponent {
-  readonly roundLinks: CardLinkModel[] = [
-    {
-      text: 'End Round & Tally Points',
-      iconClass: 'pi pi-check-circle bg-green-500',
-      routerLink: './end-round',
-    },
-  ];
+  private readonly gameStateService = inject(GameStateService);
+
+  readonly roundLinks: Signal<CardLinkModel[] | null> = computed(() =>
+    this.gameStateService.sessionIsInProgress()
+      ? [
+          {
+            text: 'End Round & Tally Points',
+            iconClass: 'pi pi-check-circle bg-green-500',
+            routerLink: './end-round',
+          },
+        ]
+      : null,
+  );
 
   readonly playersLinks: CardLinkModel[] = [
     {
@@ -31,9 +50,14 @@ export default class GmToolsPageComponent {
       routerLink: './override-points',
     },
     {
-      text: 'Disable or Enable Players',
-      iconClass: 'pi pi-user-edit bg-orange-500',
-      routerLink: './disable-players',
+      text: 'Edit Player Profiles',
+      iconClass: 'pi pi-user-edit bg-blue-500',
+      routerLink: './edit-profiles',
+    },
+    {
+      text: 'Edit Player Permissions',
+      iconClass: 'pi pi-lock bg-orange-500',
+      routerLink: './edit-permissions',
     },
     {
       text: 'Make Someone Else the GM',
@@ -42,11 +66,36 @@ export default class GmToolsPageComponent {
     },
   ];
 
-  readonly sessionLinks: CardLinkModel[] = [
-    {
-      text: 'End Session',
-      iconClass: 'pi pi-stop-circle bg-red-500',
-      routerLink: './end-session',
+  readonly sessionLinks: Signal<CardLinkModel[]> = computed(
+    (): CardLinkModel[] => {
+      switch (this.gameStateService.sessionStatus()) {
+        case SessionStatus.NotStarted:
+          return [
+            {
+              text: 'Start Session Early',
+              iconClass: 'pi pi-play-circle bg-green-500',
+              routerLink: './start-session-early',
+            },
+          ];
+        case SessionStatus.InProgress:
+          return [
+            {
+              text: 'End Session',
+              iconClass: 'pi pi-stop-circle bg-red-500',
+              routerLink: './end-session',
+            },
+          ];
+        case SessionStatus.Finished:
+          return [
+            {
+              text: 'Create Session',
+              iconClass: 'pi pi-plus bg-blue-500',
+              routerLink: './create-session',
+            },
+          ];
+        default:
+          return [];
+      }
     },
-  ];
+  );
 }

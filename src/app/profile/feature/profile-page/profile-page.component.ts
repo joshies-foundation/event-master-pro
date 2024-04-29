@@ -42,10 +42,11 @@ export default class ProfilePageComponent {
     location.reload();
   }
 
-  async onAvatarImageSelect(event: Event): Promise<void> {
+  async onAvatarImageSelect(userId: string, event: Event): Promise<void> {
     this.updatedAvatarLoading.set(true);
 
     await this.userService.setAvatar(
+      userId,
       (event.target as HTMLInputElement).files![0],
     );
 
@@ -65,7 +66,7 @@ export default class ProfilePageComponent {
       return;
     }
 
-    void this.userService.updateDisplayName(userId, newDisplayName);
+    void this.userService.setDisplayName(userId, newDisplayName);
   }
 
   async enablePushNotifications(userId: string): Promise<void> {

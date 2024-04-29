@@ -22,13 +22,14 @@ export interface ConfirmOverrideDialogModel
   standalone: true,
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
-    <p-confirmDialog styleClass="mx-3">
+    <p-confirmDialog styleClass="mx-2">
       <ng-template pTemplate="message" let-message>
         <div>
           <!-- Prompt -->
           <p class="mt-0 mb-4">
             Do you want to submit this override for
-            <strong>{{ model().player.display_name }}?</strong>
+            <strong>{{ model().player.display_name }}</strong
+            >?
           </p>
 
           <!-- Data Table -->

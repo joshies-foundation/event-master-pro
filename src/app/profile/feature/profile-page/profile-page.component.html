@@ -23,13 +23,20 @@
         class="w-10rem h-10rem border-circle block surface-100"
       />
 
-      <!-- Choose Image Button -->
-      <i
-        tabindex="0"
-        class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-700"
-        (click)="avatarFileInput.click()"
-        (keyup.enter)="avatarFileInput.click()"
-      ></i>
+      @if (vm.user.can_edit_profile) {
+        <!-- Choose Image Button -->
+        <i
+          tabindex="0"
+          class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-700"
+          (click)="avatarFileInput.click()"
+          (keyup.enter)="avatarFileInput.click()"
+        ></i>
+      } @else {
+        <i class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-400 relative">
+          <i class="pi pi-times text-3xl -mt-1 text-red-500 absolute left-0">
+          </i>
+        </i>
+      }
     }
 
     <!-- Hidden File Input -->
@@ -38,7 +45,7 @@
       hidden
       type="file"
       accept="image/*"
-      (change)="onAvatarImageSelect($event)"
+      (change)="onAvatarImageSelect(vm.user.id, $event)"
     />
   </div>
 
@@ -46,13 +53,22 @@
   <p>
     <strong class="mr-2">Display Name:</strong> {{ vm.user.display_name }}
 
-    <!-- Edit Button -->
-    <i
-      tabindex="0"
-      class="pi pi-pencil text-700 p-2 ml-1"
-      (click)="promptChangeDisplayName(vm.user.id, vm.user.display_name)"
-      (keyup.enter)="promptChangeDisplayName(vm.user.id, vm.user.display_name)"
-    ></i>
+    @if (vm.user.can_edit_profile) {
+      <!-- Edit Button -->
+      <i
+        tabindex="0"
+        class="pi pi-pencil text-700 p-2 ml-1"
+        (click)="promptChangeDisplayName(vm.user.id, vm.user.display_name)"
+        (keyup.enter)="
+          promptChangeDisplayName(vm.user.id, vm.user.display_name)
+        "
+      ></i>
+    } @else {
+      <i class="pi pi-pencil p-2 ml-1 text-400 relative">
+        <i class="pi pi-times text-2xl ml-1 -mt-1 text-red-500 absolute left-0">
+        </i>
+      </i>
+    }
   </p>
 
   <!-- Login Username -->

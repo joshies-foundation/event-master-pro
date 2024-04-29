@@ -1,13 +1,11 @@
 import { inject, Injectable, Signal } from '@angular/core';
 import {
   realtimeUpdatesFromTable,
-  showMessageOnError,
   Table,
   Function,
 } from '../util/supabase-helpers';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { SessionService } from './session.service';
-import { MessageService } from 'primeng/api';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -36,6 +34,7 @@ export interface PlayerWithUserInfo {
   enabled: boolean;
   display_name: string;
   avatar_url: string;
+  can_edit_profile: boolean;
 }
 
 @Injectable({
@@ -46,7 +45,6 @@ export class PlayerService {
   private readonly authService = inject(AuthService);
   private readonly sessionService = inject(SessionService);
   private readonly gameStateService = inject(GameStateService);
-  private readonly messageService = inject(MessageService);
 
   readonly playersWithoutDisplayNames$: Observable<PlayerModel[] | null> =
     this.sessionService.session$.pipe(
@@ -92,6 +90,7 @@ export class PlayerService {
               enabled: player.enabled,
               display_name: user.display_name,
               avatar_url: user.avatar_url,
+              can_edit_profile: user.can_edit_profile,
             };
           }),
         ),
@@ -171,13 +170,11 @@ export class PlayerService {
 
   async setEnabled(
     playerId: number,
-    displayName: string,
     enabled: boolean,
-  ): Promise<void> {
-    await showMessageOnError(
-      this.supabase.from(Table.Player).update({ enabled }).eq('id', playerId),
-      this.messageService,
-      `Cannot ${enabled ? 'disable' : 'enable'} ${displayName}`,
-    );
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.Player)
+      .update({ enabled })
+      .eq('id', playerId);
   }
 }

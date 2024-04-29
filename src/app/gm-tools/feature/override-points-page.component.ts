@@ -232,7 +232,7 @@ export default class OverridePointsPageComponent {
 
   confirmSubmit(): void {
     this.confirmationService.confirm({
-      header: 'Override Confirmation',
+      header: 'Confirmation',
       // dialog content defined in template
       acceptIcon: 'none',
       rejectIcon: 'none',

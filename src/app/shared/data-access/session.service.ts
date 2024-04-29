@@ -5,12 +5,12 @@ import {
   showMessageOnError,
   Table,
   Function,
+  SessionStatus,
 } from '../util/supabase-helpers';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { Observable, map, shareReplay } from 'rxjs';
 import { whenNotNull } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { showErrorMessage } from '../util/message-helpers';
 import { MessageService } from 'primeng/api';
 import { SessionModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
@@ -42,110 +42,57 @@ export class SessionService {
 
   async createSession(
     sessionName: string,
-    gameMasterUserId: string,
     startDate: Date,
     endDate: Date,
     numRounds: number,
-    playerUserIds: string[],
-  ): Promise<void> {
-    // add a row to the session table with this session's parameters
-    const { data: sessionRows, error: insertSessionError } = await this.supabase
-      .from(Table.Session)
-      .insert({
-        name: sessionName,
-        game_master_user_id: gameMasterUserId,
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        num_rounds: numRounds,
-      })
-      .select();
-
-    if (insertSessionError) {
-      showErrorMessage(
-        'Unable to create session. Session database table insertion error.',
-        this.messageService,
-      );
-      return;
-    }
-
-    const sessionId = sessionRows[0].id;
-
-    // add rows to player table with this session's id and the selected players' user id's
-    const { error: insertPlayersError } = await this.supabase
-      .from(Table.Player)
-      .insert(
-        playerUserIds.map((playerUserId) => ({
-          user_id: playerUserId,
-          session_id: sessionId,
-        })),
-      );
-
-    if (insertPlayersError) {
-      showErrorMessage(
-        'Unable to add players to new session. Player database table update error.',
-        this.messageService,
-      );
-      return;
-    }
-
-    // get latest rules to copy over to new session
-    const { data: rulesRows, error: getLatestRulesError } = await this.supabase
-      .from(Table.Rules)
-      .select('rules')
-      .order('id', { ascending: false })
-      .limit(1);
-
-    if (getLatestRulesError) {
-      showErrorMessage(
-        'Unable to get latest rules to copy over to this session. Rules database select error.',
-        this.messageService,
-      );
-      return;
-    }
-
-    // add rules for new session
-    const { error: insertRulesError } = await this.supabase
-      .from(Table.Rules)
-      .insert({
-        session_id: sessionId,
-        rules: rulesRows[0].rules,
-      });
-
-    if (insertRulesError) {
-      showErrorMessage(
-        'Unable to add rules to this session. Rules database insert error.',
-        this.messageService,
-      );
-      return;
-    }
-
-    // update the active session table with this sessions id
-    const { error: updateActiveSessionError } = await this.supabase
-      .from(Table.GameState)
-      .update({
-        session_id: sessionId,
-      })
-      .eq('id', 1);
-
-    if (updateActiveSessionError) {
-      showErrorMessage(
-        'Unable to activate new session. Active session database table update error.',
-        this.messageService,
-      );
-      return;
-    }
+    playerUserIds: number[],
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.CreateSession, {
+      session_name: sessionName,
+      session_start_date: startDate.toISOString(),
+      session_end_date: endDate.toISOString(),
+      num_rounds: numRounds,
+      player_user_ids: playerUserIds,
+    });
   }
 
-  async endSession(): Promise<void> {
-    showMessageOnError(
+  async startSession(): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.GameState)
+      .update({
+        session_status: SessionStatus.InProgress,
+      })
+      .eq('id', 1);
+  }
+
+  async startSessionEarly(): Promise<PostgrestSingleResponse<undefined>> {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); // convert to UTC
+
+    return this.supabase.rpc(Function.StartSessionEarly, {
+      now: now.toISOString(),
+    });
+  }
+
+  async endSession(): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.GameState)
+      .update({
+        session_status: SessionStatus.Finished,
+      })
+      .eq('id', 1);
+  }
+
+  async editSessionProperties(
+    sessionId: number,
+    partialSession: Partial<SessionModel>,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return showMessageOnError(
       this.supabase
-        .from(Table.GameState)
-        .update({
-          session_id: null,
-        })
-        .eq('id', 1),
+        .from(Table.Session)
+        .update(partialSession)
+        .eq('id', sessionId),
       this.messageService,
-      'Unable to end session.',
     );
   }
 
@@ -154,7 +101,8 @@ export class SessionService {
     playerScoreChanges: Record<string, number>,
   ): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.EndRound, {
-      score_changes: { roundNumber, playerScoreChanges },
+      _round_number: roundNumber,
+      player_score_changes: playerScoreChanges,
     });
   }
 }
