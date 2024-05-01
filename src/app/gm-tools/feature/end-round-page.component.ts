@@ -32,6 +32,7 @@ import {
   getRecordFromLocalStorage,
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
+import { trackById } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-end-round-page',
@@ -67,6 +68,7 @@ import {
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
+        [rowTrackBy]="trackById"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -132,6 +134,8 @@ export default class EndRoundPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+
+  protected readonly trackById = trackById;
 
   private readonly initialFormValue: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);

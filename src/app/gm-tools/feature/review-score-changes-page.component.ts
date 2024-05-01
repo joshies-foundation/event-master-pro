@@ -23,7 +23,10 @@ import {
 } from '../../shared/util/local-storage-helpers';
 import { MessageService } from 'primeng/api';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
-import { showMessageOnError } from '../../shared/util/supabase-helpers';
+import {
+  showMessageOnError,
+  trackById,
+} from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-review-score-changes-page',
@@ -59,6 +62,7 @@ import { showMessageOnError } from '../../shared/util/supabase-helpers';
         sortField="new_score"
         [sortOrder]="-1"
         [scrollable]="true"
+        [rowTrackBy]="trackById"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -125,6 +129,8 @@ export default class ReviewScoreChangesPageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly sessionService = inject(SessionService);
   private readonly messageService = inject(MessageService);
+
+  protected readonly trackById = trackById;
 
   private readonly playerScoreChanges: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);

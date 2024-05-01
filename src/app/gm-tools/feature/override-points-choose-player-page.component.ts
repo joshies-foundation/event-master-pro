@@ -7,6 +7,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
+import { trackById } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-override-points-choose-player-page',
@@ -34,11 +35,12 @@ import { RouterLink } from '@angular/router';
 
     @if (players(); as players) {
       <p-table
-        [value]="players!"
+        [value]="players"
         [defaultSortOrder]="-1"
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
+        [rowTrackBy]="trackById"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -85,6 +87,8 @@ import { RouterLink } from '@angular/router';
 })
 export default class OverridePointsChoosePlayerPageComponent {
   private readonly playerService = inject(PlayerService);
+
+  protected readonly trackById = trackById;
 
   readonly players = this.playerService.players;
 }

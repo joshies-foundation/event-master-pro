@@ -8,6 +8,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { PlayerWithUserInfo } from '../data-access/player.service';
+import { trackById } from '../util/supabase-helpers';
 
 @Component({
   selector: 'joshies-rankings-table',
@@ -15,7 +16,7 @@ import { PlayerWithUserInfo } from '../data-access/player.service';
   imports: [CommonModule, TableModule, NgClass, FormsModule, NgOptimizedImage],
   template: `
     <!-- Rankings Table -->
-    <p-table [value]="rankings()">
+    <p-table [value]="rankings()" [rowTrackBy]="trackById">
       <ng-template pTemplate="header">
         <tr>
           <th>Rank</th>
@@ -60,6 +61,8 @@ import { PlayerWithUserInfo } from '../data-access/player.service';
 export class RankingsTableComponent {
   players = input.required<PlayerWithUserInfo[]>();
   userId = input.required<string | null>();
+
+  protected readonly trackById = trackById;
 
   readonly rankings = computed(() => {
     const sortedPlayers = this.players()

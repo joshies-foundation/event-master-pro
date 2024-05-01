@@ -15,7 +15,10 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { UserService } from '../../shared/data-access/user.service';
 import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
-import { showMessageOnError } from '../../shared/util/supabase-helpers';
+import {
+  showMessageOnError,
+  trackById,
+} from '../../shared/util/supabase-helpers';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -44,7 +47,12 @@ import { MessageService } from 'primeng/api';
 
     @if (players(); as players) {
       <!-- Player Table -->
-      <p-table [value]="players" styleClass="mt-4" [scrollable]="true">
+      <p-table
+        [value]="players"
+        styleClass="mt-4"
+        [scrollable]="true"
+        [rowTrackBy]="trackById"
+      >
         <ng-template pTemplate="header">
           <tr>
             <th pFrozenColumn>Player</th>
@@ -95,6 +103,8 @@ export default class EditPlayerPermissionsPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly userService = inject(UserService);
   private readonly messageService = inject(MessageService);
+
+  protected readonly trackById = trackById;
 
   readonly players = this.playerService.playersIncludingDisabled;
 

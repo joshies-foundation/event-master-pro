@@ -15,7 +15,10 @@ import { UserService } from '../../shared/data-access/user.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UserModel } from '../../shared/util/supabase-types';
-import { showMessageOnError } from '../../shared/util/supabase-helpers';
+import {
+  showMessageOnError,
+  trackById,
+} from '../../shared/util/supabase-helpers';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { Router } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -53,6 +56,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
+        [rowTrackBy]="trackById"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -102,6 +106,8 @@ export default class ChangeGmPageComponent {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
+
+  protected readonly trackById = trackById;
 
   readonly users: Signal<UserModel[] | undefined> = computed(() =>
     this.userService

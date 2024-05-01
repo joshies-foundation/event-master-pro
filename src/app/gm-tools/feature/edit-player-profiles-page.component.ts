@@ -13,6 +13,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { UserService } from '../../shared/data-access/user.service';
+import { trackById } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-edit-player-profiles-page',
@@ -38,7 +39,7 @@ import { UserService } from '../../shared/data-access/user.service';
 
     @if (players(); as players) {
       <!-- Player Table -->
-      <p-table [value]="players" styleClass="mt-4">
+      <p-table [value]="players" [rowTrackBy]="trackById" styleClass="mt-4">
         <ng-template pTemplate="body" let-player>
           <tr>
             <td>
@@ -103,6 +104,8 @@ import { UserService } from '../../shared/data-access/user.service';
 export default class EditPlayerProfilesPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly userService = inject(UserService);
+
+  protected readonly trackById = trackById;
 
   readonly players = this.playerService.playersIncludingDisabled;
 

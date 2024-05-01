@@ -6,7 +6,7 @@ import {
   SupabaseClient,
 } from '@supabase/supabase-js';
 import { from, map, Observable, scan, startWith, switchMap } from 'rxjs';
-import { Signal } from '@angular/core';
+import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from './message-helpers';
@@ -189,3 +189,10 @@ export async function showMessageOnError<T>(
 
   return response;
 }
+
+interface RowWithId {
+  id: number | string;
+}
+
+export const trackById: TrackByFunction<RowWithId> = (index, row: RowWithId) =>
+  row.id;

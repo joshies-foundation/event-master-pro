@@ -12,6 +12,7 @@ import { AnalyticsService } from '../data-access/analytics.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { trackById } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-transactions-page',
@@ -35,7 +36,11 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 
     @if (transactions(); as transactions) {
       @if (transactions.length > 0) {
-        <p-table [value]="transactions" styleClass="mt-5">
+        <p-table
+          [value]="transactions"
+          [rowTrackBy]="trackById"
+          styleClass="mt-5"
+        >
           <ng-template pTemplate="body" let-transaction>
             <tr>
               <td>
@@ -81,6 +86,8 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 })
 export default class TransactionsPageComponent {
   private readonly analyticsService = inject(AnalyticsService);
+
+  protected readonly trackById = trackById;
 
   readonly transactions = this.analyticsService.transactions;
 
