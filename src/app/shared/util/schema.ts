@@ -11,25 +11,31 @@ export type Database = {
     Tables: {
       game_state: {
         Row: {
+          created_at: string;
           game_master_user_id: string;
           id: number;
           round_number: number | null;
           session_id: number | null;
           session_status: Database['public']['Enums']['session_status'];
+          updated_at: string;
         };
         Insert: {
+          created_at?: string;
           game_master_user_id: string;
           id?: number;
           round_number?: number | null;
           session_id?: number | null;
           session_status?: Database['public']['Enums']['session_status'];
+          updated_at?: string;
         };
         Update: {
+          created_at?: string;
           game_master_user_id?: string;
           id?: number;
           round_number?: number | null;
           session_id?: number | null;
           session_status?: Database['public']['Enums']['session_status'];
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -50,24 +56,30 @@ export type Database = {
       };
       player: {
         Row: {
+          created_at: string;
           enabled: boolean;
           id: number;
           score: number;
           session_id: number;
+          updated_at: string;
           user_id: string;
         };
         Insert: {
+          created_at?: string;
           enabled?: boolean;
           id?: number;
           score?: number;
           session_id: number;
+          updated_at?: string;
           user_id: string;
         };
         Update: {
+          created_at?: string;
           enabled?: boolean;
           id?: number;
           score?: number;
           session_id?: number;
+          updated_at?: string;
           user_id?: string;
         };
         Relationships: [
@@ -89,22 +101,28 @@ export type Database = {
       };
       player_round_score: {
         Row: {
+          created_at: string;
           id: number;
           player_id: number;
           round_number: number;
           score: number;
+          updated_at: string;
         };
         Insert: {
+          created_at?: string;
           id?: number;
           player_id: number;
           round_number: number;
           score: number;
+          updated_at?: string;
         };
         Update: {
+          created_at?: string;
           id?: number;
           player_id?: number;
           round_number?: number;
           score?: number;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -118,19 +136,25 @@ export type Database = {
       };
       rules: {
         Row: {
+          created_at: string;
           id: number;
           rules: string | null;
           session_id: number;
+          updated_at: string;
         };
         Insert: {
+          created_at?: string;
           id?: number;
           rules?: string | null;
           session_id: number;
+          updated_at?: string;
         };
         Update: {
+          created_at?: string;
           id?: number;
           rules?: string | null;
           session_id?: number;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -144,49 +168,58 @@ export type Database = {
       };
       session: {
         Row: {
+          created_at: string;
           end_date: string;
           id: number;
           name: string;
           num_rounds: number;
           start_date: string;
+          updated_at: string;
         };
         Insert: {
+          created_at?: string;
           end_date?: string;
           id?: number;
           name?: string;
           num_rounds: number;
           start_date?: string;
+          updated_at?: string;
         };
         Update: {
+          created_at?: string;
           end_date?: string;
           id?: number;
           name?: string;
           num_rounds?: number;
           start_date?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
       transaction: {
         Row: {
+          created_at: string;
           description: string | null;
           id: number;
           num_points: number;
           player_id: number;
-          timestamp: string;
+          updated_at: string;
         };
         Insert: {
+          created_at?: string;
           description?: string | null;
           id?: number;
           num_points: number;
           player_id: number;
-          timestamp?: string;
+          updated_at?: string;
         };
         Update: {
+          created_at?: string;
           description?: string | null;
           id?: number;
           num_points?: number;
           player_id?: number;
-          timestamp?: string;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -202,37 +235,57 @@ export type Database = {
         Row: {
           avatar_url: string;
           can_edit_profile: boolean;
+          created_at: string;
           display_name: string;
           id: string;
+          updated_at: string;
         };
         Insert: {
           avatar_url?: string;
           can_edit_profile?: boolean;
+          created_at?: string;
           display_name?: string;
           id: string;
+          updated_at?: string;
         };
         Update: {
           avatar_url?: string;
           can_edit_profile?: boolean;
+          created_at?: string;
           display_name?: string;
           id?: string;
+          updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'user_id_fkey';
+            columns: ['id'];
+            isOneToOne: true;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       user_notifications_subscription: {
         Row: {
+          created_at: string;
           id: number;
           notifications_subscription: Json;
+          updated_at: string;
           user_id: string;
         };
         Insert: {
+          created_at?: string;
           id?: number;
           notifications_subscription: Json;
+          updated_at?: string;
           user_id: string;
         };
         Update: {
+          created_at?: string;
           id?: number;
           notifications_subscription?: Json;
+          updated_at?: string;
           user_id?: string;
         };
         Relationships: [
