@@ -1,16 +1,11 @@
-import {
-  PostgrestSingleResponse,
-  REALTIME_LISTEN_TYPES,
-  REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
-  RealtimePostgresChangesPayload,
-  SupabaseClient,
-} from '@supabase/supabase-js';
-import { from, map, Observable, scan, startWith, switchMap } from 'rxjs';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Observable, switchMap } from 'rxjs';
 import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
+import { RealtimeFilter, liveTable } from './supabase-live-table';
 
 export enum Table {
   User = 'user',
@@ -46,126 +41,69 @@ export enum StorageBucket {
   Avatars = 'avatars',
 }
 
-type TableName = keyof Database['public']['Tables'];
+export type TTable = keyof Database['public']['Tables'];
 
-type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'in';
+function subscribeToLiveTable<Table extends TTable, Row extends Tables<Table>>(
+  supabase: SupabaseClient<Database>,
+  table: Table,
+  callback: (rows: readonly Row[]) => void,
+  filter?: RealtimeFilter<Database, Table>,
+): () => Promise<'ok' | 'timed out' | 'error'> {
+  const channel = liveTable(supabase, {
+    table,
+    filter,
+    callback: (error, rows: readonly Row[]) => {
+      if (error) {
+        channel
+          .unsubscribe()
+          .then(() => subscribeToLiveTable(supabase, table, callback, filter));
+        return;
+      }
+      callback(rows);
+    },
+  });
 
-export type Filter<T extends TableName> = `${Exclude<
-  keyof Tables<T>,
-  symbol
->}=${FilterOperator}.${string}`;
+  return () => channel?.unsubscribe();
+}
 
 export function realtimeUpdatesFromTable<
-  T extends TableName,
-  Model extends Tables<T>,
+  Table extends TTable,
+  Row extends Tables<Table>,
 >(
   supabase: SupabaseClient<Database>,
-  table: T,
-  filter?: Filter<T>,
-): Observable<Model[]> {
-  let initialQuery$: Observable<PostgrestSingleResponse<Model[]>>;
-
-  if (filter) {
-    const [, filterColumn, filterOperator, filterValue] =
-      filter.match(/^(.+)=([^.]+)\.(.+)$/)!;
-
-    initialQuery$ = from(
-      supabase
-        .from(table)
-        .select('*')
-        .filter(filterColumn, filterOperator, filterValue)
-        .returns<Model[]>(),
-    );
-  } else {
-    initialQuery$ = from(supabase.from(table).select('*').returns<Model[]>());
-  }
-
-  const initialValue$: Observable<Model[]> = initialQuery$.pipe(
-    map((response) => response.data!),
-  );
-
-  const changes$ = new Observable<RealtimePostgresChangesPayload<Model>>(
-    (subscriber) => {
-      const subscription = supabase
-        .channel(`${table}-table-changes-${Math.random()}`)
-        .on<Model>(
-          REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-          {
-            event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
-            schema: 'public',
-            table,
-            filter,
-          },
-          (payload) => subscriber.next(payload),
-        )
-        .subscribe();
-
-      return function unsubscribe() {
-        subscription?.unsubscribe();
-      };
-    },
-  );
-
-  return initialValue$.pipe(
-    switchMap((initialValue) =>
-      changes$.pipe(
-        scan(
-          (
-            allRecords: Model[],
-            change: RealtimePostgresChangesPayload<Model>,
-          ) => {
-            const changedRecord = (
-              (change.new as Model).id ? change.new : change.old
-            ) as Model;
-
-            switch (change.eventType) {
-              case REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT:
-                return [...allRecords, changedRecord];
-
-              case REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.DELETE:
-                return allRecords.filter(
-                  (record) => record.id !== changedRecord.id,
-                );
-
-              case REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE:
-                return allRecords.map((record) =>
-                  record.id === changedRecord.id ? changedRecord : record,
-                );
-
-              default:
-                return allRecords;
-            }
-          },
-          initialValue,
-        ),
-        startWith(initialValue),
-      ),
+  table: Table,
+  filter?: RealtimeFilter<Database, Table>,
+): Observable<Row[]> {
+  return new Observable((subscriber) =>
+    subscribeToLiveTable(
+      supabase,
+      table,
+      (rows) => subscriber.next(rows as Row[]),
+      filter,
     ),
   );
 }
 
 export function realtimeUpdatesFromTableAsSignal<
-  T extends TableName,
-  Model extends Tables<T>,
+  Table extends TTable,
+  Row extends Tables<Table>,
 >(
   supabase: SupabaseClient<Database>,
-  table: T,
-  filter?: Signal<Filter<T> | undefined> | Filter<T>,
-): Signal<Model[]> {
+  table: Table,
+  filter?:
+    | Signal<RealtimeFilter<Database, Table> | undefined>
+    | RealtimeFilter<Database, Table>,
+): Signal<Row[]> {
   if (typeof filter === 'string' || filter === undefined) {
-    return toSignal(
-      realtimeUpdatesFromTable<T, Model>(supabase, table, filter),
-      {
-        initialValue: [],
-      },
-    );
+    return toSignal(realtimeUpdatesFromTable(supabase, table, filter), {
+      initialValue: [],
+    });
   }
 
   return toSignal(
     toObservable(filter).pipe(
-      // filterOperator((filter) => filter !== undefined),
       switchMap((filter) =>
-        realtimeUpdatesFromTable<T, Model>(supabase, table, filter),
+        realtimeUpdatesFromTable<Table, Row>(supabase, table, filter),
       ),
     ),
     { initialValue: [] },

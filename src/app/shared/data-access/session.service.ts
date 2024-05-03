@@ -1,6 +1,5 @@
 import { Injectable, Signal, inject } from '@angular/core';
 import {
-  Filter,
   realtimeUpdatesFromTable,
   showMessageOnError,
   Table,
@@ -30,7 +29,7 @@ export class SessionService {
         realtimeUpdatesFromTable(
           this.supabase,
           Table.Session,
-          `id=eq.${activeSessionId}` as Filter<Table.Session>,
+          `id=eq.${activeSessionId}`,
         ).pipe(map((sessionRecords) => sessionRecords[0])),
       ),
       shareReplay(1),
