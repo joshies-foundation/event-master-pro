@@ -171,7 +171,7 @@ export default class CreateSessionPageComponent {
       startDate,
       endDate,
       numRounds,
-      playerUserIds.map((id) => Number(id)),
+      playerUserIds,
     );
 
     if (error) {

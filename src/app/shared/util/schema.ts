@@ -327,7 +327,7 @@ export type Database = {
           session_start_date: string;
           session_end_date: string;
           num_rounds: number;
-          player_user_ids: number[];
+          player_user_ids: string[];
         };
         Returns: undefined;
       };

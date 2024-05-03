@@ -44,7 +44,7 @@ export class SessionService {
     startDate: Date,
     endDate: Date,
     numRounds: number,
-    playerUserIds: number[],
+    playerUserIds: string[],
   ): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.CreateSession, {
       session_name: sessionName,
