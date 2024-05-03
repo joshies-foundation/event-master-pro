@@ -13,6 +13,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { trackById } from '../../shared/util/supabase-helpers';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-transactions-page',
@@ -24,6 +25,7 @@ import { trackById } from '../../shared/util/supabase-helpers';
     SkeletonModule,
     PageHeaderComponent,
     HeaderLinkComponent,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <joshies-page-header headerText="Transactions" alwaysSmall>
@@ -41,14 +43,18 @@ import { trackById } from '../../shared/util/supabase-helpers';
           [rowTrackBy]="trackById"
           styleClass="mt-5"
         >
-          <ng-template pTemplate="body" let-transaction>
+          <ng-template
+            pTemplate="body"
+            [joshiesStronglyTypedTableRow]="transactions"
+            let-transaction
+          >
             <tr>
               <td>
                 <p class="m-0">
                   {{ transaction.description }}
                 </p>
                 <p class="text-sm m-0 text-400">
-                  {{ transaction.timestamp | date: 'short' }}
+                  {{ transaction.created_at | date: 'short' }}
                 </p>
               </td>
               <td

@@ -33,6 +33,7 @@ import {
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { trackById } from '../../shared/util/supabase-helpers';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-end-round-page',
@@ -46,6 +47,7 @@ import { trackById } from '../../shared/util/supabase-helpers';
     NgOptimizedImage,
     ReactiveFormsModule,
     ButtonModule,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <joshies-page-header headerText="End Round" alwaysSmall>
@@ -76,7 +78,11 @@ import { trackById } from '../../shared/util/supabase-helpers';
             <th class="text-right">Score Change</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-player>
+        <ng-template
+          pTemplate="body"
+          [joshiesStronglyTypedTableRow]="vm.players!"
+          let-player
+        >
           <tr>
             <td>
               <div class="flex align-items-center gap-2 -py-2">

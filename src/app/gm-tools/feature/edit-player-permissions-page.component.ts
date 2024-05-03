@@ -20,6 +20,7 @@ import {
   trackById,
 } from '../../shared/util/supabase-helpers';
 import { MessageService } from 'primeng/api';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-edit-player-permissions-page',
@@ -34,6 +35,7 @@ import { MessageService } from 'primeng/api';
     PageHeaderComponent,
     FormsModule,
     CheckboxModule,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <!-- Header -->
@@ -60,7 +62,11 @@ import { MessageService } from 'primeng/api';
             <th class="text-center">Edit Profile</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-player>
+        <ng-template
+          pTemplate="body"
+          [joshiesStronglyTypedTableRow]="players"
+          let-player
+        >
           <tr>
             <td pFrozenColumn>
               <div class="flex align-items-center gap-2 -py-2">

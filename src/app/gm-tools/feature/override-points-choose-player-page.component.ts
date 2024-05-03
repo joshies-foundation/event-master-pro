@@ -8,6 +8,7 @@ import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
 import { trackById } from '../../shared/util/supabase-helpers';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-override-points-choose-player-page',
@@ -21,6 +22,7 @@ import { trackById } from '../../shared/util/supabase-helpers';
     DecimalPipe,
     ButtonModule,
     RouterLink,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <joshies-page-header headerText="Override Points" alwaysSmall>
@@ -49,7 +51,11 @@ import { trackById } from '../../shared/util/supabase-helpers';
             <th></th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-player>
+        <ng-template
+          pTemplate="body"
+          [joshiesStronglyTypedTableRow]="players"
+          let-player
+        >
           <tr>
             <!-- Player -->
             <td>
@@ -73,7 +79,7 @@ import { trackById } from '../../shared/util/supabase-helpers';
               <p-button
                 label="Edit"
                 icon="pi pi-pencil"
-                [routerLink]="player.player_id"
+                [routerLink]="[player.player_id]"
               />
             </td>
           </tr>

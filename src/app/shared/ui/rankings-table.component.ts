@@ -9,11 +9,19 @@ import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { PlayerWithUserInfo } from '../data-access/player.service';
 import { trackById } from '../util/supabase-helpers';
+import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-rankings-table',
   standalone: true,
-  imports: [CommonModule, TableModule, NgClass, FormsModule, NgOptimizedImage],
+  imports: [
+    CommonModule,
+    TableModule,
+    NgClass,
+    FormsModule,
+    NgOptimizedImage,
+    StronglyTypedTableRowDirective,
+  ],
   template: `
     <!-- Rankings Table -->
     <p-table [value]="rankings()" [rowTrackBy]="trackById">
@@ -24,7 +32,11 @@ import { trackById } from '../util/supabase-helpers';
           <th class="text-right">Score</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-ranking>
+      <ng-template
+        pTemplate="body"
+        [joshiesStronglyTypedTableRow]="rankings()"
+        let-ranking
+      >
         <tr
           [ngClass]="{
             'font-semibold bg-highlight': ranking.user_id === userId()

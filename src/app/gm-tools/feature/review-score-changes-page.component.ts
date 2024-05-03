@@ -27,6 +27,7 @@ import {
   showMessageOnError,
   trackById,
 } from '../../shared/util/supabase-helpers';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-review-score-changes-page',
@@ -40,6 +41,7 @@ import {
     SkeletonModule,
     ButtonModule,
     DecimalPipe,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <joshies-page-header headerText="Review Score Changes" alwaysSmall>
@@ -72,7 +74,11 @@ import {
             <th class="text-right">After</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-player>
+        <ng-template
+          pTemplate="body"
+          [joshiesStronglyTypedTableRow]="vm.players"
+          let-player
+        >
           <tr>
             <!-- Player -->
             <td pFrozenColumn>

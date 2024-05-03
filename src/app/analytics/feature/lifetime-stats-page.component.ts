@@ -15,6 +15,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { PostgrestResponse } from '@supabase/supabase-js';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-lifetime-stats-page',
@@ -28,6 +29,7 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
     NgClass,
     PageHeaderComponent,
     HeaderLinkComponent,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <joshies-page-header headerText="Lifetime Stats" alwaysSmall>
@@ -63,7 +65,11 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
             </th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-row>
+        <ng-template
+          pTemplate="body"
+          [joshiesStronglyTypedTableRow]="data"
+          let-row
+        >
           <tr
             [ngClass]="{
               'font-semibold bg-highlight': row.user_id === userId()
@@ -72,7 +78,7 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
             <td pFrozenColumn>
               <div class="flex align-items-center gap-2 -py-2">
                 <img
-                  [ngSrc]="row.avatar_url"
+                  [ngSrc]="row.avatar_url!"
                   alt=""
                   width="32"
                   height="32"

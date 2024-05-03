@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AuthService } from '../../auth/data-access/auth.service';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-change-gm-page',
@@ -36,6 +37,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
     NgOptimizedImage,
     SkeletonModule,
     ConfirmDialogModule,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <!-- Header -->
@@ -63,7 +65,11 @@ import { AuthService } from '../../auth/data-access/auth.service';
             <th colspan="2"></th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-user>
+        <ng-template
+          pTemplate="body"
+          [joshiesStronglyTypedTableRow]="users"
+          let-user
+        >
           <tr>
             <!-- User -->
             <td>

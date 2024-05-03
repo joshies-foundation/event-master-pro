@@ -14,6 +14,7 @@ import { ButtonModule } from 'primeng/button';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { UserService } from '../../shared/data-access/user.service';
 import { trackById } from '../../shared/util/supabase-helpers';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
   selector: 'joshies-edit-player-profiles-page',
@@ -26,6 +27,7 @@ import { trackById } from '../../shared/util/supabase-helpers';
     SkeletonModule,
     ButtonModule,
     PageHeaderComponent,
+    StronglyTypedTableRowDirective,
   ],
   template: `
     <!-- Header -->
@@ -40,7 +42,11 @@ import { trackById } from '../../shared/util/supabase-helpers';
     @if (players(); as players) {
       <!-- Player Table -->
       <p-table [value]="players" [rowTrackBy]="trackById" styleClass="mt-4">
-        <ng-template pTemplate="body" let-player>
+        <ng-template
+          pTemplate="body"
+          [joshiesStronglyTypedTableRow]="players"
+          let-player
+        >
           <tr>
             <td>
               <div class="flex align-items-center gap-2 -py-2">
