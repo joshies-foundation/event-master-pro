@@ -82,6 +82,7 @@ export default class ComparePointsOverTimePageComponent {
     },
     elements: {
       point: {
+        pointStyle: false,
         hitRadius: 8,
       },
     },
@@ -98,7 +99,6 @@ export default class ComparePointsOverTimePageComponent {
         label: player.display_name,
         data: [0, ...player.scores],
         fill: false,
-        tension: 0.4,
       })) ?? [],
   }));
 }
