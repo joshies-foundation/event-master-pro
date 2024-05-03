@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-} from '@angular/core';
-import { TransactionModel } from '../../shared/util/supabase-types';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { PostgrestResponse } from '@supabase/supabase-js';
 import { AnalyticsService } from '../data-access/analytics.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -96,7 +89,4 @@ export default class TransactionsPageComponent {
   protected readonly trackById = trackById;
 
   readonly transactions = this.analyticsService.transactions;
-
-  readonly transactionsResponse =
-    input.required<PostgrestResponse<TransactionModel> | null>();
 }
