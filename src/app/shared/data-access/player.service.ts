@@ -14,6 +14,7 @@ import {
   of,
   shareReplay,
   switchMap,
+  withLatestFrom,
 } from 'rxjs';
 import {
   defined,
@@ -62,7 +63,9 @@ export class PlayerService {
   private readonly playerUsers$: Observable<UserModel[] | null> =
     this.playersWithoutDisplayNames$.pipe(
       distinctUntilChanged(
-        (previous, current) => previous?.length === current?.length,
+        (a, b) =>
+          (a === null && b === null) ||
+          (a !== null && a.every((val, idx) => val === b?.[idx])),
       ),
       whenNotNull((players) =>
         realtimeUpdatesFromTable(
@@ -75,10 +78,9 @@ export class PlayerService {
     );
 
   readonly playersIncludingDisabled$: Observable<PlayerWithUserInfo[] | null> =
-    combineLatest({
-      players: this.playersWithoutDisplayNames$,
-      users: this.playerUsers$,
-    }).pipe(
+    this.playerUsers$.pipe(
+      withLatestFrom(this.playersWithoutDisplayNames$),
+      map(([users, players]) => ({ players, users })),
       whenAllValuesNotNull(({ players, users }) =>
         of(
           players.map((player) => {
