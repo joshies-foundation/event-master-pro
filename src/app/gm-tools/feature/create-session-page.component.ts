@@ -58,7 +58,7 @@ export default class CreateSessionPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
 
-  readonly allUsers = this.userService.allUsers;
+  readonly allUsers = toSignal(this.userService.allUsers$);
   readonly creatingSession = signal(false);
 
   readonly formGroup = this.formBuilder.nonNullable.group({

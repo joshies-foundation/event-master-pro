@@ -17,6 +17,7 @@ import {
 import { withAllDefined } from '../../../shared/util/signal-helpers';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-notifications-page',
@@ -36,7 +37,7 @@ export default class NotificationsPageComponent {
   private readonly notificationService = inject(NotificationsService);
   private readonly messageService = inject(MessageService);
 
-  readonly allUsers = this.userService.allUsers;
+  readonly allUsers = toSignal(this.userService.allUsers$);
   readonly sending = signal(false);
 
   readonly formGroup = this.formBuilder.nonNullable.group({

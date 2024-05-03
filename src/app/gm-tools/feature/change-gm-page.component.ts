@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   Signal,
-  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -25,6 +24,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-change-gm-page',
@@ -115,10 +115,8 @@ export default class ChangeGmPageComponent {
 
   protected readonly trackById = trackById;
 
-  readonly users: Signal<UserModel[] | undefined> = computed(() =>
-    this.userService
-      .allUsers()
-      ?.filter((user) => user.id !== this.authService.user()?.id),
+  readonly users: Signal<UserModel[] | undefined> = toSignal(
+    this.userService.allUsersExceptCurrentUser$,
   );
 
   readonly submittingUserIdInProgress = signal<string | null>(null);
