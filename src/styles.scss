@@ -150,6 +150,12 @@ $sizeVariants: (
   }
 }
 
+@for $i from 6 through 20 {
+  .z-#{$i} {
+    z-index: $i;
+  }
+}
+
 // ~~~ Classes that are different in light vs. dark mode ~~~
 
 .bg-header-footer-alpha {

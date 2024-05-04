@@ -76,7 +76,7 @@ function removeLayer(): AnimationMetadata[] {
             ...layerCommonStyles,
             transform: 'translate3d(0, 0, 0)',
             opacity: 1,
-            ['z-index']: 10,
+            ['z-index']: 5,
           }),
           animate(
             removeLayerAnimationTiming,
