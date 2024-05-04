@@ -6,6 +6,7 @@ export interface FooterLinkModel {
   href: string;
   text: string;
   iconClass: string;
+  iconClassFill: string;
 }
 
 @Component({
@@ -19,8 +20,11 @@ export interface FooterLinkModel {
       class="flex flex-column justify-content-center align-items-center gap-1 no-underline text-600"
       [routerLink]="model().href"
       routerLinkActive="text-primary-500"
+      #rla="routerLinkActive"
     >
-      <i [ngClass]="model().iconClass"></i>
+      <i
+        [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
+      ></i>
       <span class="text-xs">{{ model().text }}</span>
     </a>
   `,

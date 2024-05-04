@@ -1,0 +1,49 @@
+@font-face {
+  font-family: 'customicons';
+  src: url('fonts/customicons.eot?1t4fp5');
+  src:
+    url('fonts/customicons.eot?1t4fp5#iefix') format('embedded-opentype'),
+    url('fonts/customicons.ttf?1t4fp5') format('truetype'),
+    url('fonts/customicons.woff?1t4fp5') format('woff'),
+    url('fonts/customicons.svg?1t4fp5#customicons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^='ci-'],
+[class*=' ci-'] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'customicons' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  display: inline-block;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ci-book-fill:before {
+  content: '\e900';
+}
+
+.ci-chart-bar-fill:before {
+  content: '\e901';
+}
+
+.ci-home-fill:before {
+  content: '\e902';
+}
+
+.ci-user-fill:before {
+  content: '\e903';
+}
+
+.ci-wrench-fill:before {
+  content: '\e904';
+}

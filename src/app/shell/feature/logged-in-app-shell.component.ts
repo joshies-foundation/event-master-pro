@@ -65,11 +65,13 @@ export default class LoggedInAppShellComponent {
       text: 'Home',
       href: '/home',
       iconClass: 'pi pi-home',
+      iconClassFill: 'ci-home-fill',
     },
     {
       text: 'Rules',
       href: '/rules',
       iconClass: 'pi pi-book',
+      iconClassFill: 'ci-book-fill',
     },
     ...(this.playerService.userIsGameMaster()
       ? [
@@ -77,6 +79,7 @@ export default class LoggedInAppShellComponent {
             text: 'GM Tools',
             href: '/gm-tools',
             iconClass: 'pi pi-wrench',
+            iconClassFill: 'ci-wrench-fill',
           },
         ]
       : []),
@@ -84,6 +87,7 @@ export default class LoggedInAppShellComponent {
       text: 'Analytics',
       href: '/analytics',
       iconClass: 'pi pi-chart-bar',
+      iconClassFill: 'ci-chart-bar-fill',
     },
     // {
     //   text: 'Notifications',
@@ -94,6 +98,7 @@ export default class LoggedInAppShellComponent {
       text: 'Profile',
       href: '/profile',
       iconClass: 'pi pi-user',
+      iconClassFill: 'ci-user-fill',
     },
   ]);
 }
