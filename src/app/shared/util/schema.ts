@@ -54,6 +54,50 @@ export type Database = {
           },
         ];
       };
+      gameboard_space: {
+        Row: {
+          color: string;
+          created_at: string;
+          effect: Database['public']['Enums']['gameboard_space_effect'];
+          effect_data: Json;
+          icon_class: string | null;
+          id: number;
+          name: string;
+          session_id: number;
+          updated_at: string;
+        };
+        Insert: {
+          color?: string;
+          created_at?: string;
+          effect?: Database['public']['Enums']['gameboard_space_effect'];
+          effect_data?: Json;
+          icon_class?: string | null;
+          id?: number;
+          name?: string;
+          session_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          color?: string;
+          created_at?: string;
+          effect?: Database['public']['Enums']['gameboard_space_effect'];
+          effect_data?: Json;
+          icon_class?: string | null;
+          id?: number;
+          name?: string;
+          session_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'gameboard_space_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       player: {
         Row: {
           created_at: string;
@@ -369,6 +413,7 @@ export type Database = {
       };
     };
     Enums: {
+      gameboard_space_effect: 'gain_points' | 'gain_points_or_do_activity';
       session_status: 'not_started' | 'in_progress' | 'finished';
     };
     CompositeTypes: {

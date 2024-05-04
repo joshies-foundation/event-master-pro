@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   Signal,
+  computed,
   input,
 } from '@angular/core';
 import {
@@ -31,7 +32,7 @@ export interface Form {
       [ngClass]="form().styleClass"
       class="flex flex-column gap-3"
     >
-      @for (field of form().fields(); track field.name) {
+      @for (field of visibleFields(); track field.name) {
         <joshies-form-field
           [field]="field"
           [formGroup]="form().formGroup"
@@ -43,4 +44,10 @@ export interface Form {
 })
 export class FormComponent {
   form = input.required<Form>();
+
+  readonly visibleFields = computed(() =>
+    this.form()
+      .fields()
+      ?.filter((field) => field.visible ?? true),
+  );
 }

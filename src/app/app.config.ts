@@ -10,6 +10,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
 import { provideHttpClient } from '@angular/common/http';
+import { DecimalPipe } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,6 +29,7 @@ export const appConfig: ApplicationConfig = {
 
     // PrimeNG services
     MessageService,
+    ConfirmationService,
 
     // service worker
     provideServiceWorker('ngsw-worker.js', {
@@ -39,6 +41,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
 
     // other
-    ConfirmationService,
+    DecimalPipe,
   ],
 };

@@ -68,34 +68,44 @@ export default class GmToolsPageComponent {
 
   readonly sessionLinks: Signal<CardLinkModel[]> = computed(
     (): CardLinkModel[] => {
-      switch (this.gameStateService.sessionStatus()) {
-        case SessionStatus.NotStarted:
-          return [
-            {
-              text: 'Start Session Early',
-              iconClass: 'pi pi-play-circle bg-green-500',
-              routerLink: './start-session-early',
-            },
-          ];
-        case SessionStatus.InProgress:
-          return [
-            {
-              text: 'End Session',
-              iconClass: 'pi pi-stop-circle bg-red-500',
-              routerLink: './end-session',
-            },
-          ];
-        case SessionStatus.Finished:
-          return [
-            {
-              text: 'Create Session',
-              iconClass: 'pi pi-plus bg-blue-500',
-              routerLink: './create-session',
-            },
-          ];
-        default:
-          return [];
-      }
+      const sessionStatusDependentLinks: Record<
+        SessionStatus | 'undefined',
+        CardLinkModel[]
+      > = {
+        [SessionStatus.NotStarted]: [
+          {
+            text: 'Start Session Early',
+            iconClass: 'pi pi-play-circle bg-green-500',
+            routerLink: './start-session-early',
+          },
+        ],
+        [SessionStatus.InProgress]: [
+          {
+            text: 'End Session',
+            iconClass: 'pi pi-stop-circle bg-red-600',
+            routerLink: './end-session',
+          },
+        ],
+        [SessionStatus.Finished]: [
+          {
+            text: 'Create Session',
+            iconClass: 'pi pi-plus bg-blue-500',
+            routerLink: './create-session',
+          },
+        ],
+        undefined: [],
+      };
+
+      return [
+        {
+          text: 'Manage Gameboard Space Types',
+          iconClass: 'pi pi-question-circle bg-green-500',
+          routerLink: './space-types',
+        },
+        ...sessionStatusDependentLinks[
+          this.gameStateService.sessionStatus() ?? 'undefined'
+        ],
+      ];
     },
   );
 }

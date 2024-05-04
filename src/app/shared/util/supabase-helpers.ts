@@ -11,6 +11,7 @@ export enum Table {
   User = 'user',
   UserNotificationsSubscription = 'user_notifications_subscription',
   GameState = 'game_state',
+  GameboardSpace = 'gameboard_space',
   Session = 'session',
   Transaction = 'transaction',
   Player = 'player',
@@ -31,14 +32,19 @@ export enum Function {
   StartSessionEarly = 'start_session_early',
 }
 
+export enum StorageBucket {
+  Avatars = 'avatars',
+}
+
 export enum SessionStatus {
   NotStarted = 'not_started',
   InProgress = 'in_progress',
   Finished = 'finished',
 }
 
-export enum StorageBucket {
-  Avatars = 'avatars',
+export enum GameboardSpaceEffect {
+  GainPoints = 'gain_points',
+  GainPointsOrDoActivity = 'gain_points_or_do_activity',
 }
 
 export type TTable = keyof Database['public']['Tables'];

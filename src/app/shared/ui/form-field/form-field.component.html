@@ -9,6 +9,7 @@
         <input
           [id]="field.name | lowercase"
           [name]="field.name | lowercase"
+          [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           type="text"
           pInputText
@@ -20,6 +21,7 @@
         <p-inputNumber
           [id]="field.name | lowercase"
           [name]="field.name | lowercase"
+          [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           [showButtons]="field.showButtons"
           [buttonLayout]="field.buttonLayout ?? 'horizontal'"
@@ -37,6 +39,7 @@
         <p-dropdown
           [inputId]="field.name"
           [name]="field.name"
+          [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           [options]="field.options"
           [formControl]="field.control"
@@ -49,6 +52,7 @@
         <p-multiSelect
           [inputId]="field.name"
           [name]="field.name"
+          [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           [options]="field.options"
           [formControl]="field.control"
@@ -61,6 +65,7 @@
       @case (FormFieldType.Editor) {
         <p-editor
           [id]="field.name | lowercase"
+          [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           [formControl]="field.control"
           [style]="{ height: 'calc(100vh - 23rem)' }"
@@ -122,6 +127,7 @@
         <p-calendar
           [inputId]="field.name"
           [name]="field.name"
+          [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           [formControl]="field.control"
           [minDate]="field.minDate!"

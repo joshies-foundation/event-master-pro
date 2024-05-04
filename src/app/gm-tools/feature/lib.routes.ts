@@ -60,6 +60,17 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./end-session-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+  {
+    path: 'space-types',
+    loadComponent: () =>
+      import('./manage-gameboard-space-types-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'space-types/new',
+    loadComponent: () => import('./new-gameboard-space-type-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
 ];
 
 export default gmToolsRoutes;

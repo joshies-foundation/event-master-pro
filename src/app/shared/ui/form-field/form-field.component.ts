@@ -38,12 +38,14 @@ export type FormField = {
   label: string;
   name: string;
   styleClass?: string;
+  visible?: boolean;
 } & (
   | ({
       type: Exclude<FormFieldType, FormFieldType.Submit>;
       placeholder?: string;
       control: FormControl;
       disabled?: boolean;
+      required?: boolean;
     } & (
       | {
           type: FormFieldType.Text;
