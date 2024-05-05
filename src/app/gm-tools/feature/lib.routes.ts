@@ -74,6 +74,12 @@ const gmToolsRoutes: Routes = [
   {
     path: 'space-entry',
     loadComponent: () => import('./gameboard-space-entry-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'space-entry/review',
+    loadComponent: () =>
+      import('./review-gameboard-space-entry-page.component'),
     data: { pageAnimationLayer: 2 },
   },
 ];

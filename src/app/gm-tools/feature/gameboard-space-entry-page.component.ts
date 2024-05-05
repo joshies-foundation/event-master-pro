@@ -14,7 +14,7 @@ import { TableModule } from 'primeng/table';
 import { trackById } from '../../shared/util/supabase-helpers';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../shared/data-access/session.service';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
@@ -91,7 +91,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
                 {{ player.display_name }}
               </div>
             </td>
-            <!-- Space Select -->
+            <!-- Space Entry -->
             <td>
               <div class="overflow-x-auto">
                 <p-selectButton
@@ -100,6 +100,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
                   optionValue="id"
                   [style]="{ 'text-wrap': 'nowrap' }"
                   [formControlName]="player.player_id"
+                  [allowEmpty]="false"
                 >
                   <ng-template let-gameboardSpace pTemplate>
                     <joshies-gameboard-space
@@ -120,6 +121,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
         (onClick)="reviewGameboardSpaces()"
         icon="pi pi-chevron-right"
         iconPos="right"
+        [disabled]="formGroup()!.status === 'INVALID'"
       />
     } @else {
       <p-skeleton height="30rem" />
@@ -148,6 +150,8 @@ export default class GameboardSpaceEntryPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly sessionService = inject(SessionService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   private readonly roundNumber: Signal<number | null | undefined> =
     this.gameStateService.roundNumber;
@@ -157,7 +161,7 @@ export default class GameboardSpaceEntryPageComponent {
   private readonly initialFormValue: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
 
-  private readonly formGroup: Signal<FormGroup | undefined> = toSignal(
+  readonly formGroup: Signal<FormGroup | undefined> = toSignal(
     this.playerService.players$.pipe(
       defined(),
       take(1), // take 1 so a player changing their name or picture doesn't reset the form
@@ -168,7 +172,7 @@ export default class GameboardSpaceEntryPageComponent {
               (prev, player) => ({
                 ...prev,
                 [player.player_id]: [
-                  this.initialFormValue?.[player.player_id] ?? 0,
+                  this.initialFormValue?.[player.player_id],
                   Validators.required,
                 ],
               }),
@@ -208,10 +212,8 @@ export default class GameboardSpaceEntryPageComponent {
   });
 
   reviewGameboardSpaces(): void {
-    console.dir(
-      getRecordFromLocalStorage(
-        LocalStorageRecord.GameboardSpaceEntryFormValue,
-      ),
-    );
+    this.router.navigate(['review'], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }
