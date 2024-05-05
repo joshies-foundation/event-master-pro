@@ -1,6 +1,7 @@
 export enum LocalStorageRecord {
   RoundScoreFormValue = 'roundScoreFormValue',
   NewGameboardSpaceTypeFormValue = 'newGameboardSpaceTypeFormValue',
+  GameboardSpaceEntryFormValue = 'gameboardSpaceEntryFormValue',
 }
 
 export function getRecordFromLocalStorage<T>(

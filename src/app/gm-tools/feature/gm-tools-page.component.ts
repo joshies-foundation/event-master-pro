@@ -39,6 +39,11 @@ export default class GmToolsPageComponent {
             iconClass: 'pi pi-check-circle bg-green-500',
             routerLink: './end-round',
           },
+          {
+            text: 'Enter Spaces',
+            iconClass: 'ci-space-entry bg-gray-500',
+            routerLink: './space-entry',
+          },
         ]
       : null,
   );
