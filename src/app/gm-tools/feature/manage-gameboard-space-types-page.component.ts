@@ -42,8 +42,9 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
         let first = $first
       ) {
         <a
-          class="w-full flex align-items-center border-bottom-1 border-100 p-3 cursor-pointer"
+          class="w-full flex align-items-center border-bottom-1 border-100 p-3 text-color no-underline"
           [class.mt-5]="first"
+          [routerLink]="[gameboardSpace.id]"
         >
           <joshies-gameboard-space class="mr-3" [model]="gameboardSpace" />
           <div class="flex-grow-1">

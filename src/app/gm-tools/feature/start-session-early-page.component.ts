@@ -40,8 +40,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
       class="block mt-6 pt-6"
       [loading]="startingSession()"
     />
-
-    <p-confirmDialog styleClass="mx-3" />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

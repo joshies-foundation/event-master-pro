@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -70,6 +71,12 @@ const gmToolsRoutes: Routes = [
     path: 'space-types/new',
     loadComponent: () => import('./new-gameboard-space-type-page.component'),
     data: { pageAnimationLayer: 2 },
+  },
+  {
+    path: 'space-types/:gameboardSpaceId',
+    loadComponent: () => import('./edit-gameboard-space-type-page.component'),
+    data: { pageAnimationLayer: 2 },
+    resolve: { originalGameboardSpace: editGameboardSpaceTypeResolver },
   },
   {
     path: 'space-entry',

@@ -17,12 +17,14 @@ export interface ConfirmOverrideDialogModel
   comment: string;
 }
 
+export const confirmOverrideDialogKey = 'confirm-override';
+
 @Component({
   selector: 'joshies-confirm-override-dialog',
   standalone: true,
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
-    <p-confirmDialog styleClass="mx-2">
+    <p-confirmDialog styleClass="mx-3" [key]="confirmOverrideDialogKey">
       <ng-template pTemplate="message" let-message>
         <div>
           <!-- Prompt -->
@@ -63,6 +65,8 @@ export interface ConfirmOverrideDialogModel
 })
 export class ConfirmOverrideDialogComponent {
   readonly model = input.required<ConfirmOverrideDialogModel>();
+
+  protected readonly confirmOverrideDialogKey = confirmOverrideDialogKey;
 
   readonly tableModel = computed(
     (): OverrideDefinitionTableModel => ({

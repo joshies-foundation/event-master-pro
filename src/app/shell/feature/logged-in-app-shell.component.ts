@@ -12,16 +12,16 @@ import { FooterLinkModel } from '../ui/footer-link.component';
 import { SessionService } from '../../shared/data-access/session.service';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { FooterService } from '../../shared/data-access/footer.service';
-import { JsonPipe, NgClass } from '@angular/common';
 import { pagePaddingXCssClass } from '../../shared/util/css-helpers';
 import { layerPages } from '../../route-animations';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-helpers';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
   standalone: true,
-  imports: [RouterOutlet, FooterComponent, NgClass, JsonPipe],
+  imports: [RouterOutlet, FooterComponent, ConfirmDialogModule],
   template: `
     <!-- Pages -->
     <div [@routeAnimations]="pageAnimationLayer()" class="flex-1">
@@ -33,6 +33,8 @@ import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-he
       [footerLinks]="footerLinks()"
       [disabled]="footerDisabled()"
     />
+
+    <p-confirmDialog styleClass="mx-3" />
   `,
   animations: [layerPages],
   host: {
