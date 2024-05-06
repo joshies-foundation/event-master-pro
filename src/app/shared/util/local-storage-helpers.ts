@@ -18,9 +18,9 @@ export function getRecordFromLocalStorage<T>(
   return obj;
 }
 
-export function saveRecordToLocalStorage<T>(
+export function saveRecordToLocalStorage(
   localStorageRecord: LocalStorageRecord,
-  value: Record<string, T>,
+  value: Record<string, unknown>,
 ): void {
   window.localStorage.setItem(localStorageRecord, JSON.stringify(value));
 }

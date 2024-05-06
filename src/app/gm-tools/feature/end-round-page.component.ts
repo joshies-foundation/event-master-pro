@@ -23,9 +23,9 @@ import { PlayerService } from '../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { SessionService } from '../../shared/data-access/session.service';
 import { ButtonModule } from 'primeng/button';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
-import { map, switchMap, take } from 'rxjs';
+import { Observable, map, shareReplay, switchMap, take } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   LocalStorageRecord,
@@ -34,6 +34,9 @@ import {
 } from '../../shared/util/local-storage-helpers';
 import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
+import { ModelFormGroup } from '../../shared/util/form-helpers';
+
+type EndRoundFormModel = Record<number, number>;
 
 @Component({
   selector: 'joshies-end-round-page',
@@ -146,7 +149,7 @@ export default class EndRoundPageComponent {
   private readonly initialFormValue: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
 
-  private readonly formGroup: Signal<FormGroup | undefined> = toSignal(
+  private readonly formGroup$: Observable<ModelFormGroup<EndRoundFormModel>> =
     this.playerService.players$.pipe(
       defined(),
       take(1), // take 1 so a player changing their name or picture doesn't reset the form
@@ -165,16 +168,16 @@ export default class EndRoundPageComponent {
             ),
           ),
       ),
-    ),
-  );
+      shareReplay(1),
+    );
 
-  private readonly formGroup$ = toObservable(this.formGroup);
+  readonly formGroup: Signal<ModelFormGroup<EndRoundFormModel> | undefined> =
+    toSignal(this.formGroup$);
 
-  private readonly formValueChanges = toSignal(
-    this.formGroup$.pipe(
-      defined(),
-      switchMap((formGroup) => formGroup.valueChanges),
-    ),
+  private readonly formValueChanges: Signal<
+    Partial<EndRoundFormModel> | undefined
+  > = toSignal(
+    this.formGroup$.pipe(switchMap((formGroup) => formGroup.valueChanges)),
   );
 
   private readonly roundNumber: Signal<number | null | undefined> =
@@ -184,7 +187,7 @@ export default class EndRoundPageComponent {
     if (this.formValueChanges()) {
       saveRecordToLocalStorage(
         LocalStorageRecord.RoundScoreFormValue,
-        this.formValueChanges(),
+        this.formValueChanges()!,
       );
     }
   });

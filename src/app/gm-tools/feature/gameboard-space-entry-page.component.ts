@@ -24,9 +24,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
-import { map, switchMap, take } from 'rxjs';
+import { Observable, map, shareReplay, switchMap, take } from 'rxjs';
 import {
   LocalStorageRecord,
   getRecordFromLocalStorage,
@@ -35,6 +35,9 @@ import {
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { trackByPlayerId } from '../../shared/util/supabase-helpers';
+import { ModelFormGroup } from '../../shared/util/form-helpers';
+
+type GameboardSpaceEntryFormModel = Record<number, number>;
 
 @Component({
   selector: 'joshies-space-entry-page',
@@ -53,7 +56,7 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
         Select spaces for round {{ vm.roundNumber }} of
         {{ vm.numRounds }}
       </h4>
-      <!-- Fixed layout allows indivdual scrolling of cells instead of whole table -->
+      <!-- Fixed layout allows individual scrolling of cells instead of whole table -->
       <p-table
         [value]="vm.players!"
         [defaultSortOrder]="-1"
@@ -155,35 +158,37 @@ export default class GameboardSpaceEntryPageComponent {
   private readonly initialFormValue: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
 
-  readonly formGroup: Signal<FormGroup | undefined> = toSignal(
-    this.playerService.players$.pipe(
-      defined(),
-      take(1), // take 1 so a player changing their name or picture doesn't reset the form
-      map(
-        (players): FormGroup =>
-          this.formBuilder.nonNullable.group(
-            players!.reduce(
-              (prev, player) => ({
-                ...prev,
-                [player.player_id]: [
-                  this.initialFormValue?.[player.player_id],
-                  Validators.required,
-                ],
-              }),
-              {},
-            ),
+  private readonly formGroup$: Observable<
+    ModelFormGroup<GameboardSpaceEntryFormModel>
+  > = this.playerService.players$.pipe(
+    defined(),
+    take(1), // take 1 so a player changing their name or picture doesn't reset the form
+    map(
+      (players): FormGroup =>
+        this.formBuilder.nonNullable.group(
+          players!.reduce(
+            (prev, player) => ({
+              ...prev,
+              [player.player_id]: [
+                this.initialFormValue?.[player.player_id],
+                Validators.required,
+              ],
+            }),
+            {},
           ),
-      ),
+        ),
     ),
+    shareReplay(1),
   );
 
-  private readonly formGroup$ = toObservable(this.formGroup);
+  readonly formGroup: Signal<
+    ModelFormGroup<GameboardSpaceEntryFormModel> | undefined
+  > = toSignal(this.formGroup$);
 
-  private readonly formValueChanges = toSignal(
-    this.formGroup$.pipe(
-      defined(),
-      switchMap((formGroup) => formGroup.valueChanges),
-    ),
+  private readonly formValueChanges: Signal<
+    Partial<GameboardSpaceEntryFormModel> | undefined
+  > = toSignal(
+    this.formGroup$.pipe(switchMap((formGroup) => formGroup.valueChanges)),
   );
 
   readonly viewModel = computed(() =>
@@ -200,7 +205,7 @@ export default class GameboardSpaceEntryPageComponent {
     if (this.formValueChanges()) {
       saveRecordToLocalStorage(
         LocalStorageRecord.GameboardSpaceEntryFormValue,
-        this.formValueChanges(),
+        this.formValueChanges()!,
       );
     }
   });
