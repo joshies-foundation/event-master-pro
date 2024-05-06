@@ -8,7 +8,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { PlayerWithUserInfo } from '../data-access/player.service';
-import { trackById } from '../util/supabase-helpers';
+import { trackByPlayerId } from '../util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.directive';
 
 @Component({
@@ -24,7 +24,7 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
   ],
   template: `
     <!-- Rankings Table -->
-    <p-table [value]="rankings()" [rowTrackBy]="trackById">
+    <p-table [value]="rankings()" [rowTrackBy]="trackByPlayerId">
       <ng-template pTemplate="header">
         <tr>
           <th>Rank</th>
@@ -74,7 +74,7 @@ export class RankingsTableComponent {
   players = input.required<PlayerWithUserInfo[]>();
   userId = input.required<string | null>();
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   readonly rankings = computed(() => {
     const sortedPlayers = this.players()

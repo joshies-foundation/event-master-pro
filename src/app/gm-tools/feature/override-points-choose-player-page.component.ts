@@ -7,7 +7,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import { trackById } from '../../shared/util/supabase-helpers';
+import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
@@ -42,7 +42,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
-        [rowTrackBy]="trackById"
+        [rowTrackBy]="trackByPlayerId"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -94,7 +94,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 export default class OverridePointsChoosePlayerPageComponent {
   private readonly playerService = inject(PlayerService);
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   readonly players = this.playerService.players;
 }

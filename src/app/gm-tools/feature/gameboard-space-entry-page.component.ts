@@ -9,15 +9,13 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { DecimalPipe, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { TableModule } from 'primeng/table';
-import { trackById } from '../../shared/util/supabase-helpers';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../../shared/data-access/session.service';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
-import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
@@ -34,9 +32,9 @@ import {
   getRecordFromLocalStorage,
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
-import { RadioButtonModule } from 'primeng/radiobutton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-space-entry-page',
@@ -63,7 +61,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
-        [rowTrackBy]="trackById"
+        [rowTrackBy]="trackByPlayerId"
         [tableStyle]="{ 'table-layout': 'fixed' }"
       >
         <ng-template pTemplate="header">
@@ -135,11 +133,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
     TableModule,
     ButtonModule,
     SkeletonModule,
-    RouterLink,
-    DecimalPipe,
     GameboardSpaceComponent,
-    GameboardSpaceDescriptionPipe,
-    RadioButtonModule,
     StronglyTypedTableRowDirective,
     ReactiveFormsModule,
     SelectButtonModule,
@@ -156,7 +150,7 @@ export default class GameboardSpaceEntryPageComponent {
   private readonly roundNumber: Signal<number | null | undefined> =
     this.gameStateService.roundNumber;
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   private readonly initialFormValue: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);

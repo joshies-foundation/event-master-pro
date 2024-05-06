@@ -32,7 +32,7 @@ import {
   getRecordFromLocalStorage,
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
-import { trackById } from '../../shared/util/supabase-helpers';
+import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
@@ -70,7 +70,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
-        [rowTrackBy]="trackById"
+        [rowTrackBy]="trackByPlayerId"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -141,7 +141,7 @@ export default class EndRoundPageComponent {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   private readonly initialFormValue: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);

@@ -6,7 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { Tables } from '../../shared/util/schema';
-import { View, trackById } from '../../shared/util/supabase-helpers';
+import { View, trackByUserId } from '../../shared/util/supabase-helpers';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SharedModule } from 'primeng/api';
@@ -48,7 +48,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         sortField="lifetime_score"
         [sortOrder]="-1"
         [scrollable]="true"
-        [rowTrackBy]="trackById"
+        [rowTrackBy]="trackByUserId"
         styleClass="mt-5"
       >
         <ng-template pTemplate="header">
@@ -109,7 +109,7 @@ export default class LifetimeStatsPageComponent {
   readonly lifetimeResultsQueryResult =
     input.required<PostgrestResponse<Tables<View.LifetimeUserStats>>>(); // route resolver param
 
-  protected readonly trackById = trackById;
+  protected readonly trackByUserId = trackByUserId;
 
   private readonly authService = inject(AuthService);
 

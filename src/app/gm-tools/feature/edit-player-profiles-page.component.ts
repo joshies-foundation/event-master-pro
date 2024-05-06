@@ -13,7 +13,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { UserService } from '../../shared/data-access/user.service';
-import { trackById } from '../../shared/util/supabase-helpers';
+import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
 @Component({
@@ -41,7 +41,11 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
     @if (players(); as players) {
       <!-- Player Table -->
-      <p-table [value]="players" [rowTrackBy]="trackById" styleClass="mt-4">
+      <p-table
+        [value]="players"
+        [rowTrackBy]="trackByPlayerId"
+        styleClass="mt-4"
+      >
         <ng-template
           pTemplate="body"
           [joshiesStronglyTypedTableRow]="players"
@@ -111,7 +115,7 @@ export default class EditPlayerProfilesPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly userService = inject(UserService);
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   readonly players = this.playerService.playersIncludingDisabled;
 

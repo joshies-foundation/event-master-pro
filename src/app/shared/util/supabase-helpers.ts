@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 import { RealtimeFilter, liveTable } from './supabase-live-table';
+import { PlayerModel, TransactionModel } from './supabase-types';
 
 export enum Table {
   User = 'user',
@@ -140,3 +141,12 @@ interface RowWithId {
 
 export const trackById: TrackByFunction<RowWithId> = (index, row: RowWithId) =>
   row.id;
+
+export const trackByPlayerId: TrackByFunction<
+  Pick<TransactionModel, 'player_id'>
+> = (index, row) => row.player_id;
+
+export const trackByUserId: TrackByFunction<Pick<PlayerModel, 'user_id'>> = (
+  index,
+  row,
+) => row.user_id;

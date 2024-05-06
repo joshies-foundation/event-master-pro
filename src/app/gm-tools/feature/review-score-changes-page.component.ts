@@ -25,7 +25,7 @@ import { MessageService } from 'primeng/api';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
   showMessageOnError,
-  trackById,
+  trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 
@@ -64,7 +64,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         sortField="new_score"
         [sortOrder]="-1"
         [scrollable]="true"
-        [rowTrackBy]="trackById"
+        [rowTrackBy]="trackByPlayerId"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -136,7 +136,7 @@ export default class ReviewScoreChangesPageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly messageService = inject(MessageService);
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   private readonly playerScoreChanges: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);

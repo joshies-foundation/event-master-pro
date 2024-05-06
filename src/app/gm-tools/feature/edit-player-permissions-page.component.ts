@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import {
   showMessageOnError,
-  trackById,
+  trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
 import { MessageService } from 'primeng/api';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -53,7 +53,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [value]="players"
         styleClass="mt-4"
         [scrollable]="true"
-        [rowTrackBy]="trackById"
+        [rowTrackBy]="trackByPlayerId"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -110,7 +110,7 @@ export default class EditPlayerPermissionsPageComponent {
   private readonly userService = inject(UserService);
   private readonly messageService = inject(MessageService);
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   readonly players = this.playerService.playersIncludingDisabled;
 

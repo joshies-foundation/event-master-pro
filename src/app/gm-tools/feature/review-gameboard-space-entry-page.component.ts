@@ -12,7 +12,7 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { SessionService } from '../../shared/data-access/session.service';
 import { TableModule } from 'primeng/table';
-import { trackById } from '../../shared/util/supabase-helpers';
+import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -45,7 +45,7 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
-        [rowTrackBy]="trackById"
+        [rowTrackBy]="trackByPlayerId"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -110,7 +110,7 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly playerSpaceChanges: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
 
-  protected readonly trackById = trackById;
+  protected readonly trackByPlayerId = trackByPlayerId;
 
   private readonly players = computed(() =>
     this.playerService.players()?.map((player) => ({
