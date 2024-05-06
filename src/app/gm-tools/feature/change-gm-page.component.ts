@@ -97,8 +97,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
           </tr>
         </ng-template>
       </p-table>
-
-      <p-confirmDialog styleClass="mx-3" />
     } @else {
       <p-skeleton height="30rem" styleClass="mt-5" />
     }

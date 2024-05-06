@@ -27,6 +27,7 @@ import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
   ConfirmOverrideDialogComponent,
   ConfirmOverrideDialogModel,
+  confirmOverrideDialogKey,
 } from '../ui/confirm-override-dialog.component';
 import {
   OverrideDefinitionTableComponent,
@@ -56,7 +57,7 @@ enum ScoreOverrideType {
   template: `
     <joshies-page-header headerText="Override Points" alwaysSmall>
       <joshies-header-link
-        text="Players"
+        text="Cancel"
         routerLink=".."
         chevronDirection="left"
       />
@@ -237,6 +238,7 @@ export default class OverridePointsPageComponent {
       acceptIcon: 'none',
       rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
+      key: confirmOverrideDialogKey,
       accept: async () => {
         this.submitting.set(true);
 

@@ -115,7 +115,8 @@ p-editor {
 }
 
 // fix icon vertical position in iOS Safari
-i.pi {
+.pi,
+[class^='ci-'] {
   line-height: inherit;
 }
 
