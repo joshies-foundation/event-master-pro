@@ -7,6 +7,7 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./gm-tools-page.component'),
     data: { pageAnimationLayer: 0 },
   },
+
   // round
   {
     path: 'end-round',
@@ -18,6 +19,18 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./review-score-changes-page.component'),
     data: { pageAnimationLayer: 2 },
   },
+  {
+    path: 'space-entry',
+    loadComponent: () => import('./gameboard-space-entry-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'space-entry/review',
+    loadComponent: () =>
+      import('./review-gameboard-space-entry-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
+
   // players
   {
     path: 'override-points',
@@ -45,6 +58,7 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./change-gm-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+
   // session
   {
     path: 'create-session',
@@ -77,17 +91,6 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./edit-gameboard-space-type-page.component'),
     data: { pageAnimationLayer: 2 },
     resolve: { originalGameboardSpace: editGameboardSpaceTypeResolver },
-  },
-  {
-    path: 'space-entry',
-    loadComponent: () => import('./gameboard-space-entry-page.component'),
-    data: { pageAnimationLayer: 1 },
-  },
-  {
-    path: 'space-entry/review',
-    loadComponent: () =>
-      import('./review-gameboard-space-entry-page.component'),
-    data: { pageAnimationLayer: 2 },
   },
 ];
 
