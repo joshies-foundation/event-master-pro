@@ -4,6 +4,7 @@ import {
   Signal,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -13,15 +14,19 @@ import { PlayerService } from '../../shared/data-access/player.service';
 import { SessionService } from '../../shared/data-access/session.service';
 import { TableModule } from 'primeng/table';
 import { trackByPlayerId } from '../../shared/util/supabase-helpers';
-import { NgOptimizedImage } from '@angular/common';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import {
   LocalStorageRecord,
   getRecordFromLocalStorage,
+  removeRecordFromLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
+import { showSuccessMessage } from '../../shared/util/message-helpers';
+import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
@@ -35,8 +40,9 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
     </joshies-page-header>
     @if (viewModel(); as vm) {
       <h4 class="mt-6">
-        Selected spaces for round {{ vm.roundNumber }} of
+        Moves for round {{ vm.roundNumber }} of
         {{ vm.numRounds }}
+        <span class="text-500 font-italic">(Draft)</span>
       </h4>
       <!-- Fixed layout allows indivdual scrolling of cells instead of whole table -->
       <p-table
@@ -50,6 +56,7 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
         <ng-template pTemplate="header">
           <tr>
             <th>Player</th>
+            <th class="text-right">Distance</th>
             <th class="text-center">Space</th>
           </tr>
         </ng-template>
@@ -72,6 +79,10 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
                 {{ player.display_name }}
               </div>
             </td>
+            <!-- Distance Travelled -->
+            <td class="text-right font-semibold">
+              {{ player.distanceTravelled | number }}
+            </td>
             <!-- Selected Space -->
             <td>
               <div class="flex justify-content-center">
@@ -84,6 +95,13 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
           </tr>
         </ng-template>
       </p-table>
+      <p-button
+        [label]="'Submit Spaces for Round ' + vm.roundNumber"
+        severity="success"
+        styleClass="mt-4 w-full"
+        (onClick)="submitPlayerSpaceChanges()"
+        [loading]="submittingInProgress()"
+      />
     } @else {
       <p-skeleton height="30rem" />
     }`,
@@ -97,12 +115,15 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
     SkeletonModule,
     StronglyTypedTableRowDirective,
     GameboardSpaceComponent,
+    DecimalPipe,
   ],
 })
 export default class ReviewGameboardSpaceEntryPageComponent {
+  private readonly router = inject(Router);
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly sessionService = inject(SessionService);
+  private readonly messageService = inject(MessageService);
 
   private readonly roundNumber: Signal<number | null | undefined> =
     this.gameStateService.roundNumber;
@@ -115,11 +136,13 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly players = computed(() =>
     this.playerService.players()?.map((player) => ({
       ...player,
+      distanceTravelled: this.playerSpaceChanges['d' + player.player_id],
       new_space: this.sessionService
         .gameboardSpaces()
         ?.find(
           (gameboardSpace) =>
-            gameboardSpace.id === this.playerSpaceChanges[player.player_id],
+            gameboardSpace.id ===
+            this.playerSpaceChanges['g' + player.player_id],
         ),
     })),
   );
@@ -130,6 +153,29 @@ export default class ReviewGameboardSpaceEntryPageComponent {
       numRounds: this.sessionService.session()?.num_rounds,
       players: this.players(),
       gameboardSpaces: this.sessionService.gameboardSpaces(),
+      playerSpaceChanges: this.playerSpaceChanges,
     }),
   );
+
+  readonly submittingInProgress = signal(false);
+
+  async submitPlayerSpaceChanges() // roundNumber: number,
+  // playerSpaceChanges: Record<string, number>,
+  : Promise<void> {
+    this.submittingInProgress.set(true);
+
+    // submit to database here
+    const { error } = { error: false };
+
+    if (error) {
+      this.submittingInProgress.set(false);
+      return;
+    }
+
+    removeRecordFromLocalStorage(
+      LocalStorageRecord.GameboardSpaceEntryFormValue,
+    );
+    showSuccessMessage('Spaces saved successfully!', this.messageService);
+    this.router.navigate(['/']);
+  }
 }

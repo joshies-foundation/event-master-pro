@@ -36,14 +36,19 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
+import { InputNumberModule } from 'primeng/inputnumber';
 
-type GameboardSpaceEntryFormModel = Record<number, number>;
+interface GameboardSpaceEntryFormKeys {
+  distanceTravelled: number;
+  gameboardSpaceId: number;
+}
+type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
 
 @Component({
   selector: 'joshies-space-entry-page',
   standalone: true,
   template: `
-    <joshies-page-header headerText="Space Entry" alwaysSmall>
+    <joshies-page-header headerText="Move Entry" alwaysSmall>
       <joshies-header-link
         text="GM Tools"
         routerLink=".."
@@ -53,7 +58,7 @@ type GameboardSpaceEntryFormModel = Record<number, number>;
 
     @if (viewModel(); as vm) {
       <h4 class="mt-6">
-        Select spaces for round {{ vm.roundNumber }} of
+        Enter moves for round {{ vm.roundNumber }} of
         {{ vm.numRounds }}
       </h4>
       <!-- Fixed layout allows individual scrolling of cells instead of whole table -->
@@ -65,12 +70,13 @@ type GameboardSpaceEntryFormModel = Record<number, number>;
         [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
-        [tableStyle]="{ 'table-layout': 'fixed' }"
       >
+        <!-- [tableStyle]="{ 'table-layout': 'fixed' }" -->
         <ng-template pTemplate="header">
           <tr>
-            <th>Player</th>
-            <th width="65%">Space</th>
+            <th pFrozenColumn>Player</th>
+            <th class="text-right">Distance</th>
+            <th>Space</th>
           </tr>
         </ng-template>
         <ng-template
@@ -80,7 +86,7 @@ type GameboardSpaceEntryFormModel = Record<number, number>;
         >
           <tr>
             <!-- Player -->
-            <td>
+            <td pFrozenColumn>
               <div class="flex align-items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
@@ -92,6 +98,19 @@ type GameboardSpaceEntryFormModel = Record<number, number>;
                 {{ player.display_name }}
               </div>
             </td>
+            <!-- Distance Travelled -->
+            <td class="text-right">
+              <p-inputNumber
+                #input
+                [formControlName]="'d' + player.player_id"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                [step]="1"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                [inputStyleClass]="'w-4rem font-semibold text-right '"
+              />
+            </td>
             <!-- Space Entry -->
             <td>
               <div class="overflow-x-auto">
@@ -100,7 +119,7 @@ type GameboardSpaceEntryFormModel = Record<number, number>;
                   optionLabel="icon_class"
                   optionValue="id"
                   [style]="{ 'text-wrap': 'nowrap' }"
-                  [formControlName]="player.player_id"
+                  [formControlName]="'g' + player.player_id"
                   [allowEmpty]="false"
                 >
                   <ng-template let-gameboardSpace pTemplate>
@@ -117,7 +136,7 @@ type GameboardSpaceEntryFormModel = Record<number, number>;
       </p-table>
 
       <p-button
-        label="Review Gameboard Spaces"
+        label="Review Moves"
         styleClass="mt-4 w-full"
         (onClick)="reviewGameboardSpaces()"
         icon="pi pi-chevron-right"
@@ -140,6 +159,7 @@ type GameboardSpaceEntryFormModel = Record<number, number>;
     StronglyTypedTableRowDirective,
     ReactiveFormsModule,
     SelectButtonModule,
+    InputNumberModule,
   ],
 })
 export default class GameboardSpaceEntryPageComponent {
@@ -169,8 +189,12 @@ export default class GameboardSpaceEntryPageComponent {
           players!.reduce(
             (prev, player) => ({
               ...prev,
-              [player.player_id]: [
-                this.initialFormValue?.[player.player_id],
+              ['d' + player.player_id]: [
+                this.initialFormValue?.['d' + player.player_id],
+                Validators.required,
+              ],
+              ['g' + player.player_id]: [
+                this.initialFormValue?.['g' + player.player_id],
                 Validators.required,
               ],
             }),
