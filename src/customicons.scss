@@ -32,6 +32,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.ci-poop:before {
+  content: '\e903';
+}
+.ci-space-entry:before {
+  content: '\e906';
+}
 .ci-book-fill:before {
   content: '\e900';
 }
@@ -40,9 +46,6 @@
 }
 .ci-home-fill:before {
   content: '\e902';
-}
-.ci-space-entry:before {
-  content: '\e903';
 }
 .ci-user-fill:before {
   content: '\e904';

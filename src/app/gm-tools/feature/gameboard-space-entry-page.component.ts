@@ -98,10 +98,9 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
                 {{ player.display_name }}
               </div>
             </td>
-            <!-- Distance Travelled -->
+            <!-- Distance -->
             <td class="text-right">
               <p-inputNumber
-                #input
                 [formControlName]="'d' + player.player_id"
                 [showButtons]="true"
                 buttonLayout="horizontal"
@@ -111,7 +110,7 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
                 [inputStyleClass]="'w-4rem font-semibold text-right '"
               />
             </td>
-            <!-- Space Entry -->
+            <!-- Space -->
             <td>
               <div class="overflow-x-auto">
                 <p-selectButton
