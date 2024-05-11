@@ -58,7 +58,8 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
 
     @if (viewModel(); as vm) {
       <h4 class="mt-6">
-        Enter moves for round {{ vm.roundNumber }} of
+        Enter each player's distance traveled and space for round
+        {{ vm.roundNumber }} of
         {{ vm.numRounds }}
       </h4>
       <!-- Fixed layout allows individual scrolling of cells instead of whole table -->
@@ -70,13 +71,12 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
         [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
+        [tableStyle]="{ 'table-layout': 'fixed' }"
       >
-        <!-- [tableStyle]="{ 'table-layout': 'fixed' }" -->
         <ng-template pTemplate="header">
           <tr>
-            <th pFrozenColumn>Player</th>
-            <th class="text-right">Distance</th>
-            <th>Space</th>
+            <th class="w-8rem p-0"></th>
+            <th class="p-0"></th>
           </tr>
         </ng-template>
         <ng-template
@@ -86,7 +86,7 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
         >
           <tr>
             <!-- Player -->
-            <td pFrozenColumn>
+            <td>
               <div class="flex align-items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
@@ -107,28 +107,25 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
                 [step]="1"
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
-                [inputStyleClass]="'w-4rem font-semibold text-right '"
+                inputStyleClass="w-full font-semibold text-right"
+                placeholder="Distance"
               />
-            </td>
-            <!-- Space -->
-            <td>
-              <div class="overflow-x-auto">
-                <p-selectButton
-                  [options]="vm.gameboardSpaces!"
-                  optionLabel="icon_class"
-                  optionValue="id"
-                  [style]="{ 'text-wrap': 'nowrap' }"
-                  [formControlName]="'g' + player.player_id"
-                  [allowEmpty]="false"
-                >
-                  <ng-template let-gameboardSpace pTemplate>
-                    <joshies-gameboard-space
-                      [model]="gameboardSpace"
-                      class="relative"
-                    />
-                  </ng-template>
-                </p-selectButton>
-              </div>
+              <p-selectButton
+                [options]="vm.gameboardSpaces!"
+                optionLabel="icon_class"
+                optionValue="id"
+                [formControlName]="'g' + player.player_id"
+                [style]="{ 'text-wrap': 'nowrap' }"
+                styleClass="overflow-x-auto mt-2"
+                [allowEmpty]="false"
+              >
+                <ng-template let-gameboardSpace pTemplate>
+                  <joshies-gameboard-space
+                    [model]="gameboardSpace"
+                    class="relative"
+                  />
+                </ng-template>
+              </p-selectButton>
             </td>
           </tr>
         </ng-template>
