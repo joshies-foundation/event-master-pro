@@ -27,6 +27,7 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.component';
 
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
@@ -81,13 +82,13 @@ import { MessageService } from 'primeng/api';
             </td>
             <!-- Distance Travelled -->
             <td class="text-right font-semibold">
-              {{ player.distanceTravelled | number }}
+              {{ player.distanceTraveled | number }}
             </td>
             <!-- Selected Space -->
             <td>
               <div class="flex justify-content-center">
                 <joshies-gameboard-space
-                  [model]="player.new_space!"
+                  [model]="player.gameboardSpaceId!"
                   class="relative"
                 />
               </div>
@@ -96,7 +97,7 @@ import { MessageService } from 'primeng/api';
         </ng-template>
       </p-table>
       <p-button
-        [label]="'Submit Spaces for Round ' + vm.roundNumber"
+        [label]="'Submit Moves for Round ' + vm.roundNumber"
         severity="success"
         styleClass="mt-4 w-full"
         (onClick)="submitPlayerSpaceChanges()"
@@ -128,7 +129,7 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly roundNumber: Signal<number | null | undefined> =
     this.gameStateService.roundNumber;
 
-  private readonly playerSpaceChanges: Record<string, number> =
+  private readonly playerSpaceChanges: GameboardSpaceEntryFormModel =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
 
   protected readonly trackByPlayerId = trackByPlayerId;
@@ -136,13 +137,14 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly players = computed(() =>
     this.playerService.players()?.map((player) => ({
       ...player,
-      distanceTravelled: this.playerSpaceChanges['d' + player.player_id],
-      new_space: this.sessionService
+      distanceTraveled:
+        this.playerSpaceChanges[player.player_id].distanceTraveled,
+      gameboardSpaceId: this.sessionService
         .gameboardSpaces()
         ?.find(
           (gameboardSpace) =>
             gameboardSpace.id ===
-            this.playerSpaceChanges['g' + player.player_id],
+            this.playerSpaceChanges[player.player_id].gameboardSpaceId,
         ),
     })),
   );

@@ -39,10 +39,13 @@ import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { InputNumberModule } from 'primeng/inputnumber';
 
 interface GameboardSpaceEntryFormKeys {
-  distanceTravelled: number;
+  distanceTraveled: number;
   gameboardSpaceId: number;
 }
-type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
+export type GameboardSpaceEntryFormModel = Record<
+  number,
+  GameboardSpaceEntryFormKeys
+>;
 
 @Component({
   selector: 'joshies-space-entry-page',
@@ -84,7 +87,7 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
           [joshiesStronglyTypedTableRow]="vm.players!"
           let-player
         >
-          <tr>
+          <tr [formGroupName]="player.player_id">
             <!-- Player -->
             <td>
               <div class="flex align-items-center gap-2 -py-2">
@@ -101,7 +104,7 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
             <!-- Distance -->
             <td class="text-right">
               <p-inputNumber
-                [formControlName]="'d' + player.player_id"
+                formControlName="distanceTraveled"
                 [showButtons]="true"
                 buttonLayout="horizontal"
                 [step]="1"
@@ -114,7 +117,7 @@ type GameboardSpaceEntryFormModel = Record<number, GameboardSpaceEntryFormKeys>;
                 [options]="vm.gameboardSpaces!"
                 optionLabel="icon_class"
                 optionValue="id"
-                [formControlName]="'g' + player.player_id"
+                formControlName="gameboardSpaceId"
                 [style]="{ 'text-wrap': 'nowrap' }"
                 styleClass="overflow-x-auto mt-2"
                 [allowEmpty]="false"
@@ -171,7 +174,7 @@ export default class GameboardSpaceEntryPageComponent {
 
   protected readonly trackByPlayerId = trackByPlayerId;
 
-  private readonly initialFormValue: Record<string, number> =
+  private readonly initialFormValue: Partial<GameboardSpaceEntryFormModel> =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
 
   private readonly formGroup$: Observable<
@@ -185,14 +188,16 @@ export default class GameboardSpaceEntryPageComponent {
           players!.reduce(
             (prev, player) => ({
               ...prev,
-              ['d' + player.player_id]: [
-                this.initialFormValue?.['d' + player.player_id],
-                Validators.required,
-              ],
-              ['g' + player.player_id]: [
-                this.initialFormValue?.['g' + player.player_id],
-                Validators.required,
-              ],
+              [player.player_id]: this.formBuilder.group({
+                distanceTraveled: [
+                  this.initialFormValue?.[player.player_id]?.distanceTraveled,
+                  Validators.required,
+                ],
+                gameboardSpaceId: [
+                  this.initialFormValue?.[player.player_id]?.gameboardSpaceId,
+                  Validators.required,
+                ],
+              }),
             }),
             {},
           ),
