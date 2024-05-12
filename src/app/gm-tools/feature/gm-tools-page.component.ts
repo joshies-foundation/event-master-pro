@@ -107,6 +107,11 @@ export default class GmToolsPageComponent {
           iconClass: 'pi pi-question-circle bg-green-500',
           routerLink: './space-types',
         },
+        {
+          text: 'Manage Events',
+          iconClass: 'pi pi-flag bg-purple-500',
+          routerLink: './events',
+        },
         ...sessionStatusDependentLinks[
           this.gameStateService.sessionStatus() ?? 'undefined'
         ],

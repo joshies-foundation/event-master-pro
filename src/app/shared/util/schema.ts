@@ -9,6 +9,192 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      event: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          format: Database['public']['Enums']['event_format'];
+          id: number;
+          image_url: string | null;
+          lower_scores_are_better: boolean;
+          name: string;
+          points_label: string | null;
+          round_number: number;
+          rules: string | null;
+          scoring_map: number[];
+          session_id: number;
+          team_size: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          format?: Database['public']['Enums']['event_format'];
+          id?: number;
+          image_url?: string | null;
+          lower_scores_are_better?: boolean;
+          name: string;
+          points_label?: string | null;
+          round_number: number;
+          rules?: string | null;
+          scoring_map: number[];
+          session_id: number;
+          team_size: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          format?: Database['public']['Enums']['event_format'];
+          id?: number;
+          image_url?: string | null;
+          lower_scores_are_better?: boolean;
+          name?: string;
+          points_label?: string | null;
+          round_number?: number;
+          rules?: string | null;
+          scoring_map?: number[];
+          session_id?: number;
+          team_size?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'event_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      event_format_standard_scoring_formula: {
+        Row: {
+          created_at: string;
+          formula: string;
+          id: Database['public']['Enums']['event_format'];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          formula: string;
+          id: Database['public']['Enums']['event_format'];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          formula?: string;
+          id?: Database['public']['Enums']['event_format'];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      event_participant: {
+        Row: {
+          created_at: string;
+          id: number;
+          player_id: number;
+          team_id: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          player_id: number;
+          team_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          player_id?: number;
+          team_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'event_participant_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'event_participant_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      event_team: {
+        Row: {
+          created_at: string;
+          event_id: number;
+          id: number;
+          seed: number | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          event_id: number;
+          id?: number;
+          seed?: number | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: number;
+          id?: number;
+          seed?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'event_team_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'event';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      event_team_round_score: {
+        Row: {
+          created_at: string;
+          id: number;
+          round_number: number;
+          score: number;
+          team_id: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          round_number: number;
+          score?: number;
+          team_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          round_number?: number;
+          score?: number;
+          team_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'event_team_round_score_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       game_state: {
         Row: {
           created_at: string;
@@ -465,6 +651,10 @@ export type Database = {
       };
     };
     Enums: {
+      event_format:
+        | 'single_elimination_tournament'
+        | 'double_elimination_tournament'
+        | 'score_based_single_round';
       gameboard_space_effect: 'gain_points' | 'gain_points_or_do_activity';
       session_status: 'not_started' | 'in_progress' | 'finished';
     };

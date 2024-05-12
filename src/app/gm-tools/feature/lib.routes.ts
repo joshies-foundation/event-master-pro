@@ -92,6 +92,11 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 2 },
     resolve: { originalGameboardSpace: editGameboardSpaceTypeResolver },
   },
+  {
+    path: 'events',
+    loadComponent: () => import('./manage-events-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 ];
 
 export default gmToolsRoutes;

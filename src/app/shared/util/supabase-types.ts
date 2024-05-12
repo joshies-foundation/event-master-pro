@@ -70,6 +70,12 @@ export type TransactionModel = Tables<Table.Transaction>;
 export type UserModel = Tables<Table.User>;
 export type UserNotificationsSubscriptionModel =
   Tables<Table.UserNotificationsSubscription>;
+export type EventModel = Tables<Table.Event>;
+export type EventFormatStandardScoringFormulaModel =
+  Tables<Table.EventFormatStandardScoringFormula>;
+export type EventParticipantModel = Tables<Table.EventParticipant>;
+export type EventTeamModel = Tables<Table.EventTeam>;
+export type EventTeamRoundScoreModel = Tables<Table.EventTeamRoundScore>;
 
 // views
 export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;

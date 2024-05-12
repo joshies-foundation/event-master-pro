@@ -18,6 +18,11 @@ export enum Table {
   Player = 'player',
   PlayerRoundScore = 'player_round_score',
   Rules = 'rules',
+  Event = 'event',
+  EventFormatStandardScoringFormula = 'event_format_standard_scoring_formula',
+  EventParticipant = 'event_participant',
+  EventTeam = 'event_team',
+  EventTeamRoundScore = 'event_team_round_score',
 }
 
 export enum View {
