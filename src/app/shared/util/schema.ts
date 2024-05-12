@@ -54,6 +54,51 @@ export type Database = {
           },
         ];
       };
+      gameboard_move: {
+        Row: {
+          created_at: string;
+          distance_traveled: number;
+          gameboard_space_id: number;
+          id: number;
+          player_id: number;
+          round_number: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at: string;
+          distance_traveled: number;
+          gameboard_space_id: number;
+          id?: number;
+          player_id: number;
+          round_number: number;
+          updated_at: string;
+        };
+        Update: {
+          created_at?: string;
+          distance_traveled?: number;
+          gameboard_space_id?: number;
+          id?: number;
+          player_id?: number;
+          round_number?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'gameboard_move_gameboard_space_id_fkey';
+            columns: ['gameboard_space_id'];
+            isOneToOne: false;
+            referencedRelation: 'gameboard_space';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'gameboard_move_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       gameboard_space: {
         Row: {
           color: string;
@@ -398,6 +443,13 @@ export type Database = {
           avatar_url: string;
           scores: number[];
         }[];
+      };
+      log_round_moves: {
+        Args: {
+          roundnumber: number;
+          playermoves: Json;
+        };
+        Returns: undefined;
       };
       override_points: {
         Args: {

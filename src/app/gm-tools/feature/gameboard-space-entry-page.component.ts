@@ -43,7 +43,7 @@ interface GameboardSpaceEntryFormKeys {
   gameboardSpaceId: number;
 }
 export type GameboardSpaceEntryFormModel = Record<
-  number,
+  string,
   GameboardSpaceEntryFormKeys
 >;
 
@@ -61,7 +61,7 @@ export type GameboardSpaceEntryFormModel = Record<
 
     @if (viewModel(); as vm) {
       <h4 class="mt-6">
-        Enter each player's distance traveled and space for round
+        Enter moves for round
         {{ vm.roundNumber }} of
         {{ vm.numRounds }}
       </h4>

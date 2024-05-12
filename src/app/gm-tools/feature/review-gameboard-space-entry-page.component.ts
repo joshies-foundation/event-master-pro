@@ -24,10 +24,10 @@ import {
   removeRecordFromLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
-import { showSuccessMessage } from '../../shared/util/message-helpers';
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.component';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
@@ -100,7 +100,7 @@ import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.compo
         [label]="'Submit Moves for Round ' + vm.roundNumber"
         severity="success"
         styleClass="mt-4 w-full"
-        (onClick)="submitPlayerSpaceChanges()"
+        (onClick)="submitPlayerSpaceChanges(roundNumber()!, playerSpaceChanges)"
         [loading]="submittingInProgress()"
       />
     } @else {
@@ -125,11 +125,13 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly sessionService = inject(SessionService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
-  private readonly roundNumber: Signal<number | null | undefined> =
+  readonly roundNumber: Signal<number | null | undefined> =
     this.gameStateService.roundNumber;
 
-  private readonly playerSpaceChanges: GameboardSpaceEntryFormModel =
+  readonly playerSpaceChanges: GameboardSpaceEntryFormModel =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
 
   protected readonly trackByPlayerId = trackByPlayerId;
@@ -161,23 +163,25 @@ export default class ReviewGameboardSpaceEntryPageComponent {
 
   readonly submittingInProgress = signal(false);
 
-  async submitPlayerSpaceChanges() // roundNumber: number,
-  // playerSpaceChanges: Record<string, number>,
-  : Promise<void> {
-    this.submittingInProgress.set(true);
-
-    // submit to database here
-    const { error } = { error: false };
-
-    if (error) {
-      this.submittingInProgress.set(false);
-      return;
-    }
+  async submitPlayerSpaceChanges(
+    roundNumber: number,
+    playerSpaceChanges: GameboardSpaceEntryFormModel,
+  ): Promise<void> {
+    confirmBackendAction({
+      action: async () =>
+        this.sessionService.logRoundMoves(roundNumber, playerSpaceChanges),
+      confirmationMessageText: `Are you sure you want to submit moves for round ${roundNumber}?`,
+      successMessageText: 'Moves submitted successfully!',
+      successNavigation: '/',
+      submittingSignal: this.submittingInProgress,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      router: this.router,
+      activatedRoute: this.activatedRoute,
+    });
 
     removeRecordFromLocalStorage(
       LocalStorageRecord.GameboardSpaceEntryFormValue,
     );
-    showSuccessMessage('Spaces saved successfully!', this.messageService);
-    this.router.navigate(['/']);
   }
 }

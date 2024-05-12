@@ -31,6 +31,7 @@ export enum Function {
   GetPlayerRoundScoresFromSession = 'get_player_round_scores_from_session',
   OverridePoints = 'override_points',
   StartSessionEarly = 'start_session_early',
+  LogRoundMoves = 'log_round_moves',
 }
 
 export enum StorageBucket {
