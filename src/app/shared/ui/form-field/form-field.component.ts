@@ -23,6 +23,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { CheckboxModule } from 'primeng/checkbox';
 
 export enum FormFieldType {
   Text,
@@ -32,6 +34,8 @@ export enum FormFieldType {
   Editor,
   Calendar,
   Submit,
+  TextArea,
+  Checkbox,
 }
 
 export type FormField = {
@@ -91,6 +95,15 @@ export type FormField = {
           showTime?: boolean;
           timeOnly?: boolean;
         }
+      | {
+          type: FormFieldType.TextArea;
+          defaultValue?: string;
+          rows?: number;
+        }
+      | {
+          type: FormFieldType.Checkbox;
+          defaultValue?: boolean;
+        }
     ))
   | {
       type: FormFieldType.Submit;
@@ -114,6 +127,8 @@ export type FormField = {
     MultiSelectModule,
     EditorModule,
     InputNumberModule,
+    InputTextareaModule,
+    CheckboxModule,
   ],
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

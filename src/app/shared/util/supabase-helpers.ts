@@ -54,6 +54,12 @@ export enum GameboardSpaceEffect {
   GainPointsOrDoActivity = 'gain_points_or_do_activity',
 }
 
+export enum EventFormat {
+  SingleEliminationTournament = 'single_elimination_tournament',
+  DoubleEliminationTournament = 'double_elimination_tournament',
+  ScoreBasedSingleRound = 'score_based_single_round',
+}
+
 export type TTable = keyof Database['public']['Tables'];
 
 function subscribeToLiveTable<Table extends TTable, Row extends Tables<Table>>(

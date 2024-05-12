@@ -157,6 +157,29 @@
           [loading]="field.loading ?? false"
         />
       }
+      @case (FormFieldType.TextArea) {
+        <textarea
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          type="text"
+          pInputText
+          [formControl]="field.control"
+          [ngClass]="field.styleClass"
+          [rows]="field.rows ?? 5"
+        ></textarea>
+      }
+      @case (FormFieldType.Checkbox) {
+        <p-checkbox
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [formControl]="field.control"
+          [ngClass]="field.styleClass"
+          [binary]="true"
+        />
+      }
     }
   </div>
 }

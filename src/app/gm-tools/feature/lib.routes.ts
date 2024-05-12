@@ -97,6 +97,11 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./manage-events-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+  {
+    path: 'events/new',
+    loadComponent: () => import('./new-event-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
 ];
 
 export default gmToolsRoutes;

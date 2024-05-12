@@ -83,6 +83,7 @@ export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;
 // enums
 export type SessionStatusType = Enums<'session_status'>;
 export type GameboardSpaceEffectType = Enums<'gameboard_space_effect'>;
+// export type EventFormat = Enums<'event_format'>;
 
 // functions
 export type GetPlayerRoundScoreFunctionReturnType =

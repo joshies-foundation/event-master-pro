@@ -39,18 +39,24 @@ import { NgOptimizedImage } from '@angular/common';
     @if (events(); as events) {
       @for (event of events; track event.id; let first = $first) {
         <a
-          class="w-full flex align-items-center border-bottom-1 border-100 p-3 text-color no-underline"
+          class="w-full flex border-bottom-1 border-100 p-3 text-color no-underline"
           [class.mt-5]="first"
           [routerLink]="[event.id]"
         >
           @if (event.image_url; as imageUrl) {
-            <img [ngSrc]="imageUrl" alt="" />
+            <img
+              [ngSrc]="imageUrl"
+              alt=""
+              width="48"
+              height="48"
+              class="border-round mr-3"
+            />
           }
           <div class="flex-grow-1">
             <h4 class="mt-0 mb-2">{{ event.name }}</h4>
-            <p>{{ event.description }}</p>
+            <p class="m-0">{{ event.description }}</p>
           </div>
-          <i class="pi pi-angle-right ml-2 text-300"></i>
+          <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
         </a>
       } @empty {
         <p class="mt-5 text-center font-italic text-400">No events</p>
