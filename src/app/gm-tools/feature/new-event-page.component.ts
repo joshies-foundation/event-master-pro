@@ -87,6 +87,7 @@ export default class NewEventPageComponent {
       this.activatedRoute,
       this.confirmationService,
       this.messageService,
+      this.eventService,
     ));
   }
 }

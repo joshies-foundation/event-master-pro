@@ -56,7 +56,7 @@ import { PlayerService } from '../../shared/data-access/player.service';
           chevronDirection="left"
         />
         <div class="flex align-items-center">
-          @if (editMode()) {
+          @if (unsavedChangesExist()) {
             <p-button [text]="true" class="mr-3" (onClick)="saveChanges()">
               <i class="pi pi-save text-xl text-primary"></i>
             </p-button>
@@ -71,16 +71,17 @@ import { PlayerService } from '../../shared/data-access/player.service';
       <div cdkDropList (cdkDropListDropped)="eventDrop($event)">
         @for (event of sortedEvents; track event.id; let first = $first) {
           <a
-            class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline "
+            class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline"
             [class.mt-2]="first"
             [routerLink]="[event.id]"
             cdkDrag
-            [cdkDragStartDelay]="250"
             [cdkDragDisabled]="!userIsGameMaster()"
           >
             @if (userIsGameMaster()) {
               <div class="flex" cdkDragHandle>
-                <i class="pi pi-ellipsis-v align-self-center pl-2 pr-3"></i>
+                <i
+                  class="pi pi-ellipsis-v text-400 align-self-center pl-2 pr-3"
+                ></i>
               </div>
             }
             @if (event.image_url; as imageUrl) {
@@ -109,6 +110,11 @@ import { PlayerService } from '../../shared/data-access/player.service';
               </p>
             </div>
             <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
+            <div
+              class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3"
+              style="background-color: var(--surface-200);"
+              *cdkDragPlaceholder
+            ></div>
           </a>
         } @empty {
           <p class="mt-5 text-center font-italic text-400">No events</p>
@@ -127,14 +133,17 @@ import { PlayerService } from '../../shared/data-access/player.service';
     }
   `,
   styles: `
-    /* Animate items as they're being sorted. */
     .cdk-drop-list-dragging .cdk-drag {
       transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     }
 
-    /* Animate an item that has been dropped. */
     .cdk-drag-animating {
       transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    .cdk-drag-preview {
+      border: none;
+      background-color: var(--surface-card);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -157,14 +166,14 @@ export default class ManageEventsPageComponent {
   );
 
   readonly sortedEventsLocal = signal([] as EventModel[]);
-  readonly editMode = signal(false);
+  readonly unsavedChangesExist = signal(false);
   private readonly submitting = signal(false);
 
   eventDrop(ev: CdkDragDrop<string[]>): void {
     const sortedEventsTemp = this.sortedEventsLocal();
     moveItemInArray(sortedEventsTemp, ev.previousIndex, ev.currentIndex);
     this.sortedEventsLocal.set(sortedEventsTemp);
-    this.editMode.set(true);
+    this.unsavedChangesExist.set(true);
   }
 
   private readonly getInitialSortedEventsArray = effect(
@@ -204,11 +213,12 @@ export default class ManageEventsPageComponent {
           }
         }
 
+        this.unsavedChangesExist.set(false);
+
         showSuccessMessage(
           'Event order updated successfully',
           this.messageService,
         );
-        this.router.navigate(['..'], { relativeTo: this.activatedRoute });
       },
     });
   }
