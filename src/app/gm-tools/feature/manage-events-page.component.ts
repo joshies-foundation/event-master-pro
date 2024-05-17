@@ -27,6 +27,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { ButtonModule } from 'primeng/button';
+import { PlayerService } from '../../shared/data-access/player.service';
 
 @Component({
   selector: 'joshies-manage-events-page',
@@ -66,17 +67,22 @@ import { ButtonModule } from 'primeng/button';
         </div>
       </div>
     </joshies-page-header>
-    <!-- TODO: Add a drag handle on left side of component
-TODO: Add a placeholder icon for events without a defined icon
-TODO: make the height of each event uniform -->
     @if (sortedEventsLocal(); as sortedEvents) {
       <div cdkDropList (cdkDropListDropped)="eventDrop($event)">
         @for (event of sortedEvents; track event.id; let first = $first) {
           <a
-            class="w-full flex border-bottom-1 border-100 p-3 text-color no-underline"
+            class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline "
+            [class.mt-2]="first"
             [routerLink]="[event.id]"
             cdkDrag
+            [cdkDragStartDelay]="250"
+            [cdkDragDisabled]="!userIsGameMaster()"
           >
+            @if (userIsGameMaster()) {
+              <div class="flex" cdkDragHandle>
+                <i class="pi pi-ellipsis-v align-self-center pl-2 pr-3"></i>
+              </div>
+            }
             @if (event.image_url; as imageUrl) {
               <img
                 [ngSrc]="imageUrl"
@@ -85,10 +91,22 @@ TODO: make the height of each event uniform -->
                 height="48"
                 class="border-round mr-3"
               />
+            } @else {
+              <img
+                [ngSrc]="'/assets/icons/icon-72x72.png'"
+                alt=""
+                width="48"
+                height="48"
+                class="border-round mr-3"
+              />
             }
             <div class="flex-grow-1">
-              <h4 class="mt-0 mb-2">{{ event.name }}</h4>
-              <p class="m-0">{{ event.description }}</p>
+              <h4 class="mt-0 mb-1">{{ event.name }}</h4>
+              <p
+                class="m-0 w-13rem white-space-nowrap overflow-hidden text-overflow-ellipsis"
+              >
+                {{ event.description }}
+              </p>
             </div>
             <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
           </a>
@@ -108,6 +126,17 @@ TODO: make the height of each event uniform -->
       <p-skeleton height="5rem" />
     }
   `,
+  styles: `
+    /* Animate items as they're being sorted. */
+    .cdk-drop-list-dragging .cdk-drag {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    /* Animate an item that has been dropped. */
+    .cdk-drag-animating {
+      transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ManageEventsPageComponent {
@@ -116,8 +145,10 @@ export default class ManageEventsPageComponent {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly messageService = inject(MessageService);
+  private readonly playerService = inject(PlayerService);
 
   private readonly events = this.eventService.events;
+  readonly userIsGameMaster = this.playerService.userIsGameMaster;
 
   readonly sortedEvents = computed(() =>
     this.events()
