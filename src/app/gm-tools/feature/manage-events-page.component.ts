@@ -9,25 +9,23 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from 'primeng/skeleton';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
+import { RouterLink } from '@angular/router';
 import { EventService } from '../../shared/data-access/event.service';
 import { NgOptimizedImage } from '@angular/common';
 import {
   CdkDropList,
   CdkDrag,
-  DragDropModule,
   moveItemInArray,
   CdkDragDrop,
+  CdkDragHandle,
+  CdkDragPlaceholder,
 } from '@angular/cdk/drag-drop';
-import { EventModel } from '../../shared/util/supabase-types';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { showMessageOnError } from '../../shared/util/supabase-helpers';
-import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { ButtonModule } from 'primeng/button';
 import { PlayerService } from '../../shared/data-access/player.service';
+import { GameStateService } from '../../shared/data-access/game-state.service';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { EventModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-manage-events-page',
@@ -36,17 +34,16 @@ import { PlayerService } from '../../shared/data-access/player.service';
     PageHeaderComponent,
     HeaderLinkComponent,
     SkeletonModule,
-    StronglyTypedTableRowDirective,
-    GameboardSpaceDescriptionPipe,
     RouterLink,
-    GameboardSpaceComponent,
     NgOptimizedImage,
     CdkDropList,
     CdkDrag,
-    DragDropModule,
+    CdkDragHandle,
+    CdkDragPlaceholder,
     ButtonModule,
   ],
   template: `
+    <!-- Header -->
     <joshies-page-header headerText="Events" alwaysSmall>
       <div class="w-full flex justify-content-between align-items-center">
         <!-- TODO: Add a save confirmation when leaving page if edits have been made -->
@@ -56,53 +53,65 @@ import { PlayerService } from '../../shared/data-access/player.service';
           chevronDirection="left"
         />
         <div class="flex align-items-center">
+          <!-- Save Changes Button-->
           @if (unsavedChangesExist()) {
-            <p-button [text]="true" class="mr-3" (onClick)="saveChanges()">
+            <p-button
+              [text]="true"
+              class="mr-3"
+              (onClick)="saveChanges(sortedEvents()!, sortedEventsLocal()!)"
+            >
               <i class="pi pi-save text-xl text-primary"></i>
             </p-button>
           }
+
+          <!-- New Event Button -->
           <a routerLink="./new">
             <i class="pi pi-plus text-xl text-primary"></i>
           </a>
         </div>
       </div>
     </joshies-page-header>
+
     @if (sortedEventsLocal(); as sortedEvents) {
-      <div cdkDropList (cdkDropListDropped)="eventDrop($event)">
-        @for (event of sortedEvents; track event.id; let first = $first) {
+      <div
+        cdkDropList
+        (cdkDropListDropped)="onEventDrop($event)"
+        [cdkDropListSortPredicate]="sortPredicate()"
+      >
+        @for (
+          event of sortedEvents;
+          track event.id;
+          let first = $first;
+          let index = $index
+        ) {
           <a
-            class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline"
+            class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline surface-card"
             [class.mt-2]="first"
             [routerLink]="[event.id]"
             cdkDrag
-            [cdkDragDisabled]="!userIsGameMaster()"
+            [cdkDragDisabled]="
+              !userIsGameMaster() || index + 1 < currentRoundNumber()
+            "
           >
-            @if (userIsGameMaster()) {
+            @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
               <div class="flex" cdkDragHandle>
-                <i
-                  class="pi pi-ellipsis-v text-400 align-self-center pl-2 pr-3"
-                ></i>
+                <i class="pi pi-bars text-300 align-self-center pl-2 pr-3"></i>
               </div>
             }
-            @if (event.image_url; as imageUrl) {
-              <img
-                [ngSrc]="imageUrl"
-                alt=""
-                width="48"
-                height="48"
-                class="border-round mr-3"
-              />
-            } @else {
-              <img
-                [ngSrc]="'/assets/icons/icon-72x72.png'"
-                alt=""
-                width="48"
-                height="48"
-                class="border-round mr-3"
-              />
-            }
+
+            <!-- Event Image -->
+            <img
+              [ngSrc]="event.image_url || '/assets/icons/icon-96x96.png'"
+              alt=""
+              width="48"
+              height="48"
+              class="border-round mr-3"
+            />
             <div class="flex-grow-1">
+              <!-- Event Name -->
               <h4 class="mt-0 mb-1">{{ event.name }}</h4>
+
+              <!-- Event Description -->
               <p
                 class="m-0 w-13rem white-space-nowrap overflow-hidden text-overflow-ellipsis"
               >
@@ -110,11 +119,7 @@ import { PlayerService } from '../../shared/data-access/player.service';
               </p>
             </div>
             <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
-            <div
-              class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3"
-              style="background-color: var(--surface-200);"
-              *cdkDragPlaceholder
-            ></div>
+            <div class="surface-200 h-5rem w-full" *cdkDragPlaceholder></div>
           </a>
         } @empty {
           <p class="mt-5 text-center font-italic text-400">No events</p>
@@ -132,37 +137,21 @@ import { PlayerService } from '../../shared/data-access/player.service';
       <p-skeleton height="5rem" />
     }
   `,
-  styles: `
-    .cdk-drop-list-dragging .cdk-drag {
-      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-    }
-
-    .cdk-drag-animating {
-      transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
-    }
-
-    .cdk-drag-preview {
-      border: none;
-      background-color: var(--surface-card);
-      border-radius: 4px;
-      box-shadow:
-        0 5px 5px -3px rgba(0, 0, 0, 0.2),
-        0 8px 10px 1px rgba(0, 0, 0, 0.14),
-        0 3px 14px 2px rgba(0, 0, 0, 0.12);
-    }
-  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ManageEventsPageComponent {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly eventService = inject(EventService);
-  private readonly router = inject(Router);
-  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly messageService = inject(MessageService);
   private readonly playerService = inject(PlayerService);
+  private readonly gameStateService = inject(GameStateService);
 
   private readonly events = this.eventService.events;
   readonly userIsGameMaster = this.playerService.userIsGameMaster;
+
+  readonly currentRoundNumber = computed(
+    () => this.gameStateService.roundNumber() ?? -1,
+  );
 
   readonly sortedEvents = computed(() =>
     this.events()
@@ -170,61 +159,55 @@ export default class ManageEventsPageComponent {
       .sort((event1, event2) => event1.round_number - event2.round_number),
   );
 
-  readonly sortedEventsLocal = signal([] as EventModel[]);
-  readonly unsavedChangesExist = signal(false);
+  readonly sortedEventsLocal = signal(this.sortedEvents()?.slice());
   private readonly submitting = signal(false);
 
-  eventDrop(ev: CdkDragDrop<string[]>): void {
-    const sortedEventsTemp = this.sortedEventsLocal();
-    moveItemInArray(sortedEventsTemp, ev.previousIndex, ev.currentIndex);
-    this.sortedEventsLocal.set(sortedEventsTemp);
-    this.unsavedChangesExist.set(true);
+  readonly unsavedChangesExist = computed(() => {
+    const dbEvents = this.sortedEvents();
+    const localEvents = this.sortedEventsLocal();
+
+    if (!dbEvents || !localEvents) return false;
+
+    return dbEvents.some(
+      (dbEvent, index) => dbEvent.id !== localEvents[index].id,
+    );
+  });
+
+  onEventDrop(drop: CdkDragDrop<string[]>): void {
+    this.sortedEventsLocal.update((events) => {
+      moveItemInArray(events!, drop.previousIndex, drop.currentIndex);
+      return [...events!];
+    });
   }
 
-  private readonly getInitialSortedEventsArray = effect(
-    () => {
-      if (this.sortedEvents() && this.sortedEventsLocal().length === 0) {
-        this.sortedEventsLocal.set(this.sortedEvents()!);
-      }
-    },
+  private readonly updateLocalEventsArrayOnDatabaseUpdates = effect(
+    () => this.sortedEventsLocal.set(this.sortedEvents()?.slice()),
     { allowSignalWrites: true },
   );
 
-  saveChanges(): void {
-    this.confirmationService.confirm({
-      header: 'Confirmation',
-      message: 'Save changes to event order?',
-      icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
-      rejectButtonStyleClass: 'p-button-text',
-      accept: async () => {
-        this.submitting.set(true);
+  // prevent user from dragging an event into a round that is already over
+  sortPredicate(): (index: number) => boolean {
+    return (index: number) => index + 1 >= this.currentRoundNumber();
+  }
 
-        let newRoundNumber = 1;
-        for (const event of this.sortedEventsLocal()) {
-          const { error } = await showMessageOnError(
-            this.eventService.updateEvent(event.id, {
-              round_number: newRoundNumber,
-            }),
-            this.messageService,
-          );
+  saveChanges(dbEvents: EventModel[], localEvents: EventModel[]): void {
+    const eventsWithNewRoundNumber = localEvents.reduce<Record<number, number>>(
+      (prev, event, index) => ({
+        ...prev,
+        ...(event.id === dbEvents[index].id ? {} : { [event.id]: index + 1 }), // only add entries for events that have a different round number
+      }),
+      {},
+    );
 
-          newRoundNumber++;
-
-          if (error) {
-            this.submitting.set(false);
-            return;
-          }
-        }
-
-        this.unsavedChangesExist.set(false);
-
-        showSuccessMessage(
-          'Event order updated successfully',
-          this.messageService,
-        );
-      },
+    confirmBackendAction({
+      confirmationMessageText: 'Save changes to event order?',
+      successMessageText: 'Event order updated successfully',
+      action: async () =>
+        this.eventService.reorderEvents(eventsWithNewRoundNumber),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.submitting,
+      successNavigation: null,
     });
   }
 }

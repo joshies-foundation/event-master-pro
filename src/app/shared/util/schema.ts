@@ -643,6 +643,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      reorder_events: {
+        Args: {
+          events_with_new_round_number: Json;
+        };
+        Returns: undefined;
+      };
       start_session_early: {
         Args: {
           now: string;

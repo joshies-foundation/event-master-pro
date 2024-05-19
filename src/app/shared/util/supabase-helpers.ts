@@ -37,6 +37,7 @@ export enum Function {
   OverridePoints = 'override_points',
   StartSessionEarly = 'start_session_early',
   LogRoundMoves = 'log_round_moves',
+  ReorderEvents = 'reorder_events',
 }
 
 export enum StorageBucket {

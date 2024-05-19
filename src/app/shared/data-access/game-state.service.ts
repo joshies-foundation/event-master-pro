@@ -22,6 +22,7 @@ export class GameStateService {
   readonly gameState$: Observable<GameStateModel> = realtimeUpdatesFromTable(
     this.supabase,
     Table.GameState,
+    'id=eq.1',
   ).pipe(
     map((gameStateRecords) => gameStateRecords[0]),
     shareReplay(1),
