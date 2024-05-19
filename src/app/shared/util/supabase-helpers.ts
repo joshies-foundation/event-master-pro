@@ -13,6 +13,7 @@ export enum Table {
   UserNotificationsSubscription = 'user_notifications_subscription',
   GameState = 'game_state',
   GameboardSpace = 'gameboard_space',
+  GameboardMove = 'gameboard_move',
   Session = 'session',
   Transaction = 'transaction',
   Player = 'player',
@@ -27,6 +28,7 @@ export enum Table {
 
 export enum View {
   LifetimeUserStats = 'lifetime_user_stats',
+  MovesForCurrentRound = 'moves_for_current_round',
 }
 
 export enum Function {
@@ -53,6 +55,8 @@ export enum SessionStatus {
 export enum GameboardSpaceEffect {
   GainPoints = 'gain_points',
   GainPointsOrDoActivity = 'gain_points_or_do_activity',
+  Special = 'special',
+  Duel = 'duel',
 }
 
 export enum EventFormat {

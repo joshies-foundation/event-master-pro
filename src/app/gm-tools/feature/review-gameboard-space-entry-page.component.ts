@@ -28,6 +28,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.component';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { GameboardService } from '../../shared/data-access/gameboard.service';
 
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
@@ -124,6 +125,7 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly sessionService = inject(SessionService);
+  private readonly gameboardService = inject(GameboardService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -141,7 +143,7 @@ export default class ReviewGameboardSpaceEntryPageComponent {
       ...player,
       distanceTraveled:
         this.playerSpaceChanges[player.player_id].distanceTraveled,
-      gameboardSpaceId: this.sessionService
+      gameboardSpaceId: this.gameboardService
         .gameboardSpaces()
         ?.find(
           (gameboardSpace) =>
@@ -156,7 +158,7 @@ export default class ReviewGameboardSpaceEntryPageComponent {
       roundNumber: this.roundNumber(),
       numRounds: this.sessionService.session()?.num_rounds,
       players: this.players(),
-      gameboardSpaces: this.sessionService.gameboardSpaces(),
+      gameboardSpaces: this.gameboardService.gameboardSpaces(),
       playerSpaceChanges: this.playerSpaceChanges,
     }),
   );
@@ -169,7 +171,7 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   ): Promise<void> {
     confirmBackendAction({
       action: async () =>
-        this.sessionService.logRoundMoves(roundNumber, playerSpaceChanges),
+        this.gameboardService.logRoundMoves(roundNumber, playerSpaceChanges),
       confirmationMessageText: `Are you sure you want to submit moves for round ${roundNumber}?`,
       successMessageText: 'Moves submitted successfully!',
       successNavigation: '/',

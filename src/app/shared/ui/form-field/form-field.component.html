@@ -46,6 +46,7 @@
           [optionLabel]="field.optionLabel"
           [optionValue]="field.optionValue"
           [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [overlayOptions]="{ styleClass: 'max-w-full' }"
         />
       }
       @case (FormFieldType.MultiSelect) {

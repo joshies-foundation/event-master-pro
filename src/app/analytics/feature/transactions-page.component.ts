@@ -7,6 +7,7 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { trackById } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
+import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 
 @Component({
   selector: 'joshies-transactions-page',
@@ -19,6 +20,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
     PageHeaderComponent,
     HeaderLinkComponent,
     StronglyTypedTableRowDirective,
+    NumberWithSignAndColorPipe,
   ],
   template: `
     <joshies-page-header headerText="Transactions" alwaysSmall>
@@ -51,14 +53,9 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                 </p>
               </td>
               <td
-                class="text-right font-semibold"
-                [class.text-red]="transaction.num_points < 0"
-                [class.text-green]="transaction.num_points > 0"
-                [class.text-500]="!transaction.num_points"
-              >
-                {{ transaction.num_points > 0 ? '+' : ''
-                }}{{ transaction.num_points | number }}
-              </td>
+                class="text-right"
+                [innerHTML]="transaction.num_points | numberWithSignAndColor"
+              ></td>
             </tr>
           </ng-template>
         </p-table>

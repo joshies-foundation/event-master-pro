@@ -1,35 +1,88 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
-import { GameboardSpaceEffectWithData } from '../../shared/util/supabase-types';
+import { inject, Pipe, PipeTransform } from '@angular/core';
+import {
+  DuelSpaceEffectData,
+  GainPointsOrDoActivitySpaceEffectData,
+  GainPointsSpaceEffectData,
+  GameboardSpaceEffectWithData,
+  PlayerGainsPointsBasedOnGameScoreSpecialSpaceEffectData,
+  SpecialSpaceEffectData,
+  SpecialSpaceEventType,
+} from '../../shared/util/supabase-types';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
-import { DecimalPipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
+import { LoseOrGainPipe } from './lose-or-gain.pipe';
 
 @Pipe({
   name: 'gameboardSpaceDescription',
   standalone: true,
 })
 export class GameboardSpaceDescriptionPipe implements PipeTransform {
-  private readonly decimalPipe = inject(DecimalPipe);
+  private readonly loseOrGainPipe = inject(LoseOrGainPipe);
+  private readonly titleCasePipe = inject(TitleCasePipe);
 
   transform(gameboardSpace: GameboardSpaceEffectWithData): string {
     switch (gameboardSpace.effect) {
       case GameboardSpaceEffect.GainPoints:
-        return `
-          <p class="m-0">
-            ${gameboardSpace.effect_data.pointsGained < 0 ? 'Lose' : 'Gain'}
-            ${this.decimalPipe.transform(Math.abs(gameboardSpace.effect_data.pointsGained))} points
-          </p>
-        `;
+        return `${this.titleCasePipe.transform(this.loseOrGainPipe.transform((gameboardSpace.effect_data as GainPointsSpaceEffectData)?.pointsGained ?? '[Missing Data]'))} points`;
 
       case GameboardSpaceEffect.GainPointsOrDoActivity:
         return `
           <p class="m-0">
-            ${gameboardSpace.effect_data.pointsGained < 0 ? 'Lose' : 'Gain'}
-            ${this.decimalPipe.transform(Math.abs(gameboardSpace.effect_data.pointsGained))} points
+            ${this.titleCasePipe.transform(this.loseOrGainPipe.transform((gameboardSpace.effect_data as GainPointsOrDoActivitySpaceEffectData)?.pointsGained ?? '[Missing Data]'))} points
           </p>
           <p class="my-1"><strong>OR</strong></p>
           <p class="m-0">
-            ${gameboardSpace.effect_data.activity.description}
+            ${(gameboardSpace.effect_data as GainPointsOrDoActivitySpaceEffectData)?.alternativeActivity ?? '[Missing Data]'}
           </p>
+        `;
+
+      case GameboardSpaceEffect.Duel:
+        return `
+          <p class="m-0">
+            Randomly wager a percentage of your points and duel another player 1-on-1:
+          </p>
+          <ul class="pl-5 mt-1 mb-0">
+            ${(
+              (gameboardSpace.effect_data as DuelSpaceEffectData)?.duelGames ??
+              []
+            ).reduce((prev, game) => prev + '<li>' + game + '</li>', '')}
+          </ul>
+        `;
+
+      case GameboardSpaceEffect.Special:
+        let specialEventsDescriptions = '<ul class="pl-5 mt-1 mb-0">';
+
+        (
+          (gameboardSpace.effect_data as SpecialSpaceEffectData)
+            ?.specialEvents ?? []
+        ).forEach((event) => {
+          specialEventsDescriptions += `<li>${event.name}<ul class="pl-4"><li class="text-400">`;
+
+          switch (event.effect.type) {
+            case SpecialSpaceEventType.PlayerGainsPointsBasedOnGameScore:
+              const { sessionPointsPerGamePoint, pointsLabelSingular } = event
+                .effect
+                .data as PlayerGainsPointsBasedOnGameScoreSpecialSpaceEffectData;
+
+              specialEventsDescriptions += `${sessionPointsPerGamePoint} point${Math.abs(sessionPointsPerGamePoint) === 1 ? '' : 's'} per ${pointsLabelSingular}`;
+              break;
+
+            case SpecialSpaceEventType.EveryoneGainsPointsBasedOnRank:
+              specialEventsDescriptions +=
+                'Everyone gains points based on rank';
+              break;
+          }
+
+          specialEventsDescriptions += '</li></ul></li>';
+        });
+
+        specialEventsDescriptions += '</ul>';
+
+        return `
+          <p class="m-0">
+            Trigger a special event:
+          </p>
+          ${specialEventsDescriptions}
         `;
 
       default:

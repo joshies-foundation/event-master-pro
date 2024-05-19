@@ -594,6 +594,30 @@ export type Database = {
           },
         ];
       };
+      moves_for_current_round: {
+        Row: {
+          avatar_url: string | null;
+          display_name: string | null;
+          gameboard_space_id: number | null;
+          player_id: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'gameboard_move_gameboard_space_id_fkey';
+            columns: ['gameboard_space_id'];
+            isOneToOne: false;
+            referencedRelation: 'gameboard_space';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'gameboard_move_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Functions: {
       create_session: {
@@ -661,7 +685,11 @@ export type Database = {
         | 'single_elimination_tournament'
         | 'double_elimination_tournament'
         | 'score_based_single_round';
-      gameboard_space_effect: 'gain_points' | 'gain_points_or_do_activity';
+      gameboard_space_effect:
+        | 'gain_points'
+        | 'gain_points_or_do_activity'
+        | 'special'
+        | 'duel';
       session_status: 'not_started' | 'in_progress' | 'finished';
     };
     CompositeTypes: {

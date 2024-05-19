@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { pagePaddingXCssClass } from './shared/util/css-helpers';
+import { PrimeNGConfig } from 'primeng/api';
 
 @Component({
   selector: 'joshies-root',
@@ -27,8 +28,10 @@ import { pagePaddingXCssClass } from './shared/util/css-helpers';
 })
 export class AppComponent implements OnInit {
   private readonly renderer = inject(Renderer2);
+  private readonly primeNgConfig = inject(PrimeNGConfig);
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, pagePaddingXCssClass);
+    this.primeNgConfig.ripple = true;
   }
 }

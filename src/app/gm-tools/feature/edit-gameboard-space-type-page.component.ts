@@ -1,20 +1,23 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
-  Signal,
   computed,
   inject,
   input,
   numberAttribute,
+  OnInit,
+  Signal,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { SessionService } from '../../shared/data-access/session.service';
 import {
+  DuelSpaceEffectData,
+  GainPointsOrDoActivitySpaceEffectData,
+  GainPointsSpaceEffectData,
   GameboardSpaceEffectWithData,
   GameboardSpaceModel,
+  SpecialSpaceEffectData,
 } from '../../shared/util/supabase-types';
 import { ButtonModule } from 'primeng/button';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
@@ -23,8 +26,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import {
-  GameboardSpaceTypeForm,
+  createFormArray,
   gameboardSpaceFormFactory,
+  GameboardSpaceTypeForm,
 } from '../util/gameboard-space-form';
 import { FormBuilder } from '@angular/forms';
 import { Form, FormComponent } from '../../shared/ui/form.component';
@@ -32,6 +36,8 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { JsonPipe } from '@angular/common';
+import { GameboardService } from '../../shared/data-access/gameboard.service';
+import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-edit-gameboard-space-type-page',
@@ -77,7 +83,7 @@ import { JsonPipe } from '@angular/common';
         [label]="deleteButtonText()"
         severity="danger"
         styleClass="w-full mt-6"
-        [disabled]="performingAction()"
+        [disabled]="deleteButtonDisabled()"
         [loading]="deleting()"
       />
 
@@ -134,10 +140,10 @@ import { JsonPipe } from '@angular/common';
       </p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export default class EditGameboardSpaceTypePageComponent implements OnInit {
-  private readonly sessionService = inject(SessionService);
+  private readonly gameboardService = inject(GameboardService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
@@ -164,8 +170,15 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
     () => `Edit ${this.originalGameboardSpace()?.name ?? ''} Space`,
   );
 
+  readonly deleteButtonDisabled = computed(
+    () =>
+      this.performingAction() ||
+      this.originalGameboardSpace()?.effect === GameboardSpaceEffect.Duel,
+  );
+
   readonly deleteButtonText = computed(
-    () => `Delete ${this.originalGameboardSpace()?.name ?? ''} Space`,
+    () =>
+      `${this.originalGameboardSpace()?.effect === GameboardSpaceEffect.Duel ? 'Cannot' : ''} Delete ${this.originalGameboardSpace()?.name ?? ''} Space`,
   );
 
   readonly form: Form;
@@ -183,7 +196,7 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
       gameboardSpacePreviewData: this.updatedGameboardSpacePreviewData,
     } = gameboardSpaceFormFactory(
       async (gameboardSpace) =>
-        this.sessionService.updateGameboardSpaceType(
+        this.gameboardService.updateGameboardSpaceType(
           this.gameboardSpaceId() ?? -1,
           gameboardSpace,
         ),
@@ -207,22 +220,45 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
 
     if (!originalGameboardSpace) return;
 
-    this.formGroup.setValue({
+    this.formGroup.patchValue({
       name: originalGameboardSpace.name,
       color: originalGameboardSpace.color,
       icon_class: originalGameboardSpace.icon_class ?? '',
       effect: originalGameboardSpace.effect,
-      pointsGained: originalGameboardSpace.effect_data.pointsGained,
-      activityDescription:
-        // @ts-expect-error: this property only exists for spaces with GainPointsOrDoActivity effect
-        originalGameboardSpace?.effect_data.activity?.description ?? '',
+
+      // don't assume the database JSON is valid
+      pointsGained:
+        (
+          originalGameboardSpace?.effect_data as
+            | GainPointsSpaceEffectData
+            | undefined
+        )?.pointsGained ?? 0,
+      alternativeActivity:
+        (
+          originalGameboardSpace?.effect_data as
+            | GainPointsOrDoActivitySpaceEffectData
+            | undefined
+        )?.alternativeActivity ?? '',
+      duelGames:
+        (
+          originalGameboardSpace?.effect_data as DuelSpaceEffectData | undefined
+        )?.duelGames?.join('\n') ?? '',
     });
+
+    this.formGroup.controls.specialEvents = createFormArray(
+      this.formBuilder,
+      (
+        originalGameboardSpace?.effect_data as
+          | SpecialSpaceEffectData
+          | undefined
+      )?.specialEvents ?? [],
+    );
   }
 
   confirmDelete(gameboardSpaceId: number, gameboardSpaceName: string): void {
     confirmBackendAction({
       action: async () =>
-        this.sessionService.deleteGameboardSpaceType(gameboardSpaceId),
+        this.gameboardService.deleteGameboardSpaceType(gameboardSpaceId),
       confirmationMessageText: `Are you sure you want to delete the ${gameboardSpaceName} Space?`,
       successMessageText: `Deleted ${gameboardSpaceName} Space`,
       successNavigation: '..',

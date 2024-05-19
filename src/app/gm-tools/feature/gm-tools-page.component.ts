@@ -44,6 +44,11 @@ export default class GmToolsPageComponent {
             iconClass: 'ci-space-entry bg-gray-500',
             routerLink: './space-entry',
           },
+          {
+            text: 'Gameboard Space Resolution',
+            iconClass: 'ci-space-entry bg-blue-500',
+            routerLink: './space-resolution',
+          },
         ]
       : null,
   );

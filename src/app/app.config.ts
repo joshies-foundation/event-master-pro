@@ -10,7 +10,11 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
 import { provideHttpClient } from '@angular/common/http';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import { NumberSignColorClassPipe } from './shared/ui/number-sign-color-class.pipe';
+import { NumberWithSignPipe } from './shared/ui/number-with-sign.pipe';
+import { NumberSignPipe } from './shared/ui/number-sign.pipe';
+import { LoseOrGainPipe } from './gm-tools/ui/lose-or-gain.pipe';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,5 +46,10 @@ export const appConfig: ApplicationConfig = {
 
     // other
     DecimalPipe,
+    NumberSignPipe,
+    NumberSignColorClassPipe,
+    NumberWithSignPipe,
+    LoseOrGainPipe,
+    TitleCasePipe,
   ],
 };

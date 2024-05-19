@@ -37,6 +37,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { GameboardService } from '../../shared/data-access/gameboard.service';
 
 interface GameboardSpaceEntryFormKeys {
   distanceTraveled: number;
@@ -165,6 +166,7 @@ export default class GameboardSpaceEntryPageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly sessionService = inject(SessionService);
+  private readonly gameboardService = inject(GameboardService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -213,7 +215,14 @@ export default class GameboardSpaceEntryPageComponent {
   private readonly formValueChanges: Signal<
     Partial<GameboardSpaceEntryFormModel> | undefined
   > = toSignal(
-    this.formGroup$.pipe(switchMap((formGroup) => formGroup.valueChanges)),
+    this.formGroup$.pipe(
+      switchMap(
+        (formGroup) =>
+          formGroup.valueChanges as Observable<
+            Partial<GameboardSpaceEntryFormModel>
+          >,
+      ),
+    ),
   );
 
   readonly viewModel = computed(() =>
@@ -222,7 +231,7 @@ export default class GameboardSpaceEntryPageComponent {
       numRounds: this.sessionService.session()?.num_rounds,
       formGroup: this.formGroup(),
       players: this.playerService.players(),
-      gameboardSpaces: this.sessionService.gameboardSpaces(),
+      gameboardSpaces: this.gameboardService.gameboardSpaces(),
     }),
   );
 

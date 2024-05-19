@@ -26,7 +26,7 @@ export interface EventForm {
   description: string | undefined;
   rules: string | undefined;
   teamSize: number;
-  scoringMap: number[];
+  scoringMap: string;
   imageUrl: string | undefined;
   pointsLabel: string;
   lowerScoresAreBetter: boolean;
@@ -60,7 +60,7 @@ export function eventFormFactory(
       description: '' as string | undefined,
       rules: '' as string | undefined,
       teamSize: [1, Validators.required],
-      scoringMap: [[] as number[], Validators.required],
+      scoringMap: ['', Validators.required],
       imageUrl: '' as string | undefined,
       pointsLabel: ['points', Validators.required],
       lowerScoresAreBetter: [false, Validators.required],
@@ -204,7 +204,7 @@ export function eventFormFactory(
           description: description ?? null,
           rules: rules ?? null,
           team_size: teamSize,
-          scoring_map: scoringMap,
+          scoring_map: scoringMap as unknown as number[],
           image_url: imageUrl ?? null,
           points_label: pointsLabel,
           lower_scores_are_better: lowerScoresAreBetter,

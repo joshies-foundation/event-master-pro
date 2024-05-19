@@ -25,6 +25,7 @@ import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
+import { delay } from 'rxjs';
 
 export enum FormFieldType {
   Text,
@@ -161,13 +162,20 @@ export class FormFieldComponent implements AfterViewInit {
   );
 
   ngAfterViewInit() {
-    if (this.field().type !== FormFieldType.Submit) {
+    if (this.field().type === FormFieldType.Submit) {
+      // react to the form becoming valid/invalid
+      this.formGroup()
+        .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.cd.detectChanges());
+
       return;
     }
 
-    // react to the form becoming valid/invalid
-    this.formGroup()
-      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.cd.detectChanges());
+    // update top parent form group when nested form controls are updated
+    (
+      this.field() as unknown as { control: FormControl<unknown> }
+    ).control.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef), delay(0))
+      .subscribe(() => this.formGroup().updateValueAndValidity());
   }
 }

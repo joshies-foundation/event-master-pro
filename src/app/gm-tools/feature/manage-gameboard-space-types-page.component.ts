@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { SessionService } from '../../shared/data-access/session.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { RouterLink } from '@angular/router';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
+import { GameboardService } from '../../shared/data-access/gameboard.service';
 
 @Component({
   selector: 'joshies-manage-gameboard-space-types-page',
@@ -72,9 +72,9 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ManageGameboardSpaceTypesPageComponent {
-  private readonly sessionService = inject(SessionService);
+  private readonly gameboardService = inject(GameboardService);
 
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
 
-  readonly gameboardSpaces = this.sessionService.gameboardSpaces;
+  readonly gameboardSpaces = this.gameboardService.gameboardSpaces;
 }

@@ -34,11 +34,6 @@ import {
   OverrideDefinitionTableModel,
 } from '../ui/override-definition-table.component';
 
-enum ScoreOverrideType {
-  AddOrSubtractPoints,
-  ReplaceScore,
-}
-
 @Component({
   selector: 'joshies-override-points-page',
   standalone: true,
@@ -180,16 +175,6 @@ export default class OverridePointsPageComponent {
       : this.changeValueDerivedFromReplacementValue(),
   );
 
-  readonly changeStyleClass = computed(() =>
-    this.changeValue() > 0
-      ? 'text-green'
-      : this.changeValue() < 0
-        ? 'text-red'
-        : '',
-  );
-
-  readonly changePrefix = computed(() => (this.changeValue() > 0 ? '+' : ''));
-
   readonly newScore = computed(() => this.oldScore() + this.changeValue());
 
   readonly submitButtonDisabled = computed(() =>
@@ -203,8 +188,6 @@ export default class OverridePointsPageComponent {
       inAddOrSubtractMode: this.inAddOrSubtractMode(),
       oldScore: this.oldScore(),
       changeValue: this.changeValue(),
-      changeStyleClass: this.changeStyleClass(),
-      changePrefix: this.changePrefix(),
       newScore: this.newScore(),
       inputDisabled: this.submitting(),
     }),
@@ -267,6 +250,4 @@ export default class OverridePointsPageComponent {
       },
     });
   }
-
-  protected ScoreOverrideType = ScoreOverrideType;
 }

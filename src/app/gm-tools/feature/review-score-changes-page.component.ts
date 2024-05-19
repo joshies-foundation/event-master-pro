@@ -28,6 +28,7 @@ import {
   trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
+import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 
 @Component({
   selector: 'joshies-review-score-changes-page',
@@ -42,6 +43,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
     ButtonModule,
     DecimalPipe,
     StronglyTypedTableRowDirective,
+    NumberWithSignAndColorPipe,
   ],
   template: `
     <joshies-page-header headerText="Review Score Changes" alwaysSmall>
@@ -99,13 +101,9 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
             </td>
             <!-- Change -->
             <td
-              class="text-right font-semibold"
-              [class.text-red]="player.change < 0"
-              [class.text-green]="player.change > 0"
-              [class.text-500]="!player.change"
-            >
-              {{ (player.change > 0 ? '+' : '') + (player.change | number) }}
-            </td>
+              class="text-right"
+              [innerHTML]="player.change | numberWithSignAndColor"
+            ></td>
             <!-- After -->
             <td class="text-right font-semibold">
               {{ player.new_score | number }}

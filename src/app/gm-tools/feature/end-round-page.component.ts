@@ -35,6 +35,8 @@ import {
 import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
+import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
+import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 
 type EndRoundFormModel = Record<number, number>;
 
@@ -51,6 +53,8 @@ type EndRoundFormModel = Record<number, number>;
     ReactiveFormsModule,
     ButtonModule,
     StronglyTypedTableRowDirective,
+    NumberSignPipe,
+    NumberSignColorClassPipe,
   ],
   template: `
     <joshies-page-header headerText="End Round" alwaysSmall>
@@ -109,14 +113,10 @@ type EndRoundFormModel = Record<number, number>;
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
                 [inputStyleClass]="
-                  'w-full font-semibold text-right ' +
-                  ((input.value ?? 0) > 0
-                    ? 'text-green'
-                    : (input.value ?? 0) < 0
-                      ? 'text-red'
-                      : '')
+                  'w-full text-right ' +
+                  (input.value ?? 0 | numberSignColorClass)
                 "
-                [prefix]="(input.value ?? 0) > 0 ? '+' : ''"
+                [prefix]="input.value ?? 0 | numberSign"
               />
             </td>
           </tr>

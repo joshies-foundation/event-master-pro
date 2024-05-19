@@ -8,13 +8,14 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
+import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
+import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 
 export interface OverrideDefinitionTableModel {
   inAddOrSubtractMode: boolean;
   oldScore: number;
   changeValue: number;
-  changeStyleClass: string;
-  changePrefix: string;
   newScore: number;
   inputDisabled?: boolean;
   readonly?: boolean;
@@ -23,7 +24,15 @@ export interface OverrideDefinitionTableModel {
 @Component({
   selector: 'joshies-override-definition-table',
   standalone: true,
-  imports: [InputNumberModule, DecimalPipe, FormsModule, NgClass],
+  imports: [
+    InputNumberModule,
+    DecimalPipe,
+    FormsModule,
+    NgClass,
+    NumberSignPipe,
+    NumberSignColorClassPipe,
+    NumberWithSignAndColorPipe,
+  ],
   template: `
     <table>
       <tbody>
@@ -40,7 +49,10 @@ export interface OverrideDefinitionTableModel {
           <td>Change</td>
           <td
             class="text-right font-semibold"
-            [ngClass]="model().changeStyleClass + changePaddingClass()"
+            [ngClass]="
+              (model().changeValue | numberSignColorClass) +
+              changePaddingClass()
+            "
           >
             @if (showChangeInput()) {
               <p-inputNumber
@@ -51,14 +63,17 @@ export interface OverrideDefinitionTableModel {
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
                 [inputStyleClass]="
-                  'w-full font-semibold text-right ' + model().changeStyleClass
+                  'w-full font-semibold text-right ' +
+                  (model().changeValue | numberSignColorClass)
                 "
-                [prefix]="model().changePrefix"
+                [prefix]="model().changeValue | numberSign"
                 styleClass="w-full"
                 [disabled]="model().inputDisabled ?? false"
               />
             } @else {
-              {{ model().changePrefix + (model().changeValue | number) }}
+              <span
+                [innerHTML]="model().changeValue | numberWithSignAndColor"
+              ></span>
             }
           </td>
         </tr>

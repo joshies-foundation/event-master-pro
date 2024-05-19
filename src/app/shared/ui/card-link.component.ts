@@ -6,6 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RippleModule } from 'primeng/ripple';
 
 export interface CardLinkModel {
   iconClass: string;
@@ -18,7 +19,7 @@ export interface CardLinkModel {
 @Component({
   selector: 'joshies-card-link',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, NgClass],
+  imports: [RouterLink, RouterLinkActive, NgClass, RippleModule],
   template: `
     <a
       class="flex w-full no-underline text-color transition-colors transition-duration-100 transition-ease-in-out"

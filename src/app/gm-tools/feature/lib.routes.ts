@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
+import { gameboardMovesResolver } from '../data-access/gameboard-moves.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -29,6 +30,12 @@ const gmToolsRoutes: Routes = [
     loadComponent: () =>
       import('./review-gameboard-space-entry-page.component'),
     data: { pageAnimationLayer: 2 },
+  },
+  {
+    path: 'space-resolution',
+    loadComponent: () => import('./gameboard-space-resolution-page.component'),
+    data: { pageAnimationLayer: 2 },
+    resolve: { gameboardMovesResponse: gameboardMovesResolver },
   },
 
   // players

@@ -13,7 +13,6 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { GameboardSpaceEffectWithData } from '../../shared/util/supabase-types';
 import { Form, FormComponent } from '../../shared/ui/form.component';
-import { SessionService } from '../../shared/data-access/session.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,6 +22,7 @@ import {
   GameboardSpaceTypeForm,
   gameboardSpaceFormFactory,
 } from '../util/gameboard-space-form';
+import { GameboardService } from '../../shared/data-access/gameboard.service';
 
 @Component({
   selector: 'joshies-new-space-type-page',
@@ -83,7 +83,7 @@ import {
 })
 export default class NewGameboardSpaceTypePageComponent {
   private readonly formBuilder = inject(FormBuilder);
-  private readonly sessionService = inject(SessionService);
+  private readonly gameboardService = inject(GameboardService);
   private readonly messageService = inject(MessageService);
   private readonly gameStateService = inject(GameStateService);
   private readonly router = inject(Router);
@@ -115,7 +115,7 @@ export default class NewGameboardSpaceTypePageComponent {
       gameboardSpacePreviewData: this.gameboardSpacePreviewData,
     } = gameboardSpaceFormFactory(
       async (gameboardSpace) =>
-        this.sessionService.createNewGameboardSpaceType(gameboardSpace),
+        this.gameboardService.createNewGameboardSpaceType(gameboardSpace),
       (name) => `Create ${name} Space`,
       (name) => `${name} Space created`,
       this.formBuilder,
