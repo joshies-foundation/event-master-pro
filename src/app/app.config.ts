@@ -11,7 +11,6 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
 import { provideHttpClient } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -43,6 +42,5 @@ export const appConfig: ApplicationConfig = {
 
     // other
     DecimalPipe,
-    provideAnimationsAsync(),
   ],
 };
