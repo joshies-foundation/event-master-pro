@@ -185,6 +185,11 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./new-event-page.component'),
     data: { pageAnimationLayer: 2 },
   },
+  {
+    path: 'brackets',
+    loadComponent: () => import('./create-brackets-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 ];
 
 export default gmToolsRoutes;
