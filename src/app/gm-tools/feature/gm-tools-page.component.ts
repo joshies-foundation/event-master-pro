@@ -133,20 +133,27 @@ export default class GmToolsPageComponent {
   };
 
   readonly sessionLinks: Signal<CardLinkModel[]> = computed(
-    (): CardLinkModel[] => [
-      {
-        text: 'Manage Gameboard Space Types',
-        iconClass: 'pi pi-question-circle bg-green-500',
-        routerLink: './space-types',
-      },
-      {
-        text: 'Manage Events',
-        iconClass: 'pi pi-flag bg-purple-500',
-        routerLink: './events',
-      },
-      ...this.sessionStatusDependentLinks[
-        this.gameStateService.sessionStatus() ?? 'undefined'
-      ],
-    ],
+    (): CardLinkModel[] => {
+      return [
+        {
+          text: 'Manage Gameboard Space Types',
+          iconClass: 'pi pi-question-circle bg-green-500',
+          routerLink: './space-types',
+        },
+        {
+          text: 'Manage Events',
+          iconClass: 'pi pi-flag bg-purple-500',
+          routerLink: './events',
+        },
+        {
+          text: 'Create Brackets',
+          iconClass: 'pi pi-sitemap bg-yellow-500',
+          routerLink: './brackets',
+        },
+        ...this.sessionStatusDependentLinks[
+          this.gameStateService.sessionStatus() ?? 'undefined'
+        ],
+      ];
+    },
   );
 }
