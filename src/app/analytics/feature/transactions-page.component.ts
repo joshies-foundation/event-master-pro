@@ -66,7 +66,7 @@ import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and
       }
     } @else if (transactions() === null) {
       <p class="mt-6 pt-6 text-center text-500 font-italic">
-        No active session
+        You are not a player in this session
       </p>
     } @else {
       <!-- Loading Skeleton -->
