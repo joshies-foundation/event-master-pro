@@ -9,7 +9,7 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -21,12 +21,21 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
-import { Observable, map, shareReplay, switchMap, take } from 'rxjs';
+import {
+  Observable,
+  map,
+  shareReplay,
+  switchMap,
+  take,
+  concat,
+  of,
+} from 'rxjs';
 import {
   LocalStorageRecord,
   getRecordFromLocalStorage,
@@ -34,14 +43,21 @@ import {
 } from '../../shared/util/local-storage-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { trackByPlayerId } from '../../shared/util/supabase-helpers';
+import {
+  GameboardSpaceEffect,
+  trackByPlayerId,
+} from '../../shared/util/supabase-helpers';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
+import { ReturnSpaceWithIdIfItsEffectIsPipe } from '../../shared/ui/return-space-with-id-if-its-effect-is.pipe';
+import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
+import { GameboardSpaceModel } from '../../shared/util/supabase-types';
 
 interface GameboardSpaceEntryFormKeys {
   distanceTraveled: number;
   gameboardSpaceId: number;
+  decision?: 'points' | 'activity';
 }
 export type GameboardSpaceEntryFormModel = Record<
   string,
@@ -114,8 +130,10 @@ export type GameboardSpaceEntryFormModel = Record<
                 inputStyleClass="w-full font-semibold text-right"
                 placeholder="Distance"
               />
+
+              <!-- Space -->
               <p-selectButton
-                [options]="vm.gameboardSpaces!"
+                [options]="vm.gameboardSpaces"
                 optionLabel="icon_class"
                 optionValue="id"
                 formControlName="gameboardSpaceId"
@@ -130,6 +148,35 @@ export type GameboardSpaceEntryFormModel = Record<
                   />
                 </ng-template>
               </p-selectButton>
+
+              <!-- If player must choose between gaining/losing points and doing an activity, show the options here-->
+              @if (
+                vm.gameboardSpaces
+                  | returnSpaceWithIdIfItsEffectIs
+                    : vm.formValue[player.player_id].gameboardSpaceId
+                    : GameboardSpaceEffect.GainPointsOrDoActivity;
+                as space
+              ) {
+                <p-selectButton
+                  [options]="[
+                    {
+                      label:
+                        ($any(space.effect_data)?.pointsGained ?? 0
+                          | loseOrGain
+                          | titlecase) + ' points',
+                      value: 'points'
+                    },
+                    {
+                      label:
+                        $any(space.effect_data)?.alternativeActivity ??
+                        'Do activity',
+                      value: 'activity'
+                    }
+                  ]"
+                  formControlName="decision"
+                  styleClass="mt-2"
+                />
+              }
             </td>
           </tr>
         </ng-template>
@@ -160,6 +207,10 @@ export type GameboardSpaceEntryFormModel = Record<
     ReactiveFormsModule,
     SelectButtonModule,
     InputNumberModule,
+    FormsModule,
+    LoseOrGainPipe,
+    TitleCasePipe,
+    ReturnSpaceWithIdIfItsEffectIsPipe,
   ],
 })
 export default class GameboardSpaceEntryPageComponent {
@@ -199,6 +250,11 @@ export default class GameboardSpaceEntryPageComponent {
                   this.initialFormValue?.[player.player_id]?.gameboardSpaceId,
                   Validators.required,
                 ],
+                decision: [
+                  this.initialFormValue?.[player.player_id]?.decision ??
+                    'points',
+                  Validators.required,
+                ],
               }),
             }),
             {},
@@ -212,26 +268,43 @@ export default class GameboardSpaceEntryPageComponent {
     ModelFormGroup<GameboardSpaceEntryFormModel> | undefined
   > = toSignal(this.formGroup$);
 
-  private readonly formValueChanges: Signal<
-    Partial<GameboardSpaceEntryFormModel> | undefined
-  > = toSignal(
+  private readonly formValueChanges$: Observable<GameboardSpaceEntryFormModel> =
     this.formGroup$.pipe(
       switchMap(
         (formGroup) =>
-          formGroup.valueChanges as Observable<
-            Partial<GameboardSpaceEntryFormModel>
-          >,
+          formGroup.valueChanges as Observable<GameboardSpaceEntryFormModel>,
       ),
-    ),
-  );
+      shareReplay(1),
+    );
+
+  private readonly formValue: Signal<GameboardSpaceEntryFormModel | undefined> =
+    toSignal(
+      this.formGroup$.pipe(
+        switchMap(
+          (formGroup) =>
+            concat(
+              of(formGroup.value),
+              formGroup.valueChanges,
+            ) as Observable<GameboardSpaceEntryFormModel>,
+        ),
+        shareReplay(1),
+      ),
+    );
+
+  private readonly formValueChanges: Signal<
+    Partial<GameboardSpaceEntryFormModel> | undefined
+  > = toSignal(this.formValueChanges$);
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       roundNumber: this.roundNumber(),
       numRounds: this.sessionService.session()?.num_rounds,
       formGroup: this.formGroup(),
+      formValue: this.formValue(),
       players: this.playerService.players(),
-      gameboardSpaces: this.gameboardService.gameboardSpaces(),
+      gameboardSpaces: this.gameboardService.gameboardSpaces() as
+        | GameboardSpaceModel[]
+        | undefined,
     }),
   );
 
@@ -249,4 +322,6 @@ export default class GameboardSpaceEntryPageComponent {
       relativeTo: this.activatedRoute,
     });
   }
+
+  protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
 }

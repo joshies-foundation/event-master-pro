@@ -13,8 +13,11 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { SessionService } from '../../shared/data-access/session.service';
 import { TableModule } from 'primeng/table';
-import { trackByPlayerId } from '../../shared/util/supabase-helpers';
-import { DecimalPipe, NgOptimizedImage } from '@angular/common';
+import {
+  GameboardSpaceEffect,
+  trackByPlayerId,
+} from '../../shared/util/supabase-helpers';
+import { DecimalPipe, NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -29,6 +32,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.component';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
+import { ReturnSpaceWithIdIfItsEffectIsPipe } from '../../shared/ui/return-space-with-id-if-its-effect-is.pipe';
+import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
@@ -86,13 +91,27 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
               {{ player.distanceTraveled | number }}
             </td>
             <!-- Selected Space -->
-            <td>
-              <div class="flex justify-content-center">
-                <joshies-gameboard-space
-                  [model]="player.gameboardSpaceId!"
-                  class="relative"
-                />
-              </div>
+            <td class="text-center">
+              <joshies-gameboard-space
+                [model]="player.gameboardSpace!"
+                class="mx-auto"
+              />
+              @if (
+                player.gameboardSpace!.effect ===
+                GameboardSpaceEffect.GainPointsOrDoActivity
+              ) {
+                <p class="text-sm text-500 mt-1 mb-0">
+                  {{
+                    player.decision === 'points'
+                      ? ($any(player.gameboardSpace!.effect_data)
+                          ?.pointsGained ?? 0
+                          | loseOrGain
+                          | titlecase) + ' points'
+                      : $any(player.gameboardSpace!.effect_data)
+                          ?.alternativeActivity ?? 'Do activity'
+                  }}
+                </p>
+              }
             </td>
           </tr>
         </ng-template>
@@ -118,6 +137,9 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
     StronglyTypedTableRowDirective,
     GameboardSpaceComponent,
     DecimalPipe,
+    ReturnSpaceWithIdIfItsEffectIsPipe,
+    LoseOrGainPipe,
+    TitleCasePipe,
   ],
 })
 export default class ReviewGameboardSpaceEntryPageComponent {
@@ -143,13 +165,14 @@ export default class ReviewGameboardSpaceEntryPageComponent {
       ...player,
       distanceTraveled:
         this.playerSpaceChanges[player.player_id].distanceTraveled,
-      gameboardSpaceId: this.gameboardService
+      gameboardSpace: this.gameboardService
         .gameboardSpaces()
         ?.find(
           (gameboardSpace) =>
             gameboardSpace.id ===
             this.playerSpaceChanges[player.player_id].gameboardSpaceId,
         ),
+      decision: this.playerSpaceChanges[player.player_id].decision,
     })),
   );
 
@@ -186,4 +209,6 @@ export default class ReviewGameboardSpaceEntryPageComponent {
       LocalStorageRecord.GameboardSpaceEntryFormValue,
     );
   }
+
+  protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
 }
