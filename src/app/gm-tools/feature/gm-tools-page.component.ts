@@ -115,7 +115,7 @@ export default class GmToolsPageComponent {
         {
           text: 'Create Brackets',
           iconClass: 'pi pi-sitemap bg-yellow-500',
-          routerLink: './brackets',
+          routerLink: './bracket',
         },
         ...sessionStatusDependentLinks[
           this.gameStateService.sessionStatus() ?? 'undefined'
