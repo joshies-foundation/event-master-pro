@@ -65,6 +65,14 @@ export enum EventFormat {
   ScoreBasedSingleRound = 'score_based_single_round',
 }
 
+export enum RoundPhase {
+  GameboardMoves = 'gameboard_moves',
+  SpecialSpaceEvents = 'special_space_events',
+  Duels = 'duels',
+  Event = 'event',
+  WaitingForNextRound = 'waiting_for_next_round',
+}
+
 export type TTable = keyof Database['public']['Tables'];
 
 function subscribeToLiveTable<Table extends TTable, Row extends Tables<Table>>(

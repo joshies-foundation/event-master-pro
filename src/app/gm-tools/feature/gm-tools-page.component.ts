@@ -9,7 +9,7 @@ import {
   Signal,
 } from '@angular/core';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { SessionStatus } from '../../shared/util/supabase-helpers';
+import { RoundPhase, SessionStatus } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-gm-tools-pages-wrapper',
@@ -31,27 +31,55 @@ import { SessionStatus } from '../../shared/util/supabase-helpers';
 export default class GmToolsPageComponent {
   private readonly gameStateService = inject(GameStateService);
 
-  readonly roundLinks: Signal<CardLinkModel[] | null> = computed(() =>
-    this.gameStateService.sessionIsInProgress()
-      ? [
-          {
-            text: 'End Round & Tally Points',
-            iconClass: 'pi pi-check-circle bg-green-500',
-            routerLink: './end-round',
-          },
-          {
-            text: 'Enter Spaces',
-            iconClass: 'ci-space-entry bg-gray-500',
-            routerLink: './space-entry',
-          },
-          {
-            text: 'Gameboard Space Resolution',
-            iconClass: 'ci-space-entry bg-blue-500',
-            routerLink: './space-resolution',
-          },
-        ]
-      : null,
-  );
+  private readonly roundPhaseDependentLinks: Record<
+    RoundPhase | 'undefined',
+    CardLinkModel[] | null
+  > = {
+    [RoundPhase.GameboardMoves]: [
+      {
+        text: 'Enter Gameboard Moves',
+        iconClass: 'ci-space-entry bg-gray-500',
+        routerLink: './space-entry',
+      },
+    ],
+    [RoundPhase.SpecialSpaceEvents]: [
+      {
+        text: 'Manage Special Space Events',
+        iconClass: 'pi pi-question-circle bg-green-500',
+        routerLink: './space-resolution',
+      },
+    ],
+    [RoundPhase.Duels]: [
+      {
+        text: 'Manage Duels',
+        iconClass: 'pi pi-bolt bg-purple-500',
+        routerLink: '.',
+      },
+    ],
+    [RoundPhase.Event]: [
+      {
+        text: 'Manage Event',
+        iconClass: 'pi pi-bolt bg-orange-500',
+        routerLink: '.',
+      },
+    ],
+    [RoundPhase.WaitingForNextRound]: [
+      {
+        text: 'End Round & Tally Points',
+        iconClass: 'pi pi-check-circle bg-green-500',
+        routerLink: './end-round',
+      },
+    ],
+    undefined: null,
+  };
+
+  readonly roundLinks: Signal<CardLinkModel[] | null> = computed(() => {
+    if (!this.gameStateService.sessionIsInProgress()) return null;
+
+    return this.roundPhaseDependentLinks[
+      this.gameStateService.roundPhase() ?? 'undefined'
+    ];
+  });
 
   readonly playersLinks: CardLinkModel[] = [
     {
@@ -76,51 +104,49 @@ export default class GmToolsPageComponent {
     },
   ];
 
-  readonly sessionLinks: Signal<CardLinkModel[]> = computed(
-    (): CardLinkModel[] => {
-      const sessionStatusDependentLinks: Record<
-        SessionStatus | 'undefined',
-        CardLinkModel[]
-      > = {
-        [SessionStatus.NotStarted]: [
-          {
-            text: 'Start Session Early',
-            iconClass: 'pi pi-play-circle bg-green-500',
-            routerLink: './start-session-early',
-          },
-        ],
-        [SessionStatus.InProgress]: [
-          {
-            text: 'End Session',
-            iconClass: 'pi pi-stop-circle bg-red-600',
-            routerLink: './end-session',
-          },
-        ],
-        [SessionStatus.Finished]: [
-          {
-            text: 'Create Session',
-            iconClass: 'pi pi-plus bg-blue-500',
-            routerLink: './create-session',
-          },
-        ],
-        undefined: [],
-      };
+  private readonly sessionStatusDependentLinks: Record<
+    SessionStatus | 'undefined',
+    CardLinkModel[]
+  > = {
+    [SessionStatus.NotStarted]: [
+      {
+        text: 'Start Session Early',
+        iconClass: 'pi pi-play-circle bg-green-500',
+        routerLink: './start-session-early',
+      },
+    ],
+    [SessionStatus.InProgress]: [
+      {
+        text: 'End Session',
+        iconClass: 'pi pi-stop-circle bg-red-600',
+        routerLink: './end-session',
+      },
+    ],
+    [SessionStatus.Finished]: [
+      {
+        text: 'Create Session',
+        iconClass: 'pi pi-plus bg-blue-500',
+        routerLink: './create-session',
+      },
+    ],
+    undefined: [],
+  };
 
-      return [
-        {
-          text: 'Manage Gameboard Space Types',
-          iconClass: 'pi pi-question-circle bg-green-500',
-          routerLink: './space-types',
-        },
-        {
-          text: 'Manage Events',
-          iconClass: 'pi pi-flag bg-purple-500',
-          routerLink: './events',
-        },
-        ...sessionStatusDependentLinks[
-          this.gameStateService.sessionStatus() ?? 'undefined'
-        ],
-      ];
-    },
+  readonly sessionLinks: Signal<CardLinkModel[]> = computed(
+    (): CardLinkModel[] => [
+      {
+        text: 'Manage Gameboard Space Types',
+        iconClass: 'pi pi-question-circle bg-green-500',
+        routerLink: './space-types',
+      },
+      {
+        text: 'Manage Events',
+        iconClass: 'pi pi-flag bg-purple-500',
+        routerLink: './events',
+      },
+      ...this.sessionStatusDependentLinks[
+        this.gameStateService.sessionStatus() ?? 'undefined'
+      ],
+    ],
   );
 }

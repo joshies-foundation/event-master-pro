@@ -8,9 +8,10 @@ import {
   Table,
   realtimeUpdatesFromTable,
   showMessageOnError,
+  RoundPhase,
 } from '../util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { GameStateModel, SessionStatusType } from '../util/supabase-types';
+import { GameStateModel } from '../util/supabase-types';
 
 @Injectable({
   providedIn: 'root',
@@ -29,21 +30,25 @@ export class GameStateService {
   );
 
   // selectors (slices of state)
-  readonly sessionId$: Observable<number | null> = createSelector(
+  readonly sessionId$: Observable<number> = createSelector(
     this.gameState$,
     'session_id',
   );
-  readonly thereIsAnActiveSession$: Observable<boolean> = this.sessionId$.pipe(
-    map((activeSessionId) => activeSessionId !== null),
-    shareReplay(1),
-  );
-  readonly sessionStatus$: Observable<SessionStatusType> = createSelector(
+  readonly sessionStatus$: Observable<SessionStatus> = createSelector(
     this.gameState$,
     'session_status',
-  );
-  readonly roundNumber$: Observable<number | null> = createSelector(
+  ) as Observable<SessionStatus>;
+  readonly roundNumber$: Observable<number> = createSelector(
     this.gameState$,
     'round_number',
+  );
+  readonly roundPhase$: Observable<RoundPhase> = createSelector(
+    this.gameState$,
+    'round_phase',
+  ) as Observable<RoundPhase>;
+  readonly bankBalance$: Observable<number> = createSelector(
+    this.gameState$,
+    'bank_balance',
   );
   readonly gameMasterUserId$: Observable<string> = createSelector(
     this.gameState$,
@@ -54,17 +59,18 @@ export class GameStateService {
   readonly gameState: Signal<GameStateModel | undefined> = toSignal(
     this.gameState$,
   );
-  readonly sessionId: Signal<number | null | undefined> = toSignal(
-    this.sessionId$,
-  );
-  readonly thereIsAnActiveSession: Signal<boolean | undefined> = toSignal(
-    this.thereIsAnActiveSession$,
-  );
-  readonly sessionStatus: Signal<SessionStatusType | undefined> = toSignal(
+  readonly sessionId: Signal<number | undefined> = toSignal(this.sessionId$);
+  readonly sessionStatus: Signal<SessionStatus | undefined> = toSignal(
     this.sessionStatus$,
   );
-  readonly roundNumber: Signal<number | null | undefined> = toSignal(
+  readonly roundNumber: Signal<number | undefined> = toSignal(
     this.roundNumber$,
+  );
+  readonly roundPhase: Signal<RoundPhase | undefined> = toSignal(
+    this.roundPhase$,
+  );
+  readonly bankBalance: Signal<number | undefined> = toSignal(
+    this.bankBalance$,
   );
   readonly gameMasterUserId: Signal<string | undefined> = toSignal(
     this.gameMasterUserId$,

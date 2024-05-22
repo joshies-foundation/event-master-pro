@@ -58,7 +58,7 @@ import { EventModel } from '../../shared/util/supabase-types';
             <p-button
               [text]="true"
               class="mr-3"
-              (onClick)="saveChanges(sortedEvents()!, sortedEventsLocal()!)"
+              (onClick)="saveChanges(databaseEvents()!, localSortedEvents()!)"
             >
               <i class="pi pi-save text-xl text-primary"></i>
             </p-button>
@@ -72,7 +72,7 @@ import { EventModel } from '../../shared/util/supabase-types';
       </div>
     </joshies-page-header>
 
-    @if (sortedEventsLocal(); as sortedEvents) {
+    @if (localSortedEvents(); as sortedEvents) {
       <div
         cdkDropList
         (cdkDropListDropped)="onEventDrop($event)"
@@ -125,7 +125,7 @@ import { EventModel } from '../../shared/util/supabase-types';
           <p class="mt-5 text-center font-italic text-400">No events</p>
         }
       </div>
-    } @else if (sortedEvents === null) {
+    } @else if (databaseEvents === null) {
       <p class="mt-6 pt-6 text-center text-500 font-italic">
         No active session
       </p>
@@ -146,25 +146,19 @@ export default class ManageEventsPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly gameStateService = inject(GameStateService);
 
-  private readonly events = this.eventService.events;
+  readonly databaseEvents = this.eventService.events;
   readonly userIsGameMaster = this.playerService.userIsGameMaster;
 
   readonly currentRoundNumber = computed(
     () => this.gameStateService.roundNumber() ?? -1,
   );
 
-  readonly sortedEvents = computed(() =>
-    this.events()
-      ?.slice()
-      .sort((event1, event2) => event1.round_number - event2.round_number),
-  );
-
-  readonly sortedEventsLocal = signal(this.sortedEvents()?.slice());
+  readonly localSortedEvents = signal(this.databaseEvents()?.slice());
   private readonly submitting = signal(false);
 
   readonly unsavedChangesExist = computed(() => {
-    const dbEvents = this.sortedEvents();
-    const localEvents = this.sortedEventsLocal();
+    const dbEvents = this.databaseEvents();
+    const localEvents = this.localSortedEvents();
 
     if (!dbEvents || !localEvents) return false;
 
@@ -174,14 +168,14 @@ export default class ManageEventsPageComponent {
   });
 
   onEventDrop(drop: CdkDragDrop<string[]>): void {
-    this.sortedEventsLocal.update((events) => {
+    this.localSortedEvents.update((events) => {
       moveItemInArray(events!, drop.previousIndex, drop.currentIndex);
       return [...events!];
     });
   }
 
   private readonly updateLocalEventsArrayOnDatabaseUpdates = effect(
-    () => this.sortedEventsLocal.set(this.sortedEvents()?.slice()),
+    () => this.localSortedEvents.set(this.databaseEvents()?.slice()),
     { allowSignalWrites: true },
   );
 

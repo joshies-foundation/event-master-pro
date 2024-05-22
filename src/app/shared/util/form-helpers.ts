@@ -12,8 +12,6 @@ export type ModelFormGroupType<T> = {
       : FormControl<T[K]>;
 };
 
-// export type ModelFormArray<T extends Array<U>, U> = FormArray<>;
-
 export function formValueSignal<T>(formGroup: ModelFormGroup<T>): Signal<T> {
   return toSignal(formGroup.valueChanges, {
     initialValue: formGroup.value,

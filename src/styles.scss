@@ -176,14 +176,23 @@ $sizeVariants: (
     0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
+.bg-highlight-fadeout {
+  animation: ease-out bg-highlight-fadeout 1s;
+}
+
+@keyframes bg-highlight-fadeout {
+  from {
+    background-color: var(--yellow-500);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
 // ~~~ Classes that are different in light vs. dark mode ~~~
 
 .bg-header-footer-alpha {
   background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
-}
-
-.bg-highlight {
-  background-color: var(--yellow-100);
 }
 
 .text-green {

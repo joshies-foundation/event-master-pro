@@ -6,8 +6,7 @@ import {
   SessionStatus,
 } from '../util/supabase-helpers';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
-import { Observable, map, shareReplay } from 'rxjs';
-import { whenNotNull } from '../util/rxjs-helpers';
+import { Observable, map, shareReplay, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SessionModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
@@ -20,9 +19,9 @@ export class SessionService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly gameStateService = inject(GameStateService);
 
-  readonly session$: Observable<SessionModel | null> =
+  readonly session$: Observable<SessionModel> =
     this.gameStateService.sessionId$.pipe(
-      whenNotNull((activeSessionId) =>
+      switchMap((activeSessionId) =>
         realtimeUpdatesFromTable(
           this.supabase,
           Table.Session,
@@ -32,9 +31,7 @@ export class SessionService {
       shareReplay(1),
     );
 
-  readonly session: Signal<SessionModel | null | undefined> = toSignal(
-    this.session$,
-  );
+  readonly session: Signal<SessionModel | undefined> = toSignal(this.session$);
 
   async createSession(
     sessionName: string,

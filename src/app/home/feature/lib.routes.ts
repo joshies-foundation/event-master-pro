@@ -4,6 +4,7 @@ const homeRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./home-page/home-page.component'),
+    data: { pageAnimationLayer: 0 },
   },
 ];
 

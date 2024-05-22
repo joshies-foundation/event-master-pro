@@ -28,12 +28,16 @@ import { Observable, concat, map, of, takeWhile, timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../../../shared/util/rxjs-helpers';
 import {
+  RoundPhase,
   SessionStatus,
   showMessageOnError,
 } from '../../../shared/util/supabase-helpers';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { showSuccessMessage } from '../../../shared/util/message-helpers';
+import { EventService } from '../../../shared/data-access/event.service';
+import { RouterLink } from '@angular/router';
+import { EventInfoComponent } from '../../../shared/ui/event-info.component';
 
 interface Countdown {
   days: number;
@@ -63,6 +67,8 @@ interface Countdown {
     RankingsTableComponent,
     DatePipe,
     ButtonModule,
+    RouterLink,
+    EventInfoComponent,
   ],
 })
 export default class HomePageComponent {
@@ -70,39 +76,8 @@ export default class HomePageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly authService = inject(AuthService);
+  private readonly eventService = inject(EventService);
   private readonly messageService = inject(MessageService);
-
-  protected readonly SessionStatus = SessionStatus;
-
-  private readonly happeningNowMessage: Signal<string> = computed(() => {
-    switch (this.gameStateService.sessionStatus()) {
-      case SessionStatus.NotStarted:
-        return `Get ready for ${this.sessionService.session()?.name}!`;
-
-      case SessionStatus.Finished:
-        return `That's a wrap on ${this.sessionService.session()?.name}! Congratulations, ${this.playerService.players()?.sort((a, b) => b.score - a.score)[0].display_name}! 🥳`;
-
-      case SessionStatus.InProgress:
-        return `We're in round <strong>${this.gameStateService.roundNumber()}</strong> of <strong>${this.sessionService.session()?.num_rounds}</strong>.`;
-
-      default:
-        return "I'm gonna be honest. I have no idea what's going on right now.";
-    }
-  });
-
-  private readonly upNextMessage: Signal<string | null> = computed(() => {
-    if (!this.gameStateService.sessionIsInProgress()) {
-      return null;
-    }
-
-    const currentlyInLastRound =
-      this.gameStateService.roundNumber() ===
-      this.sessionService.session()?.num_rounds;
-
-    return currentlyInLastRound
-      ? `This is the last round! Give it all you've got.`
-      : `Up next is round <strong>${(this.gameStateService.roundNumber() ?? 0) + 1}</strong> of <strong>${this.sessionService.session()?.num_rounds}.</strong>`;
-  });
 
   private readonly showRankingsTable = computed(
     () => this.gameStateService.sessionStatus() !== SessionStatus.NotStarted,
@@ -111,7 +86,7 @@ export default class HomePageComponent {
   private readonly rankingsTableHeader = computed(() =>
     this.gameStateService.sessionIsInProgress()
       ? 'Current Rankings'
-      : 'Final Rankings',
+      : 'Final Results',
   );
 
   private readonly countdown$: Observable<Countdown | null> =
@@ -148,11 +123,16 @@ export default class HomePageComponent {
       showRankingsTable: this.showRankingsTable(),
       rankingsTableHeader: this.rankingsTableHeader(),
       sessionHasNotStarted: this.gameStateService.sessionHasNotStarted(),
+      roundNumber: this.gameStateService.roundNumber(),
+      numRounds: this.sessionService.session()?.num_rounds,
+      roundPhase: this.gameStateService.roundPhase(),
+      eventForThisRound: this.eventService.eventForThisRound(),
+      eventForNextRound: this.eventService.eventForNextRound(),
+      sessionIsInProgress: this.gameStateService.sessionIsInProgress(),
+      bankBalance: this.gameStateService.bankBalance(),
       players: this.playerService.players()!,
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userId: this.authService.user()?.id,
-      happeningNowMessage: this.happeningNowMessage(),
-      upNextMessage: this.upNextMessage(),
       countdown: this.countdown(),
     }),
   );
@@ -174,4 +154,6 @@ export default class HomePageComponent {
 
     showSuccessMessage('Session started!', this.messageService);
   }
+
+  protected readonly RoundPhase = RoundPhase;
 }

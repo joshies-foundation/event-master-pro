@@ -25,23 +25,21 @@ import { ChartOptions, ChartData } from 'chart.js';
       />
     </joshies-page-header>
 
-    @if (playerRoundScoresResponse()?.data; as playerRoundScores) {
+    @if (playerRoundScoresResponse().data; as playerRoundScores) {
       <div class="h-3rem"></div>
       <p-chart type="line" [data]="data()" [options]="options" />
-    } @else if (playerRoundScoresResponse() === null) {
-      <p class="mt-6 pt-6 text-center text-500 font-italic">
-        No active session
-      </p>
     } @else {
       <h4 class="mt-5 text-red-700">Error:</h4>
-      <p>{{ playerRoundScoresResponse()?.error }}</p>
+      <p>{{ playerRoundScoresResponse().error }}</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ComparePointsOverTimePageComponent {
   readonly playerRoundScoresResponse =
-    input.required<PostgrestSingleResponse<GetPlayerRoundScoreFunctionReturnType> | null>(); // route resolve data
+    input.required<
+      PostgrestSingleResponse<GetPlayerRoundScoreFunctionReturnType>
+    >(); // route resolve data
 
   private readonly documentStyle = getComputedStyle(document.documentElement);
   private readonly textColor =
@@ -89,13 +87,13 @@ export default class ComparePointsOverTimePageComponent {
   };
 
   private readonly numRounds = computed(
-    () => this.playerRoundScoresResponse()?.data?.[0].scores.length ?? 1,
+    () => this.playerRoundScoresResponse().data?.[0].scores.length ?? 1,
   );
 
   readonly data: Signal<ChartData> = computed(() => ({
     labels: Array.from(Array(this.numRounds() + 1).keys()),
     datasets:
-      this.playerRoundScoresResponse()?.data?.map((player) => ({
+      this.playerRoundScoresResponse().data?.map((player) => ({
         label: player.display_name,
         data: [0, ...player.scores],
         fill: false,

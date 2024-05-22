@@ -197,29 +197,35 @@ export type Database = {
       };
       game_state: {
         Row: {
+          bank_balance: number;
           created_at: string;
           game_master_user_id: string;
           id: number;
-          round_number: number | null;
-          session_id: number | null;
+          round_number: number;
+          round_phase: Database['public']['Enums']['round_phase'];
+          session_id: number;
           session_status: Database['public']['Enums']['session_status'];
           updated_at: string;
         };
         Insert: {
+          bank_balance?: number;
           created_at?: string;
           game_master_user_id: string;
           id?: number;
-          round_number?: number | null;
-          session_id?: number | null;
+          round_number: number;
+          round_phase?: Database['public']['Enums']['round_phase'];
+          session_id: number;
           session_status?: Database['public']['Enums']['session_status'];
           updated_at?: string;
         };
         Update: {
+          bank_balance?: number;
           created_at?: string;
           game_master_user_id?: string;
           id?: number;
-          round_number?: number | null;
-          session_id?: number | null;
+          round_number?: number;
+          round_phase?: Database['public']['Enums']['round_phase'];
+          session_id?: number;
           session_status?: Database['public']['Enums']['session_status'];
           updated_at?: string;
         };
@@ -690,6 +696,12 @@ export type Database = {
         | 'gain_points_or_do_activity'
         | 'special'
         | 'duel';
+      round_phase:
+        | 'gameboard_moves'
+        | 'special_space_events'
+        | 'duels'
+        | 'event'
+        | 'waiting_for_next_round';
       session_status: 'not_started' | 'in_progress' | 'finished';
     };
     CompositeTypes: {

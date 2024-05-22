@@ -1,4 +1,4 @@
-import { Database, Enums, Tables } from './schema';
+import { Database, Tables } from './schema';
 import {
   Table,
   View,
@@ -149,11 +149,6 @@ export type EventTeamRoundScoreModel = Tables<Table.EventTeamRoundScore>;
 // views
 export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;
 export type MovesForCurrentRoundModel = Tables<View.MovesForCurrentRound>;
-
-// enums
-export type SessionStatusType = Enums<'session_status'>;
-export type GameboardSpaceEffectType = Enums<'gameboard_space_effect'>;
-// export type EventFormat = Enums<'event_format'>;
 
 // functions
 export type GetPlayerRoundScoreFunctionReturnType =
