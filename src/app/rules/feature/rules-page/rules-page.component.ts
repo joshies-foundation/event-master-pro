@@ -25,10 +25,17 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { FooterService } from '../../../shared/data-access/footer.service';
-import { NgClass } from '@angular/common';
+import { NgClass, NgOptimizedImage } from '@angular/common';
 import { pagePaddingXCssClass } from '../../../shared/util/css-helpers';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
+import { EventService } from '../../../shared/data-access/event.service';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 
 function valueIsNot(invalidValue: string): ValidatorFn {
   return (control) =>
@@ -50,6 +57,9 @@ function valueIsNot(invalidValue: string): ValidatorFn {
     ButtonModule,
     ConfirmDialogModule,
     NgClass,
+    RouterLink,
+    RouterLinkActive,
+    NgOptimizedImage,
   ],
 })
 export default class RulesPageComponent {
@@ -57,8 +67,11 @@ export default class RulesPageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly playerService = inject(PlayerService);
+  private readonly eventService = inject(EventService);
   private readonly footerService = inject(FooterService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   private readonly rules = this.rulesService.rules;
 
@@ -106,6 +119,15 @@ export default class RulesPageComponent {
     { allowSignalWrites: true },
   );
 
+  private readonly scrollToAnchorAfterRulesLoad = effect(() => {
+    this.rules();
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      skipLocationChange: true,
+      preserveFragment: true,
+    });
+  });
+
   readonly pagePaddingXCssClass = pagePaddingXCssClass;
 
   readonly viewModel = computed(() =>
@@ -114,6 +136,7 @@ export default class RulesPageComponent {
       userIsGameMaster: this.playerService.userIsGameMaster(),
       rules: this.rules(),
       form: this.form(),
+      events: this.eventService.events(),
     }),
   );
 

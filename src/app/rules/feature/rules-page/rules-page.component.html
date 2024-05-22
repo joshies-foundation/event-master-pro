@@ -32,10 +32,36 @@
     } @else {
       <!-- Rules -->
       <div [innerHTML]="vm.rules" class="content"></div>
+
+      <!-- Event Rules -->
+      <h2>Events</h2>
+      @for (event of vm.events; track event.id) {
+        <h3
+          #eventInfo
+          [id]="'event-rules-' + event.id"
+          [routerLink]="[]"
+          [fragment]="eventInfo.id"
+          routerLinkActive="bg-highlight-fadeout"
+          [routerLinkActiveOptions]="{
+            paths: 'exact',
+            fragment: 'exact',
+            matrixParams: 'ignored',
+            queryParams: 'ignored'
+          }"
+          class="flex align-items-center gap-3"
+        >
+          <img
+            [ngSrc]="event.image_url || '/assets/icons/icon-96x96.png'"
+            alt=""
+            height="48"
+            width="48"
+            class="border-round"
+          />
+          {{ event.name }} Rules
+        </h3>
+        <p class="mb-5">{{ event.rules }}</p>
+      }
     }
-  } @else if (vm.rules === null) {
-    <!-- No active session -->
-    <p class="mt-6 pt-6 text-center text-500 font-italic">No active session</p>
   }
 } @else {
   <!-- Loading Skeleton -->

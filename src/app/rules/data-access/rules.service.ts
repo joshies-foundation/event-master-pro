@@ -4,36 +4,32 @@ import {
   realtimeUpdatesFromTable,
 } from '../../shared/util/supabase-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Observable, map, shareReplay } from 'rxjs';
+import { Observable, map, shareReplay, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { SessionService } from '../../shared/data-access/session.service';
-import {
-  distinctUntilIdChanged,
-  whenNotNull,
-} from '../../shared/util/rxjs-helpers';
 import { showErrorMessage } from '../../shared/util/message-helpers';
 import { MessageService } from 'primeng/api';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { Database } from '../../shared/util/schema';
+import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RulesService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
-  private readonly sessionService = inject(SessionService);
+  private readonly gameStateService = inject(GameStateService);
   private readonly messageService = inject(MessageService);
 
   readonly rules$: Observable<string | null> =
-    this.sessionService.session$.pipe(
-      distinctUntilIdChanged(),
-      whenNotNull((session) =>
+    this.gameStateService.sessionId$.pipe(
+      switchMap((sessionId) =>
         realtimeUpdatesFromTable(
           this.supabase,
           Table.Rules,
-          `session_id=eq.${session.id}`,
-        ).pipe(map((rulesRecords) => rulesRecords[0].rules)),
+          `session_id=eq.${sessionId}`,
+        ),
       ),
+      map((rulesRecords) => rulesRecords[0].rules),
       shareReplay(1),
     );
 
