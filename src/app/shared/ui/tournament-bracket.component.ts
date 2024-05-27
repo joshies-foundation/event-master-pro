@@ -2,11 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
 } from '@angular/core';
 import { TreeNode } from 'primeng/api';
-import { TreeModule } from 'primeng/tree';
+import { TreeModule, TreeNodeSelectEvent } from 'primeng/tree';
 import { EventTeamModel } from '../util/supabase-types';
+import { EventService } from '../data-access/event.service';
 
 @Component({
   selector: 'joshies-tournament-bracket',
@@ -16,11 +18,15 @@ import { EventTeamModel } from '../util/supabase-types';
       [value]="bracket()"
       layout="horizontal"
       styleClass="rotate-180"
-      selectionMode="multiple"
+      selectionMode="checkbox"
+      (onNodeSelect)="setMatchWinner($event, bracket()[0])"
+      [(selection)]="selectedNodes"
+      propagateSelectionUp="false"
+      propagateSelectionDown="false"
     >
       <ng-template let-node pTemplate="node">
         <div class="flex align-items-center rotate-180 w-5rem h-2rem">
-          {{ node.data?.seed }}
+          <span class="text-sm text-400">{{ node.data?.seed }}</span>
         </div>
       </ng-template>
     </p-tree>
@@ -36,16 +42,32 @@ import { EventTeamModel } from '../util/supabase-types';
   imports: [TreeModule],
 })
 export class TournamentBracketComponent {
-  readonly numberOfTeams = input.required<number>();
-  readonly bracket = computed(() => this.generateBracket(this.numberOfTeams()));
+  private readonly eventService = inject(EventService);
+  private readonly eventTeams = computed(() =>
+    this.eventService
+      .eventTeams()
+      ?.filter((eventTeam) => eventTeam.event_id === this.eventId()),
+  );
 
-  generateBracket(numberOfTeams: number): TreeNode<Partial<EventTeamModel>>[] {
+  readonly eventId = input.required<number>();
+  readonly numberOfTeams = input.required<number>();
+
+  readonly bracket = computed(() => this.generateBracket(this.eventTeams()));
+  selectedNodes: TreeNode[] = [];
+
+  generateBracket(
+    eventTeams: EventTeamModel[] | undefined,
+  ): TreeNode<Partial<EventTeamModel>>[] {
+    const numberOfTeams = eventTeams?.length ?? 0;
+
+    if (numberOfTeams === 0) return [];
+
     const numberOfTeamsInLargestFullRound = Math.pow(
       2,
       Math.floor(Math.log2(numberOfTeams)),
     );
 
-    // use reverse because bracket is flipped in component template
+    // use reverse() because bracket is flipped in component template
     const largestFullRoundSeedOrder = this.getSeedOrder(
       1,
       numberOfTeamsInLargestFullRound,
@@ -61,7 +83,9 @@ export class TournamentBracketComponent {
         ...nodeTemplate,
         label: 'Team ' + Math.round(Math.random() * 100),
         data: {
-          seed: largestFullRoundSeedOrder[index],
+          ...eventTeams?.find(
+            (eventTeam) => eventTeam.seed === largestFullRoundSeedOrder[index],
+          ),
         },
       }));
 
@@ -114,7 +138,7 @@ export class TournamentBracketComponent {
   getSeedOrder(lowSeed: number, highSeed: number) {
     const numberOfTeams = highSeed - lowSeed + 1;
 
-    if (numberOfTeams % 2 !== 0) {
+    if (numberOfTeams % 2 !== 0 && numberOfTeams !== 1) {
       throw new Error(
         `Unable to get seed order for seeds ${lowSeed} to ${highSeed} because there are an uneven number of teams.`,
       );
@@ -139,5 +163,39 @@ export class TournamentBracketComponent {
     }
 
     return seedOrder[0];
+  }
+
+  setMatchWinner(ev: TreeNodeSelectEvent, bracket: TreeNode) {
+    const parent = this.getNodeParent(ev.node, bracket);
+
+    if (parent) {
+      parent.data = ev.node.data;
+    }
+
+    const sibling = parent?.children?.find((child) => child !== ev.node);
+
+    const siblingIndex =
+      this.selectedNodes.findIndex((node) => node === sibling) ?? -1;
+
+    if (siblingIndex !== -1) {
+      this.selectedNodes.splice(siblingIndex, 1);
+    }
+  }
+
+  getNodeParent(node: TreeNode, rootNode: TreeNode): TreeNode | undefined {
+    if (rootNode.children) {
+      for (const child of rootNode.children) {
+        if (child === node) {
+          return rootNode;
+        }
+
+        const parent = this.getNodeParent(node, child);
+        if (parent) {
+          return parent;
+        }
+      }
+    }
+
+    return undefined;
   }
 }
