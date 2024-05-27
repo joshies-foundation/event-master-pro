@@ -22,24 +22,23 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
         chevronDirection="left"
       />
     </joshies-page-header>
-    <div class="flex justify-content-between mt-5">
+    <div class="flex flex-column mt-5 font-semibold">
+      <p class="mb-1">Event ID:</p>
       <p-inputNumber
-        [(ngModel)]="numberOfTeamsLocal"
+        [(ngModel)]="eventIdLocal"
         [showButtons]="true"
         buttonLayout="horizontal"
         incrementButtonIcon="pi pi-plus"
         decrementButtonIcon="pi pi-minus"
+        styleClass="w-full"
       />
       <p-button
-        (onClick)="updateNumberOfTeams(numberOfTeamsLocal, this.numberOfTeams)"
-        label="Go"
-        styleClass="h-full"
+        (onClick)="updateNumberOfTeams(eventIdLocal, eventId)"
+        [label]="'Show Bracket for Event ' + eventIdLocal"
+        styleClass="mt-3 w-full"
       />
     </div>
-    <joshies-tournament-bracket
-      [numberOfTeams]="numberOfTeams()"
-      [eventId]="8"
-    />
+    <joshies-tournament-bracket [eventId]="eventId()" />
   `,
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,8 +52,8 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
   ],
 })
 export default class CreateBracketPageComponent {
-  numberOfTeamsLocal = 10;
-  numberOfTeams = signal(this.numberOfTeamsLocal);
+  eventIdLocal = 10;
+  eventId = signal(this.eventIdLocal);
 
   updateNumberOfTeams(
     newNumberOfTeams: number,

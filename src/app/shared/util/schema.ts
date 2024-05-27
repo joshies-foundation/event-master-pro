@@ -133,6 +133,7 @@ export type Database = {
           created_at: string;
           event_id: number;
           id: number;
+          name: string | null;
           seed: number | null;
           updated_at: string;
         };
@@ -140,6 +141,7 @@ export type Database = {
           created_at?: string;
           event_id: number;
           id?: number;
+          name?: string | null;
           seed?: number | null;
           updated_at?: string;
         };
@@ -147,6 +149,7 @@ export type Database = {
           created_at?: string;
           event_id?: number;
           id?: number;
+          name?: string | null;
           seed?: number | null;
           updated_at?: string;
         };
@@ -198,9 +201,13 @@ export type Database = {
       game_state: {
         Row: {
           bank_balance: number;
+          bank_balance: number;
           created_at: string;
           game_master_user_id: string;
           id: number;
+          round_number: number;
+          round_phase: Database['public']['Enums']['round_phase'];
+          session_id: number;
           round_number: number;
           round_phase: Database['public']['Enums']['round_phase'];
           session_id: number;
@@ -209,9 +216,13 @@ export type Database = {
         };
         Insert: {
           bank_balance?: number;
+          bank_balance?: number;
           created_at?: string;
           game_master_user_id: string;
           id?: number;
+          round_number: number;
+          round_phase?: Database['public']['Enums']['round_phase'];
+          session_id: number;
           round_number: number;
           round_phase?: Database['public']['Enums']['round_phase'];
           session_id: number;
@@ -220,9 +231,13 @@ export type Database = {
         };
         Update: {
           bank_balance?: number;
+          bank_balance?: number;
           created_at?: string;
           game_master_user_id?: string;
           id?: number;
+          round_number?: number;
+          round_phase?: Database['public']['Enums']['round_phase'];
+          session_id?: number;
           round_number?: number;
           round_phase?: Database['public']['Enums']['round_phase'];
           session_id?: number;
@@ -477,6 +492,115 @@ export type Database = {
         };
         Relationships: [];
       };
+      special_space_event: {
+        Row: {
+          created_at: string;
+          id: number;
+          player_id: number;
+          results: Json | null;
+          round_number: number;
+          session_id: number;
+          special_space_id: number;
+          status: Database['public']['Enums']['space_event_status'];
+          template_id: number | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          player_id: number;
+          results?: Json | null;
+          round_number: number;
+          session_id: number;
+          special_space_id: number;
+          status: Database['public']['Enums']['space_event_status'];
+          template_id?: number | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          player_id?: number;
+          results?: Json | null;
+          round_number?: number;
+          session_id?: number;
+          special_space_id?: number;
+          status?: Database['public']['Enums']['space_event_status'];
+          template_id?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'special_space_event_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'special_space_event_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'special_space_event_special_space_id_fkey';
+            columns: ['special_space_id'];
+            isOneToOne: false;
+            referencedRelation: 'gameboard_space';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'special_space_event_template_id_fkey';
+            columns: ['template_id'];
+            isOneToOne: false;
+            referencedRelation: 'special_space_event_template';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      special_space_event_template: {
+        Row: {
+          created_at: string;
+          description: string;
+          details: Json;
+          id: number;
+          name: string;
+          session_id: number;
+          type: Database['public']['Enums']['special_space_event_type'];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          details: Json;
+          id?: number;
+          name: string;
+          session_id: number;
+          type: Database['public']['Enums']['special_space_event_type'];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          details?: Json;
+          id?: number;
+          name?: string;
+          session_id?: number;
+          type?: Database['public']['Enums']['special_space_event_type'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'special_space_event_template_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       transaction: {
         Row: {
           created_at: string;
@@ -624,6 +748,33 @@ export type Database = {
           },
         ];
       };
+      special_space_events_for_current_round: {
+        Row: {
+          avatar_url: string | null;
+          display_name: string | null;
+          id: number | null;
+          player_id: number | null;
+          status: Database['public']['Enums']['space_event_status'] | null;
+          template_id: number | null;
+          template_name: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'special_space_event_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'special_space_event_template_id_fkey';
+            columns: ['template_id'];
+            isOneToOne: false;
+            referencedRelation: 'special_space_event_template';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Functions: {
       create_session: {
@@ -687,6 +838,11 @@ export type Database = {
       };
     };
     Enums: {
+      chaos_space_event_type:
+        | 'everyone_gains_points_based_on_rank'
+        | 'everyone_loses_percentage_of_their_points'
+        | 'everyone_loses_percentage_of_their_points_based_on_task_failure'
+        | 'point_swap';
       event_format:
         | 'single_elimination_tournament'
         | 'double_elimination_tournament'
@@ -702,7 +858,27 @@ export type Database = {
         | 'duels'
         | 'event'
         | 'waiting_for_next_round';
+      gameboard_space_effect:
+        | 'gain_points'
+        | 'gain_points_or_do_activity'
+        | 'special'
+        | 'duel';
+      round_phase:
+        | 'gameboard_moves'
+        | 'special_space_events'
+        | 'duels'
+        | 'event'
+        | 'waiting_for_next_round';
       session_status: 'not_started' | 'in_progress' | 'finished';
+      space_event_status:
+        | 'event_not_selected'
+        | 'waiting_to_begin'
+        | 'in_progress'
+        | 'finished'
+        | 'canceled';
+      special_space_event_type:
+        | 'player_gains_points_based_on_game_score'
+        | 'everyone_gains_points_based_on_rank';
     };
     CompositeTypes: {
       [_ in never]: never;
