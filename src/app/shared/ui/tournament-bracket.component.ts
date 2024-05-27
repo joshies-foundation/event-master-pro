@@ -17,7 +17,7 @@ import { EventService } from '../data-access/event.service';
     <p-tree
       [value]="bracket()"
       layout="horizontal"
-      styleClass="rotate-180"
+      [styleClass]="bracket().length ? 'rotate-180' : ''"
       selectionMode="checkbox"
       (onNodeSelect)="setMatchWinner($event, bracket()[0])"
       [(selection)]="selectedNodes"
@@ -25,8 +25,9 @@ import { EventService } from '../data-access/event.service';
       propagateSelectionDown="false"
     >
       <ng-template let-node pTemplate="node">
-        <div class="flex align-items-center rotate-180 w-5rem h-2rem">
-          <span class="text-sm text-400">{{ node.data?.seed }}</span>
+        <div class="flex align-items-center rotate-180 w-7rem h-2rem">
+          <span class="text-sm text-400 mr-1">{{ node.data?.seed }}</span>
+          <span class="text-800">{{ node.data?.name }}</span>
         </div>
       </ng-template>
     </p-tree>
@@ -50,7 +51,6 @@ export class TournamentBracketComponent {
   );
 
   readonly eventId = input.required<number>();
-  readonly numberOfTeams = input.required<number>();
 
   readonly bracket = computed(() => this.generateBracket(this.eventTeams()));
   selectedNodes: TreeNode[] = [];
@@ -81,7 +81,6 @@ export class TournamentBracketComponent {
       .fill(null)
       .map((node, index) => ({
         ...nodeTemplate,
-        label: 'Team ' + Math.round(Math.random() * 100),
         data: {
           ...eventTeams?.find(
             (eventTeam) => eventTeam.seed === largestFullRoundSeedOrder[index],
@@ -105,16 +104,30 @@ export class TournamentBracketComponent {
         highestAvailableNode!.children = [
           {
             ...nodeTemplate,
-            label: 'Team ' + Math.round(Math.random() * 100),
-            data: { seed: playInSeedOrder.pop()! },
+            data: {
+              ...eventTeams?.find(
+                (eventTeam) =>
+                  eventTeam.seed ===
+                  playInSeedOrder[playInSeedOrder.length - 1],
+              ),
+            },
           },
           {
             ...nodeTemplate,
-            label: 'Team ' + Math.round(Math.random() * 100),
-            data: { seed: playInSeedOrder.pop()! },
+            data: {
+              ...eventTeams?.find(
+                (eventTeam) =>
+                  eventTeam.seed ===
+                  playInSeedOrder[playInSeedOrder.length - 2],
+              ),
+            },
           },
         ];
-        delete highestAvailableNode!.data!.seed;
+
+        playInSeedOrder.pop();
+        playInSeedOrder.pop();
+
+        delete highestAvailableNode!.data;
         highestAvailableSeed--;
       }
     }

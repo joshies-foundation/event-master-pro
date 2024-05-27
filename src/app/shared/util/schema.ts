@@ -481,8 +481,8 @@ export type Database = {
           game_master_user_id: string;
           id: number;
           round_number: number;
-          round_phase: Database['public']['Enums']['round_phase'];
           session_id: number;
+          round_phase: Database['public']['Enums']['round_phase'];
           session_status: Database['public']['Enums']['session_status'];
           updated_at: string;
         };
@@ -1187,6 +1187,11 @@ export type Database = {
       };
     };
     Enums: {
+      chaos_space_event_type:
+        | 'everyone_gains_points_based_on_rank'
+        | 'everyone_loses_percentage_of_their_points'
+        | 'everyone_loses_percentage_of_their_points_based_on_task_failure'
+        | 'point_swap';
       bet_status:
         | 'pending_acceptance'
         | 'canceled_by_requester'
@@ -1196,11 +1201,6 @@ export type Database = {
         | 'requester_won'
         | 'opponent_won'
         | 'push';
-      chaos_space_event_type:
-        | 'everyone_gains_points_based_on_rank'
-        | 'everyone_loses_percentage_of_their_points'
-        | 'everyone_loses_percentage_of_their_points_based_on_task_failure'
-        | 'point_swap';
       duel_status:
         | 'opponent_not_selected'
         | 'wager_not_selected'
