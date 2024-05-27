@@ -36,7 +36,10 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
         styleClass="h-full"
       />
     </div>
-    <joshies-tournament-bracket [numberOfTeams]="numberOfTeams()" />
+    <joshies-tournament-bracket
+      [numberOfTeams]="numberOfTeams()"
+      [eventId]="8"
+    />
   `,
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
