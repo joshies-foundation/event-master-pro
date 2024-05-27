@@ -4,9 +4,6 @@ import {
   GainPointsOrDoActivitySpaceEffectData,
   GainPointsSpaceEffectData,
   GameboardSpaceEffectWithData,
-  PlayerGainsPointsBasedOnGameScoreSpecialSpaceEffectData,
-  SpecialSpaceEffectData,
-  SpecialSpaceEventType,
 } from '../../shared/util/supabase-types';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 import { TitleCasePipe } from '@angular/common';
@@ -50,40 +47,41 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
         `;
 
       case GameboardSpaceEffect.Special:
-        let specialEventsDescriptions = '<ul class="pl-5 mt-1 mb-0">';
-
-        (
-          (gameboardSpace.effect_data as SpecialSpaceEffectData)
-            ?.specialEvents ?? []
-        ).forEach((event) => {
-          specialEventsDescriptions += `<li>${event.name}<ul class="pl-4"><li class="text-400">`;
-
-          switch (event.effect.type) {
-            case SpecialSpaceEventType.PlayerGainsPointsBasedOnGameScore:
-              const { sessionPointsPerGamePoint, pointsLabelSingular } = event
-                .effect
-                .data as PlayerGainsPointsBasedOnGameScoreSpecialSpaceEffectData;
-
-              specialEventsDescriptions += `${sessionPointsPerGamePoint} point${Math.abs(sessionPointsPerGamePoint) === 1 ? '' : 's'} per ${pointsLabelSingular}`;
-              break;
-
-            case SpecialSpaceEventType.EveryoneGainsPointsBasedOnRank:
-              specialEventsDescriptions +=
-                'Everyone gains points based on rank';
-              break;
-          }
-
-          specialEventsDescriptions += '</li></ul></li>';
-        });
-
-        specialEventsDescriptions += '</ul>';
-
-        return `
-          <p class="m-0">
-            Trigger a special event:
-          </p>
-          ${specialEventsDescriptions}
-        `;
+        return `<p class="m-0">Trigger a special event</p>`;
+      // let specialEventsDescriptions = '<ul class="pl-5 mt-1 mb-0">';
+      //
+      // (
+      //   (gameboardSpace.effect_data as SpecialSpaceEffectData)
+      //     ?.specialSpaceEventTemplateIds ?? []
+      // ).forEach((event) => {
+      //   specialEventsDescriptions += `<li>${event.name}<ul class="pl-4"><li class="text-400">`;
+      //
+      //   switch (event.effect.type) {
+      //     case SpecialSpaceEventType.PlayerGainsPointsBasedOnGameScore:
+      //       const { sessionPointsPerGamePoint, pointsLabelSingular } = event
+      //         .effect
+      //         .data as PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails;
+      //
+      //       specialEventsDescriptions += `${sessionPointsPerGamePoint} point${Math.abs(sessionPointsPerGamePoint) === 1 ? '' : 's'} per ${pointsLabelSingular}`;
+      //       break;
+      //
+      //     case SpecialSpaceEventType.EveryoneGainsPointsBasedOnRank:
+      //       specialEventsDescriptions +=
+      //         'Everyone gains points based on rank';
+      //       break;
+      //   }
+      //
+      //   specialEventsDescriptions += '</li></ul></li>';
+      // });
+      //
+      // specialEventsDescriptions += '</ul>';
+      //
+      // return `
+      //   <p class="m-0">
+      //     Trigger a special event:
+      //   </p>
+      //   ${specialEventsDescriptions}
+      // `;
 
       default:
         return `Unknown gameboard_space_effect: "${(gameboardSpace as { effect: string }).effect}"`;

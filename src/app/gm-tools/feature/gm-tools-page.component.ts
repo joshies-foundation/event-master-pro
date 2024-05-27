@@ -44,9 +44,9 @@ export default class GmToolsPageComponent {
     ],
     [RoundPhase.SpecialSpaceEvents]: [
       {
-        text: 'Manage Special Space Events',
+        text: 'Resolve Special Space Events',
         iconClass: 'pi pi-question-circle bg-green-500',
-        routerLink: './space-resolution',
+        routerLink: './resolve-special-space-events',
       },
     ],
     [RoundPhase.Duels]: [
@@ -136,8 +136,13 @@ export default class GmToolsPageComponent {
     (): CardLinkModel[] => [
       {
         text: 'Manage Gameboard Space Types',
-        iconClass: 'pi pi-question-circle bg-green-500',
+        iconClass: 'ci-space-entry bg-gray-500',
         routerLink: './space-types',
+      },
+      {
+        text: 'Manage Special Space Event Types',
+        iconClass: 'pi pi-question-circle bg-green-500',
+        routerLink: './special-space-event-templates',
       },
       {
         text: 'Manage Events',

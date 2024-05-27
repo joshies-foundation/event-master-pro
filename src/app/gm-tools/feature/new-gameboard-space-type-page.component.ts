@@ -23,6 +23,7 @@ import {
   gameboardSpaceFormFactory,
 } from '../util/gameboard-space-form';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-new-space-type-page',
@@ -90,6 +91,10 @@ export default class NewGameboardSpaceTypePageComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly confirmationService = inject(ConfirmationService);
 
+  private readonly specialSpaceEventTemplates = toSignal(
+    this.gameboardService.specialSpaceEventTemplates$,
+  );
+
   readonly confirmDialogKey = 'create-gameboard-space';
 
   readonly submitting = signal(false);
@@ -121,6 +126,7 @@ export default class NewGameboardSpaceTypePageComponent {
       this.formBuilder,
       this.submitting,
       this.submitting,
+      this.specialSpaceEventTemplates,
       this.confirmDialogKey,
       this.gameStateService,
       this.router,

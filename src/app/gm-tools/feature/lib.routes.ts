@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
-import { gameboardMovesResolver } from '../data-access/gameboard-moves.resolver';
+import { specialSpaceEventsForCurrentRoundResolver } from '../data-access/special-space-events-for-current-round.resolver';
+import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -32,10 +33,44 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 2 },
   },
   {
-    path: 'space-resolution',
-    loadComponent: () => import('./gameboard-space-resolution-page.component'),
+    path: 'resolve-special-space-events',
+    loadComponent: () =>
+      import('./resolve-special-space-events-page.component'),
     data: { pageAnimationLayer: 2 },
-    resolve: { gameboardMovesResponse: gameboardMovesResolver },
+    resolve: {
+      specialSpaceEventsForCurrentRoundResponse:
+        specialSpaceEventsForCurrentRoundResolver,
+    },
+  },
+  {
+    path: 'resolve-special-space-events/:specialSpaceEventId',
+    loadComponent: () => import('./special-space-event-page.component'),
+    data: { pageAnimationLayer: 3 },
+    resolve: {
+      specialSpaceEventsForCurrentRoundResponse:
+        specialSpaceEventsForCurrentRoundResolver,
+    },
+  },
+  {
+    path: 'special-space-event-templates',
+    loadComponent: () =>
+      import('./manage-special-space-event-templates-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
+  {
+    path: 'special-space-event-templates/new',
+    loadComponent: () =>
+      import('./new-special-space-event-template-page.component'),
+    data: { pageAnimationLayer: 3 },
+  },
+  {
+    path: 'special-space-event-templates/:specialSpaceEventTemplateId',
+    loadComponent: () =>
+      import('./edit-special-space-event-template-page.component'),
+    data: { pageAnimationLayer: 3 },
+    resolve: {
+      originalSpecialSpaceEventTemplate: editSpecialSpaceEventTemplateResolver,
+    },
   },
 
   // players

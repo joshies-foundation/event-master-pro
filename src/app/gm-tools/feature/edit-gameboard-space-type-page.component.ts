@@ -26,7 +26,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import {
-  createFormArray,
   gameboardSpaceFormFactory,
   GameboardSpaceTypeForm,
 } from '../util/gameboard-space-form';
@@ -38,6 +37,7 @@ import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { JsonPipe } from '@angular/common';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-edit-gameboard-space-type-page',
@@ -151,6 +151,10 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly gameStateService = inject(GameStateService);
 
+  private readonly specialSpaceEventTemplates = toSignal(
+    this.gameboardService.specialSpaceEventTemplates$,
+  );
+
   readonly gameboardSpaceId: Signal<number> = input(0, {
     transform: numberAttribute,
   }); // route param
@@ -205,6 +209,7 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
       this.formBuilder,
       this.submittingChange,
       this.performingAction,
+      this.specialSpaceEventTemplates,
       this.confirmSubmitChangesDialogKey,
       this.gameStateService,
       this.router,
@@ -243,16 +248,13 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
         (
           originalGameboardSpace?.effect_data as DuelSpaceEffectData | undefined
         )?.duelGames?.join('\n') ?? '',
+      specialSpaceEventTemplateIds:
+        (
+          originalGameboardSpace?.effect_data as
+            | SpecialSpaceEffectData
+            | undefined
+        )?.specialSpaceEventTemplateIds ?? [],
     });
-
-    this.formGroup.controls.specialEvents = createFormArray(
-      this.formBuilder,
-      (
-        originalGameboardSpace?.effect_data as
-          | SpecialSpaceEffectData
-          | undefined
-      )?.specialEvents ?? [],
-    );
   }
 
   confirmDelete(gameboardSpaceId: number, gameboardSpaceName: string): void {

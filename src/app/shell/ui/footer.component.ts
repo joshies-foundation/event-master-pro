@@ -18,7 +18,7 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Spacer -->
-    <div class="h-9rem"></div>
+    <div class="h-6rem"></div>
 
     <!-- Disabled Cover -->
     @if (disabled()) {

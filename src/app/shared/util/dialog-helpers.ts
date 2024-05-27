@@ -64,6 +64,8 @@ export async function confirmBackendAction(
         config.router.navigate([config.successNavigation], {
           relativeTo: config.activatedRoute,
         });
+      } else if (config.submittingSignal) {
+        config.submittingSignal.set(false);
       }
     },
   });

@@ -39,6 +39,12 @@ export enum FormFieldType {
   Checkbox,
 }
 
+export interface DropdownItem<T = unknown> {
+  label: string;
+  value: T;
+  disabled?: boolean;
+}
+
 export type FormField = {
   label: string;
   name: string;
@@ -71,16 +77,18 @@ export type FormField = {
         }
       | {
           type: FormFieldType.Dropdown;
-          options: object[];
-          optionLabel: string;
-          optionValue: string;
+          options: (DropdownItem | object)[];
+          optionLabel?: string;
+          optionValue?: string;
+          optionDisabled?: string;
         }
       | {
           type: FormFieldType.MultiSelect;
           useChips?: boolean;
-          options: object[];
-          optionLabel: string;
-          optionValue: string;
+          options: (DropdownItem | object)[];
+          optionLabel?: string;
+          optionValue?: string;
+          optionDisabled?: string;
         }
       | {
           type: FormFieldType.Editor;

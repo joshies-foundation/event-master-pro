@@ -24,11 +24,14 @@ export enum Table {
   EventParticipant = 'event_participant',
   EventTeam = 'event_team',
   EventTeamRoundScore = 'event_team_round_score',
+  SpecialSpaceEvent = 'special_space_event',
+  SpecialSpaceEventTemplate = 'special_space_event_template',
 }
 
 export enum View {
   LifetimeUserStats = 'lifetime_user_stats',
   MovesForCurrentRound = 'moves_for_current_round',
+  SpecialSpaceEventsForCurrentRound = 'special_space_events_for_current_round',
 }
 
 export enum Function {
@@ -57,6 +60,14 @@ export enum GameboardSpaceEffect {
   GainPointsOrDoActivity = 'gain_points_or_do_activity',
   Special = 'special',
   Duel = 'duel',
+}
+
+export enum SpaceEventStatus {
+  EventNotSelected = 'event_not_selected',
+  WaitingToBegin = 'waiting_to_begin',
+  InProgress = 'in_progress',
+  Finished = 'finished',
+  Canceled = 'canceled',
 }
 
 export enum EventFormat {

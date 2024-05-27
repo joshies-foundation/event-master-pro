@@ -24,6 +24,10 @@ body {
   background-color: var(--surface-card);
 }
 
+pre {
+  font-family: var(--font-family);
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -100,6 +104,10 @@ p-editor {
 
 .blur-background {
   backdrop-filter: blur(0.75rem);
+}
+
+.pre-wrap {
+  white-space: pre-wrap;
 }
 
 // round corners of table header
