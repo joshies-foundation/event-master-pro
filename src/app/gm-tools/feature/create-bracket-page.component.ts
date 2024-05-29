@@ -52,7 +52,7 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
   ],
 })
 export default class CreateBracketPageComponent {
-  eventIdLocal = 10;
+  eventIdLocal = 8;
   eventId = signal(this.eventIdLocal);
 
   updateNumberOfTeams(
