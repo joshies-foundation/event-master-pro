@@ -201,13 +201,9 @@ export type Database = {
       game_state: {
         Row: {
           bank_balance: number;
-          bank_balance: number;
           created_at: string;
           game_master_user_id: string;
           id: number;
-          round_number: number;
-          round_phase: Database['public']['Enums']['round_phase'];
-          session_id: number;
           round_number: number;
           round_phase: Database['public']['Enums']['round_phase'];
           session_id: number;
@@ -216,13 +212,9 @@ export type Database = {
         };
         Insert: {
           bank_balance?: number;
-          bank_balance?: number;
           created_at?: string;
           game_master_user_id: string;
           id?: number;
-          round_number: number;
-          round_phase?: Database['public']['Enums']['round_phase'];
-          session_id: number;
           round_number: number;
           round_phase?: Database['public']['Enums']['round_phase'];
           session_id: number;
@@ -231,13 +223,9 @@ export type Database = {
         };
         Update: {
           bank_balance?: number;
-          bank_balance?: number;
           created_at?: string;
           game_master_user_id?: string;
           id?: number;
-          round_number?: number;
-          round_phase?: Database['public']['Enums']['round_phase'];
-          session_id?: number;
           round_number?: number;
           round_phase?: Database['public']['Enums']['round_phase'];
           session_id?: number;
@@ -847,17 +835,6 @@ export type Database = {
         | 'single_elimination_tournament'
         | 'double_elimination_tournament'
         | 'score_based_single_round';
-      gameboard_space_effect:
-        | 'gain_points'
-        | 'gain_points_or_do_activity'
-        | 'special'
-        | 'duel';
-      round_phase:
-        | 'gameboard_moves'
-        | 'special_space_events'
-        | 'duels'
-        | 'event'
-        | 'waiting_for_next_round';
       gameboard_space_effect:
         | 'gain_points'
         | 'gain_points_or_do_activity'
