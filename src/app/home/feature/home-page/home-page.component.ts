@@ -3,9 +3,9 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   inject,
+  Signal,
   signal,
 } from '@angular/core';
 import { TableModule } from 'primeng/table';
@@ -24,13 +24,14 @@ import { SessionService } from '../../../shared/data-access/session.service';
 import { RankingsTableComponent } from '../../../shared/ui/rankings-table.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { GameStateService } from '../../../shared/data-access/game-state.service';
-import { Observable, concat, map, of, takeWhile, timer } from 'rxjs';
+import { concat, map, Observable, of, switchMap, takeWhile, timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../../../shared/util/rxjs-helpers';
 import {
   RoundPhase,
   SessionStatus,
   showMessageOnError,
+  SpaceEventStatus,
 } from '../../../shared/util/supabase-helpers';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
@@ -38,6 +39,9 @@ import { showSuccessMessage } from '../../../shared/util/message-helpers';
 import { EventService } from '../../../shared/data-access/event.service';
 import { RouterLink } from '@angular/router';
 import { EventInfoComponent } from '../../../shared/ui/event-info.component';
+import { GameboardService } from '../../../shared/data-access/gameboard.service';
+import { AvatarModule } from 'primeng/avatar';
+import { SpaceEventStatusTagComponent } from '../../../gm-tools/ui/space-event-status-tag.component';
 
 interface Countdown {
   days: number;
@@ -69,11 +73,14 @@ interface Countdown {
     ButtonModule,
     RouterLink,
     EventInfoComponent,
+    AvatarModule,
+    SpaceEventStatusTagComponent,
   ],
 })
 export default class HomePageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly gameStateService = inject(GameStateService);
+  private readonly gameboardService = inject(GameboardService);
   private readonly playerService = inject(PlayerService);
   private readonly authService = inject(AuthService);
   private readonly eventService = inject(EventService);
@@ -117,6 +124,16 @@ export default class HomePageComponent {
     this.countdown$,
   );
 
+  readonly specialSpaceEvents = toSignal(
+    this.gameStateService.roundPhase$.pipe(
+      switchMap((roundPhase) =>
+        roundPhase === RoundPhase.SpecialSpaceEvents
+          ? this.gameboardService.specialSpaceEventsForThisTurn$
+          : of(null),
+      ),
+    ),
+  );
+
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       session: this.sessionService.session(),
@@ -134,6 +151,7 @@ export default class HomePageComponent {
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userId: this.authService.user()?.id,
       countdown: this.countdown(),
+      specialSpaceEvents: this.specialSpaceEvents(),
     }),
   );
 
@@ -156,4 +174,5 @@ export default class HomePageComponent {
   }
 
   protected readonly RoundPhase = RoundPhase;
+  protected readonly SpaceEventStatus = SpaceEventStatus;
 }

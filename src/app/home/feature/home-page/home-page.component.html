@@ -65,7 +65,59 @@
             }
           }
           @case (RoundPhase.SpecialSpaceEvents) {
-            Special space events
+            <p class="mt-0 mb-2">Special Space Events:</p>
+
+            <table class="w-full">
+              <tbody>
+                @for (
+                  specialSpaceEvent of vm.specialSpaceEvents;
+                  track specialSpaceEvent.id
+                ) {
+                  <tr>
+                    <td class="pt-1 px-2">
+                      <div class="flex align-items-center gap-2">
+                        <p-avatar
+                          [image]="specialSpaceEvent.avatar_url!"
+                          shape="circle"
+                        />
+                        {{ specialSpaceEvent.display_name }}
+                      </div>
+                    </td>
+
+                    <td class="pt-1">
+                      {{ specialSpaceEvent.template?.name }}
+                    </td>
+
+                    <td class="pt-1 text-right">
+                      @if (
+                        specialSpaceEvent.status ===
+                        SpaceEventStatus.WaitingToBegin
+                      ) {
+                        <p-button size="small" label="Place Bet" />
+                      } @else {
+                        <joshies-space-event-status-tag
+                          [spaceEventStatus]="specialSpaceEvent.status"
+                        />
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td class="font-italic text-600">
+                      No special space events for this turn
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            @if (vm.userIsGameMaster && vm.specialSpaceEvents?.length) {
+              <p-button
+                label="Resolve Special Space Events"
+                styleClass="mt-2 w-full"
+                routerLink="/gm-tools/resolve-special-space-events"
+              />
+            }
           }
           @case (RoundPhase.Duels) {
             ⚔️ Time to duel!

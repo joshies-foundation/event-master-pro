@@ -6,6 +6,7 @@ import {
   SpecialSpaceEventsForCurrentRoundModel,
   SpecialSpaceEventTemplateModel,
   SpecialSpaceEventType,
+  UserModel,
 } from '../util/supabase-types';
 import {
   PostgrestResponse,
@@ -22,11 +23,25 @@ import {
 } from '../util/supabase-helpers';
 import { GameboardSpaceEntryFormModel } from '../../gm-tools/feature/gameboard-space-entry-page.component';
 import { Database, Json } from '../util/schema';
-import { map, Observable, shareReplay } from 'rxjs';
+import {
+  combineLatest,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+} from 'rxjs';
 import { whenNotNull } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GameStateService } from './game-state.service';
-import { ActivatedRoute } from '@angular/router';
+import { PlayerService } from './player.service';
+
+export type SpecialSpaceEventWithPlayerAndTemplateData =
+  SpecialSpaceEventModel & {
+    avatar_url: UserModel['avatar_url'] | null;
+    display_name: UserModel['display_name'] | null;
+    template: SpecialSpaceEventTemplateModel | null;
+  };
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +49,7 @@ import { ActivatedRoute } from '@angular/router';
 export class GameboardService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly gameStateService = inject(GameStateService);
-  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly playerService = inject(PlayerService);
 
   readonly gameboardSpaces$: Observable<GameboardSpaceModel[] | null> =
     this.gameStateService.sessionId$.pipe(
@@ -67,13 +82,74 @@ export class GameboardService {
   readonly gameboardSpaces: Signal<GameboardSpaceModel[] | null | undefined> =
     toSignal(this.gameboardSpaces$);
 
+  readonly specialSpaceEvents$: Observable<
+    SpecialSpaceEventWithPlayerAndTemplateData[]
+  > = this.gameStateService.sessionId$.pipe(
+    switchMap(
+      (sessionId) =>
+        realtimeUpdatesFromTable(
+          this.supabase,
+          Table.SpecialSpaceEvent,
+          `session_id=eq.${sessionId}`,
+        ) as Observable<SpecialSpaceEventModel[]>,
+    ),
+    switchMap((specialSpaceEvents) => {
+      if (!specialSpaceEvents?.length) return of([]);
+
+      return combineLatest({
+        players: this.playerService.players$,
+        specialSpaceEventTemplates: this.specialSpaceEventTemplates$,
+      }).pipe(
+        map(({ players, specialSpaceEventTemplates }) =>
+          specialSpaceEvents
+            .sort((a, b) => a.id - b.id)
+            .map((specialSpaceEvent) => {
+              const player = players?.find(
+                (p) => p.player_id === specialSpaceEvent.player_id,
+              );
+
+              const specialSpaceEventTemplate =
+                specialSpaceEventTemplates?.find(
+                  (template) => template.id === specialSpaceEvent.template_id,
+                );
+
+              return {
+                ...specialSpaceEvent,
+                avatar_url: player?.avatar_url ?? null,
+                display_name: player?.display_name ?? null,
+                template: specialSpaceEventTemplate ?? null,
+              };
+            }),
+        ),
+      );
+    }),
+    shareReplay(1),
+  );
+
+  readonly specialSpaceEventsForThisTurn$: Observable<
+    SpecialSpaceEventWithPlayerAndTemplateData[] | null
+  > = this.gameStateService.roundNumber$.pipe(
+    switchMap((roundNumber) =>
+      this.specialSpaceEvents$.pipe(
+        map(
+          (events) =>
+            events?.filter((event) => event.round_number === roundNumber) ??
+            null,
+        ),
+      ),
+    ),
+    shareReplay(1),
+  );
+
   getRealtimeUpdatesFromSpecialSpaceEvent(
     specialSpaceEventId: SpecialSpaceEventModel['id'],
   ): Observable<SpecialSpaceEventModel | null> {
-    return realtimeUpdatesFromTable(
-      this.supabase,
-      Table.SpecialSpaceEvent,
-      `id=eq.${specialSpaceEventId}`,
+    return (
+      realtimeUpdatesFromTable(
+        this.supabase,
+        Table.SpecialSpaceEvent,
+        `id=eq.${specialSpaceEventId}`,
+      ) as Observable<SpecialSpaceEventModel[]>
     ).pipe(
       map((specialSpaceEventRecords) => specialSpaceEventRecords[0] ?? null),
       shareReplay({ bufferSize: 1, refCount: true }),

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
-import { specialSpaceEventsForCurrentRoundResolver } from '../data-access/special-space-events-for-current-round.resolver';
 import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
 
 const gmToolsRoutes: Routes = [
@@ -37,19 +36,11 @@ const gmToolsRoutes: Routes = [
     loadComponent: () =>
       import('./resolve-special-space-events-page.component'),
     data: { pageAnimationLayer: 2 },
-    resolve: {
-      specialSpaceEventsForCurrentRoundResponse:
-        specialSpaceEventsForCurrentRoundResolver,
-    },
   },
   {
     path: 'resolve-special-space-events/:specialSpaceEventId',
     loadComponent: () => import('./special-space-event-page.component'),
     data: { pageAnimationLayer: 3 },
-    resolve: {
-      specialSpaceEventsForCurrentRoundResponse:
-        specialSpaceEventsForCurrentRoundResolver,
-    },
   },
   {
     path: 'special-space-event-templates',

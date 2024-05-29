@@ -145,6 +145,13 @@ export type SpecialSpaceEventsForCurrentRoundModel = Omit<
   status: SpaceEventStatus;
 };
 
+export type SpecialSpaceEventModel = Omit<
+  Tables<Table.SpecialSpaceEvent>,
+  'status'
+> & {
+  status: SpaceEventStatus;
+};
+
 // tables
 export type GameStateModel = Tables<Table.GameState>;
 export type PlayerModel = Tables<Table.Player>;
@@ -161,7 +168,6 @@ export type EventFormatStandardScoringFormulaModel =
 export type EventParticipantModel = Tables<Table.EventParticipant>;
 export type EventTeamModel = Tables<Table.EventTeam>;
 export type EventTeamRoundScoreModel = Tables<Table.EventTeamRoundScore>;
-export type SpecialSpaceEventModel = Tables<Table.SpecialSpaceEvent>;
 
 // views
 export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;

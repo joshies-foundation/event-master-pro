@@ -21,6 +21,11 @@ import { SnakeCaseToTitleCasePipe } from '../../shared/ui/snake-case-to-title-ca
       [severity]="severity()"
     />
   `,
+  styles: `
+    :host ::ng-deep .p-tag-value {
+      flex-shrink: 0;
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpaceEventStatusTagComponent {
@@ -29,7 +34,7 @@ export class SpaceEventStatusTagComponent {
   readonly icon: Signal<string> = computed(
     () =>
       ({
-        [SpaceEventStatus.EventNotSelected]: PrimeIcons.QUESTION,
+        [SpaceEventStatus.EventNotSelected]: '',
         [SpaceEventStatus.WaitingToBegin]: PrimeIcons.HOURGLASS,
         [SpaceEventStatus.InProgress]: PrimeIcons.PLAY,
         [SpaceEventStatus.Finished]: PrimeIcons.CHECK,
