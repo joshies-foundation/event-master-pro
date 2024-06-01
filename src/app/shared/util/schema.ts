@@ -311,7 +311,7 @@ export type Database = {
           lower_scores_are_better?: boolean;
           name: string;
           points_label?: string | null;
-          round_number: number;
+          round_number?: number;
           rules?: string | null;
           scoring_map: number[];
           session_id: number;

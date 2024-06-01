@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
 import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
 import { editChaosSpaceEventTemplateResolver } from '../data-access/edit-chaos-space-event-template.resolver';
+import { editEventResolver } from '../data-access/edit-event.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -184,6 +185,12 @@ const gmToolsRoutes: Routes = [
     path: 'events/new',
     loadComponent: () => import('./new-event-page.component'),
     data: { pageAnimationLayer: 2 },
+  },
+  {
+    path: 'events/:eventId',
+    loadComponent: () => import('./edit-event-page.component'),
+    data: { pageAnimationLayer: 2 },
+    resolve: { originalEvent: editEventResolver },
   },
   {
     path: 'bracket',

@@ -70,6 +70,8 @@ export class EventService {
       ),
     );
 
+  readonly eventForThisRound = toSignal(this.eventForThisRound$);
+
   readonly eventForNextRound$: Observable<EventModel | null> =
     this.gameStateService.roundNumber$.pipe(
       switchMap((roundNumber) =>
@@ -82,6 +84,8 @@ export class EventService {
         ),
       ),
     );
+
+  readonly eventForNextRound = toSignal(this.eventForNextRound$);
 
   readonly events = toSignal(this.events$);
 

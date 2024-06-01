@@ -12,6 +12,10 @@ import { EventService } from '../data-access/event.service';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 
+interface EventTeamModelWithWinnerFlag extends EventTeamModel {
+  isWinner: boolean;
+}
+
 @Component({
   selector: 'joshies-tournament-bracket',
   standalone: true,
@@ -39,8 +43,16 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
             }
           </p-avatarGroup>
           <span class="text-800">
-            @for (player of node.data.players; track player.player_id) {
-              {{ player.display_name }}
+            @for (
+              player of node.data.players;
+              track player.player_id;
+              let index = $index, last = $last
+            ) {
+              {{
+                (last && index !== 0 ? '& ' : '') +
+                  player.display_name +
+                  (index < node.data.players.length - 2 ? ',' : '')
+              }}
             }
           </span>
         </div>
@@ -69,19 +81,19 @@ export class TournamentBracketComponent {
   readonly eventId = input.required<number>();
 
   readonly bracket = computed(() => this.generateBracket(this.eventTeams()));
-  readonly selectedNodes: TreeNode[] = [];
+  readonly selectedNodes: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[] =
+    [];
 
   generateBracket(
     eventTeams: EventTeamModel[] | undefined,
-  ): TreeNode<Partial<EventTeamModel>>[] {
-    console.dir(eventTeams);
+  ): TreeNode<Partial<EventTeamModelWithWinnerFlag>>[] {
     if (!eventTeams) {
       return [{}];
     }
 
     const nodeTemplate = { expanded: true, type: 'node' };
     const bracket = this.generateBracketRecursively(
-      { data: { seed: 1 } },
+      { data: { seed: 1, isWinner: false } },
       eventTeams.length,
       1,
       eventTeams,
@@ -91,20 +103,21 @@ export class TournamentBracketComponent {
     return [bracket];
   }
 
-  generateBracketRecursively(
-    parentNode: TreeNode<Partial<EventTeamModel>>,
+  private generateBracketRecursively(
+    parentNode: TreeNode<Partial<EventTeamModelWithWinnerFlag>>,
     numberOfTeams: number,
     numberOfTeamsInRound: number,
     eventTeams: EventTeamModel[],
     nodeTemplate: TreeNode,
     isLowSeed: boolean,
-  ): TreeNode<Partial<EventTeamModel>> {
-    const bracketNode: TreeNode<Partial<EventTeamModel>> = {
+  ): TreeNode<Partial<EventTeamModelWithWinnerFlag>> {
+    const bracketNode: TreeNode<Partial<EventTeamModelWithWinnerFlag>> = {
       ...nodeTemplate,
       data: {
         seed: isLowSeed
           ? parentNode.data!.seed
           : numberOfTeamsInRound + 1 - parentNode.data!.seed!,
+        isWinner: false,
       },
     };
 
@@ -146,8 +159,8 @@ export class TournamentBracketComponent {
 
   setMatchWinner(
     ev: TreeNodeSelectEvent,
-    bracket: TreeNode<Partial<EventTeamModel>>[],
-    selectedNodes: TreeNode<Partial<EventTeamModel>>[],
+    bracket: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
+    selectedNodes: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
   ) {
     const parent = this.getNodeParent(ev.node, bracket[0]);
 
