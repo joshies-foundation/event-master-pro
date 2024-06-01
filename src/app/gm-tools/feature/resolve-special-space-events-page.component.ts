@@ -31,7 +31,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SpaceEventStatusTagComponent } from '../ui/space-event-status-tag.component';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
@@ -69,46 +69,53 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     @if (specialSpaceEvents(); as specialSpaceEvents) {
       <p class="mt-5">Special Space events for turn {{ roundNumber() }}</p>
 
-      <p-table [value]="specialSpaceEvents" [rowTrackBy]="trackById">
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="px-0">Player</th>
-            <th>Event</th>
-            <th class="text-right px-0">Status</th>
-            <th class="px-0"></th>
-          </tr>
-        </ng-template>
+      @if (specialSpaceEvents.length) {
+        {{ specialSpaceEvents }}
+        <p-table [value]="specialSpaceEvents" [rowTrackBy]="trackById">
+          <ng-template pTemplate="header">
+            <tr>
+              <th class="px-0">Player</th>
+              <th>Event</th>
+              <th class="text-right px-0">Status</th>
+              <th class="px-0"></th>
+            </tr>
+          </ng-template>
 
-        <ng-template
-          pTemplate="body"
-          let-specialSpaceEvent
-          [joshiesStronglyTypedTableRow]="specialSpaceEvents"
-        >
-          <tr [routerLink]="[specialSpaceEvent.id]">
-            <td class="px-0">
-              <div class="flex align-items-center">
-                <p-avatar
-                  [image]="specialSpaceEvent.avatar_url!"
-                  shape="circle"
-                  styleClass="mr-2"
+          <ng-template
+            pTemplate="body"
+            let-specialSpaceEvent
+            [joshiesStronglyTypedTableRow]="specialSpaceEvents"
+          >
+            <tr [routerLink]="[specialSpaceEvent.id]">
+              <td class="px-0">
+                <div class="flex align-items-center">
+                  <p-avatar
+                    [image]="specialSpaceEvent.avatar_url!"
+                    shape="circle"
+                    styleClass="mr-2"
+                  />
+                  {{ specialSpaceEvent.display_name }}
+                </div>
+              </td>
+              <td>
+                {{ specialSpaceEvent.template?.name ?? '?' }}
+              </td>
+              <td class="text-right px-0">
+                <joshies-space-event-status-tag
+                  [spaceEventStatus]="specialSpaceEvent.status"
                 />
-                {{ specialSpaceEvent.display_name }}
-              </div>
-            </td>
-            <td>
-              {{ specialSpaceEvent.template?.name ?? '?' }}
-            </td>
-            <td class="text-right px-0">
-              <joshies-space-event-status-tag
-                [spaceEventStatus]="specialSpaceEvent.status"
-              />
-            </td>
-            <td class="pl-1 pr-0">
-              <i class="pi pi-angle-right text-400"></i>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+              </td>
+              <td class="pl-1 pr-0">
+                <i class="pi pi-angle-right text-400"></i>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      } @else {
+        <p class="my-6 py-6 text-center text-500 font-italic">
+          No special space events for this turn
+        </p>
+      }
 
       @if (allSpecialSpaceEventsAreResolved()) {
         <p-button
@@ -117,10 +124,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
           (onClick)="proceedToDuelPhase()"
         />
       }
-    } @else if (specialSpaceEvents() === null) {
-      <p class="mt-6 pt-6 text-center text-500 font-italic">
-        No special space events for this turn
-      </p>
     } @else {
       <p-skeleton height="30rem" />
     }
@@ -132,6 +135,8 @@ export default class ResolveSpecialSpaceEventsPageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   readonly specialSpaceEvents: Signal<
     SpecialSpaceEventWithPlayerAndTemplateData[] | null | undefined
@@ -154,7 +159,9 @@ export default class ResolveSpecialSpaceEventsPageComponent {
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToDuelPhase,
-      successNavigation: null,
+      successNavigation: '..',
+      router: this.router,
+      activatedRoute: this.activatedRoute,
     });
   }
 
