@@ -111,7 +111,7 @@ export function eventFormFactory(
         control: eventFormGroup.controls.scoringMap,
       },
       {
-        type: FormFieldType.Text,
+        type: FormFieldType.Image,
         name: 'image-url',
         label: 'Image URL',
         placeholder: 'https://foo.bar',

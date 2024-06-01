@@ -183,6 +183,35 @@
           [binary]="true"
         />
       }
+      @case (FormFieldType.Image) {
+        <input
+          #imageUrlInput
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          type="text"
+          pInputText
+          [formControl]="field.control"
+          [ngClass]="field.styleClass"
+        />
+
+        <p-button
+          label="Upload Image"
+          icon="pi pi-camera"
+          styleClass="w-full"
+          (onClick)="imageFileInput.click()"
+        />
+
+        <!-- Hidden File Input -->
+        <input
+          #imageFileInput
+          hidden
+          type="file"
+          accept="image/*"
+          (change)="onImageSelect($event)"
+        />
+      }
     }
   </div>
 }

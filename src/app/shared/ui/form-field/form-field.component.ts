@@ -26,6 +26,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { delay } from 'rxjs';
+import { EventService } from '../../data-access/event.service';
 
 export enum FormFieldType {
   Text,
@@ -37,6 +38,7 @@ export enum FormFieldType {
   Submit,
   TextArea,
   Checkbox,
+  Image,
 }
 
 export interface DropdownItem<T = unknown> {
@@ -113,6 +115,9 @@ export type FormField = {
           type: FormFieldType.Checkbox;
           defaultValue?: boolean;
         }
+      | {
+          type: FormFieldType.Image;
+        }
     ))
   | {
       type: FormFieldType.Submit;
@@ -149,6 +154,7 @@ export class FormFieldComponent implements AfterViewInit {
 
   private readonly cd = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly eventService = inject(EventService);
 
   protected readonly FormFieldType = FormFieldType;
 
@@ -185,5 +191,18 @@ export class FormFieldComponent implements AfterViewInit {
     ).control.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef), delay(0))
       .subscribe(() => this.formGroup().updateValueAndValidity());
+  }
+
+  // When a new image is selected, upload it to supabase and use its new URL as the field value
+  async onImageSelect(event: Event): Promise<void> {
+    const field = this.field();
+    if (field.type !== FormFieldType.Image) {
+      return;
+    }
+    field.control.setValue(
+      await this.eventService.uploadImage(
+        (event.target as HTMLInputElement).files![0],
+      ),
+    );
   }
 }
