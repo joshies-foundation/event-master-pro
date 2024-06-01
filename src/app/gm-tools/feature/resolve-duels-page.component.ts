@@ -9,11 +9,7 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { ButtonModule } from 'primeng/button';
 import {
-  GameboardService,
-  SpecialSpaceEventWithPlayerAndTemplateData,
-} from '../../shared/data-access/gameboard.service';
-import {
-  GameboardSpaceEffect,
+  DuelStatus,
   RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
@@ -34,9 +30,12 @@ import { StatusTagComponent } from '../ui/status-tag.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { DuelService } from '../../shared/data-access/duel.service';
+import { DuelModel } from '../../shared/util/supabase-types';
+import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.component';
 
 @Component({
-  selector: 'joshies-resolve-special-space-events-page',
+  selector: 'joshies-resolve-duels-page',
   standalone: true,
   imports: [
     HeaderLinkComponent,
@@ -56,9 +55,10 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     StronglyTypedTableRowDirective,
     StatusTagComponent,
     RouterLink,
+    DuelTableAvatarsComponent,
   ],
   template: `
-    <joshies-page-header headerText="Special Space Events" alwaysSmall>
+    <joshies-page-header headerText="Duels" alwaysSmall>
       <joshies-header-link
         text="GM Tools"
         routerLink=".."
@@ -66,15 +66,15 @@ import { ConfirmationService, MessageService } from 'primeng/api';
       />
     </joshies-page-header>
 
-    @if (specialSpaceEvents(); as specialSpaceEvents) {
-      <p class="mt-5">Special Space events for turn {{ roundNumber() }}</p>
+    @if (duels(); as duels) {
+      <p class="mt-5">Duels for turn {{ roundNumber() }}</p>
 
-      @if (specialSpaceEvents.length) {
-        <p-table [value]="specialSpaceEvents" [rowTrackBy]="trackById">
+      @if (duels.length) {
+        <p-table [value]="duels" [rowTrackBy]="trackById">
           <ng-template pTemplate="header">
             <tr>
-              <th class="px-0">Player</th>
-              <th>Event</th>
+              <th class="px-0">Players</th>
+              <th>Game</th>
               <th class="text-right px-0">Status</th>
               <th class="px-0"></th>
             </tr>
@@ -82,25 +82,18 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
           <ng-template
             pTemplate="body"
-            let-specialSpaceEvent
-            [joshiesStronglyTypedTableRow]="specialSpaceEvents"
+            let-duel
+            [joshiesStronglyTypedTableRow]="duels"
           >
-            <tr [routerLink]="[specialSpaceEvent.id]">
+            <tr [routerLink]="[duel.id]">
               <td class="px-0">
-                <div class="flex align-items-center">
-                  <p-avatar
-                    [image]="specialSpaceEvent.avatar_url!"
-                    shape="circle"
-                    styleClass="mr-2"
-                  />
-                  {{ specialSpaceEvent.display_name }}
-                </div>
+                <joshies-duel-table-avatars [duel]="duel" />
               </td>
-              <td>
-                {{ specialSpaceEvent.template?.name ?? '?' }}
+              <td class="text-sm">
+                {{ duel.game_name }}
               </td>
               <td class="text-right px-0">
-                <joshies-status-tag [status]="specialSpaceEvent.status" />
+                <joshies-status-tag [status]="duel.status" />
               </td>
               <td class="pl-1 pr-0">
                 <i class="pi pi-angle-right text-400"></i>
@@ -110,15 +103,15 @@ import { ConfirmationService, MessageService } from 'primeng/api';
         </p-table>
       } @else {
         <p class="my-6 py-6 text-center text-500 font-italic">
-          No special space events for this turn
+          No duels for this turn
         </p>
       }
 
-      @if (allSpecialSpaceEventsAreResolved()) {
+      @if (allDuelsAreResolved()) {
         <p-button
-          label="Proceed to Duel Phase"
+          label="Proceed to Chaos Space Event Phase"
           styleClass="w-full mt-3"
-          (onClick)="proceedToDuelPhase()"
+          (onClick)="proceedToChaosSpaceEventPhase()"
         />
       }
     } @else {
@@ -127,41 +120,41 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ResolveSpecialSpaceEventsPageComponent {
-  private readonly gameboardService = inject(GameboardService);
+export default class ResolveDuelsPageComponent {
+  private readonly duelService = inject(DuelService);
   private readonly gameStateService = inject(GameStateService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  readonly specialSpaceEvents: Signal<
-    SpecialSpaceEventWithPlayerAndTemplateData[] | null | undefined
-  > = toSignal(this.gameboardService.specialSpaceEventsForThisTurn$);
+  readonly duels: Signal<DuelModel[] | undefined> = toSignal(
+    this.duelService.duelsForThisTurn$,
+  );
 
-  readonly allSpecialSpaceEventsAreResolved: Signal<boolean | undefined> =
-    toSignal(
-      this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$,
-    );
+  readonly allDuelsAreResolved: Signal<boolean | undefined> = toSignal(
+    this.duelService.allDuelsForThisTurnAreResolved$,
+  );
 
   readonly roundNumber = this.gameStateService.roundNumber;
 
-  proceedingToDuelPhase = signal(false);
+  proceedingToNextPhase = signal(false);
 
-  proceedToDuelPhase(): void {
+  proceedToChaosSpaceEventPhase(): void {
     confirmBackendAction({
-      confirmationMessageText: 'Proceed to the duel phase?',
-      successMessageText: "We're in the duel phase babyyyy",
-      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
+      confirmationMessageText: 'Proceed to the Chaos Space Event phase?',
+      successMessageText: "We're in the Chaos Space Event phase",
+      action: async () =>
+        this.gameStateService.setRoundPhase(RoundPhase.ChaosSpaceEvents),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
-      submittingSignal: this.proceedingToDuelPhase,
+      submittingSignal: this.proceedingToNextPhase,
       successNavigation: '..',
       router: this.router,
       activatedRoute: this.activatedRoute,
     });
   }
 
-  protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
   protected readonly trackById = trackById;
+  protected readonly DuelStatus = DuelStatus;
 }

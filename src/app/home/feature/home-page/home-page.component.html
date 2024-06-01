@@ -95,8 +95,8 @@
                       ) {
                         <p-button size="small" label="Place Bet" />
                       } @else {
-                        <joshies-space-event-status-tag
-                          [spaceEventStatus]="specialSpaceEvent.status"
+                        <joshies-status-tag
+                          [status]="specialSpaceEvent.status"
                         />
                       }
                     </td>
@@ -126,11 +126,51 @@
                 />
               }
             }
-
-            @if (vm.userIsGameMaster && vm.specialSpaceEvents?.length) {}
           }
           @case (RoundPhase.Duels) {
-            ⚔️ Time to duel!
+            <p class="mt-0 mb-2">Duels:</p>
+
+            <table class="w-full">
+              <tbody>
+                @for (duel of vm.duels; track duel.id) {
+                  <tr>
+                    <td class="pt-1 pr-2">
+                      <joshies-duel-table-avatars [duel]="duel" />
+                    </td>
+
+                    <td class="text-sm">{{ duel.game_name }}</td>
+
+                    <td class="pt-1 text-right">
+                      @if (duel.status === DuelStatus.WaitingToBegin) {
+                        <p-button size="small" label="Place Bet" />
+                      } @else {
+                        <joshies-status-tag [status]="duel.status" />
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td class="font-italic text-600">No duels for this turn</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            @if (vm.userIsGameMaster) {
+              @if (vm.allDuelsAreResolved) {
+                <p-button
+                  label="Proceed to Chaos Space Event Phase"
+                  styleClass="w-full mt-2"
+                  (onClick)="proceedToChaosSpaceEventPhase()"
+                />
+              } @else {
+                <p-button
+                  label="Resolve Duels"
+                  styleClass="mt-2 w-full"
+                  routerLink="/gm-tools/resolve-duels"
+                />
+              }
+            }
           }
           @case (RoundPhase.Event) {
             @if (vm.eventForThisRound; as event) {

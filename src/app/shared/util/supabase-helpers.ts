@@ -26,6 +26,7 @@ export enum Table {
   EventTeamRoundScore = 'event_team_round_score',
   SpecialSpaceEvent = 'special_space_event',
   SpecialSpaceEventTemplate = 'special_space_event_template',
+  Duel = 'duel',
 }
 
 export enum View {
@@ -45,6 +46,7 @@ export enum Function {
   ReorderEvents = 'reorder_events',
   SubmitGainPointsBasedOnRank = 'submit_gain_points_based_on_rank',
   SubmitSpecialSpaceEventScore = 'submit_special_space_event_score',
+  SubmitDuelResults = 'submit_duel_results',
 }
 
 export enum StorageBucket {
@@ -72,6 +74,17 @@ export enum SpaceEventStatus {
   Canceled = 'canceled',
 }
 
+export enum DuelStatus {
+  OpponentNotSelected = 'opponent_not_selected',
+  WagerNotSelected = 'wager_not_selected',
+  GameNotSelected = 'game_not_selected',
+  WaitingToBegin = 'waiting_to_begin',
+  InProgress = 'in_progress',
+  ChallengerWon = 'challenger_won',
+  OpponentWon = 'opponent_won',
+  Canceled = 'canceled',
+}
+
 export enum EventFormat {
   SingleEliminationTournament = 'single_elimination_tournament',
   DoubleEliminationTournament = 'double_elimination_tournament',
@@ -82,6 +95,7 @@ export enum RoundPhase {
   GameboardMoves = 'gameboard_moves',
   SpecialSpaceEvents = 'special_space_events',
   Duels = 'duels',
+  ChaosSpaceEvents = 'chaos_space_events',
   Event = 'event',
   WaitingForNextRound = 'waiting_for_next_round',
 }

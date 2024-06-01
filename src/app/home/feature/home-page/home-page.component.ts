@@ -28,6 +28,7 @@ import { concat, map, Observable, of, switchMap, takeWhile, timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../../../shared/util/rxjs-helpers';
 import {
+  DuelStatus,
   RoundPhase,
   SessionStatus,
   showMessageOnError,
@@ -41,8 +42,10 @@ import { RouterLink } from '@angular/router';
 import { EventInfoComponent } from '../../../shared/ui/event-info.component';
 import { GameboardService } from '../../../shared/data-access/gameboard.service';
 import { AvatarModule } from 'primeng/avatar';
-import { SpaceEventStatusTagComponent } from '../../../gm-tools/ui/space-event-status-tag.component';
+import { StatusTagComponent } from '../../../gm-tools/ui/status-tag.component';
 import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
+import { DuelService } from '../../../shared/data-access/duel.service';
+import { DuelTableAvatarsComponent } from '../../../shared/ui/duel-table-avatars.component';
 
 interface Countdown {
   days: number;
@@ -75,12 +78,14 @@ interface Countdown {
     RouterLink,
     EventInfoComponent,
     AvatarModule,
-    SpaceEventStatusTagComponent,
+    StatusTagComponent,
+    DuelTableAvatarsComponent,
   ],
 })
 export default class HomePageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly gameStateService = inject(GameStateService);
+  private readonly duelService = inject(DuelService);
   private readonly gameboardService = inject(GameboardService);
   private readonly playerService = inject(PlayerService);
   private readonly authService = inject(AuthService);
@@ -141,6 +146,20 @@ export default class HomePageComponent {
       this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$,
     );
 
+  readonly duels = toSignal(
+    this.gameStateService.roundPhase$.pipe(
+      switchMap((roundPhase) =>
+        roundPhase === RoundPhase.Duels
+          ? this.duelService.nonCanceledDuelsForThisTurn$
+          : of(null),
+      ),
+    ),
+  );
+
+  readonly allDuelsAreResolved: Signal<boolean | undefined> = toSignal(
+    this.duelService.allDuelsForThisTurnAreResolved$,
+  );
+
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       session: this.sessionService.session(),
@@ -160,6 +179,8 @@ export default class HomePageComponent {
       countdown: this.countdown(),
       specialSpaceEvents: this.specialSpaceEvents(),
       allSpecialSpaceEventsAreResolved: this.allSpecialSpaceEventsAreResolved(),
+      duels: this.duels(),
+      allDuelsAreResolved: this.allDuelsAreResolved(),
     }),
   );
 
@@ -181,7 +202,7 @@ export default class HomePageComponent {
     showSuccessMessage('Session started!', this.messageService);
   }
 
-  proceedingToDuelPhase = signal(false);
+  proceedingToNextPhase = signal(false);
 
   proceedToDuelPhase(): void {
     confirmBackendAction({
@@ -190,11 +211,25 @@ export default class HomePageComponent {
       action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
-      submittingSignal: this.proceedingToDuelPhase,
+      submittingSignal: this.proceedingToNextPhase,
+      successNavigation: null,
+    });
+  }
+
+  proceedToChaosSpaceEventPhase(): void {
+    confirmBackendAction({
+      confirmationMessageText: 'Proceed to the Chaos Space Event phase?',
+      successMessageText: "We're in the Chaos Space Event phase",
+      action: async () =>
+        this.gameStateService.setRoundPhase(RoundPhase.ChaosSpaceEvents),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.proceedingToNextPhase,
       successNavigation: null,
     });
   }
 
   protected readonly RoundPhase = RoundPhase;
   protected readonly SpaceEventStatus = SpaceEventStatus;
+  protected readonly DuelStatus = DuelStatus;
 }

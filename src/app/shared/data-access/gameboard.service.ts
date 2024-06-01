@@ -152,6 +152,7 @@ export class GameboardService {
               ),
             ),
       ),
+      shareReplay(1),
     );
 
   readonly nonCanceledSpecialSpaceEventsForThisTurn$: Observable<

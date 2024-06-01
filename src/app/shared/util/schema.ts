@@ -41,6 +41,77 @@ export type Database = {
           },
         ];
       };
+      duel: {
+        Row: {
+          challenger_player_id: number;
+          created_at: string;
+          duel_space_id: number;
+          game_name: string | null;
+          id: number;
+          opponent_player_id: number | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['duel_status'];
+          updated_at: string;
+          wager_percentage: number | null;
+        };
+        Insert: {
+          challenger_player_id: number;
+          created_at?: string;
+          duel_space_id: number;
+          game_name?: string | null;
+          id?: number;
+          opponent_player_id?: number | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['duel_status'];
+          updated_at?: string;
+          wager_percentage?: number | null;
+        };
+        Update: {
+          challenger_player_id?: number;
+          created_at?: string;
+          duel_space_id?: number;
+          game_name?: string | null;
+          id?: number;
+          opponent_player_id?: number | null;
+          round_number?: number;
+          session_id?: number;
+          status?: Database['public']['Enums']['duel_status'];
+          updated_at?: string;
+          wager_percentage?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'duel_challenger_player_id_fkey';
+            columns: ['challenger_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_duel_space_id_fkey';
+            columns: ['duel_space_id'];
+            isOneToOne: false;
+            referencedRelation: 'gameboard_space';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_opponent_player_id_fkey';
+            columns: ['opponent_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       event: {
         Row: {
           created_at: string;
@@ -856,6 +927,14 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_duel_results: {
+        Args: {
+          duel_id: number;
+          challenger_won: boolean;
+          player_score_changes: Json;
+        };
+        Returns: undefined;
+      };
       submit_gain_points_based_on_rank: {
         Args: {
           special_space_event_id: number;
@@ -878,6 +957,15 @@ export type Database = {
         | 'everyone_loses_percentage_of_their_points'
         | 'everyone_loses_percentage_of_their_points_based_on_task_failure'
         | 'point_swap';
+      duel_status:
+        | 'opponent_not_selected'
+        | 'wager_not_selected'
+        | 'game_not_selected'
+        | 'waiting_to_begin'
+        | 'in_progress'
+        | 'challenger_won'
+        | 'opponent_won'
+        | 'canceled';
       event_format:
         | 'single_elimination_tournament'
         | 'double_elimination_tournament'

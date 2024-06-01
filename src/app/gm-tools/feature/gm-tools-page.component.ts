@@ -51,8 +51,15 @@ export default class GmToolsPageComponent {
     ],
     [RoundPhase.Duels]: [
       {
-        text: 'Manage Duels',
+        text: 'Resolve Duels',
         iconClass: 'pi pi-bolt bg-purple-500',
+        routerLink: './resolve-duels',
+      },
+    ],
+    [RoundPhase.ChaosSpaceEvents]: [
+      {
+        text: 'Resolve Special Space Events',
+        iconClass: 'pi pi-exclamation-circle bg-black',
         routerLink: '.',
       },
     ],

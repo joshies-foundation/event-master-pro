@@ -5,7 +5,9 @@ import {
   Function,
   GameboardSpaceEffect,
   SpaceEventStatus,
+  DuelStatus,
 } from './supabase-helpers';
+import { PlayerWithUserAndRankInfo } from '../data-access/player.service';
 
 type PublicSchema = Database[Extract<keyof Database, 'public'>];
 
@@ -150,6 +152,12 @@ export type SpecialSpaceEventModel = Omit<
   'status'
 > & {
   status: SpaceEventStatus;
+};
+
+export type DuelModel = Omit<Tables<Table.Duel>, 'status'> & {
+  status: DuelStatus;
+  challenger: PlayerWithUserAndRankInfo | undefined;
+  opponent: PlayerWithUserAndRankInfo | undefined;
 };
 
 // tables

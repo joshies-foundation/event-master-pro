@@ -63,6 +63,16 @@ const gmToolsRoutes: Routes = [
       originalSpecialSpaceEventTemplate: editSpecialSpaceEventTemplateResolver,
     },
   },
+  {
+    path: 'resolve-duels',
+    loadComponent: () => import('./resolve-duels-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
+  {
+    path: 'resolve-duels/:duelId',
+    loadComponent: () => import('./duel-page.component'),
+    data: { pageAnimationLayer: 3 },
+  },
 
   // players
   {
