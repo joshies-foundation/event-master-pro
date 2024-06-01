@@ -18,6 +18,7 @@ import {
 } from '../../shared/util/rxjs-helpers';
 import {
   PlayerService,
+  PlayerWithUserAndRankInfo,
   PlayerWithUserInfo,
 } from '../../shared/data-access/player.service';
 import { Database } from '../../shared/util/schema';
@@ -27,6 +28,7 @@ import {
   TransactionModel,
 } from '../../shared/util/supabase-types';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { addRankingInfoToPlayers } from '../../shared/util/ranking-helpers';
 
 export interface IdAndName {
   id: number;
@@ -74,17 +76,20 @@ export class AnalyticsService {
     );
   }
 
-  getAllScoresFromSession(sessionId: number): Observable<PlayerWithUserInfo[]> {
+  getAllScoresFromSession(
+    sessionId: number,
+  ): Observable<PlayerWithUserAndRankInfo[]> {
     return from(
       this.supabase.rpc(Function.GetAllScoresFromSession, {
         sessionid: sessionId,
       }),
     ).pipe(
-      map(
-        (response) =>
+      map((response) =>
+        addRankingInfoToPlayers(
           (response.data
             ? response.data
             : []) as unknown as PlayerWithUserInfo[],
+        ),
       ),
     );
   }

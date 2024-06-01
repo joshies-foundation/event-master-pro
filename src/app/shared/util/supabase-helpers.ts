@@ -43,6 +43,7 @@ export enum Function {
   StartSessionEarly = 'start_session_early',
   LogRoundMoves = 'log_round_moves',
   ReorderEvents = 'reorder_events',
+  SubmitGainPointsBasedOnRank = 'submit_gain_points_based_on_rank',
 }
 
 export enum StorageBucket {

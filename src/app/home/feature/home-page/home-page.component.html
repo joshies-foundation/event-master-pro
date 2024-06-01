@@ -74,7 +74,7 @@
                   track specialSpaceEvent.id
                 ) {
                   <tr>
-                    <td class="pt-1 px-2">
+                    <td class="pt-1 pr-2">
                       <div class="flex align-items-center gap-2">
                         <p-avatar
                           [image]="specialSpaceEvent.avatar_url!"
@@ -111,13 +111,23 @@
               </tbody>
             </table>
 
-            @if (vm.userIsGameMaster && vm.specialSpaceEvents?.length) {
-              <p-button
-                label="Resolve Special Space Events"
-                styleClass="mt-2 w-full"
-                routerLink="/gm-tools/resolve-special-space-events"
-              />
+            @if (vm.userIsGameMaster) {
+              @if (vm.allSpecialSpaceEventsAreResolved) {
+                <p-button
+                  label="Proceed to Duel Phase"
+                  styleClass="w-full mt-2"
+                  (onClick)="proceedToDuelPhase()"
+                />
+              } @else {
+                <p-button
+                  label="Resolve Special Space Events"
+                  styleClass="mt-2 w-full"
+                  routerLink="/gm-tools/resolve-special-space-events"
+                />
+              }
             }
+
+            @if (vm.userIsGameMaster && vm.specialSpaceEvents?.length) {}
           }
           @case (RoundPhase.Duels) {
             ⚔️ Time to duel!

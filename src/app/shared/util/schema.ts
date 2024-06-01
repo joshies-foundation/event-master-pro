@@ -133,6 +133,7 @@ export type Database = {
           created_at: string;
           event_id: number;
           id: number;
+          name: string | null;
           seed: number | null;
           updated_at: string;
         };
@@ -140,6 +141,7 @@ export type Database = {
           created_at?: string;
           event_id: number;
           id?: number;
+          name?: string | null;
           seed?: number | null;
           updated_at?: string;
         };
@@ -147,6 +149,7 @@ export type Database = {
           created_at?: string;
           event_id?: number;
           id?: number;
+          name?: string | null;
           seed?: number | null;
           updated_at?: string;
         };
@@ -821,6 +824,14 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_gain_points_based_on_rank: {
+        Args: {
+          special_space_event_id: number;
+          special_space_event_template_id: number;
+          player_score_changes: Json;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       chaos_space_event_type:
@@ -841,6 +852,7 @@ export type Database = {
         | 'gameboard_moves'
         | 'special_space_events'
         | 'duels'
+        | 'chaos_space_events'
         | 'event'
         | 'waiting_for_next_round';
       session_status: 'not_started' | 'in_progress' | 'finished';

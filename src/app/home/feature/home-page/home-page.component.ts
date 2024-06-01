@@ -34,7 +34,7 @@ import {
   SpaceEventStatus,
 } from '../../../shared/util/supabase-helpers';
 import { ButtonModule } from 'primeng/button';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { showSuccessMessage } from '../../../shared/util/message-helpers';
 import { EventService } from '../../../shared/data-access/event.service';
 import { RouterLink } from '@angular/router';
@@ -42,6 +42,7 @@ import { EventInfoComponent } from '../../../shared/ui/event-info.component';
 import { GameboardService } from '../../../shared/data-access/gameboard.service';
 import { AvatarModule } from 'primeng/avatar';
 import { SpaceEventStatusTagComponent } from '../../../gm-tools/ui/space-event-status-tag.component';
+import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
 
 interface Countdown {
   days: number;
@@ -85,6 +86,7 @@ export default class HomePageComponent {
   private readonly authService = inject(AuthService);
   private readonly eventService = inject(EventService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   private readonly showRankingsTable = computed(
     () => this.gameStateService.sessionStatus() !== SessionStatus.NotStarted,
@@ -128,11 +130,16 @@ export default class HomePageComponent {
     this.gameStateService.roundPhase$.pipe(
       switchMap((roundPhase) =>
         roundPhase === RoundPhase.SpecialSpaceEvents
-          ? this.gameboardService.specialSpaceEventsForThisTurn$
+          ? this.gameboardService.nonCanceledSpecialSpaceEventsForThisTurn$
           : of(null),
       ),
     ),
   );
+
+  readonly allSpecialSpaceEventsAreResolved: Signal<boolean | undefined> =
+    toSignal(
+      this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$,
+    );
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
@@ -152,6 +159,7 @@ export default class HomePageComponent {
       userId: this.authService.user()?.id,
       countdown: this.countdown(),
       specialSpaceEvents: this.specialSpaceEvents(),
+      allSpecialSpaceEventsAreResolved: this.allSpecialSpaceEventsAreResolved(),
     }),
   );
 
@@ -171,6 +179,20 @@ export default class HomePageComponent {
     }
 
     showSuccessMessage('Session started!', this.messageService);
+  }
+
+  proceedingToDuelPhase = signal(false);
+
+  proceedToDuelPhase(): void {
+    confirmBackendAction({
+      confirmationMessageText: 'Proceed to the duel phase?',
+      successMessageText: "We're in the duel phase babyyyy",
+      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.proceedingToDuelPhase,
+      successNavigation: null,
+    });
   }
 
   protected readonly RoundPhase = RoundPhase;

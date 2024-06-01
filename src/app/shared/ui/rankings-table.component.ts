@@ -1,14 +1,9 @@
 import { CommonModule, NgClass, NgOptimizedImage } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
-import { PlayerWithUserInfo } from '../data-access/player.service';
-import { trackByPlayerId } from '../util/supabase-helpers';
+import { PlayerWithUserAndRankInfo } from '../data-access/player.service';
+import { trackByUserId } from '../util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.directive';
 
 @Component({
@@ -24,7 +19,7 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
   ],
   template: `
     <!-- Rankings Table -->
-    <p-table [value]="rankings()" [rowTrackBy]="trackByPlayerId">
+    <p-table [value]="players()" [rowTrackBy]="trackByUserId">
       <ng-template pTemplate="header">
         <tr>
           <th>Rank</th>
@@ -34,35 +29,35 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
       </ng-template>
       <ng-template
         pTemplate="body"
-        [joshiesStronglyTypedTableRow]="rankings()"
-        let-ranking
+        [joshiesStronglyTypedTableRow]="players()"
+        let-player
       >
         <tr
           [ngClass]="{
-            'font-semibold bg-highlight': ranking.user_id === userId()
+            'font-semibold bg-highlight': player.user_id === userId()
           }"
         >
           <td class="text-center">
-            @if (ranking.rankEmoji) {
-              {{ ranking.rankEmoji }}
+            @if (player.rankEmoji) {
+              {{ player.rankEmoji }}
             } @else {
-              {{ ranking.rank | number }}
+              {{ player.rank | number }}
             }
           </td>
           <td>
             <div class="flex align-items-center gap-2 -py-2">
               <img
-                [ngSrc]="ranking.avatar_url"
+                [ngSrc]="player.avatar_url"
                 alt=""
                 width="32"
                 height="32"
                 class="border-circle surface-100"
               />
-              {{ ranking.display_name }}
+              {{ player.display_name }}
             </div>
           </td>
           <td class="text-right">
-            {{ ranking.score | number }}
+            {{ player.score | number }}
           </td>
         </tr>
       </ng-template>
@@ -71,38 +66,8 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RankingsTableComponent {
-  players = input.required<PlayerWithUserInfo[]>();
+  players = input.required<PlayerWithUserAndRankInfo[]>();
   userId = input.required<string | null>();
 
-  protected readonly trackByPlayerId = trackByPlayerId;
-
-  readonly rankings = computed(() => {
-    const sortedPlayers = this.players()
-      .slice()
-      .sort((player1, player2) => player2.score - player1.score);
-
-    let currentRank = 1;
-    let previousScore = sortedPlayers[0]?.score;
-
-    return sortedPlayers.map((player, index) => {
-      if (player.score !== previousScore) {
-        currentRank = index + 1;
-      }
-      previousScore = player.score;
-      return {
-        user_id: player.user_id,
-        player_id: player.player_id,
-        display_name: player.display_name,
-        score: player.score,
-        avatar_url: player.avatar_url,
-        rank: currentRank,
-        rankEmoji:
-          currentRank === 1
-            ? '👑'
-            : currentRank === sortedPlayers.length
-              ? '💩'
-              : undefined,
-      };
-    });
-  });
+  protected readonly trackByUserId = trackByUserId;
 }

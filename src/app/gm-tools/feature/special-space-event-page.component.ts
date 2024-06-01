@@ -14,12 +14,19 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   PlayerService,
-  PlayerWithUserInfo,
+  PlayerWithUserAndRankInfo,
 } from '../../shared/data-access/player.service';
 import { AvatarModule } from 'primeng/avatar';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import { filter, map, shareReplay, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  filter,
+  map,
+  Observable,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs';
 import {
   defined,
   distinctUntilIdChanged,
@@ -29,10 +36,13 @@ import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { DropdownModule } from 'primeng/dropdown';
 import {
+  EveryoneGainsPointsBasedOnRankSpecialSpaceEventDetails,
   PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails,
+  PlayerModel,
   SpecialSpaceEffectData,
   SpecialSpaceEventModel,
   SpecialSpaceEventTemplateModel,
+  SpecialSpaceEventType,
 } from '../../shared/util/supabase-types';
 import { SpaceEventStatus } from '../../shared/util/supabase-helpers';
 import { FormsModule } from '@angular/forms';
@@ -40,6 +50,13 @@ import { ButtonModule } from 'primeng/button';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
+import { TableModule } from 'primeng/table';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
+import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
+
+interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
+  scoreChange: number;
+}
 
 @Component({
   selector: 'joshies-special-space-event-page',
@@ -56,11 +73,14 @@ import { PaginatorModule } from 'primeng/paginator';
     ButtonModule,
     PaginatorModule,
     TitleCasePipe,
+    TableModule,
+    StronglyTypedTableRowDirective,
+    NumberWithSignAndColorPipe,
   ],
   template: `
-    <joshies-page-header headerText="Special Space Events" alwaysSmall>
+    <joshies-page-header headerText="Special Space Event" alwaysSmall>
       <joshies-header-link
-        text="GM Tools"
+        text="Events"
         routerLink=".."
         chevronDirection="left"
       />
@@ -68,149 +88,217 @@ import { PaginatorModule } from 'primeng/paginator';
 
     @if (viewModel(); as vm) {
       @if (vm.specialSpaceEvent) {
-        @if (vm.player) {
-          <div class="flex-grow-1 flex flex-column justify-content-between">
-            <div>
-              <!-- Player -->
-              <div class="mt-5 flex align-items-center gap-3">
-                <p-avatar
-                  size="large"
-                  shape="circle"
-                  [image]="vm.player.avatar_url"
-                />
-                {{ vm.player.display_name }}'s Special Space event for turn
-                {{ vm.roundNumber }}
-              </div>
+        <div class="flex-grow-1 flex flex-column justify-content-between">
+          <div>
+            <!-- Player -->
+            <div class="mt-5 flex align-items-center gap-3">
+              <p-avatar
+                size="large"
+                shape="circle"
+                [image]="vm.specialSpaceEvent.avatar_url ?? ''"
+              />
+              {{ vm.specialSpaceEvent.display_name }}'s Special Space event for
+              turn
+              {{ vm.roundNumber }}
+            </div>
 
-              @switch (vm.specialSpaceEvent.status) {
-                @case (SpaceEventStatus.EventNotSelected) {
-                  <!-- Select Event -->
+            @switch (vm.specialSpaceEvent.status) {
+              @case (SpaceEventStatus.EventNotSelected) {
+                <!-- Select Event -->
+                <!-- eslint-disable-next-line -->
+                <label class="mt-5 flex flex-column gap-2">
+                  Select Event
+                  <p-dropdown
+                    [options]="eventOptions()"
+                    optionLabel="name"
+                    optionValue="id"
+                    styleClass="w-full"
+                    [(ngModel)]="selectedEventTemplateId"
+                    [disabled]="backendActionInProgress()"
+                  />
+                </label>
+
+                @if (selectedEventTemplate(); as selectedEventTemplate) {
+                  <!-- Event Description -->
+                  <p class="pre-wrap">
+                    {{ selectedEventTemplate.description }}
+                  </p>
+
+                  @switch (selectedEventTemplate.type) {
+                    @case (
+                      SpecialSpaceEventType.EveryoneGainsPointsBasedOnRank
+                    ) {
+                      @if (
+                        playersWithScoreChanges();
+                        as playersWithScoreChanges
+                      ) {
+                        <p-table [value]="playersWithScoreChanges">
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th>Player</th>
+                              <th class="text-right">Current Score</th>
+                              <th class="text-right">Change</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template
+                            pTemplate="body"
+                            let-player
+                            [joshiesStronglyTypedTableRow]="
+                              playersWithScoreChanges
+                            "
+                          >
+                            <tr>
+                              <td>
+                                <div class="flex align-items-center gap-2">
+                                  <p-avatar
+                                    [image]="player.avatar_url"
+                                    shape="circle"
+                                  />
+                                  {{ player.display_name }}
+                                </div>
+                              </td>
+                              <td class="text-right">{{ player.score }}</td>
+                              <td
+                                class="text-right"
+                                [innerHTML]="
+                                  player.scoreChange | numberWithSignAndColor
+                                "
+                              ></td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+
+                        <!-- Submit Changes Button -->
+                        <p-button
+                          label="Submit Score Changes"
+                          styleClass="mt-4 w-full"
+                          [disabled]="backendActionInProgress()"
+                          [loading]="selectingEvent()"
+                          (onClick)="
+                            confirmSubmitScoreChanges(
+                              vm.specialSpaceEvent.id,
+                              selectedEventTemplateId()!,
+                              playersWithScoreChanges
+                            )
+                          "
+                        />
+                      } @else {
+                        Loading score changes...
+                      }
+                    }
+                    @default {
+                      <!-- "Lock in Event" Button -->
+                      <p-button
+                        label="Lock in Event (Opens Betting)"
+                        styleClass="w-full"
+                        [disabled]="backendActionInProgress()"
+                        [loading]="selectingEvent()"
+                        (onClick)="
+                          confirmSelectEventTemplate(
+                            vm.specialSpaceEvent.id,
+                            selectedEventTemplate
+                          )
+                        "
+                      />
+                    }
+                  }
+                }
+              }
+              @case (SpaceEventStatus.WaitingToBegin) {
+                @if (vm.specialSpaceEvent.template) {
+                  <h3 class="mt-5 mb-2">
+                    {{ vm.specialSpaceEvent.template.name }}
+                  </h3>
+                  <pre class="mt-0 mb-5 pre-wrap">{{
+                    vm.specialSpaceEvent.template.description
+                  }}</pre>
+
+                  <p-button
+                    label="Start Event (Closes Betting)"
+                    severity="success"
+                    styleClass="w-full"
+                    [disabled]="backendActionInProgress()"
+                    [loading]="startingEvent()"
+                    (onClick)="confirmStartEvent(vm.specialSpaceEvent.id)"
+                  />
+                } @else {
+                  Event template not found
+                }
+              }
+              @case (SpaceEventStatus.InProgress) {
+                @if (vm.specialSpaceEvent.template) {
+                  <h3 class="mt-5 mb-2">
+                    {{ vm.specialSpaceEvent.template.name }}
+                  </h3>
+                  <pre class="mt-0 mb-5 pre-wrap">{{
+                    vm.specialSpaceEvent.template.description
+                  }}</pre>
+
                   <!-- eslint-disable-next-line -->
-                  <label class="mt-5 flex flex-column gap-2">
-                    Select Event
-                    <p-dropdown
-                      [options]="eventOptions()"
-                      optionLabel="name"
-                      optionValue="id"
+                  <label class="flex flex-column gap-2">
+                    {{
+                      $any(vm.specialSpaceEvent.template.details)
+                        ?.pointsLabelPlural ?? 'points' | titlecase
+                    }}
+                    <p-inputNumber
+                      [(ngModel)]="score"
+                      [showButtons]="true"
+                      buttonLayout="horizontal"
+                      [step]="1"
+                      incrementButtonIcon="pi pi-plus"
+                      decrementButtonIcon="pi pi-minus"
+                      inputStyleClass="w-full font-semibold text-right"
                       styleClass="w-full"
-                      [(ngModel)]="selectedEventTemplateId"
                       [disabled]="backendActionInProgress()"
                     />
                   </label>
 
-                  @if (selectedEventTemplate(); as selectedEventTemplate) {
-                    <!-- Event Description -->
-                    <p class="pre-wrap">
-                      {{ selectedEventTemplate.description }}
-                    </p>
+                  <p>
+                    Session Points: <strong>{{ sessionPoints() }}</strong>
+                  </p>
 
-                    <!-- "Lock in Event" Button -->
-                    <p-button
-                      label="Lock in Event (Opens Betting)"
-                      styleClass="w-full"
-                      [disabled]="backendActionInProgress()"
-                      [loading]="selectingEvent()"
-                      (onClick)="
-                        confirmSelectEventTemplate(
-                          vm.specialSpaceEvent.id,
-                          selectedEventTemplate
-                        )
-                      "
-                    />
-                  }
-                }
-                @case (SpaceEventStatus.WaitingToBegin) {
-                  @if (vm.specialSpaceEventTemplate) {
-                    <h3 class="mt-5 mb-2">
-                      {{ vm.specialSpaceEventTemplate.name }}
-                    </h3>
-                    <pre class="mt-0 mb-5 pre-wrap">{{
-                      vm.specialSpaceEventTemplate.description
-                    }}</pre>
-
-                    <p-button
-                      label="Start Event (Closes Betting)"
-                      severity="success"
-                      styleClass="w-full"
-                      [disabled]="backendActionInProgress()"
-                      [loading]="startingEvent()"
-                      (onClick)="confirmStartEvent(vm.specialSpaceEvent.id)"
-                    />
-                  } @else {
-                    Event template not found
-                  }
-                }
-                @case (SpaceEventStatus.InProgress) {
-                  @if (vm.specialSpaceEventTemplate) {
-                    <h3 class="mt-5 mb-2">
-                      {{ vm.specialSpaceEventTemplate.name }}
-                    </h3>
-                    <pre class="mt-0 mb-5 pre-wrap">{{
-                      vm.specialSpaceEventTemplate.description
-                    }}</pre>
-
-                    <!-- eslint-disable-next-line -->
-                    <label class="flex flex-column gap-2">
-                      {{
-                        $any(vm.specialSpaceEventTemplate.details)
-                          ?.pointsLabelPlural ?? 'points' | titlecase
-                      }}
-                      <p-inputNumber
-                        [(ngModel)]="score"
-                        [showButtons]="true"
-                        buttonLayout="horizontal"
-                        [step]="1"
-                        incrementButtonIcon="pi pi-plus"
-                        decrementButtonIcon="pi pi-minus"
-                        inputStyleClass="w-full font-semibold text-right"
-                        styleClass="w-full"
-                        [disabled]="backendActionInProgress()"
-                      />
-                    </label>
-
-                    <p>
-                      Session Points: <strong>{{ sessionPoints() }}</strong>
-                    </p>
-
-                    <p-button
-                      label="Submit Score"
-                      styleClass="mt-5 w-full"
-                      [disabled]="backendActionInProgress()"
-                      [loading]="startingEvent()"
-                      (onClick)="
-                        confirmSubmitScore(
-                          vm.specialSpaceEvent.id,
-                          score(),
-                          sessionPoints(),
-                          vm.player.display_name
-                        )
-                      "
-                    />
-                  } @else {
-                    Event template not found
-                  }
+                  <p-button
+                    label="Submit Score"
+                    styleClass="mt-5 w-full"
+                    [disabled]="backendActionInProgress()"
+                    [loading]="startingEvent()"
+                    (onClick)="
+                      confirmSubmitScore(
+                        vm.specialSpaceEvent.id,
+                        score(),
+                        sessionPoints(),
+                        vm.specialSpaceEvent.display_name ?? ''
+                      )
+                    "
+                  />
+                } @else {
+                  Event template not found
                 }
               }
-            </div>
+            }
+          </div>
 
+          @if (vm.showCancelButton) {
             <p-button
               [text]="true"
               severity="danger"
               label="Cancel this Special Space Event"
-              styleClass="w-full"
+              styleClass="mt-6 w-full"
               [disabled]="backendActionInProgress()"
+              [loading]="cancelingEvent()"
+              (onClick)="
+                confirmCancelSpecialSpaceEvent(
+                  vm.specialSpaceEvent.id,
+                  vm.specialSpaceEvent.display_name ?? ''
+                )
+              "
             />
-          </div>
-        } @else {
-          <p class="mt-5">
-            No player found with ID
-            <strong>{{ vm.specialSpaceEvent.player_id }}</strong>
-          </p>
-        }
+          }
+        </div>
       } @else {
         <p class="mt-5">
           No special space event found with ID
-          <strong>{{ specialSpaceEventId() }}</strong>
+          <strong>{{ vm.specialSpaceEventId }}</strong>
         </p>
       }
     } @else {
@@ -231,55 +319,29 @@ export default class SpecialSpaceEventPageComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly specialSpaceEventId = input.required<string>();
+  readonly specialSpaceEventId = input<string>();
   readonly specialSpaceEventId$ = toObservable(this.specialSpaceEventId);
 
-  readonly specialSpaceEvent$ = this.specialSpaceEventId$.pipe(
-    defined(),
-    switchMap((specialSpaceEventId) =>
-      this.gameboardService.getRealtimeUpdatesFromSpecialSpaceEvent(
-        Number(specialSpaceEventId),
-      ),
+  private readonly specialSpaceEvents = toSignal(
+    this.gameboardService.specialSpaceEvents$,
+  );
+
+  readonly specialSpaceEvent$ = combineLatest({
+    specialSpaceEventId: this.specialSpaceEventId$,
+    specialSpaceEvents: this.gameboardService.specialSpaceEvents$,
+  }).pipe(
+    map(({ specialSpaceEventId, specialSpaceEvents }) =>
+      specialSpaceEventId === undefined
+        ? null
+        : specialSpaceEvents.find(
+            (event) => event.id === Number(specialSpaceEventId),
+          ),
     ),
-    shareReplay(1),
   );
 
   readonly specialSpaceEvent = toSignal(this.specialSpaceEvent$);
 
-  readonly specialSpaceEventTemplate: Signal<
-    SpecialSpaceEventTemplateModel | null | undefined
-  > = toSignal(
-    this.specialSpaceEvent$.pipe(
-      whenNotNull((specialSpaceEvent) =>
-        this.gameboardService.specialSpaceEventTemplates$.pipe(
-          map(
-            (templates) =>
-              templates?.find(
-                (template) => template.id === specialSpaceEvent.template_id,
-              ) ?? null,
-          ),
-        ),
-      ),
-    ),
-  );
-
-  readonly player: Signal<PlayerWithUserInfo | null | undefined> = computed(
-    () => {
-      const players = this.playerService.players();
-      const specialSpaceEvent = this.specialSpaceEvent();
-
-      if (!players) return players;
-      if (!specialSpaceEvent) return specialSpaceEvent;
-
-      return (
-        players.find(
-          (player) => player.player_id === specialSpaceEvent.player_id,
-        ) ?? null
-      );
-    },
-  );
-
-  readonly roundNumber = this.gameStateService.roundNumber;
+  private readonly roundNumber = this.gameStateService.roundNumber;
 
   readonly eventOptions = toSignal(
     this.specialSpaceEvent$.pipe(
@@ -318,9 +380,7 @@ export default class SpecialSpaceEventPageComponent {
     this.selectedEventTemplateId,
   );
 
-  readonly selectedEventTemplate: Signal<
-    SpecialSpaceEventTemplateModel | null | undefined
-  > = toSignal(
+  readonly selectedEventTemplate$: Observable<SpecialSpaceEventTemplateModel | null> =
     this.selectedEventTemplateId$.pipe(
       whenNotNull((selectedEventTemplateId) =>
         this.gameboardService.specialSpaceEventTemplates$.pipe(
@@ -333,16 +393,48 @@ export default class SpecialSpaceEventPageComponent {
           ),
         ),
       ),
+    );
+
+  readonly selectedEventTemplate: Signal<
+    SpecialSpaceEventTemplateModel | null | undefined
+  > = toSignal(this.selectedEventTemplate$);
+
+  readonly playersWithScoreChanges: Signal<
+    PlayerWithScoreChanges[] | undefined
+  > = toSignal(
+    this.selectedEventTemplate$.pipe(
+      defined(),
+      withLatestFrom(this.playerService.players$),
+      map(([specialSpaceEventTemplate, players]) =>
+        players!.map((player) => ({
+          ...player,
+          scoreChange: Math.round(
+            (((
+              specialSpaceEventTemplate.details as EveryoneGainsPointsBasedOnRankSpecialSpaceEventDetails
+            )?.lastPlacePoints ?? 0) /
+              players!.length) *
+              player.rank,
+          ),
+        })),
+      ),
     ),
+  );
+
+  private readonly showCancelButton = computed(
+    () =>
+      ![
+        SpaceEventStatus.Canceled,
+        SpaceEventStatus.Finished,
+        undefined,
+      ].includes(this.specialSpaceEvent()?.status),
   );
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       specialSpaceEventId: this.specialSpaceEventId(),
       specialSpaceEvent: this.specialSpaceEvent(),
-      specialSpaceEventTemplate: this.specialSpaceEventTemplate(),
-      player: this.player(),
       roundNumber: this.roundNumber(),
+      showCancelButton: this.showCancelButton(),
     }),
   );
 
@@ -352,7 +444,7 @@ export default class SpecialSpaceEventPageComponent {
     () =>
       this.score() *
       ((
-        this.specialSpaceEventTemplate()?.details as
+        this.specialSpaceEvent()?.template?.details as
           | PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails
           | undefined
       )?.sessionPointsPerGamePoint ?? 0),
@@ -360,11 +452,17 @@ export default class SpecialSpaceEventPageComponent {
 
   readonly selectingEvent = signal(false);
   readonly startingEvent = signal(false);
+  readonly cancelingEvent = signal(false);
   readonly submittingScore = signal(false);
+  readonly submittingScoreChanges = signal(false);
 
   readonly backendActionInProgress = computed(
     () =>
-      this.selectingEvent() || this.startingEvent() || this.submittingScore(),
+      this.selectingEvent() ||
+      this.startingEvent() ||
+      this.cancelingEvent() ||
+      this.submittingScore() ||
+      this.submittingScoreChanges(),
   );
 
   confirmSelectEventTemplate(
@@ -422,5 +520,57 @@ export default class SpecialSpaceEventPageComponent {
     });
   }
 
+  confirmSubmitScoreChanges(
+    specialSpaceEventId: SpecialSpaceEventModel['id'],
+    specialSpaceEventTemplateId: SpecialSpaceEventTemplateModel['id'],
+    playersWithScoreChanges: PlayerWithScoreChanges[],
+  ): void {
+    const playerScoreChanges = playersWithScoreChanges.reduce<
+      Record<PlayerModel['id'], number>
+    >(
+      (prev, player) => ({
+        ...prev,
+        [player.player_id]: player.scoreChange,
+      }),
+      {},
+    );
+
+    confirmBackendAction({
+      action: async () =>
+        this.gameboardService.submitGainPointsBasedOnRank(
+          specialSpaceEventId,
+          specialSpaceEventTemplateId,
+          playerScoreChanges,
+        ),
+      confirmationMessageText: `Are you sure you want to submit score changes?`,
+      successMessageText: 'Scores updated',
+      submittingSignal: this.submittingScoreChanges,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: '..',
+      activatedRoute: this.activatedRoute,
+      router: this.router,
+    });
+  }
+
+  confirmCancelSpecialSpaceEvent(
+    specialSpaceEventId: SpecialSpaceEventModel['id'],
+    displayName: string,
+  ): void {
+    confirmBackendAction({
+      action: async () =>
+        this.gameboardService.cancelSpecialSpaceEvent(specialSpaceEventId),
+      confirmationMessageText: `Are you sure you cancel ${displayName}'s Special Space Event? This cannot be undone.`,
+      successMessageText: 'Special Space Event canceled',
+      submittingSignal: this.startingEvent,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: '..',
+      activatedRoute: this.activatedRoute,
+      router: this.router,
+    });
+  }
+
   protected readonly SpaceEventStatus = SpaceEventStatus;
+  protected readonly SpecialSpaceEventType = SpecialSpaceEventType;
 }

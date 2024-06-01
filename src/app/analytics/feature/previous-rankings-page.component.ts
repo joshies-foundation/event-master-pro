@@ -12,7 +12,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { startWith, switchMap } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { PlayerWithUserInfo } from '../../shared/data-access/player.service';
+import { PlayerWithUserAndRankInfo } from '../../shared/data-access/player.service';
 import { RankingsTableComponent } from '../../shared/ui/rankings-table.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { FormsModule } from '@angular/forms';
@@ -80,7 +80,7 @@ export default class PreviousRankingsPageComponent {
   private readonly dropdown$ = toObservable(this.dropdown);
 
   private readonly previousSessionPlayers: Signal<
-    PlayerWithUserInfo[] | null | undefined
+    PlayerWithUserAndRankInfo[] | null | undefined
   > = toSignal(
     this.dropdown$.pipe(
       nullWhenUndefinedElse((dropdown) =>

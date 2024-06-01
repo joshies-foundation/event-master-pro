@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  signal,
   Signal,
 } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -13,6 +14,7 @@ import {
 } from '../../shared/data-access/gameboard.service';
 import {
   GameboardSpaceEffect,
+  RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
 import { MovesWithSpaceIdPipe } from '../ui/moves-with-space-id.pipe';
@@ -30,6 +32,8 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SpaceEventStatusTagComponent } from '../ui/space-event-status-tag.component';
 import { RouterLink } from '@angular/router';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'joshies-resolve-special-space-events-page',
@@ -105,6 +109,14 @@ import { RouterLink } from '@angular/router';
           </tr>
         </ng-template>
       </p-table>
+
+      @if (allSpecialSpaceEventsAreResolved()) {
+        <p-button
+          label="Proceed to Duel Phase"
+          styleClass="w-full mt-3"
+          (onClick)="proceedToDuelPhase()"
+        />
+      }
     } @else if (specialSpaceEvents() === null) {
       <p class="mt-6 pt-6 text-center text-500 font-italic">
         No special space events for this turn
@@ -118,12 +130,33 @@ import { RouterLink } from '@angular/router';
 export default class ResolveSpecialSpaceEventsPageComponent {
   private readonly gameboardService = inject(GameboardService);
   private readonly gameStateService = inject(GameStateService);
+  private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly specialSpaceEvents: Signal<
     SpecialSpaceEventWithPlayerAndTemplateData[] | null | undefined
   > = toSignal(this.gameboardService.specialSpaceEventsForThisTurn$);
 
+  readonly allSpecialSpaceEventsAreResolved: Signal<boolean | undefined> =
+    toSignal(
+      this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$,
+    );
+
   readonly roundNumber = this.gameStateService.roundNumber;
+
+  proceedingToDuelPhase = signal(false);
+
+  proceedToDuelPhase(): void {
+    confirmBackendAction({
+      confirmationMessageText: 'Proceed to the duel phase?',
+      successMessageText: "We're in the duel phase babyyyy",
+      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.proceedingToDuelPhase,
+      successNavigation: null,
+    });
+  }
 
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
   protected readonly trackById = trackById;

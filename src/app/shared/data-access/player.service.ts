@@ -27,6 +27,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { PlayerModel, UserModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
 import { GameStateService } from './game-state.service';
+import { addRankingInfoToPlayers } from '../util/ranking-helpers';
 
 export interface PlayerWithUserInfo {
   player_id: number;
@@ -36,6 +37,11 @@ export interface PlayerWithUserInfo {
   display_name: string;
   avatar_url: string;
   can_edit_profile: boolean;
+}
+
+export interface PlayerWithUserAndRankInfo extends PlayerWithUserInfo {
+  rank: number;
+  rankEmoji: string | undefined;
 }
 
 @Injectable({
@@ -83,18 +89,20 @@ export class PlayerService {
       map(([users, players]) => ({ players, users })),
       whenAllValuesNotNull(({ players, users }) =>
         of(
-          players.map((player) => {
-            const user = users.find((user) => user.id === player.user_id)!;
-            return {
-              player_id: player.id,
-              user_id: user.id,
-              score: player.score,
-              enabled: player.enabled,
-              display_name: user.display_name,
-              avatar_url: user.avatar_url,
-              can_edit_profile: user.can_edit_profile,
-            };
-          }),
+          players
+            .map((player) => {
+              const user = users.find((user) => user.id === player.user_id)!;
+              return {
+                player_id: player.id,
+                user_id: user.id,
+                score: player.score,
+                enabled: player.enabled,
+                display_name: user.display_name,
+                avatar_url: user.avatar_url,
+                can_edit_profile: user.can_edit_profile,
+              };
+            })
+            .sort((a, b) => b.score - a.score),
         ),
       ),
       shareReplay(1),
@@ -104,15 +112,14 @@ export class PlayerService {
     PlayerWithUserInfo[] | null | undefined
   > = toSignal(this.playersIncludingDisabled$);
 
-  readonly players$: Observable<PlayerWithUserInfo[] | null> =
+  readonly players$: Observable<PlayerWithUserAndRankInfo[] | null> =
     this.playersIncludingDisabled$.pipe(
-      whenNotNull((players) => of(players.filter((player) => player.enabled))),
+      whenNotNull((players) => of(addRankingInfoToPlayers(players, true))),
       shareReplay(1),
     );
 
-  readonly players: Signal<PlayerWithUserInfo[] | null | undefined> = toSignal(
-    this.players$,
-  );
+  readonly players: Signal<PlayerWithUserAndRankInfo[] | null | undefined> =
+    toSignal(this.players$);
 
   readonly userPlayer$: Observable<PlayerWithUserInfo | null> =
     this.authService.user$.pipe(
