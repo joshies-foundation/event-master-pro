@@ -2,7 +2,7 @@ import { computed, inject, Injectable, Signal } from '@angular/core';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '../util/schema';
 import { GameStateService } from './game-state.service';
-import { map, Observable, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay, switchMap } from 'rxjs';
 import {
   EventModel,
   EventParticipantModel,
@@ -65,6 +65,8 @@ export class EventService {
       ),
     );
 
+  readonly eventForThisRound = toSignal(this.eventForThisRound$);
+
   readonly eventForNextRound$: Observable<EventModel | null> =
     this.gameStateService.roundNumber$.pipe(
       switchMap((roundNumber) =>
@@ -77,6 +79,8 @@ export class EventService {
         ),
       ),
     );
+
+  readonly eventForNextRound = toSignal(this.eventForNextRound$);
 
   readonly events = toSignal(this.events$);
 
