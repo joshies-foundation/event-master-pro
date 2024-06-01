@@ -29,7 +29,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     <joshies-page-header [headerText]="headerText()" alwaysSmall>
       <joshies-header-link
         text="Events"
-        routerLink=".."
+        routerLink="../.."
         chevronDirection="left"
       />
     </joshies-page-header>
@@ -67,7 +67,7 @@ export default class EditEventPageComponent {
   private readonly eventService = inject(EventService);
 
   readonly headerText = computed(
-    () => `Edit ${this.originalEvent()?.name ?? ''} Event`,
+    () => `Edit ${this.originalEvent()?.name ?? ''}`,
   );
 
   readonly eventId: Signal<number> = input(0, {
@@ -91,7 +91,6 @@ export default class EditEventPageComponent {
       eventFormValue: this.eventFormValue,
     } = eventFormFactory(
       async (event) => {
-        console.log('submitting');
         return this.eventService.updateEvent(this.eventId() ?? -1, event);
       },
       `Submit Changes`,

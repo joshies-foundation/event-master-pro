@@ -111,8 +111,14 @@ const gmToolsRoutes: Routes = [
     data: { pageAnimationLayer: 2 },
   },
   {
-    path: 'events/:eventId',
+    path: 'events/edit/:eventId',
     loadComponent: () => import('./edit-event-page.component'),
+    data: { pageAnimationLayer: 2 },
+    resolve: { originalEvent: editEventResolver },
+  },
+  {
+    path: 'events/teams/:eventId',
+    loadComponent: () => import('./edit-event-teams-page.component'),
     data: { pageAnimationLayer: 2 },
     resolve: { originalEvent: editEventResolver },
   },
