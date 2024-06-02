@@ -92,7 +92,6 @@ import { EventModel } from '../../shared/util/supabase-types';
               !userIsGameMaster() || index + 1 < currentRoundNumber()
             "
           >
-            <!-- [routerLink]="[event.id]" -->
             @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
               <div class="flex" cdkDragHandle>
                 <i class="pi pi-bars text-300 align-self-center pl-2 pr-3"></i>
