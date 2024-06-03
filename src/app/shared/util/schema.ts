@@ -49,6 +49,7 @@ export type Database = {
           game_name: string | null;
           id: number;
           opponent_player_id: number | null;
+          points_gained_by_winner: number | null;
           round_number: number;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
@@ -62,6 +63,7 @@ export type Database = {
           game_name?: string | null;
           id?: number;
           opponent_player_id?: number | null;
+          points_gained_by_winner?: number | null;
           round_number: number;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
@@ -75,6 +77,7 @@ export type Database = {
           game_name?: string | null;
           id?: number;
           opponent_player_id?: number | null;
+          points_gained_by_winner?: number | null;
           round_number?: number;
           session_id?: number;
           status?: Database['public']['Enums']['duel_status'];
@@ -875,6 +878,12 @@ export type Database = {
           session_end_date: string;
           num_rounds: number;
           player_user_ids: string[];
+        };
+        Returns: undefined;
+      };
+      delete_gameboard_space: {
+        Args: {
+          gameboard_space_id: number;
         };
         Returns: undefined;
       };

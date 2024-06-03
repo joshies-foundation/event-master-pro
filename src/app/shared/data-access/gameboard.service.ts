@@ -195,11 +195,10 @@ export class GameboardService {
 
   async deleteGameboardSpaceType(
     gameboardSpaceId: number,
-  ): Promise<PostgrestSingleResponse<null>> {
-    return this.supabase
-      .from(Table.GameboardSpace)
-      .delete()
-      .eq('id', gameboardSpaceId);
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.DeleteGameboardSpace, {
+      gameboard_space_id: gameboardSpaceId,
+    });
   }
 
   async createNewSpecialSpaceEventTemplate<T extends SpecialSpaceEventType>(
