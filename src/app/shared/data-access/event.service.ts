@@ -104,7 +104,7 @@ export class EventService {
 
     const { data: uploadData, error: uploadError } = await showMessageOnError(
       this.supabase.storage
-        .from(StorageBucket.Avatars)
+        .from(StorageBucket.EventImages)
         .upload(uploadPath, resizedImage),
       this.messageService,
     );
@@ -114,7 +114,7 @@ export class EventService {
     }
 
     return this.supabase.storage
-      .from(StorageBucket.Avatars)
+      .from(StorageBucket.EventImages)
       .getPublicUrl(uploadData.path).data.publicUrl;
   }
 }

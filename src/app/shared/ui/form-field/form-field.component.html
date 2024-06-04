@@ -184,17 +184,14 @@
         />
       }
       @case (FormFieldType.Image) {
-        <input
-          #imageUrlInput
-          [id]="field.name | lowercase"
-          [name]="field.name | lowercase"
-          [required]="field.required ?? false"
-          [placeholder]="field.placeholder"
-          type="text"
-          pInputText
-          [formControl]="field.control"
-          [ngClass]="field.styleClass"
-        />
+        @if (imageUrl()) {
+          <img
+            #image
+            alt="Event Image"
+            [src]="imageUrl()"
+            style="max-width: 200px"
+          />
+        } @else {}
 
         <p-button
           label="Upload Image"
@@ -206,6 +203,9 @@
         <!-- Hidden File Input -->
         <input
           #imageFileInput
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [formControl]="field.control"
           hidden
           type="file"
           accept="image/*"

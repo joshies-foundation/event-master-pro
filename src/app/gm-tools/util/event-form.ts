@@ -112,9 +112,8 @@ export function eventFormFactory(
       },
       {
         type: FormFieldType.Image,
-        name: 'image-url',
-        label: 'Image URL',
-        placeholder: 'https://foo.bar',
+        name: 'image',
+        label: 'Image',
         control: eventFormGroup.controls.imageUrl,
       },
       {

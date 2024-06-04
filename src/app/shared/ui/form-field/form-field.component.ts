@@ -7,6 +7,7 @@ import {
   effect,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import {
@@ -27,6 +28,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { delay } from 'rxjs';
 import { EventService } from '../../data-access/event.service';
+import { ImageModule } from 'primeng/image';
 
 export enum FormFieldType {
   Text,
@@ -143,14 +145,18 @@ export type FormField = {
     InputNumberModule,
     InputTextareaModule,
     CheckboxModule,
+    ImageModule,
   ],
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent implements AfterViewInit {
+  private readonly defaultImage = '/assets/icons/icon-96x96.png';
+
   field = input.required<FormField>();
   formGroup = input.required<FormGroup>();
   formDisabled = input.required<boolean>();
+  imageUrl = signal<string | null>(this.defaultImage); // Only used for ImageUrl type fields
 
   private readonly cd = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
@@ -193,13 +199,10 @@ export class FormFieldComponent implements AfterViewInit {
       .subscribe(() => this.formGroup().updateValueAndValidity());
   }
 
-  // When a new image is selected, upload it to supabase and use its new URL as the field value
+  // When a new image is selected, upload it to supabase and use its new URL as the preview image
   async onImageSelect(event: Event): Promise<void> {
-    const field = this.field();
-    if (field.type !== FormFieldType.Image) {
-      return;
-    }
-    field.control.setValue(
+    this.imageUrl.set(this.defaultImage); // Reset the image first to signal that the old image has been replaced
+    this.imageUrl.set(
       await this.eventService.uploadImage(
         (event.target as HTMLInputElement).files![0],
       ),
