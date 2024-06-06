@@ -75,6 +75,12 @@ export default class LoggedInAppShellComponent {
       iconClass: 'pi pi-book',
       iconClassFill: 'ci-book-fill',
     },
+    {
+      text: 'Betting',
+      href: '/betting',
+      iconClass: 'pi pi-money-bill',
+      iconClassFill: 'pi pi-money-bill', //TODO add fill class
+    },
     ...(this.playerService.userIsGameMaster()
       ? [
           {

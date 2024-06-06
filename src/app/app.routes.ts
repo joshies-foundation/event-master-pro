@@ -27,6 +27,10 @@ export const routes: Routes = [
         loadChildren: () => import('./rules/feature/lib.routes'),
       },
       {
+        path: 'betting',
+        loadChildren: () => import('./betting/feature/lib.routes'),
+      },
+      {
         path: 'gm-tools',
         loadChildren: () => import('./gm-tools/feature/lib.routes'),
       },

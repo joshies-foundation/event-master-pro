@@ -27,6 +27,7 @@ export enum Table {
   SpecialSpaceEvent = 'special_space_event',
   SpecialSpaceEventTemplate = 'special_space_event_template',
   Duel = 'duel',
+  Bet = 'bet',
 }
 
 export enum View {

@@ -9,6 +9,67 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bet: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: number;
+          opponent_player_id: number;
+          opponent_wager: number;
+          requester_player_id: number;
+          requester_wager: number;
+          session_id: number;
+          status: Database['public']['Enums']['bet_status'];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: number;
+          opponent_player_id: number;
+          opponent_wager: number;
+          requester_player_id: number;
+          requester_wager: number;
+          session_id: number;
+          status: Database['public']['Enums']['bet_status'];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: number;
+          opponent_player_id?: number;
+          opponent_wager?: number;
+          requester_player_id?: number;
+          requester_wager?: number;
+          session_id?: number;
+          status?: Database['public']['Enums']['bet_status'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'bet_opponent_player_id_fkey';
+            columns: ['opponent_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bet_requester_player_id_fkey';
+            columns: ['requester_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bet_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       bracket: {
         Row: {
           created_at: string;
@@ -952,6 +1013,15 @@ export type Database = {
       };
     };
     Enums: {
+      bet_status:
+        | 'pending_acceptance'
+        | 'canceled_by_requester'
+        | 'canceled_by_gm'
+        | 'rejected'
+        | 'active'
+        | 'requester_won'
+        | 'opponent_won'
+        | 'push';
       chaos_space_event_type:
         | 'everyone_gains_points_based_on_rank'
         | 'everyone_loses_percentage_of_their_points'
