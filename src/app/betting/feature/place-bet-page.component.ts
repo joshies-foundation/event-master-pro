@@ -58,7 +58,11 @@ import { SessionService } from '../../shared/data-access/session.service';
     <!-- Requester bet -->
     <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
-      {{ requester()?.display_name ?? 'Bettor' }} Bets
+      {{
+        evenOdds()
+          ? 'Both Bet'
+          : (requester()?.display_name ?? 'Bettor') + ' Bets'
+      }}
       <p-inputNumber
         #inputRequesterBet
         [(ngModel)]="requesterBet"
