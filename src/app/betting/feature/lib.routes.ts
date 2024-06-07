@@ -9,14 +9,8 @@ const bettingRoutes: Routes = [
 
   {
     path: 'place-bet',
-    loadComponent: () => import('./place-bet-choose-player-page.component'),
-    data: { pageAnimationLayer: 1 },
-  },
-
-  {
-    path: 'place-bet/:opponentId',
     loadComponent: () => import('./place-bet-page.component'),
-    data: { pageAnimationLayer: 2 },
+    data: { pageAnimationLayer: 1 },
   },
 
   {
