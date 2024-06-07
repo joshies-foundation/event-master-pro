@@ -18,5 +18,11 @@ const bettingRoutes: Routes = [
     loadComponent: () => import('./place-bet-page.component'),
     data: { pageAnimationLayer: 2 },
   },
+
+  {
+    path: 'accept-bets',
+    loadComponent: () => import('./accept-bets-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 ];
 export default bettingRoutes;

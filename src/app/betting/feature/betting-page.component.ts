@@ -21,5 +21,10 @@ export default class BettingPageComponent {
       iconClass: 'pi pi-plus bg-purple-500',
       routerLink: './place-bet',
     },
+    {
+      text: 'Accept bets',
+      iconClass: 'pi pi-plus bg-purple-500',
+      routerLink: './accept-bets',
+    },
   ];
 }
