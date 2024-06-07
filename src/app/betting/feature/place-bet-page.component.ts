@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -50,6 +51,8 @@ import { DropdownModule } from 'primeng/dropdown';
       />
     </joshies-page-header>
 
+    <h4>Your score: {{ userPlayer()?.score }}</h4>
+
     <!-- Opponent Dropdown -->
     <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
@@ -57,7 +60,7 @@ import { DropdownModule } from 'primeng/dropdown';
       <p-dropdown
         [options]="playersWithoutUser()"
         [(ngModel)]="selectedOpponent"
-        optionLabel="display_name"
+        optionLabel="nameAndScore"
         styleClass="flex"
         placeholder="Select an opponent"
       />
@@ -158,12 +161,30 @@ export default class PlaceBetPageComponent {
   readonly playersWithoutUser = computed(() => {
     return this.playerService
       .players()
-      ?.filter((player) => player.user_id !== this.userPlayer()!.user_id);
+      ?.filter((player) => player.user_id !== this.userPlayer()!.user_id)
+      .map((player) => {
+        return {
+          userId: player.user_id,
+          nameAndScore: player.display_name + ' (' + player.score + ' points)',
+          score: player.score,
+          player_id: player.player_id,
+          display_name: player.display_name,
+        };
+      });
   });
 
-  readonly submitButtonDisabled = computed(
-    () => this.submitting() || !this.terms() || !this.selectedOpponent(),
-  );
+  readonly submitButtonDisabled = computed(() => {
+    const userScore = this.userPlayer()?.score ?? 0;
+    const opponentScore = this.selectedOpponent()?.score ?? 0;
+    return (
+      this.submitting() ||
+      !this.terms() ||
+      !this.selectedOpponent() ||
+      !this.userPlayer() ||
+      this.requesterBet() > userScore ||
+      this.opponentBet() > opponentScore
+    );
+  });
 
   checkEvenOdds(): void {
     if (this.evenOdds()) {
@@ -195,5 +216,17 @@ export default class PlaceBetPageComponent {
 
     showSuccessMessage('Bet placed successfully', this.messageService);
     this.router.navigate(['..'], { relativeTo: this.activatedRoute });
+  }
+
+  // When player list changes (e.g. someone's score changes externally)
+  // clear selected opponent so it doesn't get orphaned
+  constructor() {
+    effect(
+      () => {
+        this.playersWithoutUser();
+        this.selectedOpponent.set(null);
+      },
+      { allowSignalWrites: true },
+    );
   }
 }
