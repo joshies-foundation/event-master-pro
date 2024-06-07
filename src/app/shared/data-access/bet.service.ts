@@ -35,4 +35,20 @@ export class BetService {
   ): Promise<PostgrestSingleResponse<null>> {
     return this.supabase.from(Table.Bet).insert(bet);
   }
+
+  async acceptBet(id: number): Promise<PostgrestSingleResponse<BetModel[]>> {
+    return this.supabase
+      .from(Table.Bet)
+      .update({ status: 'active' })
+      .eq('id', id)
+      .select();
+  }
+
+  async rejectBet(id: number): Promise<PostgrestSingleResponse<BetModel[]>> {
+    return this.supabase
+      .from(Table.Bet)
+      .update({ status: 'rejected' })
+      .eq('id', id)
+      .select();
+  }
 }

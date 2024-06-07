@@ -23,7 +23,7 @@ export default class BettingPageComponent {
     },
     {
       text: 'Accept bets',
-      iconClass: 'pi pi-plus bg-purple-500',
+      iconClass: 'pi pi-check bg-green-500',
       routerLink: './accept-bets',
     },
   ];

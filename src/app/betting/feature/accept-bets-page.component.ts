@@ -47,7 +47,7 @@ import { BetService } from '../../shared/data-access/bet.service';
       >
         <ng-template pTemplate="header">
           <tr>
-            <th></th>
+            <th style="width: 60%;"></th>
             <th></th>
           </tr>
         </ng-template>
@@ -79,11 +79,13 @@ import { BetService } from '../../shared/data-access/bet.service';
                 label="Accept Bet"
                 icon="pi pi-check"
                 styleClass="w-full"
+                (onClick)="acceptBet(bet.id)"
               />
               <p-button
                 label="Reject Bet"
                 icon="pi pi-times"
                 styleClass="w-full"
+                (onClick)="rejectBet(bet.id)"
               />
             </td>
           </tr>
@@ -121,7 +123,16 @@ export default class PlaceBetChoosePlayerPageComponent {
         requesterWager: bet.requester_wager,
         yourWager: bet.opponent_wager,
         description: bet.description,
+        id: bet.id,
       };
     }),
   );
+
+  acceptBet(id: number) {
+    this.betService.acceptBet(id);
+  }
+
+  rejectBet(id: number) {
+    this.betService.rejectBet(id);
+  }
 }
