@@ -988,6 +988,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_bet_accepted: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
       submit_duel_results: {
         Args: {
           duel_id: number;

@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -11,9 +12,10 @@ import { TableModule } from 'primeng/table';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import { trackByPlayerId } from '../../shared/util/supabase-helpers';
+import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'joshies-place-bet-choose-player-page',
@@ -43,7 +45,6 @@ import { BetService } from '../../shared/data-access/bet.service';
         sortField="score"
         [sortOrder]="-1"
         [scrollable]="true"
-        [rowTrackBy]="trackByPlayerId"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -61,32 +62,40 @@ import { BetService } from '../../shared/data-access/bet.service';
             <td>
               <div class="flex flex-column gap-2 -py-2">
                 <div>
-                  {{ bet.requesterName ?? 'Requester' }} Wagers:
+                  {{ bet.requesterName }} wagers:
                   {{ bet.requesterWager }}
                 </div>
                 <div>
-                  {{ userPlayer()?.display_name ?? 'Player' }} Wagers:
+                  {{ userNameAndScore() }} wagers:
                   {{ bet.yourWager }}
                 </div>
                 <div>{{ bet.description }}</div>
               </div>
             </td>
             <!-- Accept/Reject Buttons -->
-            <td
-              class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
-            >
-              <p-button
-                label="Accept Bet"
-                icon="pi pi-check"
-                styleClass="w-full"
-                (onClick)="acceptBet(bet.id)"
-              />
-              <p-button
-                label="Reject Bet"
-                icon="pi pi-times"
-                styleClass="w-full"
-                (onClick)="rejectBet(bet.id)"
-              />
+            <td>
+              <div
+                class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
+              >
+                <p-button
+                  label="Accept Bet"
+                  icon="pi pi-check"
+                  styleClass="w-full"
+                  (onClick)="acceptBet(bet.id)"
+                  [disabled]="
+                    bet.yourWager > (userPlayer()?.score ?? 0) ||
+                    bet.requesterWager > (bet.requesterScore ?? 0)
+                  "
+                  [loading]="submitting()"
+                />
+                <p-button
+                  label="Reject Bet"
+                  icon="pi pi-times"
+                  styleClass="w-full"
+                  (onClick)="rejectBet(bet.id)"
+                  [loading]="submitting()"
+                />
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -98,11 +107,12 @@ import { BetService } from '../../shared/data-access/bet.service';
 export default class PlaceBetChoosePlayerPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly betService = inject(BetService);
-
-  protected readonly trackByPlayerId = trackByPlayerId;
+  private readonly messageService = inject(MessageService);
 
   readonly userPlayer = this.playerService.userPlayer;
   readonly bets = this.betService.bets;
+
+  readonly submitting = signal(false);
 
   private readonly betsAwaitingUser = computed(() => {
     return this.bets()?.filter(
@@ -119,7 +129,12 @@ export default class PlaceBetChoosePlayerPageComponent {
         (player) => player.player_id === bet.requester_player_id,
       )[0];
       return {
-        requesterName: requester?.display_name,
+        requesterName:
+          (requester?.display_name ?? 'Requester') +
+          ' (' +
+          requester?.score +
+          ' points)',
+        requesterScore: requester?.score,
         requesterWager: bet.requester_wager,
         yourWager: bet.opponent_wager,
         description: bet.description,
@@ -128,8 +143,22 @@ export default class PlaceBetChoosePlayerPageComponent {
     }),
   );
 
-  acceptBet(id: number) {
-    this.betService.acceptBet(id);
+  readonly userNameAndScore = computed(() => {
+    return (
+      (this.userPlayer()?.display_name ?? 'Player') +
+      ' (' +
+      this.userPlayer()?.score +
+      ' points)'
+    );
+  });
+
+  async acceptBet(id: number) {
+    this.submitting.set(true);
+    await showMessageOnError(
+      this.betService.acceptBet(id),
+      this.messageService,
+    );
+    this.submitting.set(false);
   }
 
   rejectBet(id: number) {

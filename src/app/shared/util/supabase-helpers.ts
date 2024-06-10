@@ -48,6 +48,7 @@ export enum Function {
   SubmitGainPointsBasedOnRank = 'submit_gain_points_based_on_rank',
   SubmitSpecialSpaceEventScore = 'submit_special_space_event_score',
   SubmitDuelResults = 'submit_duel_results',
+  SubmitBetAccepted = 'submit_bet_accepted',
 }
 
 export enum StorageBucket {
