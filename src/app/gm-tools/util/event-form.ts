@@ -23,11 +23,11 @@ import { EventService } from '../../shared/data-access/event.service';
 
 export interface EventForm {
   name: string;
-  description: string | undefined;
-  rules: string | undefined;
+  description: string;
+  rules: string;
   teamSize: number;
   scoringMap: string;
-  imageUrl: string | undefined;
+  imageUrl: string;
   pointsLabel: string;
   lowerScoresAreBetter: boolean;
   format: EventFormat;
@@ -57,11 +57,11 @@ export function eventFormFactory(
   const eventFormGroup: ModelFormGroup<EventForm> =
     formBuilder.nonNullable.group({
       name: ['', Validators.required],
-      description: '' as string | undefined,
-      rules: '' as string | undefined,
+      description: [''],
+      rules: [''],
       teamSize: [1, Validators.required],
       scoringMap: ['', Validators.required],
-      imageUrl: '' as string | undefined,
+      imageUrl: ['', Validators.required],
       pointsLabel: ['points', Validators.required],
       lowerScoresAreBetter: [false, Validators.required],
       format: [EventFormat.ScoreBasedSingleRound, Validators.required],
@@ -115,6 +115,9 @@ export function eventFormFactory(
         name: 'image',
         label: 'Image',
         control: eventFormGroup.controls.imageUrl,
+        previewHeight: 100,
+        previewWidth: 100,
+        uploadCallback: (imageFile) => eventService.uploadImage(imageFile),
       },
       {
         type: FormFieldType.Text,
