@@ -210,6 +210,7 @@ export type EventFormatStandardScoringFormulaModel =
 export type EventParticipantModel = Tables<Table.EventParticipant>;
 export type EventTeamModel = Tables<Table.EventTeam>;
 export type EventTeamRoundScoreModel = Tables<Table.EventTeamRoundScore>;
+export type BetModel = Tables<Table.Bet>;
 
 // views
 export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;
