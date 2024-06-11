@@ -95,6 +95,10 @@ export default class NewGameboardSpaceTypePageComponent {
     this.gameboardService.specialSpaceEventTemplates$,
   );
 
+  private readonly chaosSpaceEventTemplates = toSignal(
+    this.gameboardService.chaosSpaceEventTemplates$,
+  );
+
   readonly confirmDialogKey = 'create-gameboard-space';
 
   readonly submitting = signal(false);
@@ -127,6 +131,7 @@ export default class NewGameboardSpaceTypePageComponent {
       this.submitting,
       this.submitting,
       this.specialSpaceEventTemplates,
+      this.chaosSpaceEventTemplates,
       this.confirmDialogKey,
       this.gameStateService,
       this.router,

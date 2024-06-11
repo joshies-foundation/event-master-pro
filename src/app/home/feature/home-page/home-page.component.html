@@ -67,49 +67,10 @@
           @case (RoundPhase.SpecialSpaceEvents) {
             <p class="mt-0 mb-2">Special Space Events:</p>
 
-            <table class="w-full">
-              <tbody>
-                @for (
-                  specialSpaceEvent of vm.specialSpaceEvents;
-                  track specialSpaceEvent.id
-                ) {
-                  <tr>
-                    <td class="pt-1 pr-2">
-                      <div class="flex align-items-center gap-2">
-                        <p-avatar
-                          [image]="specialSpaceEvent.avatar_url!"
-                          shape="circle"
-                        />
-                        {{ specialSpaceEvent.display_name }}
-                      </div>
-                    </td>
-
-                    <td class="pt-1">
-                      {{ specialSpaceEvent.template?.name }}
-                    </td>
-
-                    <td class="pt-1 text-right">
-                      @if (
-                        specialSpaceEvent.status ===
-                        SpaceEventStatus.WaitingToBegin
-                      ) {
-                        <p-button size="small" label="Place Bet" />
-                      } @else {
-                        <joshies-status-tag
-                          [status]="specialSpaceEvent.status"
-                        />
-                      }
-                    </td>
-                  </tr>
-                } @empty {
-                  <tr>
-                    <td class="font-italic text-600">
-                      No special space events for this turn
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+            <joshies-space-event-table
+              [spaceEvents]="vm.specialSpaceEvents"
+              [spaceType]="GameboardSpaceEffect.Special"
+            />
 
             @if (vm.userIsGameMaster) {
               @if (vm.allSpecialSpaceEventsAreResolved) {
@@ -161,13 +122,37 @@
                 <p-button
                   label="Proceed to Chaos Space Event Phase"
                   styleClass="w-full mt-2"
-                  (onClick)="proceedToChaosSpaceEventPhase()"
+                  (onClick)="proceedToChaosSpaceEventsPhase()"
                 />
               } @else {
                 <p-button
                   label="Resolve Duels"
                   styleClass="mt-2 w-full"
                   routerLink="/gm-tools/resolve-duels"
+                />
+              }
+            }
+          }
+          @case (RoundPhase.ChaosSpaceEvents) {
+            <p class="mt-0 mb-2">Chaos Space Events:</p>
+
+            <joshies-space-event-table
+              [spaceEvents]="vm.chaosSpaceEvents"
+              [spaceType]="GameboardSpaceEffect.Chaos"
+            />
+
+            @if (vm.userIsGameMaster) {
+              @if (vm.allChaosSpaceEventsAreResolved) {
+                <p-button
+                  label="Proceed to Event Phase"
+                  styleClass="w-full mt-2"
+                  (onClick)="proceedToEventPhase()"
+                />
+              } @else {
+                <p-button
+                  label="Resolve Chaos Space Events"
+                  styleClass="mt-2 w-full"
+                  routerLink="/gm-tools/resolve-chaos-space-events"
                 />
               }
             }
@@ -201,7 +186,9 @@
       >
         @switch (vm.roundPhase) {
           @case (RoundPhase.GameboardMoves) {
-            <p class="mt-0 mb-1">Special space events and duels.</p>
+            <p class="mt-0 mb-1">
+              Special Space events, duels, and Chaos Space events.
+            </p>
             <p class="mt-0">Then, our next event:</p>
 
             @if (vm.eventForThisRound; as event) {
@@ -214,7 +201,8 @@
             }
           }
           @case (RoundPhase.SpecialSpaceEvents) {
-            <p class="mt-0">Duels, and then our next event:</p>
+            <p class="mt-0 mb-1">Duels and Chaos Space events.</p>
+            <p class="mt-0">Then, our next event:</p>
 
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
@@ -226,6 +214,18 @@
             }
           }
           @case (RoundPhase.Duels) {
+            <p class="mt-0">Chaos Space events, and then our next event:</p>
+
+            @if (vm.eventForThisRound; as event) {
+              <joshies-event-info [event]="event" />
+            } @else {
+              <span class="text-red font-semibold">
+                There's no event scheduled for this turn 😳 Tell the GM to get
+                on it 😤
+              </span>
+            }
+          }
+          @case (RoundPhase.ChaosSpaceEvents) {
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
             } @else {

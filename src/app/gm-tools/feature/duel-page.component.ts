@@ -160,7 +160,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   <p-inputNumber
                     [showButtons]="true"
                     buttonLayout="horizontal"
-                    [step]="1"
+                    [step]="5"
                     incrementButtonIcon="pi pi-plus"
                     decrementButtonIcon="pi pi-minus"
                     inputStyleClass="w-full text-center"

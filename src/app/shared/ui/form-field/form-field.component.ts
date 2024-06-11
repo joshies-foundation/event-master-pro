@@ -74,6 +74,8 @@ export type FormField = {
           max?: number;
           mode?: 'decimal' | 'currency';
           currency?: string;
+          suffix?: string;
+          inputStyleClass?: string;
         }
       | {
           type: FormFieldType.Dropdown;

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
 import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
+import { editChaosSpaceEventTemplateResolver } from '../data-access/edit-chaos-space-event-template.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -72,6 +73,38 @@ const gmToolsRoutes: Routes = [
     path: 'resolve-duels/:duelId',
     loadComponent: () => import('./duel-page.component'),
     data: { pageAnimationLayer: 3 },
+  },
+
+  {
+    path: 'resolve-chaos-space-events',
+    loadComponent: () => import('./resolve-chaos-space-events-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
+  {
+    path: 'resolve-chaos-space-events/:chaosSpaceEventId',
+    loadComponent: () => import('./chaos-space-event-page.component'),
+    data: { pageAnimationLayer: 3 },
+  },
+  {
+    path: 'chaos-space-event-templates',
+    loadComponent: () =>
+      import('./manage-chaos-space-event-templates-page.component'),
+    data: { pageAnimationLayer: 2 },
+  },
+  {
+    path: 'chaos-space-event-templates/new',
+    loadComponent: () =>
+      import('./new-chaos-space-event-template-page.component'),
+    data: { pageAnimationLayer: 3 },
+  },
+  {
+    path: 'chaos-space-event-templates/:chaosSpaceEventTemplateId',
+    loadComponent: () =>
+      import('./edit-chaos-space-event-template-page.component'),
+    data: { pageAnimationLayer: 3 },
+    resolve: {
+      originalChaosSpaceEventTemplate: editChaosSpaceEventTemplateResolver,
+    },
   },
 
   // players
