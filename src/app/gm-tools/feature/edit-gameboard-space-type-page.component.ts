@@ -12,6 +12,7 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import {
+  ChaosSpaceEffectData,
   DuelSpaceEffectData,
   GainPointsOrDoActivitySpaceEffectData,
   GainPointsSpaceEffectData,
@@ -155,6 +156,10 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
     this.gameboardService.specialSpaceEventTemplates$,
   );
 
+  private readonly chaosSpaceEventTemplates = toSignal(
+    this.gameboardService.chaosSpaceEventTemplates$,
+  );
+
   readonly gameboardSpaceId: Signal<number> = input(0, {
     transform: numberAttribute,
   }); // route param
@@ -210,6 +215,7 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
       this.submittingChange,
       this.performingAction,
       this.specialSpaceEventTemplates,
+      this.chaosSpaceEventTemplates,
       this.confirmSubmitChangesDialogKey,
       this.gameStateService,
       this.router,
@@ -254,6 +260,12 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
             | SpecialSpaceEffectData
             | undefined
         )?.specialSpaceEventTemplateIds ?? [],
+      chaosSpaceEventTemplateIds:
+        (
+          originalGameboardSpace?.effect_data as
+            | ChaosSpaceEffectData
+            | undefined
+        )?.chaosSpaceEventTemplateIds ?? [],
     });
   }
 

@@ -1,8 +1,8 @@
 {
   "name": "EventMaster Pro",
   "short_name": "EventMaster Pro",
-  "theme_color": "#fff",
-  "background_color": "#fff",
+  "theme_color": "#18181b",
+  "background_color": "#18181b",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

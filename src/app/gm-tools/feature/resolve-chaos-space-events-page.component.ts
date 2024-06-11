@@ -31,10 +31,10 @@ import { StatusTagComponent } from '../ui/status-tag.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
+import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
 
 @Component({
-  selector: 'joshies-resolve-special-space-events-page',
+  selector: 'joshies-resolve-chaos-space-events-page',
   standalone: true,
   imports: [
     HeaderLinkComponent,
@@ -56,7 +56,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
     RouterLink,
   ],
   template: `
-    <joshies-page-header headerText="Special Space Events" alwaysSmall>
+    <joshies-page-header headerText="Chaos Space Events" alwaysSmall>
       <joshies-header-link
         text="GM Tools"
         routerLink=".."
@@ -64,11 +64,11 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
       />
     </joshies-page-header>
 
-    @if (specialSpaceEvents(); as specialSpaceEvents) {
-      <p class="mt-5">Special Space events for turn {{ roundNumber() }}</p>
+    @if (chaosSpaceEvents(); as chaosSpaceEvents) {
+      <p class="mt-5">Chaos Space events for turn {{ roundNumber() }}</p>
 
-      @if (specialSpaceEvents.length) {
-        <p-table [value]="specialSpaceEvents" [rowTrackBy]="trackById">
+      @if (chaosSpaceEvents.length) {
+        <p-table [value]="chaosSpaceEvents" [rowTrackBy]="trackById">
           <ng-template pTemplate="header">
             <tr>
               <th class="px-0">Player</th>
@@ -80,25 +80,25 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
 
           <ng-template
             pTemplate="body"
-            let-specialSpaceEvent
-            [joshiesStronglyTypedTableRow]="specialSpaceEvents"
+            let-chaosSpaceEvent
+            [joshiesStronglyTypedTableRow]="chaosSpaceEvents"
           >
-            <tr [routerLink]="[specialSpaceEvent.id]">
+            <tr [routerLink]="[chaosSpaceEvent.id]">
               <td class="px-0">
                 <div class="flex align-items-center">
                   <p-avatar
-                    [image]="specialSpaceEvent.player?.avatar_url!"
+                    [image]="chaosSpaceEvent.player?.avatar_url!"
                     shape="circle"
                     styleClass="mr-2"
                   />
-                  {{ specialSpaceEvent.player?.display_name }}
+                  {{ chaosSpaceEvent.player?.display_name }}
                 </div>
               </td>
               <td>
-                {{ specialSpaceEvent.template?.name ?? '?' }}
+                {{ chaosSpaceEvent.template?.name ?? '?' }}
               </td>
               <td class="text-right px-0">
-                <joshies-status-tag [status]="specialSpaceEvent.status" />
+                <joshies-status-tag [status]="chaosSpaceEvent.status" />
               </td>
               <td class="pl-1 pr-0">
                 <i class="pi pi-angle-right text-400"></i>
@@ -108,15 +108,15 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
         </p-table>
       } @else {
         <p class="my-6 py-6 text-center text-500 font-italic">
-          No special space events for this turn
+          No chaos space events for this turn
         </p>
       }
 
-      @if (allSpecialSpaceEventsAreResolved()) {
+      @if (allChaosSpaceEventsAreResolved()) {
         <p-button
-          label="Proceed to Duel Phase"
+          label="Proceed to Event Phase"
           styleClass="w-full mt-3"
-          (onClick)="proceedToDuelPhase()"
+          (onClick)="proceedToEventPhase()"
         />
       }
     } @else {
@@ -125,7 +125,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ResolveSpecialSpaceEventsPageComponent {
+export default class ResolveChaosSpaceEventsPageComponent {
   private readonly gameboardService = inject(GameboardService);
   private readonly gameStateService = inject(GameStateService);
   private readonly messageService = inject(MessageService);
@@ -133,27 +133,24 @@ export default class ResolveSpecialSpaceEventsPageComponent {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  readonly specialSpaceEvents: Signal<
-    SpecialSpaceEventModel[] | null | undefined
-  > = toSignal(this.gameboardService.specialSpaceEventsForThisTurn$);
+  readonly chaosSpaceEvents: Signal<ChaosSpaceEventModel[] | null | undefined> =
+    toSignal(this.gameboardService.chaosSpaceEventsForThisTurn$);
 
-  readonly allSpecialSpaceEventsAreResolved: Signal<boolean | undefined> =
-    toSignal(
-      this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$,
-    );
+  readonly allChaosSpaceEventsAreResolved: Signal<boolean | undefined> =
+    toSignal(this.gameboardService.allChaosSpaceEventsForThisTurnAreResolved$);
 
   readonly roundNumber = this.gameStateService.roundNumber;
 
-  proceedingToDuelPhase = signal(false);
+  proceedingToEventPhase = signal(false);
 
-  proceedToDuelPhase(): void {
+  proceedToEventPhase(): void {
     confirmBackendAction({
-      confirmationMessageText: 'Proceed to the Duel phase?',
-      successMessageText: "We're now in the Duel phase",
-      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
+      confirmationMessageText: 'Proceed to the Event phase?',
+      successMessageText: "We're now in the Event phase",
+      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Event),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
-      submittingSignal: this.proceedingToDuelPhase,
+      submittingSignal: this.proceedingToEventPhase,
       successNavigation: '..',
       router: this.router,
       activatedRoute: this.activatedRoute,

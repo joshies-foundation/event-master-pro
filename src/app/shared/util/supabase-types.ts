@@ -66,8 +66,13 @@ export interface EveryoneGainsPointsBasedOnRankSpecialSpaceEventDetails {
   lastPlacePoints: number;
 }
 
-export interface EveryoneLosesAPercentageOfTheirPointsChaosSpaceDetails {
+export interface EveryoneLosesPercentageOfTheirPointsChaosSpaceDetails {
   percentageLoss: number;
+}
+
+export interface EveryoneLosesPercentageOfTheirPointsBasedOnTaskFailureSpecialSpaceEffectData
+  extends EveryoneLosesPercentageOfTheirPointsChaosSpaceDetails {
+  taskName: string;
 }
 
 export type SpecialSpaceEventDetails<T extends SpecialSpaceEventType> =
@@ -75,13 +80,18 @@ export type SpecialSpaceEventDetails<T extends SpecialSpaceEventType> =
     ? PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails
     : T extends SpecialSpaceEventType.EveryoneGainsPointsBasedOnRank
       ? EveryoneGainsPointsBasedOnRankSpecialSpaceEventDetails
-      : // : T extends SpecialSpaceEventType.EveryoneLosesAPercentageOfTheirPoints
-        //   ? EveryoneLosesAPercentageOfTheirPointsSpecialSpaceEffectData
-        //   : T extends SpecialSpaceEventType.EveryoneLosesAPercentageOfTheirPointsBasedOnTaskFailure
-        //     ? EveryoneLosesAPercentageOfTheirPointsBasedOnTaskFailureSpecialSpaceEffectData
-        //     : T extends SpecialSpaceEventType.PointSwap
-        //       ? Record<string, never>
-        never;
+      : never;
+
+export type ChaosSpaceEventDetails<T extends ChaosSpaceEventType> =
+  T extends ChaosSpaceEventType.EveryoneGainsPointsBasedOnRank
+    ? EveryoneGainsPointsBasedOnRankSpecialSpaceEventDetails
+    : T extends ChaosSpaceEventType.EveryoneLosesPercentageOfTheirPoints
+      ? EveryoneLosesPercentageOfTheirPointsChaosSpaceDetails
+      : T extends ChaosSpaceEventType.EveryoneLosesPercentageOfTheirPointsBasedOnTaskFailure
+        ? EveryoneLosesPercentageOfTheirPointsBasedOnTaskFailureSpecialSpaceEffectData
+        : T extends ChaosSpaceEventType.PointSwap
+          ? Record<string, never>
+          : never;
 
 export interface SpecialSpaceEventEffect<
   T extends SpecialSpaceEventType = SpecialSpaceEventType,
@@ -101,6 +111,10 @@ export interface SpecialSpaceEffectData {
   specialSpaceEventTemplateIds: SpecialSpaceEventTemplateModel['id'][];
 }
 
+export interface ChaosSpaceEffectData {
+  chaosSpaceEventTemplateIds: ChaosSpaceEventTemplateModel['id'][];
+}
+
 export interface DuelSpaceEffectData {
   duelGames: string[];
 }
@@ -114,7 +128,9 @@ export type GameboardSpaceEffectData<T extends GameboardSpaceEffect> =
         ? SpecialSpaceEffectData
         : T extends GameboardSpaceEffect.Duel
           ? DuelSpaceEffectData
-          : never;
+          : T extends GameboardSpaceEffect.Chaos
+            ? ChaosSpaceEffectData
+            : never;
 
 export interface GameboardSpaceEffectWithData<
   T extends GameboardSpaceEffect = GameboardSpaceEffect,
@@ -152,6 +168,24 @@ export type SpecialSpaceEventModel = Omit<
   'status'
 > & {
   status: SpaceEventStatus;
+  player: PlayerWithUserAndRankInfo | null;
+  template: SpecialSpaceEventTemplateModel | null;
+};
+
+export type ChaosSpaceEventTemplateModel<
+  T extends ChaosSpaceEventType = ChaosSpaceEventType,
+> = Omit<Tables<Table.ChaosSpaceEventTemplate>, 'type' | 'details'> & {
+  type: T;
+  details: ChaosSpaceEventDetails<T>;
+};
+
+export type ChaosSpaceEventModel = Omit<
+  Tables<Table.ChaosSpaceEvent>,
+  'status'
+> & {
+  status: SpaceEventStatus;
+  player: PlayerWithUserAndRankInfo | null;
+  template: ChaosSpaceEventTemplateModel | null;
 };
 
 export type DuelModel = Omit<Tables<Table.Duel>, 'status'> & {
