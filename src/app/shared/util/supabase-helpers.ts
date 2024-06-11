@@ -101,6 +101,17 @@ export enum RoundPhase {
   WaitingForNextRound = 'waiting_for_next_round',
 }
 
+export enum BetStatus {
+  PendingAcceptance = 'pending_acceptance',
+  CanceledByRequester = 'canceled_by_requester',
+  CanceledByGm = 'canceled_by_gm',
+  Rejected = 'rejected',
+  Active = 'active',
+  RequesterWon = 'requester_won',
+  OpponentWon = 'opponent_won',
+  Push = 'push',
+}
+
 export type TTable = keyof Database['public']['Tables'];
 
 function subscribeToLiveTable<Table extends TTable, Row extends Tables<Table>>(
