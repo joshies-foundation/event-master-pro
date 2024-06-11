@@ -83,6 +83,9 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
       //   ${specialEventsDescriptions}
       // `;
 
+      case GameboardSpaceEffect.Chaos:
+        return `<p class="m-0">Trigger a chaotic event</p>`;
+
       default:
         return `Unknown gameboard_space_effect: "${(gameboardSpace as { effect: string }).effect}"`;
     }

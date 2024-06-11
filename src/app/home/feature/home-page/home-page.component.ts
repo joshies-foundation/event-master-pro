@@ -29,6 +29,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../../../shared/util/rxjs-helpers';
 import {
   DuelStatus,
+  GameboardSpaceEffect,
   RoundPhase,
   SessionStatus,
   showMessageOnError,
@@ -46,6 +47,7 @@ import { StatusTagComponent } from '../../../gm-tools/ui/status-tag.component';
 import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
 import { DuelService } from '../../../shared/data-access/duel.service';
 import { DuelTableAvatarsComponent } from '../../../shared/ui/duel-table-avatars.component';
+import { SpaceEventTableComponent } from '../../ui/space-event-table.component';
 
 interface Countdown {
   days: number;
@@ -80,6 +82,7 @@ interface Countdown {
     AvatarModule,
     StatusTagComponent,
     DuelTableAvatarsComponent,
+    SpaceEventTableComponent,
   ],
 })
 export default class HomePageComponent {
@@ -146,6 +149,19 @@ export default class HomePageComponent {
       this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$,
     );
 
+  readonly chaosSpaceEvents = toSignal(
+    this.gameStateService.roundPhase$.pipe(
+      switchMap((roundPhase) =>
+        roundPhase === RoundPhase.ChaosSpaceEvents
+          ? this.gameboardService.nonCanceledChaosSpaceEventsForThisTurn$
+          : of(null),
+      ),
+    ),
+  );
+
+  readonly allChaosSpaceEventsAreResolved: Signal<boolean | undefined> =
+    toSignal(this.gameboardService.allChaosSpaceEventsForThisTurnAreResolved$);
+
   readonly duels = toSignal(
     this.gameStateService.roundPhase$.pipe(
       switchMap((roundPhase) =>
@@ -179,6 +195,8 @@ export default class HomePageComponent {
       countdown: this.countdown(),
       specialSpaceEvents: this.specialSpaceEvents(),
       allSpecialSpaceEventsAreResolved: this.allSpecialSpaceEventsAreResolved(),
+      chaosSpaceEvents: this.chaosSpaceEvents(),
+      allChaosSpaceEventsAreResolved: this.allChaosSpaceEventsAreResolved(),
       duels: this.duels(),
       allDuelsAreResolved: this.allDuelsAreResolved(),
     }),
@@ -206,8 +224,8 @@ export default class HomePageComponent {
 
   proceedToDuelPhase(): void {
     confirmBackendAction({
-      confirmationMessageText: 'Proceed to the duel phase?',
-      successMessageText: "We're in the duel phase babyyyy",
+      confirmationMessageText: 'Proceed to the Duel phase?',
+      successMessageText: "We're now in the Duel phase",
       action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
@@ -216,12 +234,24 @@ export default class HomePageComponent {
     });
   }
 
-  proceedToChaosSpaceEventPhase(): void {
+  proceedToChaosSpaceEventsPhase(): void {
     confirmBackendAction({
-      confirmationMessageText: 'Proceed to the Chaos Space Event phase?',
-      successMessageText: "We're in the Chaos Space Event phase",
+      confirmationMessageText: 'Proceed to the Chaos Space Events phase?',
+      successMessageText: "We're now in the Chaos Space Events phase",
       action: async () =>
         this.gameStateService.setRoundPhase(RoundPhase.ChaosSpaceEvents),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.proceedingToNextPhase,
+      successNavigation: null,
+    });
+  }
+
+  proceedToEventPhase(): void {
+    confirmBackendAction({
+      confirmationMessageText: 'Proceed to the Event phase?',
+      successMessageText: "We're now in the Event phase",
+      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Event),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToNextPhase,
@@ -232,4 +262,5 @@ export default class HomePageComponent {
   protected readonly RoundPhase = RoundPhase;
   protected readonly SpaceEventStatus = SpaceEventStatus;
   protected readonly DuelStatus = DuelStatus;
+  protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
 }

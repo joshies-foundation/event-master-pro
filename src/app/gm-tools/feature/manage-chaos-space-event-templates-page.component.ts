@@ -9,7 +9,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'joshies-manage-special-space-events-page',
+  selector: 'joshies-manage-chaos-space-event-templates-page',
   standalone: true,
   imports: [
     HeaderLinkComponent,
@@ -20,7 +20,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     SkeletonModule,
   ],
   template: `
-    <joshies-page-header headerText="Special Space Events" alwaysSmall>
+    <joshies-page-header headerText="Chaos Space Events" alwaysSmall>
       <div class="w-full flex justify-content-between">
         <joshies-header-link
           text="GM Tools"
@@ -33,7 +33,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </div>
     </joshies-page-header>
 
-    @if (specialSpaceEventTemplates(); as specialSpaceEventTemplates) {
+    @if (chaosSpaceEventTemplates(); as specialSpaceEventTemplates) {
       @for (
         eventTemplate of specialSpaceEventTemplates;
         track eventTemplate.id;
@@ -52,11 +52,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
         </a>
       } @empty {
         <p class="mt-6 pt-6 text-center text-500 font-italic">
-          Tap <span class="font-bold text-primary">+</span> to add a Special
-          Space event
+          Tap <span class="font-bold text-primary">+</span> to add a Chaos Space
+          event
         </p>
       }
-    } @else if (specialSpaceEventTemplates() === null) {
+    } @else if (chaosSpaceEventTemplates() === null) {
       <p class="mt-6 pt-6 text-center text-500 font-italic">
         No active session
       </p>
@@ -73,7 +73,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export default class ManageSpecialSpaceEventTemplatesPageComponent {
   private readonly gameboardService = inject(GameboardService);
 
-  readonly specialSpaceEventTemplates = toSignal(
-    this.gameboardService.specialSpaceEventTemplates$,
+  readonly chaosSpaceEventTemplates = toSignal(
+    this.gameboardService.chaosSpaceEventTemplates$,
   );
 }

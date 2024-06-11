@@ -58,9 +58,9 @@ export default class GmToolsPageComponent {
     ],
     [RoundPhase.ChaosSpaceEvents]: [
       {
-        text: 'Resolve Special Space Events',
-        iconClass: 'pi pi-exclamation-circle bg-black',
-        routerLink: '.',
+        text: 'Resolve Chaos Space Events',
+        iconClass: 'pi pi-exclamation-circle surface-0',
+        routerLink: './resolve-chaos-space-events',
       },
     ],
     [RoundPhase.Event]: [
@@ -142,14 +142,19 @@ export default class GmToolsPageComponent {
   readonly sessionLinks: Signal<CardLinkModel[]> = computed(
     (): CardLinkModel[] => [
       {
-        text: 'Manage Gameboard Space Types',
+        text: 'Manage Gameboard Spaces',
         iconClass: 'ci-space-entry bg-gray-500',
         routerLink: './space-types',
       },
       {
-        text: 'Manage Special Space Event Types',
+        text: 'Manage Special Space Events',
         iconClass: 'pi pi-question-circle bg-green-500',
         routerLink: './special-space-event-templates',
+      },
+      {
+        text: 'Manage Chaos Space Events',
+        iconClass: 'pi pi-exclamation-circle surface-0',
+        routerLink: './chaos-space-event-templates',
       },
       {
         text: 'Manage Events',

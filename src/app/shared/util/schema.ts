@@ -41,6 +41,115 @@ export type Database = {
           },
         ];
       };
+      chaos_space_event: {
+        Row: {
+          chaos_space_id: number;
+          created_at: string;
+          id: number;
+          player_id: number;
+          results: Json | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['space_event_status'];
+          template_id: number | null;
+          updated_at: string;
+        };
+        Insert: {
+          chaos_space_id: number;
+          created_at?: string;
+          id?: number;
+          player_id: number;
+          results?: Json | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['space_event_status'];
+          template_id?: number | null;
+          updated_at?: string;
+        };
+        Update: {
+          chaos_space_id?: number;
+          created_at?: string;
+          id?: number;
+          player_id?: number;
+          results?: Json | null;
+          round_number?: number;
+          session_id?: number;
+          status?: Database['public']['Enums']['space_event_status'];
+          template_id?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chaos_space_event_chaos_space_id_fkey';
+            columns: ['chaos_space_id'];
+            isOneToOne: false;
+            referencedRelation: 'gameboard_space';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_template_id_fkey';
+            columns: ['template_id'];
+            isOneToOne: false;
+            referencedRelation: 'special_space_event_template';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chaos_space_event_template: {
+        Row: {
+          created_at: string;
+          description: string;
+          details: Json;
+          id: number;
+          name: string;
+          session_id: number;
+          type: Database['public']['Enums']['chaos_space_event_type'];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          details: Json;
+          id?: number;
+          name: string;
+          session_id: number;
+          type: Database['public']['Enums']['chaos_space_event_type'];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          details?: Json;
+          id?: number;
+          name?: string;
+          session_id?: number;
+          type?: Database['public']['Enums']['chaos_space_event_type'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chaos_space_event_template_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       duel: {
         Row: {
           challenger_player_id: number;
@@ -49,6 +158,7 @@ export type Database = {
           game_name: string | null;
           id: number;
           opponent_player_id: number | null;
+          points_gained_by_winner: number | null;
           round_number: number;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
@@ -62,6 +172,7 @@ export type Database = {
           game_name?: string | null;
           id?: number;
           opponent_player_id?: number | null;
+          points_gained_by_winner?: number | null;
           round_number: number;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
@@ -75,6 +186,7 @@ export type Database = {
           game_name?: string | null;
           id?: number;
           opponent_player_id?: number | null;
+          points_gained_by_winner?: number | null;
           round_number?: number;
           session_id?: number;
           status?: Database['public']['Enums']['duel_status'];
@@ -878,6 +990,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      delete_gameboard_space: {
+        Args: {
+          gameboard_space_id: number;
+        };
+        Returns: undefined;
+      };
       end_round: {
         Args: {
           _round_number: number;
@@ -935,11 +1053,13 @@ export type Database = {
         };
         Returns: undefined;
       };
-      submit_gain_points_based_on_rank: {
+      submit_space_event_player_score_changes: {
         Args: {
-          special_space_event_id: number;
-          special_space_event_template_id: number;
+          space_event_id: number;
+          space_event_template_id: number;
           player_score_changes: Json;
+          event_description: string;
+          is_chaos_space_event: boolean;
         };
         Returns: undefined;
       };
@@ -974,7 +1094,8 @@ export type Database = {
         | 'gain_points'
         | 'gain_points_or_do_activity'
         | 'special'
-        | 'duel';
+        | 'duel'
+        | 'chaos';
       round_phase:
         | 'gameboard_moves'
         | 'special_space_events'

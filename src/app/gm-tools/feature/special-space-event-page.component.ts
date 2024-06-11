@@ -32,7 +32,7 @@ import {
   distinctUntilIdChanged,
   whenNotNull,
 } from '../../shared/util/rxjs-helpers';
-import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
+import { JsonPipe, NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { DropdownModule } from 'primeng/dropdown';
 import {
@@ -76,6 +76,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
     TableModule,
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,
+    JsonPipe,
   ],
   template: `
     <joshies-page-header headerText="Special Space Event" alwaysSmall>
@@ -95,10 +96,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               <p-avatar
                 size="large"
                 shape="circle"
-                [image]="vm.specialSpaceEvent.avatar_url ?? ''"
+                [image]="vm.specialSpaceEvent.player?.avatar_url ?? ''"
               />
-              {{ vm.specialSpaceEvent.display_name }}'s Special Space event for
-              turn
+              {{ vm.specialSpaceEvent.player?.display_name }}'s Special Space
+              event for turn
               {{ vm.roundNumber }}
             </div>
 
@@ -267,13 +268,24 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         vm.specialSpaceEvent.id,
                         score(),
                         sessionPoints(),
-                        vm.specialSpaceEvent.display_name ?? ''
+                        vm.specialSpaceEvent.player?.display_name ?? ''
                       )
                     "
                   />
                 } @else {
                   Event template not found
                 }
+              }
+              @default {
+                <h3>
+                  {{
+                    vm.specialSpaceEvent.template?.name ??
+                      'Cannot find Special Space Event Template with ID ' +
+                        vm.specialSpaceEvent.template_id
+                  }}
+                </h3>
+                <h4>Results</h4>
+                <p>{{ vm.specialSpaceEvent.results | json }}</p>
               }
             }
           </div>
@@ -289,7 +301,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               (onClick)="
                 confirmCancelSpecialSpaceEvent(
                   vm.specialSpaceEvent.id,
-                  vm.specialSpaceEvent.display_name ?? ''
+                  vm.specialSpaceEvent.player?.display_name ?? ''
                 )
               "
             />
@@ -537,7 +549,7 @@ export default class SpecialSpaceEventPageComponent {
 
     confirmBackendAction({
       action: async () =>
-        this.gameboardService.submitGainPointsBasedOnRank(
+        this.gameboardService.submitGainPointsBasedOnRankSpecial(
           specialSpaceEventId,
           specialSpaceEventTemplateId,
           playerScoreChanges,

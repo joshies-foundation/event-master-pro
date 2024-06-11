@@ -26,6 +26,8 @@ export enum Table {
   EventTeamRoundScore = 'event_team_round_score',
   SpecialSpaceEvent = 'special_space_event',
   SpecialSpaceEventTemplate = 'special_space_event_template',
+  ChaosSpaceEvent = 'chaos_space_event',
+  ChaosSpaceEventTemplate = 'chaos_space_event_template',
   Duel = 'duel',
 }
 
@@ -44,9 +46,10 @@ export enum Function {
   StartSessionEarly = 'start_session_early',
   LogRoundMoves = 'log_round_moves',
   ReorderEvents = 'reorder_events',
-  SubmitGainPointsBasedOnRank = 'submit_gain_points_based_on_rank',
+  SubmitSpaceEventPlayerScoreChanges = 'submit_space_event_player_score_changes',
   SubmitSpecialSpaceEventScore = 'submit_special_space_event_score',
   SubmitDuelResults = 'submit_duel_results',
+  DeleteGameboardSpace = 'delete_gameboard_space',
 }
 
 export enum StorageBucket {
@@ -65,6 +68,7 @@ export enum GameboardSpaceEffect {
   GainPointsOrDoActivity = 'gain_points_or_do_activity',
   Special = 'special',
   Duel = 'duel',
+  Chaos = 'chaos',
 }
 
 export enum SpaceEventStatus {

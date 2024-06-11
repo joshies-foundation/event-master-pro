@@ -30,9 +30,11 @@
           [decrementButtonIcon]="field.decrementButtonIcon ?? 'pi pi-minus'"
           [min]="field.min"
           [max]="field.max"
+          [suffix]="field.suffix"
           [mode]="field.mode ?? 'decimal'"
           [formControl]="field.control"
           [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [inputStyleClass]="field.inputStyleClass"
         />
       }
       @case (FormFieldType.Dropdown) {
