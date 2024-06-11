@@ -12,7 +12,10 @@ import { TableModule } from 'primeng/table';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import { showMessageOnError } from '../../shared/util/supabase-helpers';
+import {
+  BetStatus,
+  showMessageOnError,
+} from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
 import { MessageService } from 'primeng/api';
@@ -118,7 +121,7 @@ export default class PlaceBetChoosePlayerPageComponent {
     return this.bets()?.filter(
       (bet) =>
         bet.opponent_player_id === this.userPlayer()?.player_id &&
-        bet.status === 'pending_acceptance',
+        bet.status === BetStatus.PendingAcceptance,
     );
   });
 
@@ -144,10 +147,11 @@ export default class PlaceBetChoosePlayerPageComponent {
   );
 
   readonly userNameAndScore = computed(() => {
+    const userPlayer = this.userPlayer();
     return (
-      (this.userPlayer()?.display_name ?? 'Player') +
+      (userPlayer?.display_name ?? 'Player') +
       ' (' +
-      this.userPlayer()?.score +
+      userPlayer?.score +
       ' points)'
     );
   });
@@ -161,7 +165,12 @@ export default class PlaceBetChoosePlayerPageComponent {
     this.submitting.set(false);
   }
 
-  rejectBet(id: number) {
-    this.betService.rejectBet(id);
+  async rejectBet(id: number) {
+    this.submitting.set(true);
+    await showMessageOnError(
+      this.betService.rejectBet(id),
+      this.messageService,
+    );
+    this.submitting.set(false);
   }
 }
