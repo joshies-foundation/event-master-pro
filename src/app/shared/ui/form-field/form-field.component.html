@@ -183,6 +183,51 @@
           [binary]="true"
         />
       }
+      @case (FormFieldType.Image) {
+        @if (uploading()) {
+          <p-skeleton
+            styleClass="border-round"
+            class="mx-auto"
+            [width]="field.previewWidth + 'px'"
+            [height]="field.previewHeight + 'px'"
+          />
+        } @else {
+          @if (fieldValue(); as imageUrl) {
+            <img
+              #image
+              [alt]="field.altText"
+              [ngSrc]="$any(imageUrl)"
+              class="border-round mx-auto max-w-full surface-200"
+              [width]="field.previewWidth"
+              [height]="field.previewHeight"
+            />
+          } @else {
+            <div
+              class="border-round mx-auto max-w-full surface-100 pi pi-question text-6xl text-center text-300 flex flex-column justify-content-center"
+              [style]="{
+                width: field.previewWidth + 'px',
+                height: field.previewHeight + 'px'
+              }"
+            ></div>
+          }
+        }
+
+        <p-button
+          label="Upload Image"
+          icon="pi pi-camera"
+          styleClass="w-full mt-2"
+          (onClick)="imageFileInput.click()"
+        />
+
+        <!-- Hidden File Input -->
+        <input
+          #imageFileInput
+          hidden
+          type="file"
+          accept="image/*"
+          (change)="onImageSelect(field.control, $event, field.uploadCallback)"
+        />
+      }
     }
   </div>
 }

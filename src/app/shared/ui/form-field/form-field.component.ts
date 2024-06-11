@@ -7,6 +7,7 @@ import {
   effect,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import {
@@ -16,16 +17,28 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import { LowerCasePipe, NgClass } from '@angular/common';
+import {
+  AsyncPipe,
+  LowerCasePipe,
+  NgClass,
+  NgOptimizedImage,
+} from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  takeUntilDestroyed,
+  toObservable,
+  toSignal,
+} from '@angular/core/rxjs-interop';
 import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
-import { delay } from 'rxjs';
+import { concat, delay, map, of, switchMap } from 'rxjs';
+import { EventService } from '../../data-access/event.service';
+import { ImageModule } from 'primeng/image';
+import { SkeletonModule } from 'primeng/skeleton';
 
 export enum FormFieldType {
   Text,
@@ -37,7 +50,11 @@ export enum FormFieldType {
   Submit,
   TextArea,
   Checkbox,
+  Image,
 }
+
+type UploadedImageUrl = string;
+type ImageUploadCallback = (imageFile: File) => Promise<UploadedImageUrl>;
 
 export interface DropdownItem<T = unknown> {
   label: string;
@@ -113,6 +130,13 @@ export type FormField = {
           type: FormFieldType.Checkbox;
           defaultValue?: boolean;
         }
+      | {
+          type: FormFieldType.Image;
+          uploadCallback: ImageUploadCallback;
+          previewHeight: number;
+          previewWidth: number;
+          altText?: string;
+        }
     ))
   | {
       type: FormFieldType.Submit;
@@ -138,17 +162,42 @@ export type FormField = {
     InputNumberModule,
     InputTextareaModule,
     CheckboxModule,
+    ImageModule,
+    AsyncPipe,
+    SkeletonModule,
+    NgOptimizedImage,
   ],
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent implements AfterViewInit {
+  private readonly defaultImage = '/assets/icons/icon-96x96.png';
+
   field = input.required<FormField>();
+  field$ = toObservable(this.field);
   formGroup = input.required<FormGroup>();
   formDisabled = input.required<boolean>();
 
+  fieldValue = toSignal(
+    this.field$.pipe(
+      map(
+        (field) =>
+          field as unknown as { control: FormControl<unknown> | undefined },
+      ),
+      switchMap((field) =>
+        concat(
+          of(field.control?.value),
+          field.control?.valueChanges ?? of(undefined),
+        ),
+      ),
+    ),
+  );
+
+  uploading = signal(false);
+
   private readonly cd = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly eventService = inject(EventService);
 
   protected readonly FormFieldType = FormFieldType;
 
@@ -185,5 +234,24 @@ export class FormFieldComponent implements AfterViewInit {
     ).control.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef), delay(0))
       .subscribe(() => this.formGroup().updateValueAndValidity());
+  }
+
+  async onImageSelect(
+    imageUrlFormControl: FormControl<string>,
+    event: Event,
+    uploadCallback: ImageUploadCallback,
+  ): Promise<void> {
+    this.uploading.set(true);
+
+    const imageFile = (event.target as HTMLInputElement).files?.[0];
+
+    if (!imageFile) return;
+
+    try {
+      const imageUrl = await uploadCallback(imageFile);
+      imageUrlFormControl.setValue(imageUrl);
+    } finally {
+      this.uploading.set(false);
+    }
   }
 }

@@ -51,6 +51,7 @@ export enum Function {
 
 export enum StorageBucket {
   Avatars = 'avatars',
+  EventImages = 'event-images',
 }
 
 export enum SessionStatus {
