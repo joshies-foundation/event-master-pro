@@ -8,16 +8,15 @@ import {
   input,
   numberAttribute,
   signal,
+  WritableSignal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { EventModel, EventTeamModel } from '../../shared/util/supabase-types';
 import {
-  EventModel,
-  EventParticipantModel,
-} from '../../shared/util/supabase-types';
-import {
+  EventParticipantWithPlayerInfo,
   EventService,
-  EventTeamWithPlayerUserInfo,
+  EventTeamWithParticipantInfo,
 } from '../../shared/data-access/event.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PlayerService } from '../../shared/data-access/player.service';
@@ -33,6 +32,16 @@ import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+
+enum DropListIds {
+  UnassignedTeam = 'unassigned-team',
+  NewTeam = 'new-team',
+}
+
+enum TeamIds {
+  UnassignedTeam = -1,
+  NewTeam = -2,
+}
 
 @Component({
   selector: 'joshies-edit-event-teams-page',
@@ -55,37 +64,37 @@ import { ButtonModule } from 'primeng/button';
       </div>
     </joshies-page-header>
 
-    @if (localSortedEventTeams(); as teams) {
+    @if (eventTeamsWithParticipantInfo(); as teams) {
       <!-- Unassigned players -->
       <p class="mb-1">Unassigned Players</p>
       <div
         class="flex flex-wrap border-1 border-200 border-round-md surface-50 relative"
         cdkDropList
-        [cdkDropListData]="unassignedPlayerTeam()"
+        [cdkDropListData]="teams[0]"
         (cdkDropListDropped)="onEventParticipantDrop($event)"
         [cdkDropListConnectedTo]="dropListIds()"
-        id="unassigned-player-list"
+        [id]="DropListIds.UnassignedTeam"
       >
         @for (
-          player of unassignedPlayerTeam().players;
-          track player.player_id;
+          participant of teams[0].participants;
+          track participant.participant_id;
           let first = $first
         ) {
           <div
             class="flex border-round-md p-2 m-1 text-color no-underline surface-200"
             cdkDrag
             [cdkDragDisabled]="!userIsGameMaster()"
-            [cdkDragData]="player"
+            [cdkDragData]="participant"
           >
             <img
-              [ngSrc]="player.avatar_url"
+              [ngSrc]="participant.avatar_url"
               alt=""
               width="24"
               height="24"
               class="border-circle surface-100 mr-1"
             />
             <span class="align-self-center">
-              {{ player.display_name }}
+              {{ participant.display_name }}
             </span>
           </div>
         } @empty {
@@ -101,66 +110,70 @@ import { ButtonModule } from 'primeng/button';
       <!-- Drop List for Reordering Teams -->
       <div cdkDropList (cdkDropListDropped)="onEventTeamDrop($event)">
         @for (
-          team of localSortedEventTeams();
+          team of teams;
           track team.id;
-          let index = $index
+          let index = $index, first = $first, last = $last
         ) {
-          <div class="flex" cdkDrag>
-            @if (userIsGameMaster()) {
-              <div class="flex" cdkDragHandle>
-                <i class="pi pi-bars text-300 pl-2 pr-3 align-self-center"></i>
-              </div>
-            }
-
-            <!-- Drop List for Adding/Removing Players from Teams -->
-            <div
-              class="flex flex-wrap flex-grow-1 border-1 border-200 border-round-md my-2 surface-50 relative"
-              cdkDropList
-              [cdkDropListData]="team"
-              [cdkDropListConnectedTo]="dropListIds()"
-              (cdkDropListDropped)="onEventParticipantDrop($event)"
-              [id]="team.id!.toString()"
-            >
-              <p class="text-sm text-400 px-2 mb-0">{{ index + 1 }}</p>
-              <p class="text-sm text-400 px-2 mb-0">{{ team.id! }}</p>
-              @for (
-                player of team.players;
-                track player.player_id;
-                let first = $first
-              ) {
-                <div
-                  class="flex border-round-md p-2 m-1 text-color no-underline surface-200"
-                  cdkDrag
-                  [cdkDragData]="player"
-                >
-                  <img
-                    [ngSrc]="player.avatar_url"
-                    alt=""
-                    width="24"
-                    height="24"
-                    class="border-circle surface-100 mr-1"
-                  />
-                  <span class="align-self-center">
-                    {{ player.display_name }}
-                  </span>
+          @if (!(first || last)) {
+            <div class="flex" cdkDrag>
+              @if (userIsGameMaster()) {
+                <div class="flex" cdkDragHandle>
+                  <i
+                    class="pi pi-bars text-300 pl-2 pr-3 align-self-center"
+                  ></i>
                 </div>
-              } @empty {
-                <p class="text-center font-italic text-400">
-                  No participants assigned to this team
-                </p>
               }
-            </div>
 
-            <div class="surface-200 h-3rem w-full" *cdkDragPlaceholder></div>
-          </div>
+              <!-- Drop List for Adding/Removing Players from Teams -->
+              <div
+                class="flex flex-wrap flex-grow-1 border-1 border-200 border-round-md my-2 surface-50 relative"
+                cdkDropList
+                [cdkDropListData]="team"
+                [cdkDropListConnectedTo]="dropListIds()"
+                (cdkDropListDropped)="onEventParticipantDrop($event)"
+                [id]="team.id!.toString()"
+              >
+                <p class="text-sm text-400 px-2 mb-0">{{ index }}</p>
+                <p class="text-sm text-400 px-2 mb-0">{{ team.id! }}</p>
+                @for (
+                  participant of team.participants;
+                  track participant.participant_id;
+                  let first = $first
+                ) {
+                  <div
+                    class="flex border-round-md p-2 m-1 text-color no-underline surface-200"
+                    cdkDrag
+                    [cdkDragData]="participant"
+                  >
+                    <img
+                      [ngSrc]="participant.avatar_url"
+                      alt=""
+                      width="24"
+                      height="24"
+                      class="border-circle surface-100 mr-1"
+                    />
+                    <span class="align-self-center">
+                      {{ participant.display_name }}
+                    </span>
+                  </div>
+                } @empty {
+                  <p class="text-center font-italic text-400">
+                    No participants assigned to this team
+                  </p>
+                }
+              </div>
+
+              <div class="surface-200 h-3rem w-full" *cdkDragPlaceholder></div>
+            </div>
+          }
         }
         <div
           class="flex w-full border-1 border-200 border-round-md my-2 surface-50"
           cdkDropList
-          [cdkDropListData]="newPlayerTeam"
+          [cdkDropListData]="teams[teams.length - 1]"
           (cdkDropListDropped)="onEventParticipantDrop($event)"
           [cdkDropListConnectedTo]="dropListIds()"
-          id="new-player-team"
+          [id]="DropListIds.NewTeam"
         >
           <p class="text-center text-400 ml-2">
             Drag players here to create a new team
@@ -198,6 +211,9 @@ export default class EditEventTeamsPageComponent {
   private readonly eventService = inject(EventService);
   private readonly playerService = inject(PlayerService);
 
+  // make the DropListIds enum available in component template
+  readonly DropListIds = DropListIds;
+
   readonly userIsGameMaster = this.playerService.userIsGameMaster;
 
   readonly headerText = computed(
@@ -212,46 +228,94 @@ export default class EditEventTeamsPageComponent {
 
   private readonly players = this.playerService.players;
 
-  readonly databaseEventTeams = computed(
+  private readonly newTeamTemplate = computed(() => ({
+    created_at: '',
+    event_id: this.eventId(),
+    name: '',
+    updated_at: '',
+  }));
+
+  readonly databaseEventTeams: Signal<EventTeamModel[] | undefined> = computed(
     () =>
       this.eventService
-        .eventTeamsWithPlayerUserInfo()
+        .eventTeams()
         ?.filter((eventTeam) => eventTeam.event_id === this.eventId())
-        ?.sort(
-          (a, b) => (a.seed ?? 0) - (b.seed ?? 0),
-        ) as Partial<EventTeamWithPlayerUserInfo>[],
+        ?.sort((a, b) => (a.seed ?? 0) - (b.seed ?? 0)),
   );
 
-  readonly localSortedEventTeams = signal(
-    structuredClone(this.databaseEventTeams()),
+  private readonly localSortedEventTeams: WritableSignal<
+    EventTeamModel[] | undefined
+  > = signal(structuredClone(this.databaseEventTeams()));
+
+  private readonly databaseEventParticipants: Signal<
+    EventParticipantWithPlayerInfo[] | undefined
+  > = computed(() =>
+    this.eventService
+      .eventParticipantsWithPlayerInfo()
+      ?.filter((eventParticipant) =>
+        this.databaseEventTeams()
+          ?.map((eventTeam) => eventTeam.id)
+          .includes(eventParticipant.team_id),
+      ),
   );
 
-  readonly unassignedPlayerTeam = computed(
-    () =>
-      ({
-        id: -1,
-        players: this.players()?.filter(
-          (player) =>
-            !this.localSortedEventTeams()?.some((team) =>
-              team.players?.some(
-                (teamPlayer) => teamPlayer.player_id === player.player_id,
-              ),
-            ),
-        ),
-      }) as Partial<EventTeamWithPlayerUserInfo>,
-  );
-
-  readonly newPlayerTeam = { id: -2 } as Partial<EventTeamWithPlayerUserInfo>;
-
-  readonly dropListIds = computed(() => [
-    'unassigned-player-list',
-    'new-player-team',
-    ...(this.localSortedEventTeams()?.map((eventTeam) =>
-      eventTeam.id!.toString(),
-    ) ?? []),
+  private readonly localEventParticipants: WritableSignal<
+    EventParticipantWithPlayerInfo[] | undefined
+  > = signal([
+    ...(this.players()
+      ?.filter(
+        (player) =>
+          !this.databaseEventParticipants()
+            ?.map((eventParticipant) => eventParticipant.player_id)
+            .includes(player.player_id),
+      )
+      .map(
+        (player) =>
+          ({
+            participant_id: -player.player_id,
+            team_id: TeamIds.UnassignedTeam,
+            player_id: player.player_id,
+            display_name: player.display_name,
+            avatar_url: player.avatar_url,
+          }) as EventParticipantWithPlayerInfo,
+      ) ?? ([] as EventParticipantWithPlayerInfo[])),
+    ...(structuredClone(this.databaseEventParticipants()) ??
+      ([] as EventParticipantWithPlayerInfo[])),
   ]);
 
-  private readonly updateLocalEventsArrayOnDatabaseUpdates = effect(
+  readonly eventTeamsWithParticipantInfo = computed(() => [
+    // include a "team" for unassigned players so the container type matches for drag/drop
+    {
+      ...this.newTeamTemplate(),
+      id: TeamIds.UnassignedTeam,
+      participants: this.localEventParticipants()?.filter(
+        (eventParticipant) =>
+          eventParticipant.team_id === TeamIds.UnassignedTeam,
+      ),
+    } as EventTeamWithParticipantInfo,
+
+    ...(this.localSortedEventTeams()?.map((eventTeam) => ({
+      ...eventTeam,
+      participants: this.localEventParticipants()?.filter(
+        (eventParticipant) => eventParticipant.team_id === eventTeam.id,
+      ),
+    })) ?? []),
+
+    // include a "new team" so the container type matches for drag/drop
+    {
+      ...this.newTeamTemplate(),
+      id: TeamIds.NewTeam,
+    } as EventTeamWithParticipantInfo,
+  ]);
+
+  readonly dropListIds = computed(() => [
+    ...Object.values(this.DropListIds),
+    ...(this.eventTeamsWithParticipantInfo()
+      ?.filter((eventTeam) => eventTeam.id > 0)
+      .map((eventTeam) => eventTeam.id.toString()) ?? []),
+  ]);
+
+  private readonly updateLocalEventTeamsArrayOnDatabaseUpdates = effect(
     () =>
       this.localSortedEventTeams.set(
         structuredClone(this.databaseEventTeams()),
@@ -259,209 +323,283 @@ export default class EditEventTeamsPageComponent {
     { allowSignalWrites: true },
   );
 
+  private readonly updateLocalEventParticipantsArrayOnDatabaseUpdates = effect(
+    () =>
+      this.localEventParticipants.set([
+        ...(this.players()
+          ?.filter(
+            (player) =>
+              !structuredClone(this.databaseEventParticipants())
+                ?.map((eventParticipant) => eventParticipant.player_id)
+                .includes(player.player_id),
+          )
+          .map(
+            (player) =>
+              ({
+                participant_id: -player.player_id,
+                team_id: TeamIds.UnassignedTeam,
+                player_id: player.player_id,
+                display_name: player.display_name,
+                avatar_url: player.avatar_url,
+              }) as EventParticipantWithPlayerInfo,
+          ) ?? ([] as EventParticipantWithPlayerInfo[])),
+        ...(structuredClone(this.databaseEventParticipants()) ??
+          ([] as EventParticipantWithPlayerInfo[])),
+      ]),
+    { allowSignalWrites: true },
+  );
+
   readonly unsavedChangesExist = computed(() => {
-    // teams are reordered
+    const eventParticipantsWithoutUnassigned =
+      this.localEventParticipants()?.filter(
+        (localEventParticipant) =>
+          localEventParticipant.team_id !== TeamIds.UnassignedTeam,
+      );
+
     if (
-      this.localSortedEventTeams()?.some(
-        (eventTeam, index) => eventTeam.seed !== index + 1,
+      eventParticipantsWithoutUnassigned?.length !==
+        this.databaseEventParticipants()?.length ||
+      eventParticipantsWithoutUnassigned?.some(
+        (localEventParticipant) =>
+          localEventParticipant.team_id !==
+          this.databaseEventParticipants()?.find(
+            (dbEventParticipant) =>
+              dbEventParticipant.participant_id ===
+              localEventParticipant?.participant_id,
+          )?.team_id,
       )
     ) {
       return true;
     }
 
-    // team has been removed or player has changed teams
     if (
-      this.databaseEventTeams()?.some((dbEventTeam) => {
-        const localEventTeamPlayers = this.localSortedEventTeams()?.find(
-          (localEventTeam) => localEventTeam.id === dbEventTeam.id,
-        )?.players;
-
-        return (
-          localEventTeamPlayers?.length !== dbEventTeam.players?.length ||
-          !dbEventTeam.players?.every((dbPlayer) =>
-            localEventTeamPlayers?.some(
-              (localPlayer) => dbPlayer.player_id === localPlayer.player_id,
-            ),
-          )
-        );
-      })
+      this.localSortedEventTeams()?.length !==
+        this.databaseEventTeams()?.length ||
+      this.localSortedEventTeams()?.some(
+        (localEventTeam, index) =>
+          index !==
+          this.databaseEventTeams()?.findIndex(
+            (dbEventTeam) => dbEventTeam.id === localEventTeam.id,
+          ),
+      )
     ) {
       return true;
     }
 
     return false;
+    // team has been removed
+    // team has changed positions
+    // new team
   });
+
+  // readonly unsavedChangesExist = computed(() => {
+  //   // teams are reordered
+  //   if (
+  //     this.localSortedEventTeams()?.some(
+  //       (eventTeam, index) => eventTeam.seed !== index + 1,
+  //     )
+  //   ) {
+  //     return true;
+  //   }
+
+  //   // team has been removed or participant has changed teams
+  //   if (
+  //     this.databaseEventTeams()?.some((dbEventTeam) => {
+  //       const localEventTeamParticipants = this.localSortedEventTeams()?.find(
+  //         (localEventTeam) => localEventTeam.id === dbEventTeam.id,
+  //       )?.participants;
+
+  //       return (
+  //         localEventTeamParticipants?.length !==
+  //           dbEventTeam.participants?.length ||
+  //         !dbEventTeam.participants?.every((dbParticipant) =>
+  //           localEventTeamParticipants?.some(
+  //             (localParticipant) =>
+  //               dbParticipant.participant_id ===
+  //               localParticipant.participant_id,
+  //           ),
+  //         )
+  //       );
+  //     })
+  //   ) {
+  //     return true;
+  //   }
+
+  //   return false;
+  // });
 
   private readonly nextAvailableTeamId = computed(() =>
     this.localSortedEventTeams()?.length
       ? Math.max(
-          ...this.localSortedEventTeams().map((eventTeam) => eventTeam.id!),
+          ...this.localSortedEventTeams()!.map((eventTeam) => eventTeam.id),
         ) + 1
       : 1,
   );
 
   onEventTeamDrop(
-    drop: CdkDragDrop<EventTeamWithPlayerUserInfo[] | undefined>,
+    drop: CdkDragDrop<EventTeamWithParticipantInfo[] | undefined>,
   ): void {
+    console.log('team dropped');
     this.localSortedEventTeams.update((eventTeams) => {
-      moveItemInArray(eventTeams, drop.previousIndex, drop.currentIndex);
-      return [...eventTeams];
+      moveItemInArray(eventTeams!, drop.previousIndex, drop.currentIndex);
+      return [...eventTeams!];
     });
   }
 
   onEventParticipantDrop(
-    drop: CdkDragDrop<Partial<EventTeamWithPlayerUserInfo>>,
+    drop: CdkDragDrop<EventTeamWithParticipantInfo>,
   ): void {
     if (drop.previousContainer.data.id === drop.container.data.id) {
       return;
     }
 
+    let newTeamId = drop.container.data.id;
+
     this.localSortedEventTeams.update((eventTeams) => {
-      const previousTeam = eventTeams.find(
-        (eventTeam) => eventTeam.id === drop.previousContainer.data.id,
+      if (newTeamId === TeamIds.NewTeam) {
+        newTeamId = this.nextAvailableTeamId();
+        eventTeams!.push({
+          ...this.newTeamTemplate(),
+          seed: 0,
+          id: newTeamId,
+        });
+      }
+
+      const previousTeamParticipantCount =
+        this.localEventParticipants()?.filter(
+          (eventParticipant) =>
+            eventParticipant.team_id === drop.previousContainer.data.id,
+        ).length;
+
+      if (
+        previousTeamParticipantCount! <= 1 &&
+        drop.previousContainer.data.id !== TeamIds.UnassignedTeam
+      ) {
+        const previousTeamIndex = eventTeams?.findIndex(
+          (eventTeam) => eventTeam.id === drop.previousContainer.data.id,
+        );
+        eventTeams?.splice(previousTeamIndex!, 1);
+      }
+
+      return [...eventTeams!];
+    });
+
+    this.localEventParticipants.update((eventParticipants) => {
+      const droppedEventParticipant = eventParticipants!.find(
+        (eventParticipant) =>
+          eventParticipant.participant_id === drop.item.data.participant_id,
       );
 
-      previousTeam?.players?.splice(drop.previousIndex, 1);
+      droppedEventParticipant!.team_id = newTeamId;
 
-      if (drop.container.data.id === -2) {
-        eventTeams.push({
-          id: this.nextAvailableTeamId(),
-          created_at: '',
-          updated_at: '',
-          event_id: this.eventId(),
-          seed: this.localSortedEventTeams.length,
-          name: null,
-          players: [drop.item.data],
-        } as EventTeamWithPlayerUserInfo);
-      } else {
-        eventTeams
-          .find((eventTeam) => eventTeam.id === drop.container.data.id)
-          ?.players?.push(drop.item.data);
-      }
-
-      if (previousTeam?.players?.length === 0) {
-        const eventTeamIndex = eventTeams.findIndex(
-          (eventTeam) => eventTeam.id === previousTeam.id,
-        );
-        eventTeams.splice(eventTeamIndex, 1);
-      }
-
-      return [...eventTeams];
+      return [...eventParticipants!];
     });
   }
 
   saveChanges() {
-    const newTeamIdsWithSeeds = this.localSortedEventTeams()
-      .map((localEventTeam, index) => ({
-        id: localEventTeam.id,
-        seed: index + 1,
-      }))
-      .filter(
-        (localEventTeam) =>
-          !this.databaseEventTeams()
-            .map((dbEventTeam) => dbEventTeam.id)
-            .includes(localEventTeam.id),
-      );
-
-    const databaseParticipants = this.databaseEventTeams().reduce(
-      (prev, eventTeam) => [
-        ...prev,
-        ...eventTeam.players!.map((player) => ({
-          player_id: player.player_id,
-          team_id: eventTeam.id!,
-        })),
-      ],
-      [] as Partial<EventParticipantModel>[],
-    );
-
-    const localParticipants = this.localSortedEventTeams().reduce(
-      (prev, eventTeam) => [
-        ...prev,
-        ...eventTeam.players!.map((player) => ({
-          player_id: player.player_id,
-          team_id: eventTeam.id!,
-        })),
-      ],
-      [] as Partial<EventParticipantModel>[],
-    );
-
-    const newParticipants = localParticipants.filter(
-      (localParticipant) =>
-        !databaseParticipants
-          .map((dbParticipant) => dbParticipant.player_id)
-          .includes(localParticipant.player_id),
-    );
-
-    const eventTeamUpdates = {
-      newTeamIdsWithSeeds: newTeamIdsWithSeeds,
-
-      updatedTeamIdsWithSeeds: this.localSortedEventTeams().reduce(
-        (prev, eventTeam, index) => [
-          ...prev,
-          ...(eventTeam.seed !== index + 1 &&
-          !newTeamIdsWithSeeds.some(
-            (newEventTeam) => newEventTeam.id === eventTeam.id,
-          )
-            ? [{ id: eventTeam.id!, seed: index + 1 }]
-            : []),
-        ],
-        [] as { id: number; seed: number }[],
-      ),
-
-      removedTeamIds: this.databaseEventTeams()
-        .map((dbEventTeam) => dbEventTeam.id)
-        .filter(
-          (dbEventTeamId) =>
-            !this.localSortedEventTeams()
-              .map((localEventTeam) => localEventTeam.id)
-              .includes(dbEventTeamId),
-        ),
-
-      newParticipants: newParticipants,
-
-      updatedParticipants: localParticipants.filter(
-        (localParticipant) =>
-          databaseParticipants.find(
-            (dbParticipant) =>
-              dbParticipant.player_id === localParticipant.player_id,
-          )?.team_id !== localParticipant.team_id &&
-          !newParticipants
-            .map((participant) => participant.player_id)
-            .includes(localParticipant.player_id),
-      ),
-
-      removedPlayerIds: databaseParticipants
-        .filter(
-          (dbParticipant) =>
-            !localParticipants
-              .map((localParticipant) => localParticipant.player_id)
-              .includes(dbParticipant.player_id),
-        )
-        .map((dbParticipant) => dbParticipant.player_id),
-    };
-
-    console.log('\n' + JSON.stringify(eventTeamUpdates));
-
-    // console.log(
-    //   `new teams: ${eventTeamUpdates.newTeamIdsWithSeeds.map((team) => JSON.stringify(team))}`,
-    // );
-    // console.log(
-    //   `removed teams: ${eventTeamUpdates.removedTeamIds.map((team) => JSON.stringify(team))}`,
-    // );
-    // console.log(
-    //   `updated teams: ${eventTeamUpdates.updatedTeamIdsWithSeeds.map((team) => JSON.stringify(team))}`,
-    // );
-
-    // console.log(
-    //   `added players: ${eventTeamUpdates.newParticipants.map((playerWithSeed) => JSON.stringify(playerWithSeed))}`,
-    // );
-
-    // console.log(
-    //   `updated players: ${eventTeamUpdates.updatedParticipants.map((playerWithSeed) => JSON.stringify(playerWithSeed))}`,
-    // );
-
-    // console.log(
-    //   `removed players: ${eventTeamUpdates.removedPlayerIds.map((playerId) => JSON.stringify(playerId))}`,
-    // );
+    console.dir(this.localSortedEventTeams());
+    console.dir(this.databaseEventTeams());
+    console.log('saving changes...');
   }
+
+  // saveChanges() {
+  //   const newTeamIdsWithSeeds = this.localSortedEventTeams()
+  //     .map((localEventTeam, index) => ({
+  //       id: localEventTeam.id,
+  //       seed: index + 1,
+  //     }))
+  //     .filter(
+  //       (localEventTeam) =>
+  //         !this.databaseEventTeams()
+  //           .map((dbEventTeam) => dbEventTeam.id)
+  //           .includes(localEventTeam.id),
+  //     );
+
+  //   const databaseParticipants = this.databaseEventTeams().reduce(
+  //     (prev, eventTeam) => [...prev, ...eventTeam.participants!],
+  //     [] as Partial<EventParticipantWithPlayerInfo>[],
+  //   );
+
+  //   const localParticipants = this.localSortedEventTeams().reduce(
+  //     (prev, eventTeam) => [...prev, ...eventTeam.participants!],
+  //     [] as Partial<EventParticipantWithPlayerInfo>[],
+  //   );
+
+  //   const newParticipants = localParticipants.filter(
+  //     (localParticipant) =>
+  //       !databaseParticipants
+  //         .map((dbParticipant) => dbParticipant.participant_id)
+  //         .includes(localParticipant.participant_id),
+  //   );
+
+  //   const eventTeamUpdates = {
+  //     newTeamIdsWithSeeds: newTeamIdsWithSeeds,
+
+  //     updatedTeamIdsWithSeeds: this.localSortedEventTeams().reduce(
+  //       (prev, eventTeam, index) => [
+  //         ...prev,
+  //         ...(eventTeam.seed !== index + 1 &&
+  //         !newTeamIdsWithSeeds.some(
+  //           (newEventTeam) => newEventTeam.id === eventTeam.id,
+  //         )
+  //           ? [{ id: eventTeam.id!, seed: index + 1 }]
+  //           : []),
+  //       ],
+  //       [] as { id: number; seed: number }[],
+  //     ),
+
+  //     removedTeamIds: this.databaseEventTeams()
+  //       .map((dbEventTeam) => dbEventTeam.id)
+  //       .filter(
+  //         (dbEventTeamId) =>
+  //           !this.localSortedEventTeams()
+  //             .map((localEventTeam) => localEventTeam.id)
+  //             .includes(dbEventTeamId),
+  //       ),
+
+  //     newParticipants: newParticipants,
+
+  //     updatedParticipants: localParticipants.filter(
+  //       (localParticipant) =>
+  //         databaseParticipants.find(
+  //           (dbParticipant) =>
+  //             dbParticipant.participant_id === localParticipant.participant_id,
+  //         )?.team_id !== localParticipant.team_id &&
+  //         !newParticipants
+  //           .map((participant) => participant.participant_id)
+  //           .includes(localParticipant.participant_id),
+  //     ),
+
+  //     removedParticipantIds: databaseParticipants
+  //       .filter(
+  //         (dbParticipant) =>
+  //           !localParticipants
+  //             .map((localParticipant) => localParticipant.participant_id)
+  //             .includes(dbParticipant.participant_id),
+  //       )
+  //       .map((dbParticipant) => dbParticipant.participant_id),
+  //   };
+
+  //   console.log(
+  //     `new teams: ${eventTeamUpdates.newTeamIdsWithSeeds.map((team) => JSON.stringify(team))}`,
+  //   );
+  //   console.log(
+  //     `removed teams: ${eventTeamUpdates.removedTeamIds.map((team) => JSON.stringify(team))}`,
+  //   );
+  //   console.log(
+  //     `updated teams: ${eventTeamUpdates.updatedTeamIdsWithSeeds.map((team) => JSON.stringify(team))}`,
+  //   );
+
+  //   console.log(
+  //     `added participants: ${eventTeamUpdates.newParticipants.map((playerWithSeed) => JSON.stringify(playerWithSeed))}`,
+  //   );
+
+  //   console.log(
+  //     `updated participants: ${eventTeamUpdates.updatedParticipants.map((playerWithSeed) => JSON.stringify(playerWithSeed))}`,
+  //   );
+
+  //   console.log(
+  //     `removed participants: ${eventTeamUpdates.removedParticipantIds.map((playerId) => JSON.stringify(playerId))}`,
+  //   );
+  // }
 }
