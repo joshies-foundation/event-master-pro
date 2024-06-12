@@ -107,6 +107,13 @@ const gmToolsRoutes: Routes = [
     },
   },
 
+  // betting
+  {
+    path: 'resolve-bets',
+    loadComponent: () => import('./resolve-bets-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+
   // players
   {
     path: 'override-points',

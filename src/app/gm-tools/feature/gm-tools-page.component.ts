@@ -22,6 +22,8 @@ import { RoundPhase, SessionStatus } from '../../shared/util/supabase-helpers';
       <joshies-card headerText="Round" [links]="roundLinks" />
     }
 
+    <joshies-card headerText="Betting" [links]="bettingLinks" />
+
     <joshies-card headerText="Players" [links]="playersLinks" />
 
     <joshies-card headerText="Session" [links]="sessionLinks()" />
@@ -87,6 +89,14 @@ export default class GmToolsPageComponent {
       this.gameStateService.roundPhase() ?? 'undefined'
     ];
   });
+
+  readonly bettingLinks: CardLinkModel[] = [
+    {
+      text: 'Resolve Bets',
+      iconClass: 'pi pi-check bg-green-500',
+      routerLink: './resolve-bets',
+    },
+  ];
 
   readonly playersLinks: CardLinkModel[] = [
     {
