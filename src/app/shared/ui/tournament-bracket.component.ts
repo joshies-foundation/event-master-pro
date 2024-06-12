@@ -74,7 +74,7 @@ export class TournamentBracketComponent {
 
   private readonly eventTeams = computed(() =>
     this.eventService
-      .eventTeamsWithPlayerUserInfo()
+      .eventTeamsWithParticipantInfo()
       ?.filter((eventTeam) => eventTeam.event_id === this.eventId()),
   );
 

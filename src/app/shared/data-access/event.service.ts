@@ -3,12 +3,12 @@ import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '../util/schema';
 import { GameStateService } from './game-state.service';
 import {
+  combineLatestWith,
   map,
   Observable,
   of,
   shareReplay,
   switchMap,
-  withLatestFrom,
 } from 'rxjs';
 import {
   EventModel,
@@ -23,7 +23,7 @@ import {
   Table,
 } from '../util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { PlayerService, PlayerWithUserInfo } from './player.service';
+import { PlayerService } from './player.service';
 
 export interface EventParticipantWithPlayerInfo {
   participant_id: number;
@@ -33,8 +33,8 @@ export interface EventParticipantWithPlayerInfo {
   avatar_url: string;
 }
 
-export interface EventTeamWithPlayerUserInfo extends EventTeamModel {
-  players: PlayerWithUserInfo[] | undefined;
+export interface EventTeamWithParticipantInfo extends EventTeamModel {
+  participants: EventParticipantWithPlayerInfo[] | undefined;
 }
 
 @Injectable({
@@ -107,20 +107,13 @@ export class EventService {
 
   readonly eventTeams = toSignal(this.eventTeams$);
 
-  readonly eventTeamsWithPlayerUserInfo: Signal<
-    EventTeamWithPlayerUserInfo[] | undefined
+  readonly eventTeamsWithParticipantInfo: Signal<
+    EventTeamWithParticipantInfo[] | undefined
   > = computed(() =>
     this.eventTeams()?.map((eventTeam) => ({
       ...eventTeam,
-      players: this.playerService.players()?.filter((player) =>
-        this.eventParticipants()
-          ?.filter(
-            (eventParticipant) => eventParticipant.team_id === eventTeam.id,
-          )
-          .some(
-            (eventParticipant) =>
-              player.player_id === eventParticipant.player_id,
-          ),
+      participants: this.eventParticipantsWithPlayerInfo()?.filter(
+        (eventParticipant) => eventParticipant.team_id === eventTeam.id,
       ),
     })),
   );
@@ -143,7 +136,7 @@ export class EventService {
   readonly eventParticipantsWithPlayerInfo$: Observable<
     EventParticipantWithPlayerInfo[] | null
   > = this.eventParticipants$.pipe(
-    withLatestFrom(this.playerService.players$),
+    combineLatestWith(this.playerService.players$),
     map(([participants, players]) => ({ participants, players })),
     whenAllValuesNotNull(({ participants, players }) =>
       of(
@@ -155,13 +148,14 @@ export class EventService {
           return {
             participant_id: participant.id,
             team_id: participant.team_id,
-            player_id: player.player_id,
+            player_id: participant.player_id,
             display_name: player.display_name,
             avatar_url: player.avatar_url,
           };
         }),
       ),
     ),
+    shareReplay(1),
   );
 
   readonly eventParticipantsWithPlayerInfo: Signal<
