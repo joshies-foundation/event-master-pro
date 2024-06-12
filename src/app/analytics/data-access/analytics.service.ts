@@ -28,6 +28,7 @@ import {
   TransactionModel,
   SessionModel,
   PlayerRollHistory,
+  PlayerSpaceStats,
 } from '../../shared/util/supabase-types';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { addRankingInfoToPlayers } from '../../shared/util/ranking-helpers';
@@ -134,5 +135,15 @@ export class AnalyticsService {
         sessionid: sessionId,
       }),
     ) as Observable<PostgrestResponse<PlayerRollHistory>>;
+  }
+
+  getSpaceStatsForSession(
+    sessionId: SessionModel['id'],
+  ): Observable<PostgrestResponse<PlayerSpaceStats>> {
+    return from(
+      this.supabase.rpc(Function.GetSpaceStatsForSession, {
+        sessionid: sessionId,
+      }),
+    ) as Observable<PostgrestResponse<PlayerSpaceStats>>;
   }
 }

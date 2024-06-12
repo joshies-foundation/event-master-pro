@@ -1087,6 +1087,12 @@ export type Database = {
         };
         Returns: Json[];
       };
+      get_space_stats_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
       log_round_moves: {
         Args: {
           roundnumber: number;

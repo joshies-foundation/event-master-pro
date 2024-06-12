@@ -208,6 +208,14 @@ export interface PlayerRollHistory {
   }[];
 }
 
+export interface PlayerSpaceStats {
+  user_id: UserModel['id'];
+  player_id: PlayerModel['id'];
+  display_name: UserModel['display_name'];
+  avatar_url: UserModel['avatar_url'];
+  space_stats: Partial<Record<GameboardSpaceModel['id'], number>>;
+}
+
 // tables
 export type GameStateModel = Tables<Table.GameState>;
 export type PlayerModel = Tables<Table.Player>;

@@ -3,6 +3,7 @@ import { lifetimeStatsResolver } from '../data-access/lifetime-stats.resolver';
 import { previousSessionsResolver } from '../data-access/previous-sessions.resolver';
 import { playerRoundScoresResolver } from '../data-access/player-round-scores.resolver';
 import { rollHistoryResolver } from '../data-access/roll-history.resolver';
+import { spaceStatsResolver } from '../data-access/space-stats.resolver';
 
 const analyticsRoutes: Routes = [
   {
@@ -49,6 +50,14 @@ const analyticsRoutes: Routes = [
     loadComponent: () => import('./roll-history-page.component'),
     resolve: {
       rollHistoryQueryResult: rollHistoryResolver,
+    },
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'space-stats',
+    loadComponent: () => import('./space-stats-page.component'),
+    resolve: {
+      spaceStatsQueryResult: spaceStatsResolver,
     },
     data: { pageAnimationLayer: 1 },
   },
