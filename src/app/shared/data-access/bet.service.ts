@@ -6,11 +6,13 @@ import {
   realtimeUpdatesFromTable,
   Table,
   Function,
+  BetStatus,
 } from '../util/supabase-helpers';
-import { map, Observable, switchMap, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay, combineLatest } from 'rxjs';
 import { GameStateService } from './game-state.service';
 import { PlayerService } from './player.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { whenNotNull } from '../util/rxjs-helpers';
 
 @Injectable({
   providedIn: 'root',
@@ -20,14 +22,35 @@ export class BetService {
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
 
-  readonly bets$: Observable<BetModel[]> =
-    this.gameStateService.sessionId$.pipe(
-      switchMap((sessionId) =>
-        realtimeUpdatesFromTable(
-          this.supabase,
-          Table.Bet,
-          `session_id=eq.${sessionId}`,
-        ).pipe(map((bets) => bets.sort((a, b) => a.id - b.id))),
+  readonly bets$: Observable<BetModel[] | null> =
+    // get user player id
+    this.playerService.userPlayer$.pipe(
+      whenNotNull((player) =>
+        // get both requester bets and opponent bets
+        combineLatest({
+          requesterBets: realtimeUpdatesFromTable(
+            this.supabase,
+            Table.Bet,
+            `requester_player_id=eq.${player.player_id}`,
+          ),
+          opponentBets: realtimeUpdatesFromTable(
+            this.supabase,
+            Table.Bet,
+            `opponent_player_id=eq.${player.player_id}`,
+          ),
+        }).pipe(
+          map(({ requesterBets, opponentBets }) =>
+            requesterBets
+              // concatenate the 2 together
+              .concat(opponentBets)
+              // sort by date
+              .sort(
+                (a, b) =>
+                  new Date(a.created_at).getTime() -
+                  new Date(b.created_at).getTime(),
+              ),
+          ),
+        ),
       ),
       shareReplay(1),
     );
@@ -47,7 +70,7 @@ export class BetService {
   async rejectBet(id: number): Promise<PostgrestSingleResponse<BetModel[]>> {
     return this.supabase
       .from(Table.Bet)
-      .update({ status: 'rejected' })
+      .update({ status: BetStatus.Rejected })
       .eq('id', id)
       .select();
   }

@@ -12,13 +12,12 @@ import { TableModule } from 'primeng/table';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import {
-  BetStatus,
-  showMessageOnError,
-} from '../../shared/util/supabase-helpers';
+import { BetStatus } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { BetModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-place-bet-choose-player-page',
@@ -41,7 +40,7 @@ import { MessageService } from 'primeng/api';
       />
     </joshies-page-header>
 
-    @if (displayBets(); as bets) {
+    @if (displayBets()?.length && displayBets(); as bets) {
       <p-table
         [value]="bets"
         [defaultSortOrder]="-1"
@@ -82,6 +81,7 @@ import { MessageService } from 'primeng/api';
               >
                 <p-button
                   label="Accept Bet"
+                  severity="success"
                   icon="pi pi-check"
                   styleClass="w-full"
                   (onClick)="acceptBet(bet.id)"
@@ -93,6 +93,7 @@ import { MessageService } from 'primeng/api';
                 />
                 <p-button
                   label="Reject Bet"
+                  severity="danger"
                   icon="pi pi-times"
                   styleClass="w-full"
                   (onClick)="rejectBet(bet.id)"
@@ -103,6 +104,8 @@ import { MessageService } from 'primeng/api';
           </tr>
         </ng-template>
       </p-table>
+    } @else {
+      <p class="text-500 font-italic text-center mt-5">No pending bets</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -111,6 +114,7 @@ export default class PlaceBetChoosePlayerPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly betService = inject(BetService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly userPlayer = this.playerService.userPlayer;
   readonly bets = this.betService.bets;
@@ -156,21 +160,27 @@ export default class PlaceBetChoosePlayerPageComponent {
     );
   });
 
-  async acceptBet(id: number) {
-    this.submitting.set(true);
-    await showMessageOnError(
-      this.betService.acceptBet(id),
-      this.messageService,
-    );
-    this.submitting.set(false);
+  async acceptBet(betId: BetModel['id']) {
+    confirmBackendAction({
+      action: async () => this.betService.acceptBet(betId),
+      confirmationMessageText: 'Are you sure you want to accept this bet?',
+      successMessageText: 'Bet accepted',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
   }
 
-  async rejectBet(id: number) {
-    this.submitting.set(true);
-    await showMessageOnError(
-      this.betService.rejectBet(id),
-      this.messageService,
-    );
-    this.submitting.set(false);
+  async rejectBet(betId: BetModel['id']) {
+    confirmBackendAction({
+      action: async () => this.betService.rejectBet(betId),
+      confirmationMessageText: 'Are you sure you want to reject this bet?',
+      successMessageText: 'Bet rejected',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
   }
 }
