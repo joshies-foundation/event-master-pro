@@ -38,6 +38,8 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
       />
     </joshies-page-header>
 
+    <p class="mt-5">Dice rolls and spaces landed on each turn</p>
+
     @if (rollHistory(); as rollHistory) {
       <p-table
         [value]="rollHistory"
@@ -46,7 +48,6 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
         [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
-        styleClass="mt-5"
       >
         <ng-template pTemplate="header">
           <tr>

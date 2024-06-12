@@ -39,6 +39,8 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
       />
     </joshies-page-header>
 
+    <p class="mt-5">How many times each player landed on each space</p>
+
     @if (spaceStats(); as spaceStats) {
       <!-- Lifetime Rankings Table -->
       <p-table
@@ -48,7 +50,6 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
         [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
-        styleClass="mt-5"
       >
         <ng-template pTemplate="header">
           <tr>

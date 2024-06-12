@@ -11,7 +11,6 @@ import { DecimalPipe } from '@angular/common';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { TableModule } from 'primeng/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { RouterLink } from '@angular/router';
 import { DuelHistoryRecord } from '../../shared/util/supabase-types';
 import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.component';
 import { PostgrestResponse } from '@supabase/supabase-js';
@@ -29,7 +28,6 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
     StronglyTypedTableRowDirective,
     DuelTableAvatarsComponent,
     DuelHistoryRecordToDuelPipe,
-    RouterLink,
   ],
   template: `
     <joshies-page-header headerText="Duel History" alwaysSmall>
@@ -42,13 +40,23 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
 
     @if (duelHistory(); as duels) {
       @if (duels.length) {
-        <p-table [value]="duels" [rowTrackBy]="trackById" styleClass="mt-5">
+        <p-table
+          [value]="duels"
+          [rowTrackBy]="trackById"
+          sortField="round_number"
+          styleClass="mt-5"
+        >
           <ng-template pTemplate="header">
             <tr>
-              <th>Turn</th>
+              <th pSortableColumn="round_number">
+                Turn
+                <p-sortIcon field="round_number" />
+              </th>
               <th>Players</th>
               <th>Game</th>
-              <th class="text-right">Points</th>
+              <th class="text-right" pSortableColumn="points_gained_by_winner">
+                Points <p-sortIcon field="points_gained_by_winner" />
+              </th>
             </tr>
           </ng-template>
 
@@ -57,7 +65,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
             let-duel
             [joshiesStronglyTypedTableRow]="duels"
           >
-            <tr [routerLink]="[duel.id]">
+            <tr>
               <td class="text-center">{{ duel.round_number | number }}</td>
               <td>
                 <joshies-duel-table-avatars
@@ -67,12 +75,16 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
               <td class="text-sm">
                 {{ duel.game_name }}
               </td>
-              <td
-                class="text-right"
-                [innerHTML]="
-                  duel.points_gained_by_winner | numberWithSignAndColor
-                "
-              ></td>
+              <td class="text-right">
+                <div
+                  [innerHTML]="
+                    duel.points_gained_by_winner | numberWithSignAndColor
+                  "
+                ></div>
+                <div class="text-sm text-500 mt-1">
+                  ({{ duel.wager_percentage }}%)
+                </div>
+              </td>
             </tr>
           </ng-template>
         </p-table>
