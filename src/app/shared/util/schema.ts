@@ -1070,6 +1070,24 @@ export type Database = {
         };
         Returns: Record<string, unknown>[];
       };
+      get_duel_history_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
+      get_player_duel_stats_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
+      get_player_duels_stats_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
       get_player_round_scores_from_session: {
         Args: {
           sessionid: number;
@@ -1091,7 +1109,7 @@ export type Database = {
         Args: {
           sessionid: number;
         };
-        Returns: Json[];
+        Returns: Record<string, unknown>[];
       };
       log_round_moves: {
         Args: {

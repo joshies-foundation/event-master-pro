@@ -24,6 +24,9 @@ import { PlayerService } from '../../shared/data-access/player.service';
     <!-- Gameboard -->
     <joshies-card headerText="Gameboard" [links]="gameboardLinks" />
 
+    <!-- Duels -->
+    <joshies-card headerText="Duels" [links]="duelsLinks" />
+
     <!-- Previous Session -->
     <joshies-card
       headerText="Previous Sessions"
@@ -57,14 +60,25 @@ export default class AnalyticsTabComponent {
     {
       iconClass: 'pi pi-history bg-orange-500',
       text: 'Roll History',
-      subtext: 'Distance traveled and spaces landed',
       routerLink: './roll-history',
     },
     {
       iconClass: 'pi ci-space-entry bg-gray-500',
       text: 'Space Stats',
-      subtext: 'Times each player landed on each space',
       routerLink: './space-stats',
+    },
+  ];
+
+  readonly duelsLinks: CardLinkModel[] = [
+    {
+      iconClass: 'pi pi-history bg-blue-500',
+      text: 'Duel History',
+      routerLink: './duel-history',
+    },
+    {
+      iconClass: 'pi pi-list-check bg-red-500',
+      text: 'Player Duel Stats',
+      routerLink: './player-duel-stats',
     },
   ];
 

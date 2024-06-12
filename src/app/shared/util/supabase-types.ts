@@ -216,6 +216,31 @@ export interface PlayerSpaceStats {
   space_stats: Partial<Record<GameboardSpaceModel['id'], number>>;
 }
 
+export interface DuelHistoryRecord {
+  id: DuelModel['id'];
+  round_number: DuelModel['round_number'];
+  challenger_user_id: UserModel['id'];
+  challenger_display_name: UserModel['display_name'];
+  challenger_avatar_url: UserModel['avatar_url'];
+  opponent_user_id: UserModel['id'];
+  opponent_display_name: UserModel['display_name'];
+  opponent_avatar_url: UserModel['avatar_url'];
+  status: DuelStatus;
+  game_name: string;
+  wager_percentage: number;
+  points_gained_by_winner: number;
+}
+
+export interface PlayerDuelStats {
+  user_id: UserModel['id'];
+  display_name: UserModel['display_name'];
+  avatar_url: UserModel['avatar_url'];
+  num_duels_participated: number;
+  num_duels_won: number;
+  total_points_won: number;
+  total_points_lost: number;
+}
+
 // tables
 export type GameStateModel = Tables<Table.GameState>;
 export type PlayerModel = Tables<Table.Player>;
