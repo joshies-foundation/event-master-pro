@@ -99,17 +99,16 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 })
 export default class SpaceStatsPageComponent {
   private readonly gameboardService = inject(GameboardService);
+  private readonly authService = inject(AuthService);
 
   readonly spaceStatsQueryResult =
     input.required<PostgrestResponse<PlayerSpaceStats>>(); // route resolver param
 
-  readonly spaceStats = computed(() => this.spaceStatsQueryResult().data);
-
   readonly gameboardSpaces = this.gameboardService.gameboardSpaces;
 
-  protected readonly trackByPlayerId = trackByPlayerId;
-
-  private readonly authService = inject(AuthService);
+  readonly spaceStats = computed(() => this.spaceStatsQueryResult().data);
 
   readonly userId = computed(() => this.authService.user()?.id);
+
+  protected readonly trackByPlayerId = trackByPlayerId;
 }

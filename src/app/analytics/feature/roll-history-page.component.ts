@@ -39,7 +39,6 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
     </joshies-page-header>
 
     @if (rollHistory(); as rollHistory) {
-      <!-- Lifetime Rankings Table -->
       <p-table
         [value]="rollHistory"
         [defaultSortOrder]="-1"
@@ -108,6 +107,8 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RollHistoryPageComponent {
+  private readonly authService = inject(AuthService);
+
   readonly rollHistoryQueryResult =
     input.required<PostgrestResponse<PlayerRollHistory>>(); // route resolver param
 
@@ -117,9 +118,7 @@ export default class RollHistoryPageComponent {
     this.rollHistory()?.[0]?.gameboard_moves.map((move, index) => index),
   );
 
-  protected readonly trackByPlayerId = trackByPlayerId;
-
-  private readonly authService = inject(AuthService);
-
   readonly userId = computed(() => this.authService.user()?.id);
+
+  protected readonly trackByPlayerId = trackByPlayerId;
 }
