@@ -194,6 +194,28 @@ export type DuelModel = Omit<Tables<Table.Duel>, 'status'> & {
   opponent: PlayerWithUserAndRankInfo | undefined;
 };
 
+export interface PlayerRollHistory {
+  user_id: UserModel['id'];
+  player_id: PlayerModel['id'];
+  display_name: UserModel['display_name'];
+  avatar_url: UserModel['avatar_url'];
+  gameboard_moves: {
+    distance: GameboardMoveModel['distance_traveled'] | null;
+    gameboard_space: {
+      color: GameboardSpaceModel['color'] | null;
+      icon_class: GameboardSpaceModel['icon_class'] | null;
+    };
+  }[];
+}
+
+export interface PlayerSpaceStats {
+  user_id: UserModel['id'];
+  player_id: PlayerModel['id'];
+  display_name: UserModel['display_name'];
+  avatar_url: UserModel['avatar_url'];
+  space_stats: Partial<Record<GameboardSpaceModel['id'], number>>;
+}
+
 // tables
 export type GameStateModel = Tables<Table.GameState>;
 export type PlayerModel = Tables<Table.Player>;
@@ -211,6 +233,7 @@ export type EventParticipantModel = Tables<Table.EventParticipant>;
 export type EventTeamModel = Tables<Table.EventTeam>;
 export type EventTeamRoundScoreModel = Tables<Table.EventTeamRoundScore>;
 export type BetModel = Tables<Table.Bet>;
+export type GameboardMoveModel = Tables<Table.GameboardMove>;
 
 // views
 export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;
