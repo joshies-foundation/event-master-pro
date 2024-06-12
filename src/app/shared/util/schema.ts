@@ -165,7 +165,7 @@ export type Database = {
             foreignKeyName: 'chaos_space_event_template_id_fkey';
             columns: ['template_id'];
             isOneToOne: false;
-            referencedRelation: 'special_space_event_template';
+            referencedRelation: 'chaos_space_event_template';
             referencedColumns: ['id'];
           },
         ];
@@ -1070,6 +1070,18 @@ export type Database = {
         };
         Returns: Record<string, unknown>[];
       };
+      get_duel_history_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
+      get_player_duel_stats_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
       get_player_round_scores_from_session: {
         Args: {
           sessionid: number;
@@ -1080,6 +1092,18 @@ export type Database = {
           avatar_url: string;
           scores: number[];
         }[];
+      };
+      get_roll_history_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
+      get_space_stats_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Record<string, unknown>[];
       };
       log_round_moves: {
         Args: {

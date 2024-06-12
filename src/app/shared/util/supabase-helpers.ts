@@ -52,6 +52,10 @@ export enum Function {
   SubmitDuelResults = 'submit_duel_results',
   DeleteGameboardSpace = 'delete_gameboard_space',
   SubmitBetAccepted = 'submit_bet_accepted',
+  GetRollHistoryForSession = 'get_roll_history_for_session',
+  GetSpaceStatsForSession = 'get_space_stats_for_session',
+  GetDuelHistoryForSession = 'get_duel_history_for_session',
+  GetPlayerDuelStatsForSession = 'get_player_duel_stats_for_session',
 }
 
 export enum StorageBucket {

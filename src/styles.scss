@@ -203,6 +203,10 @@ $sizeVariants: (
   background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
 }
 
+.bg-highlight {
+  background-color: var(--yellow-200) !important;
+}
+
 .text-green {
   color: var(--green-700);
 }
@@ -221,7 +225,7 @@ $sizeVariants: (
   }
 
   .bg-highlight {
-    background-color: var(--yellow-900);
+    background-color: var(--yellow-900) !important;
   }
 
   .text-green {

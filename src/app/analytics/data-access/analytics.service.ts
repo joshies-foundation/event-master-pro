@@ -26,6 +26,11 @@ import {
   LifetimeUserStatsModel,
   GetPlayerRoundScoreFunctionReturnType,
   TransactionModel,
+  SessionModel,
+  PlayerRollHistory,
+  PlayerSpaceStats,
+  PlayerDuelStats,
+  DuelHistoryRecord,
 } from '../../shared/util/supabase-types';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { addRankingInfoToPlayers } from '../../shared/util/ranking-helpers';
@@ -122,5 +127,45 @@ export class AnalyticsService {
         sessionid: sessionId,
       }),
     );
+  }
+
+  getRollHistoryForSession(
+    sessionId: SessionModel['id'],
+  ): Observable<PostgrestResponse<PlayerRollHistory>> {
+    return from(
+      this.supabase.rpc(Function.GetRollHistoryForSession, {
+        sessionid: sessionId,
+      }),
+    ) as Observable<PostgrestResponse<PlayerRollHistory>>;
+  }
+
+  getSpaceStatsForSession(
+    sessionId: SessionModel['id'],
+  ): Observable<PostgrestResponse<PlayerSpaceStats>> {
+    return from(
+      this.supabase.rpc(Function.GetSpaceStatsForSession, {
+        sessionid: sessionId,
+      }),
+    ) as Observable<PostgrestResponse<PlayerSpaceStats>>;
+  }
+
+  getDuelHistoryForSession(
+    sessionId: SessionModel['id'],
+  ): Observable<PostgrestResponse<DuelHistoryRecord>> {
+    return from(
+      this.supabase.rpc(Function.GetDuelHistoryForSession, {
+        sessionid: sessionId,
+      }),
+    ) as Observable<PostgrestResponse<DuelHistoryRecord>>;
+  }
+
+  getPlayerDuelStatsForSession(
+    sessionId: SessionModel['id'],
+  ): Observable<PostgrestResponse<PlayerDuelStats>> {
+    return from(
+      this.supabase.rpc(Function.GetPlayerDuelStatsForSession, {
+        sessionid: sessionId,
+      }),
+    ) as Observable<PostgrestResponse<PlayerDuelStats>>;
   }
 }
