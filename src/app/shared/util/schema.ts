@@ -1082,12 +1082,6 @@ export type Database = {
         };
         Returns: Json[];
       };
-      get_player_duels_stats_for_session: {
-        Args: {
-          sessionid: number;
-        };
-        Returns: Json[];
-      };
       get_player_round_scores_from_session: {
         Args: {
           sessionid: number;
