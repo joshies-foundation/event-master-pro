@@ -51,6 +51,7 @@ export enum Function {
   SubmitSpecialSpaceEventScore = 'submit_special_space_event_score',
   SubmitDuelResults = 'submit_duel_results',
   DeleteGameboardSpace = 'delete_gameboard_space',
+  SubmitBetAccepted = 'submit_bet_accepted',
   GetRollHistoryForSession = 'get_roll_history_for_session',
   GetSpaceStatsForSession = 'get_space_stats_for_session',
   GetDuelHistoryForSession = 'get_duel_history_for_session',
