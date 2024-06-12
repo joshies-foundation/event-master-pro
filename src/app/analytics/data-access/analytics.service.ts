@@ -26,6 +26,8 @@ import {
   LifetimeUserStatsModel,
   GetPlayerRoundScoreFunctionReturnType,
   TransactionModel,
+  SessionModel,
+  PlayerRollHistory,
 } from '../../shared/util/supabase-types';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { addRankingInfoToPlayers } from '../../shared/util/ranking-helpers';
@@ -122,5 +124,15 @@ export class AnalyticsService {
         sessionid: sessionId,
       }),
     );
+  }
+
+  getRollHistoryForSession(
+    sessionId: SessionModel['id'],
+  ): Observable<PostgrestResponse<PlayerRollHistory>> {
+    return from(
+      this.supabase.rpc(Function.GetRollHistoryForSession, {
+        sessionid: sessionId,
+      }),
+    ) as Observable<PostgrestResponse<PlayerRollHistory>>;
   }
 }

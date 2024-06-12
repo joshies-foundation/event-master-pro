@@ -18,8 +18,11 @@ import { PlayerService } from '../../shared/data-access/player.service';
     <!-- Header -->
     <joshies-page-header headerText="Analytics" />
 
-    <!-- This Session -->
-    <joshies-card headerText="This Session" [links]="thisSessionLinks()" />
+    <!-- Points -->
+    <joshies-card headerText="Points" [links]="pointsLinks()" />
+
+    <!-- Gameboard -->
+    <joshies-card headerText="Gameboard" [links]="gameboardLinks" />
 
     <!-- Previous Session -->
     <joshies-card
@@ -32,7 +35,7 @@ import { PlayerService } from '../../shared/data-access/player.service';
 export default class AnalyticsTabComponent {
   private readonly playerService = inject(PlayerService);
 
-  readonly thisSessionLinks: Signal<CardLinkModel[]> = computed(() => [
+  readonly pointsLinks: Signal<CardLinkModel[]> = computed(() => [
     {
       iconClass: 'pi pi-chart-line bg-blue-500',
       text: 'Compare Points Over Time',
@@ -42,22 +45,32 @@ export default class AnalyticsTabComponent {
       ? [
           {
             iconClass: 'pi pi-list bg-green-500',
-            text: 'Point Transactions',
+            text: 'Transactions',
             subtext: "Every time you've gained or lost points",
             routerLink: './transactions',
           },
         ]
       : []),
-    {
-      iconClass: 'pi pi-trophy bg-yellow-500',
-      text: 'Current Rankings',
-      routerLink: './current-rankings',
-    },
   ]);
+
+  readonly gameboardLinks: CardLinkModel[] = [
+    {
+      iconClass: 'pi pi-history bg-orange-500',
+      text: 'Roll History',
+      subtext: 'Distance traveled and spaces landed',
+      routerLink: './roll-history',
+    },
+    {
+      iconClass: 'pi ci-space-entry bg-gray-500',
+      text: 'Space Stats',
+      subtext: 'Times each player landed on each space',
+      routerLink: './space-stats',
+    },
+  ];
 
   readonly previousSessionsLinks: CardLinkModel[] = [
     {
-      iconClass: 'pi pi-trophy bg-orange-500',
+      iconClass: 'pi pi-trophy bg-yellow-500',
       text: 'Previous Session Rankings',
       routerLink: './previous-rankings',
     },

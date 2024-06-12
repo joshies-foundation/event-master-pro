@@ -165,7 +165,7 @@ export type Database = {
             foreignKeyName: 'chaos_space_event_template_id_fkey';
             columns: ['template_id'];
             isOneToOne: false;
-            referencedRelation: 'special_space_event_template';
+            referencedRelation: 'chaos_space_event_template';
             referencedColumns: ['id'];
           },
         ];
@@ -1080,6 +1080,12 @@ export type Database = {
           avatar_url: string;
           scores: number[];
         }[];
+      };
+      get_roll_history_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
       };
       log_round_moves: {
         Args: {
