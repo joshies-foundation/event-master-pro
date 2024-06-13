@@ -57,7 +57,18 @@ enum TeamIds {
 
         <!-- Save Changes Button-->
         @if (unsavedChangesExist()) {
-          <p-button [text]="true" (onClick)="saveChanges()">
+          <p-button
+            [text]="true"
+            (onClick)="
+              saveChanges(
+                this.localSortedEventTeams(),
+                this.databaseEventTeams(),
+                this.localEventParticipants(),
+                this.databaseEventParticipants(),
+                this.eventId()
+              )
+            "
+          >
             <i class="pi pi-save text-xl text-primary"></i>
           </p-button>
         }
@@ -243,11 +254,10 @@ export default class EditEventTeamsPageComponent {
         ?.sort((a, b) => (a.seed ?? 0) - (b.seed ?? 0)),
   );
 
-  private readonly localSortedEventTeams: WritableSignal<
-    EventTeamModel[] | undefined
-  > = signal(structuredClone(this.databaseEventTeams()));
+  readonly localSortedEventTeams: WritableSignal<EventTeamModel[] | undefined> =
+    signal(structuredClone(this.databaseEventTeams()));
 
-  private readonly databaseEventParticipants: Signal<
+  readonly databaseEventParticipants: Signal<
     EventParticipantWithPlayerInfo[] | undefined
   > = computed(() =>
     this.eventService
@@ -259,7 +269,7 @@ export default class EditEventTeamsPageComponent {
       ),
   );
 
-  private readonly localEventParticipants: WritableSignal<
+  readonly localEventParticipants: WritableSignal<
     EventParticipantWithPlayerInfo[] | undefined
   > = signal([
     ...(this.players()
@@ -376,57 +386,14 @@ export default class EditEventTeamsPageComponent {
       this.localSortedEventTeams()?.length !==
         this.databaseEventTeams()?.length ||
       this.localSortedEventTeams()?.some(
-        (localEventTeam, index) =>
-          index !==
-          this.databaseEventTeams()?.findIndex(
-            (dbEventTeam) => dbEventTeam.id === localEventTeam.id,
-          ),
+        (localEventTeam, index) => localEventTeam.seed !== index + 1,
       )
     ) {
       return true;
     }
 
     return false;
-    // team has been removed
-    // team has changed positions
-    // new team
   });
-
-  // readonly unsavedChangesExist = computed(() => {
-  //   // teams are reordered
-  //   if (
-  //     this.localSortedEventTeams()?.some(
-  //       (eventTeam, index) => eventTeam.seed !== index + 1,
-  //     )
-  //   ) {
-  //     return true;
-  //   }
-
-  //   // team has been removed or participant has changed teams
-  //   if (
-  //     this.databaseEventTeams()?.some((dbEventTeam) => {
-  //       const localEventTeamParticipants = this.localSortedEventTeams()?.find(
-  //         (localEventTeam) => localEventTeam.id === dbEventTeam.id,
-  //       )?.participants;
-
-  //       return (
-  //         localEventTeamParticipants?.length !==
-  //           dbEventTeam.participants?.length ||
-  //         !dbEventTeam.participants?.every((dbParticipant) =>
-  //           localEventTeamParticipants?.some(
-  //             (localParticipant) =>
-  //               dbParticipant.participant_id ===
-  //               localParticipant.participant_id,
-  //           ),
-  //         )
-  //       );
-  //     })
-  //   ) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // });
 
   private readonly nextAvailableTeamId = computed(() =>
     this.localSortedEventTeams()?.length
@@ -439,7 +406,6 @@ export default class EditEventTeamsPageComponent {
   onEventTeamDrop(
     drop: CdkDragDrop<EventTeamWithParticipantInfo[] | undefined>,
   ): void {
-    console.log('team dropped');
     this.localSortedEventTeams.update((eventTeams) => {
       moveItemInArray(eventTeams!, drop.previousIndex, drop.currentIndex);
       return [...eventTeams!];
@@ -496,110 +462,130 @@ export default class EditEventTeamsPageComponent {
     });
   }
 
-  saveChanges() {
-    console.dir(this.localSortedEventTeams());
-    console.dir(this.databaseEventTeams());
-    console.log('saving changes...');
+  saveChanges(
+    localSortedEventTeams: EventTeamModel[] | undefined,
+    databaseEventTeams: EventTeamModel[] | undefined,
+    localEventParticipants: EventParticipantWithPlayerInfo[] | undefined,
+    databaseEventParticipants: EventParticipantWithPlayerInfo[] | undefined,
+    eventId: number,
+  ) {
+    const newEventTeams = localSortedEventTeams?.filter(
+      (localEventTeam) =>
+        !databaseEventTeams?.some(
+          (dbEventTeam) => dbEventTeam.id === localEventTeam.id,
+        ),
+    );
+
+    const newEventParticipants = localEventParticipants?.filter(
+      (localParticipant) =>
+        !databaseEventParticipants?.some(
+          (dbParticipant) =>
+            dbParticipant.participant_id === localParticipant.participant_id,
+        ) && localParticipant.team_id !== TeamIds.UnassignedTeam,
+    );
+
+    const eventTeamUpdates = {
+      newEventTeams: newEventTeams?.map((newEventTeam) => ({
+        id: newEventTeam.id,
+        event_id: eventId,
+        seed:
+          localSortedEventTeams!.findIndex(
+            (localEventTeam) => localEventTeam.id === newEventTeam.id,
+          ) + 1,
+      })),
+
+      updatedTeams: localSortedEventTeams
+        ?.map((eventTeam, index) => ({
+          id: eventTeam.id,
+          seed: index + 1,
+        }))
+        .filter(
+          (localEventTeam) =>
+            localEventTeam.seed !==
+              databaseEventTeams?.find(
+                (dbEventTeam) => dbEventTeam.id === localEventTeam.id,
+              )?.seed &&
+            !newEventTeams?.some(
+              (newEventTeam) => newEventTeam.id === localEventTeam.id,
+            ),
+        ),
+
+      removedTeams: databaseEventTeams
+        ?.filter(
+          (dbEventTeam) =>
+            !localSortedEventTeams?.some(
+              (localEventTeam) => localEventTeam.id === dbEventTeam.id,
+            ),
+        )
+        .map((eventTeam) => ({ id: eventTeam.id })),
+
+      newParticipants: newEventParticipants?.map((eventParticipant) => ({
+        team_id: eventParticipant.team_id,
+        player_id: eventParticipant.player_id,
+      })),
+
+      updatedParticipants: localEventParticipants
+        ?.filter(
+          (localEventParticipant) =>
+            localEventParticipant.team_id !==
+              databaseEventParticipants?.find(
+                (dbEventParticipant) =>
+                  dbEventParticipant.participant_id ===
+                  localEventParticipant.participant_id,
+              )?.team_id &&
+            !newEventParticipants?.some(
+              (newEventParticipant) =>
+                newEventParticipant.participant_id ===
+                localEventParticipant.participant_id,
+            ) &&
+            localEventParticipant.team_id !== TeamIds.UnassignedTeam,
+        )
+        .map((eventParticipant) => ({
+          team_id: eventParticipant.team_id,
+          player_id: eventParticipant.player_id,
+        })),
+
+      removedParticipants: databaseEventParticipants
+        ?.filter(
+          (dbEventParticipant) =>
+            !localEventParticipants
+              ?.filter(
+                (localEventParticipant) =>
+                  localEventParticipant.team_id !== TeamIds.UnassignedTeam,
+              )
+              .some(
+                (localEventParticipant) =>
+                  localEventParticipant.participant_id ===
+                  dbEventParticipant.participant_id,
+              ),
+        )
+        .map((eventParticipant) => ({ id: eventParticipant.participant_id })),
+    };
+
+    console.log(JSON.stringify(eventTeamUpdates));
+
+    console.log(
+      `new teams: ${eventTeamUpdates.newEventTeams?.map((team) => JSON.stringify(team))}`,
+    );
+
+    console.log(
+      `removed teams: ${eventTeamUpdates.removedTeams?.map((team) => JSON.stringify(team))}`,
+    );
+
+    console.log(
+      `updated teams: ${eventTeamUpdates.updatedTeams?.map((team) => JSON.stringify(team))}`,
+    );
+
+    console.log(
+      `added participants: ${eventTeamUpdates.newParticipants?.map((participant) => JSON.stringify(participant))}`,
+    );
+
+    console.log(
+      `updated participants: ${eventTeamUpdates.updatedParticipants?.map((participant) => JSON.stringify(participant))}`,
+    );
+
+    console.log(
+      `removed participants: ${eventTeamUpdates.removedParticipants?.map((participant) => JSON.stringify(participant))}`,
+    );
   }
-
-  // saveChanges() {
-  //   const newTeamIdsWithSeeds = this.localSortedEventTeams()
-  //     .map((localEventTeam, index) => ({
-  //       id: localEventTeam.id,
-  //       seed: index + 1,
-  //     }))
-  //     .filter(
-  //       (localEventTeam) =>
-  //         !this.databaseEventTeams()
-  //           .map((dbEventTeam) => dbEventTeam.id)
-  //           .includes(localEventTeam.id),
-  //     );
-
-  //   const databaseParticipants = this.databaseEventTeams().reduce(
-  //     (prev, eventTeam) => [...prev, ...eventTeam.participants!],
-  //     [] as Partial<EventParticipantWithPlayerInfo>[],
-  //   );
-
-  //   const localParticipants = this.localSortedEventTeams().reduce(
-  //     (prev, eventTeam) => [...prev, ...eventTeam.participants!],
-  //     [] as Partial<EventParticipantWithPlayerInfo>[],
-  //   );
-
-  //   const newParticipants = localParticipants.filter(
-  //     (localParticipant) =>
-  //       !databaseParticipants
-  //         .map((dbParticipant) => dbParticipant.participant_id)
-  //         .includes(localParticipant.participant_id),
-  //   );
-
-  //   const eventTeamUpdates = {
-  //     newTeamIdsWithSeeds: newTeamIdsWithSeeds,
-
-  //     updatedTeamIdsWithSeeds: this.localSortedEventTeams().reduce(
-  //       (prev, eventTeam, index) => [
-  //         ...prev,
-  //         ...(eventTeam.seed !== index + 1 &&
-  //         !newTeamIdsWithSeeds.some(
-  //           (newEventTeam) => newEventTeam.id === eventTeam.id,
-  //         )
-  //           ? [{ id: eventTeam.id!, seed: index + 1 }]
-  //           : []),
-  //       ],
-  //       [] as { id: number; seed: number }[],
-  //     ),
-
-  //     removedTeamIds: this.databaseEventTeams()
-  //       .map((dbEventTeam) => dbEventTeam.id)
-  //       .filter(
-  //         (dbEventTeamId) =>
-  //           !this.localSortedEventTeams()
-  //             .map((localEventTeam) => localEventTeam.id)
-  //             .includes(dbEventTeamId),
-  //       ),
-
-  //     newParticipants: newParticipants,
-
-  //     updatedParticipants: localParticipants.filter(
-  //       (localParticipant) =>
-  //         databaseParticipants.find(
-  //           (dbParticipant) =>
-  //             dbParticipant.participant_id === localParticipant.participant_id,
-  //         )?.team_id !== localParticipant.team_id &&
-  //         !newParticipants
-  //           .map((participant) => participant.participant_id)
-  //           .includes(localParticipant.participant_id),
-  //     ),
-
-  //     removedParticipantIds: databaseParticipants
-  //       .filter(
-  //         (dbParticipant) =>
-  //           !localParticipants
-  //             .map((localParticipant) => localParticipant.participant_id)
-  //             .includes(dbParticipant.participant_id),
-  //       )
-  //       .map((dbParticipant) => dbParticipant.participant_id),
-  //   };
-
-  //   console.log(
-  //     `new teams: ${eventTeamUpdates.newTeamIdsWithSeeds.map((team) => JSON.stringify(team))}`,
-  //   );
-  //   console.log(
-  //     `removed teams: ${eventTeamUpdates.removedTeamIds.map((team) => JSON.stringify(team))}`,
-  //   );
-  //   console.log(
-  //     `updated teams: ${eventTeamUpdates.updatedTeamIdsWithSeeds.map((team) => JSON.stringify(team))}`,
-  //   );
-
-  //   console.log(
-  //     `added participants: ${eventTeamUpdates.newParticipants.map((playerWithSeed) => JSON.stringify(playerWithSeed))}`,
-  //   );
-
-  //   console.log(
-  //     `updated participants: ${eventTeamUpdates.updatedParticipants.map((playerWithSeed) => JSON.stringify(playerWithSeed))}`,
-  //   );
-
-  //   console.log(
-  //     `removed participants: ${eventTeamUpdates.removedParticipantIds.map((playerId) => JSON.stringify(playerId))}`,
-  //   );
-  // }
 }
