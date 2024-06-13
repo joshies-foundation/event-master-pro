@@ -12,14 +12,12 @@ import { TableModule } from 'primeng/table';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import {
-  BetStatus,
-  showMessageOnError,
-} from '../../shared/util/supabase-helpers';
+import { BetStatus } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { BetModel } from '../../shared/util/supabase-types';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 
 @Component({
   selector: 'joshies-resolve-bets-page',
@@ -65,15 +63,8 @@ import { BetModel } from '../../shared/util/supabase-types';
             <!-- Bet Terms -->
             <td>
               <div class="flex flex-column gap-2 -py-2">
-                <div>
-                  {{ bet.requesterName }} wagers:
-                  {{ bet.requesterWager }}
-                </div>
-                <div>
-                  {{ bet.opponentName }} wagers:
-                  {{ bet.opponentWager }}
-                </div>
-                <div>{{ bet.description }}</div>
+                {{ bet.requesterName }} bets {{ bet.opponentName }} that
+                {{ bet.description }}
               </div>
             </td>
             <!-- Status Buttons -->
@@ -86,7 +77,7 @@ import { BetModel } from '../../shared/util/supabase-types';
                   severity="success"
                   icon="pi pi-check"
                   styleClass="w-full"
-                  (onClick)="submitRequesterWins(bet.id)"
+                  (onClick)="submitRequesterWins(bet.id, bet.requesterName)"
                   [hidden]="bet.status === betStatus.PendingAcceptance"
                   [loading]="submitting()"
                 />
@@ -95,7 +86,7 @@ import { BetModel } from '../../shared/util/supabase-types';
                   severity="success"
                   icon="pi pi-check"
                   styleClass="w-full"
-                  (onClick)="submitOpponentWins(bet.id)"
+                  (onClick)="submitOpponentWins(bet.id, bet.opponentName)"
                   [hidden]="bet.status === betStatus.PendingAcceptance"
                   [loading]="submitting()"
                 />
@@ -128,6 +119,7 @@ export default class ResolveBetsPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly betService = inject(BetService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly betStatus = BetStatus;
   readonly userPlayer = this.playerService.userPlayer;
@@ -136,64 +128,82 @@ export default class ResolveBetsPageComponent {
   readonly submitting = signal(false);
 
   readonly displayBets = computed(() =>
-    this.betService.openBets()?.map((bet) => {
-      const players = this.playerService.players();
-      const requester = players?.filter(
-        (player) => player.player_id === bet.requester_player_id,
-      )[0];
-      const opponent = players?.filter(
-        (player) => player.player_id === bet.opponent_player_id,
-      )[0];
+    this.betService
+      .allBets()
+      ?.filter(
+        (bet) =>
+          bet.status === BetStatus.Active ||
+          bet.status === BetStatus.PendingAcceptance,
+      )
+      ?.map((bet) => {
+        const players = this.playerService.players();
+        const requester = players?.filter(
+          (player) => player.player_id === bet.requester_player_id,
+        )[0];
+        const opponent = players?.filter(
+          (player) => player.player_id === bet.opponent_player_id,
+        )[0];
 
-      return {
-        requesterName: requester?.display_name ?? 'Requester',
-        requesterScore: requester?.score,
-        requesterWager: bet.requester_wager,
-        opponentName: opponent?.display_name ?? 'Opponent',
-        opponentScore: opponent?.score,
-        opponentWager: bet.opponent_wager,
-        description: bet.description,
-        id: bet.id,
-        status: bet.status,
-      };
-    }),
+        return {
+          requesterName: requester?.display_name ?? 'Requester',
+          requesterScore: requester?.score,
+          requesterWager: bet.requester_wager,
+          opponentName: opponent?.display_name ?? 'Opponent',
+          opponentScore: opponent?.score,
+          opponentWager: bet.opponent_wager,
+          description: bet.description,
+          id: bet.id,
+          status: bet.status,
+        };
+      }),
   );
 
   pushBet(betId: BetModel['id']) {
-    //TODO
-    betId;
+    confirmBackendAction({
+      action: async () => this.betService.pushBet(betId),
+      confirmationMessageText:
+        'Are you sure you want to mark this bet as a push?',
+      successMessageText: 'Bet resolved',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
   }
 
-  submitRequesterWins(betId: BetModel['id']) {
-    //TODO
-    betId;
+  submitRequesterWins(betId: BetModel['id'], requesterName: string) {
+    confirmBackendAction({
+      action: async () => this.betService.submitBetRequesterWon(betId),
+      confirmationMessageText: `Are you sure you want to mark this bet as won by ${requesterName}?`,
+      successMessageText: 'Bet resolved',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
   }
 
-  submitOpponentWins(betId: BetModel['id']) {
-    //TODO
-    betId;
+  submitOpponentWins(betId: BetModel['id'], opponentName: string) {
+    confirmBackendAction({
+      action: async () => this.betService.submitBetOpponentWon(betId),
+      confirmationMessageText: `Are you sure you want to mark this bet as won by ${opponentName}?`,
+      successMessageText: 'Bet resolved',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
   }
 
   cancelBet(betId: BetModel['id']) {
-    //TODO
-    betId;
-  }
-
-  async acceptBet(id: number) {
-    this.submitting.set(true);
-    await showMessageOnError(
-      this.betService.acceptBet(id),
-      this.messageService,
-    );
-    this.submitting.set(false);
-  }
-
-  async rejectBet(id: number) {
-    this.submitting.set(true);
-    await showMessageOnError(
-      this.betService.rejectBet(id),
-      this.messageService,
-    );
-    this.submitting.set(false);
+    confirmBackendAction({
+      action: async () => this.betService.cancelBetByGM(betId),
+      confirmationMessageText: `Are you sure you want to cancel this bet?`,
+      successMessageText: 'Bet canceled',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
   }
 }

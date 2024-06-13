@@ -57,45 +57,29 @@ export class BetService {
 
   readonly bets: Signal<BetModel[] | null | undefined> = toSignal(this.bets$);
 
-  readonly openBets$: Observable<BetModel[] | null> =
+  readonly allBets$: Observable<BetModel[] | null> =
     // get both active and pending bets (should be almost entirely from the current session)
-    combineLatest({
-      activeBets: realtimeUpdatesFromTable(
-        this.supabase,
-        Table.Bet,
-        `status=eq.${BetStatus.Active}`,
-      ),
-      pendingBets: realtimeUpdatesFromTable(
-        this.supabase,
-        Table.Bet,
-        `status=eq.${BetStatus.PendingAcceptance}`,
-      ),
-      sessionId: this.gameStateService.sessionId$,
-    }).pipe(
-      map(({ activeBets, pendingBets, sessionId }) =>
-        activeBets
-          // sort by date
-          .sort(
-            (a, b) =>
-              new Date(a.created_at).getTime() -
-              new Date(b.created_at).getTime(),
-          )
-          // add the sorted list of pending bets to the end
-          .concat(
-            pendingBets.sort(
+    this.gameStateService.sessionId$.pipe(
+      whenNotNull((sessionId) =>
+        realtimeUpdatesFromTable(
+          this.supabase,
+          Table.Bet,
+          `session_id=eq.${sessionId}`,
+        ).pipe(
+          map((bets) =>
+            bets.sort(
               (a, b) =>
-                new Date(a.created_at).getTime() -
-                new Date(b.created_at).getTime(),
+                (a.status === BetStatus.Active ? 0 : 1) -
+                (b.status === BetStatus.Active ? 0 : 1),
             ),
-          )
-          // filter out bets from other sessions
-          .filter((bet) => bet.session_id === sessionId),
+          ),
+        ),
       ),
       shareReplay(1),
     );
 
-  readonly openBets: Signal<BetModel[] | null | undefined> = toSignal(
-    this.openBets$,
+  readonly allBets: Signal<BetModel[] | null | undefined> = toSignal(
+    this.allBets$,
   );
 
   async createBet(
@@ -106,6 +90,26 @@ export class BetService {
 
   async acceptBet(id: number): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.SubmitBetAccepted, { bet_id: id });
+  }
+
+  async pushBet(id: number): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.SubmitBetPush, { bet_id: id });
+  }
+
+  async submitBetRequesterWon(
+    id: number,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.SubmitBetRequesterWon, { bet_id: id });
+  }
+
+  async submitBetOpponentWon(
+    id: number,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.SubmitBetOpponentWon, { bet_id: id });
+  }
+
+  async cancelBetByGM(id: number): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.SubmitBetCanceledByGm, { bet_id: id });
   }
 
   async rejectBet(id: number): Promise<PostgrestSingleResponse<BetModel[]>> {

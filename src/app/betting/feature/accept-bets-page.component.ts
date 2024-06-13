@@ -34,7 +34,7 @@ import { BetModel } from '../../shared/util/supabase-types';
   template: `
     <joshies-page-header headerText="Accept Bets" alwaysSmall>
       <joshies-header-link
-        text="GM Tools"
+        text="Betting"
         routerLink=".."
         chevronDirection="left"
       />
@@ -51,7 +51,9 @@ import { BetModel } from '../../shared/util/supabase-types';
         >
           <ng-template pTemplate="header">
             <tr>
-              <th style="width: 60%;"></th>
+              <th style="width: 60%;">
+                Bet Terms (Your score: {{ userPlayer()?.score }})
+              </th>
               <th></th>
             </tr>
           </ng-template>
@@ -63,16 +65,17 @@ import { BetModel } from '../../shared/util/supabase-types';
             <tr>
               <!-- Bet Terms -->
               <td>
-                <div class="flex flex-column gap-2 -py-2">
-                  <div>
-                    {{ bet.requesterName }} wagers:
-                    {{ bet.requesterWager }}
-                  </div>
-                  <div>
-                    {{ userNameAndScore() }} wagers:
-                    {{ bet.yourWager }}
-                  </div>
-                  <div>{{ bet.description }}</div>
+                <div>
+                  {{
+                    bet.requesterName +
+                      ' bets ' +
+                      bet.requesterWager +
+                      (bet.yourWager === bet.requesterWager
+                        ? ''
+                        : ' against your ' + bet.yourWager) +
+                      ' that ' +
+                      bet.description
+                  }}
                 </div>
               </td>
               <!-- Accept/Reject Buttons -->

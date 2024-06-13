@@ -56,6 +56,10 @@ export enum Function {
   GetSpaceStatsForSession = 'get_space_stats_for_session',
   GetDuelHistoryForSession = 'get_duel_history_for_session',
   GetPlayerDuelStatsForSession = 'get_player_duel_stats_for_session',
+  SubmitBetPush = 'submit_bet_push',
+  SubmitBetRequesterWon = 'submit_bet_requester_won',
+  SubmitBetOpponentWon = 'submit_bet_opponent_won',
+  SubmitBetCanceledByGm = 'submit_bet_canceled_by_gm',
 }
 
 export enum StorageBucket {
