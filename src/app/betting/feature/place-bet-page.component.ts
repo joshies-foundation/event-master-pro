@@ -30,7 +30,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { BetStatus } from '../../shared/util/supabase-helpers';
 
 @Component({
-  selector: 'joshies-override-points-page',
+  selector: 'joshies-place-bet-page',
   standalone: true,
   imports: [
     PageHeaderComponent,

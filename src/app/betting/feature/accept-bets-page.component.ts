@@ -20,7 +20,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { BetModel } from '../../shared/util/supabase-types';
 
 @Component({
-  selector: 'joshies-place-bet-choose-player-page',
+  selector: 'joshies-accept-bets-page',
   standalone: true,
   imports: [
     PageHeaderComponent,
@@ -42,13 +42,7 @@ import { BetModel } from '../../shared/util/supabase-types';
 
     @if (displayBets()?.length) {
       @if (displayBets(); as bets) {
-        <p-table
-          [value]="bets"
-          [defaultSortOrder]="-1"
-          sortField="score"
-          [sortOrder]="-1"
-          [scrollable]="true"
-        >
+        <p-table [value]="bets" [scrollable]="true">
           <ng-template pTemplate="header">
             <tr>
               <th style="width: 60%;">

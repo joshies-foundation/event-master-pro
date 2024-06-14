@@ -41,13 +41,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
     </joshies-page-header>
 
     @if (displayBets(); as bets) {
-      <p-table
-        [value]="bets"
-        [defaultSortOrder]="-1"
-        sortField="score"
-        [sortOrder]="-1"
-        [scrollable]="true"
-      >
+      <p-table [value]="bets" [scrollable]="true">
         <ng-template pTemplate="header">
           <tr>
             <th style="width: 60%;"></th>

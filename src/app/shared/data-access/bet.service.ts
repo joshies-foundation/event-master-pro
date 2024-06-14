@@ -119,4 +119,14 @@ export class BetService {
       .eq('id', id)
       .select();
   }
+
+  async cancelBetByRequester(
+    id: number,
+  ): Promise<PostgrestSingleResponse<BetModel[]>> {
+    return this.supabase
+      .from(Table.Bet)
+      .update({ status: BetStatus.CanceledByRequester })
+      .eq('id', id)
+      .select();
+  }
 }
