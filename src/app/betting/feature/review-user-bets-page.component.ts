@@ -43,6 +43,7 @@ import { BetModel } from '../../shared/util/supabase-types';
 
     @if (displayBets()?.length) {
       @if (displayBets(); as bets) {
+        <p class="mt-5">Review bets that are active or awaiting approval.</p>
         <p-table
           [value]="bets"
           [defaultSortOrder]="-1"
