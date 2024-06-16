@@ -122,6 +122,11 @@ export enum BetStatus {
   Push = 'push',
 }
 
+export enum BetType {
+  Manual = 'manual',
+  DuelWinner = 'duel',
+}
+
 export type TTable = keyof Database['public']['Tables'];
 
 function subscribeToLiveTable<Table extends TTable, Row extends Tables<Table>>(

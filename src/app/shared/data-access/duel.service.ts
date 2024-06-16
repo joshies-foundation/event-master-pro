@@ -11,6 +11,7 @@ import {
   Table,
 } from '../util/supabase-helpers';
 import { PlayerService } from './player.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -71,6 +72,8 @@ export class DuelService {
       ),
       shareReplay(1),
     );
+
+  readonly duelsForThisTurn = toSignal(this.duelsForThisTurn$);
 
   readonly nonCanceledDuelsForThisTurn$: Observable<DuelModel[]> =
     this.duelsForThisTurn$.pipe(
