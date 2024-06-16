@@ -11,10 +11,8 @@ export type Database = {
     Tables: {
       bet: {
         Row: {
-          bet_type: Database['public']['Enums']['bet_type'] | null;
           created_at: string;
           description: string;
-          details: Json | null;
           id: number;
           opponent_player_id: number;
           opponent_wager: number;
@@ -25,10 +23,8 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          bet_type?: Database['public']['Enums']['bet_type'] | null;
           created_at?: string;
           description: string;
-          details?: Json | null;
           id?: number;
           opponent_player_id: number;
           opponent_wager: number;
@@ -39,10 +35,8 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          bet_type?: Database['public']['Enums']['bet_type'] | null;
           created_at?: string;
           description?: string;
-          details?: Json | null;
           id?: number;
           opponent_player_id?: number;
           opponent_wager?: number;
@@ -487,8 +481,8 @@ export type Database = {
           game_master_user_id: string;
           id: number;
           round_number: number;
-          session_id: number;
           round_phase: Database['public']['Enums']['round_phase'];
+          session_id: number;
           session_status: Database['public']['Enums']['session_status'];
           updated_at: string;
         };
@@ -619,24 +613,6 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
-      };
-      lzs: {
-        Row: {
-          dummy: number | null;
-          id: number;
-          jayce: Json | null;
-        };
-        Insert: {
-          dummy?: number | null;
-          id?: number;
-          jayce?: Json | null;
-        };
-        Update: {
-          dummy?: number | null;
-          id?: number;
-          jayce?: Json | null;
-        };
-        Relationships: [];
       };
       player: {
         Row: {
@@ -1226,7 +1202,6 @@ export type Database = {
         | 'requester_won'
         | 'opponent_won'
         | 'push';
-      bet_type: 'duel';
       chaos_space_event_type:
         | 'everyone_gains_points_based_on_rank'
         | 'everyone_loses_percentage_of_their_points'

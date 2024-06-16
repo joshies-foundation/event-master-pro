@@ -6,7 +6,7 @@ import {
   inject,
   input,
   numberAttribute,
-  signal,
+  signal, OnInit,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -57,7 +57,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     ConfirmDialogModule,
   ],
 })
-export default class EditEventPageComponent {
+export default class EditEventPageComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly messageService = inject(MessageService);
   private readonly gameStateService = inject(GameStateService);
@@ -104,6 +104,7 @@ export default class EditEventPageComponent {
       this.activatedRoute,
       this.confirmationService,
       this.messageService,
+      this.eventService,
     ));
   }
 
