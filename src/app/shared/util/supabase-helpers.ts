@@ -40,6 +40,7 @@ export enum Function {
   StartSessionEarly = 'start_session_early',
   LogRoundMoves = 'log_round_moves',
   ReorderEvents = 'reorder_events',
+  UpdateEventTeams = 'update_event_teams',
 }
 
 export enum StorageBucket {

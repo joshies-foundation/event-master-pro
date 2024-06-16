@@ -67,7 +67,8 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "lint-staged": "^15.2.2",
     "pre-commit": "^1.2.2",
-    "prettier": "~3.2.5",
+    "prettier": "3.2.5",
+    "prettier-plugin-apex": "2.1.4",
     "supabase": "^1.167.4",
     "typescript": "~5.4.5"
   }

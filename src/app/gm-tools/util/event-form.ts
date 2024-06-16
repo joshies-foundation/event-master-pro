@@ -199,6 +199,7 @@ export function eventFormFactory(
           lower_scores_are_better: lowerScoresAreBetter,
           format,
           session_id: sessionId,
+          round_number: -1,
         }),
       successMessageText: successText(name),
       successNavigation: '..',

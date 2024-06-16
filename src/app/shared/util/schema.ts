@@ -9,6 +9,288 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bet: {
+        Row: {
+          bet_type: Database['public']['Enums']['bet_type'] | null;
+          created_at: string;
+          description: string;
+          details: Json | null;
+          id: number;
+          opponent_player_id: number;
+          opponent_wager: number;
+          requester_player_id: number;
+          requester_wager: number;
+          session_id: number;
+          status: Database['public']['Enums']['bet_status'];
+          updated_at: string;
+        };
+        Insert: {
+          bet_type?: Database['public']['Enums']['bet_type'] | null;
+          created_at?: string;
+          description: string;
+          details?: Json | null;
+          id?: number;
+          opponent_player_id: number;
+          opponent_wager: number;
+          requester_player_id: number;
+          requester_wager: number;
+          session_id: number;
+          status: Database['public']['Enums']['bet_status'];
+          updated_at?: string;
+        };
+        Update: {
+          bet_type?: Database['public']['Enums']['bet_type'] | null;
+          created_at?: string;
+          description?: string;
+          details?: Json | null;
+          id?: number;
+          opponent_player_id?: number;
+          opponent_wager?: number;
+          requester_player_id?: number;
+          requester_wager?: number;
+          session_id?: number;
+          status?: Database['public']['Enums']['bet_status'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'bet_opponent_player_id_fkey';
+            columns: ['opponent_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bet_requester_player_id_fkey';
+            columns: ['requester_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bet_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      bracket: {
+        Row: {
+          created_at: string;
+          data: Json | null;
+          event_id: number;
+          id: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          data?: Json | null;
+          event_id: number;
+          id?: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          data?: Json | null;
+          event_id?: number;
+          id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'bracket_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'event';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chaos_space_event: {
+        Row: {
+          chaos_space_id: number;
+          created_at: string;
+          id: number;
+          player_id: number;
+          results: Json | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['space_event_status'];
+          template_id: number | null;
+          updated_at: string;
+        };
+        Insert: {
+          chaos_space_id: number;
+          created_at?: string;
+          id?: number;
+          player_id: number;
+          results?: Json | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['space_event_status'];
+          template_id?: number | null;
+          updated_at?: string;
+        };
+        Update: {
+          chaos_space_id?: number;
+          created_at?: string;
+          id?: number;
+          player_id?: number;
+          results?: Json | null;
+          round_number?: number;
+          session_id?: number;
+          status?: Database['public']['Enums']['space_event_status'];
+          template_id?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chaos_space_event_chaos_space_id_fkey';
+            columns: ['chaos_space_id'];
+            isOneToOne: false;
+            referencedRelation: 'gameboard_space';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_template_id_fkey';
+            columns: ['template_id'];
+            isOneToOne: false;
+            referencedRelation: 'chaos_space_event_template';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chaos_space_event_template: {
+        Row: {
+          created_at: string;
+          description: string;
+          details: Json;
+          id: number;
+          name: string;
+          session_id: number;
+          type: Database['public']['Enums']['chaos_space_event_type'];
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          details: Json;
+          id?: number;
+          name: string;
+          session_id: number;
+          type: Database['public']['Enums']['chaos_space_event_type'];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          details?: Json;
+          id?: number;
+          name?: string;
+          session_id?: number;
+          type?: Database['public']['Enums']['chaos_space_event_type'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chaos_space_event_template_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      duel: {
+        Row: {
+          challenger_player_id: number;
+          created_at: string;
+          duel_space_id: number;
+          game_name: string | null;
+          id: number;
+          opponent_player_id: number | null;
+          points_gained_by_winner: number | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['duel_status'];
+          updated_at: string;
+          wager_percentage: number | null;
+        };
+        Insert: {
+          challenger_player_id: number;
+          created_at?: string;
+          duel_space_id: number;
+          game_name?: string | null;
+          id?: number;
+          opponent_player_id?: number | null;
+          points_gained_by_winner?: number | null;
+          round_number: number;
+          session_id: number;
+          status: Database['public']['Enums']['duel_status'];
+          updated_at?: string;
+          wager_percentage?: number | null;
+        };
+        Update: {
+          challenger_player_id?: number;
+          created_at?: string;
+          duel_space_id?: number;
+          game_name?: string | null;
+          id?: number;
+          opponent_player_id?: number | null;
+          points_gained_by_winner?: number | null;
+          round_number?: number;
+          session_id?: number;
+          status?: Database['public']['Enums']['duel_status'];
+          updated_at?: string;
+          wager_percentage?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'duel_challenger_player_id_fkey';
+            columns: ['challenger_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_duel_space_id_fkey';
+            columns: ['duel_space_id'];
+            isOneToOne: false;
+            referencedRelation: 'gameboard_space';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_opponent_player_id_fkey';
+            columns: ['opponent_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       event: {
         Row: {
           created_at: string;
@@ -35,7 +317,7 @@ export type Database = {
           lower_scores_are_better?: boolean;
           name: string;
           points_label?: string | null;
-          round_number?: number;
+          round_number: number;
           rules?: string | null;
           scoring_map: number[];
           session_id: number;
@@ -337,6 +619,24 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      lzs: {
+        Row: {
+          dummy: number | null;
+          id: number;
+          jayce: Json | null;
+        };
+        Insert: {
+          dummy?: number | null;
+          id?: number;
+          jayce?: Json | null;
+        };
+        Update: {
+          dummy?: number | null;
+          id?: number;
+          jayce?: Json | null;
+        };
+        Relationships: [];
       };
       player: {
         Row: {
@@ -775,6 +1075,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      delete_gameboard_space: {
+        Args: {
+          gameboard_space_id: number;
+        };
+        Returns: undefined;
+      };
       end_round: {
         Args: {
           _round_number: number;
@@ -788,6 +1094,18 @@ export type Database = {
         };
         Returns: Record<string, unknown>[];
       };
+      get_duel_history_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
+      get_player_duel_stats_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
       get_player_round_scores_from_session: {
         Args: {
           sessionid: number;
@@ -798,6 +1116,18 @@ export type Database = {
           avatar_url: string;
           scores: number[];
         }[];
+      };
+      get_roll_history_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Json[];
+      };
+      get_space_stats_for_session: {
+        Args: {
+          sessionid: number;
+        };
+        Returns: Record<string, unknown>[];
       };
       log_round_moves: {
         Args: {
@@ -824,13 +1154,93 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_bet_accepted: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_bet_canceled_by_gm: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_bet_opponent_won: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_bet_push: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_bet_requester_won: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_duel_results: {
+        Args: {
+          duel_id: number;
+          challenger_won: boolean;
+          player_score_changes: Json;
+        };
+        Returns: undefined;
+      };
+      submit_space_event_player_score_changes: {
+        Args: {
+          space_event_id: number;
+          space_event_template_id: number;
+          player_score_changes: Json;
+          event_description: string;
+          is_chaos_space_event: boolean;
+        };
+        Returns: undefined;
+      };
+      submit_special_space_event_score: {
+        Args: {
+          special_space_event_id: number;
+          score: number;
+        };
+        Returns: undefined;
+      };
+      update_event_teams: {
+        Args: {
+          event_team_updates: Json;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
+      bet_status:
+        | 'pending_acceptance'
+        | 'canceled_by_requester'
+        | 'canceled_by_gm'
+        | 'rejected'
+        | 'active'
+        | 'requester_won'
+        | 'opponent_won'
+        | 'push';
+      bet_type: 'duel';
       chaos_space_event_type:
         | 'everyone_gains_points_based_on_rank'
         | 'everyone_loses_percentage_of_their_points'
         | 'everyone_loses_percentage_of_their_points_based_on_task_failure'
         | 'point_swap';
+      duel_status:
+        | 'opponent_not_selected'
+        | 'wager_not_selected'
+        | 'game_not_selected'
+        | 'waiting_to_begin'
+        | 'in_progress'
+        | 'challenger_won'
+        | 'opponent_won'
+        | 'canceled';
       event_format:
         | 'single_elimination_tournament'
         | 'double_elimination_tournament'
@@ -839,11 +1249,13 @@ export type Database = {
         | 'gain_points'
         | 'gain_points_or_do_activity'
         | 'special'
-        | 'duel';
+        | 'duel'
+        | 'chaos';
       round_phase:
         | 'gameboard_moves'
         | 'special_space_events'
         | 'duels'
+        | 'chaos_space_events'
         | 'event'
         | 'waiting_for_next_round';
       session_status: 'not_started' | 'in_progress' | 'finished';

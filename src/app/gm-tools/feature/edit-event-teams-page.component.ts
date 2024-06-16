@@ -16,6 +16,7 @@ import { EventModel, EventTeamModel } from '../../shared/util/supabase-types';
 import {
   EventParticipantWithPlayerInfo,
   EventService,
+  EventTeamUpdateModel,
   EventTeamWithParticipantInfo,
 } from '../../shared/data-access/event.service';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -32,6 +33,8 @@ import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 enum DropListIds {
   UnassignedTeam = 'unassigned-team',
@@ -221,6 +224,8 @@ enum TeamIds {
 export default class EditEventTeamsPageComponent {
   private readonly eventService = inject(EventService);
   private readonly playerService = inject(PlayerService);
+  private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   // make the DropListIds enum available in component template
   readonly DropListIds = DropListIds;
@@ -238,6 +243,7 @@ export default class EditEventTeamsPageComponent {
   readonly originalEvent: Signal<EventModel | null> = input.required(); // route resolve data
 
   private readonly players = this.playerService.players;
+  private readonly submitting = signal(false);
 
   private readonly newTeamTemplate = computed(() => ({
     created_at: '',
@@ -484,7 +490,7 @@ export default class EditEventTeamsPageComponent {
         ) && localParticipant.team_id !== TeamIds.UnassignedTeam,
     );
 
-    const eventTeamUpdates = {
+    const eventTeamUpdates: EventTeamUpdateModel = {
       newEventTeams: newEventTeams?.map((newEventTeam) => ({
         id: newEventTeam.id,
         event_id: eventId,
@@ -541,8 +547,8 @@ export default class EditEventTeamsPageComponent {
             localEventParticipant.team_id !== TeamIds.UnassignedTeam,
         )
         .map((eventParticipant) => ({
+          id: eventParticipant.participant_id,
           team_id: eventParticipant.team_id,
-          player_id: eventParticipant.player_id,
         })),
 
       removedParticipants: databaseEventParticipants
@@ -562,30 +568,17 @@ export default class EditEventTeamsPageComponent {
         .map((eventParticipant) => ({ id: eventParticipant.participant_id })),
     };
 
-    console.log(JSON.stringify(eventTeamUpdates));
-
-    console.log(
-      `new teams: ${eventTeamUpdates.newEventTeams?.map((team) => JSON.stringify(team))}`,
-    );
-
-    console.log(
-      `removed teams: ${eventTeamUpdates.removedTeams?.map((team) => JSON.stringify(team))}`,
-    );
-
-    console.log(
-      `updated teams: ${eventTeamUpdates.updatedTeams?.map((team) => JSON.stringify(team))}`,
-    );
-
-    console.log(
-      `added participants: ${eventTeamUpdates.newParticipants?.map((participant) => JSON.stringify(participant))}`,
-    );
-
-    console.log(
-      `updated participants: ${eventTeamUpdates.updatedParticipants?.map((participant) => JSON.stringify(participant))}`,
-    );
-
-    console.log(
-      `removed participants: ${eventTeamUpdates.removedParticipants?.map((participant) => JSON.stringify(participant))}`,
-    );
+    confirmBackendAction({
+      confirmationMessageText: `Save changes to ${this.originalEvent()?.name ?? ''} teams?`,
+      successMessageText: `Teams updated successfully for ${this.originalEvent()?.name ?? ''}`,
+      action: async () =>
+        this.eventService.updateEventTeams(
+          JSON.parse(JSON.stringify(eventTeamUpdates)),
+        ),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.submitting,
+      successNavigation: null,
+    });
   }
 }
