@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '../util/schema';
+import { Database, Json } from '../util/schema';
 import { GameStateService } from './game-state.service';
 import {
   combineLatestWith,
@@ -39,6 +39,49 @@ export interface EventParticipantWithPlayerInfo {
 
 export interface EventTeamWithParticipantInfo extends EventTeamModel {
   participants: EventParticipantWithPlayerInfo[] | undefined;
+}
+
+export interface EventTeamUpdateModel {
+  newEventTeams:
+    | {
+        id: number;
+        event_id: number;
+        seed: number;
+      }[]
+    | undefined;
+
+  updatedTeams:
+    | {
+        id: number;
+        seed: number;
+      }[]
+    | undefined;
+
+  removedTeams:
+    | {
+        id: number;
+      }[]
+    | undefined;
+
+  newParticipants:
+    | {
+        player_id: number;
+        team_id: number;
+      }[]
+    | undefined;
+
+  updatedParticipants:
+    | {
+        id: number;
+        team_id: number;
+      }[]
+    | undefined;
+
+  removedParticipants:
+    | {
+        id: number;
+      }[]
+    | undefined;
 }
 
 @Injectable({
@@ -214,5 +257,13 @@ export class EventService {
     return this.supabase.storage
       .from(StorageBucket.EventImages)
       .getPublicUrl(uploadData.path).data.publicUrl;
+  }
+
+  async updateEventTeams(
+    eventTeamUpdates: Json,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.UpdateEventTeams, {
+      event_team_updates: eventTeamUpdates,
+    });
   }
 }

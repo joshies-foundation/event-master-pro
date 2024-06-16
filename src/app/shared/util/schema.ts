@@ -11,8 +11,10 @@ export type Database = {
     Tables: {
       bet: {
         Row: {
+          bet_type: Database['public']['Enums']['bet_type'] | null;
           created_at: string;
           description: string;
+          details: Json | null;
           id: number;
           opponent_player_id: number;
           opponent_wager: number;
@@ -23,8 +25,10 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          bet_type?: Database['public']['Enums']['bet_type'] | null;
           created_at?: string;
           description: string;
+          details?: Json | null;
           id?: number;
           opponent_player_id: number;
           opponent_wager: number;
@@ -35,8 +39,10 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          bet_type?: Database['public']['Enums']['bet_type'] | null;
           created_at?: string;
           description?: string;
+          details?: Json | null;
           id?: number;
           opponent_player_id?: number;
           opponent_wager?: number;
@@ -311,7 +317,7 @@ export type Database = {
           lower_scores_are_better?: boolean;
           name: string;
           points_label?: string | null;
-          round_number?: number;
+          round_number: number;
           rules?: string | null;
           scoring_map: number[];
           session_id: number;
@@ -613,6 +619,24 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      lzs: {
+        Row: {
+          dummy: number | null;
+          id: number;
+          jayce: Json | null;
+        };
+        Insert: {
+          dummy?: number | null;
+          id?: number;
+          jayce?: Json | null;
+        };
+        Update: {
+          dummy?: number | null;
+          id?: number;
+          jayce?: Json | null;
+        };
+        Relationships: [];
       };
       player: {
         Row: {
@@ -1136,6 +1160,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_bet_canceled_by_gm: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
       submit_bet_opponent_won: {
         Args: {
           bet_id: number;
@@ -1149,12 +1179,6 @@ export type Database = {
         Returns: undefined;
       };
       submit_bet_requester_won: {
-        Args: {
-          bet_id: number;
-        };
-        Returns: undefined;
-      };
-      submit_bet_canceled_by_gm: {
         Args: {
           bet_id: number;
         };
@@ -1185,13 +1209,14 @@ export type Database = {
         };
         Returns: undefined;
       };
+      update_event_teams: {
+        Args: {
+          event_team_updates: Json;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
-      chaos_space_event_type:
-        | 'everyone_gains_points_based_on_rank'
-        | 'everyone_loses_percentage_of_their_points'
-        | 'everyone_loses_percentage_of_their_points_based_on_task_failure'
-        | 'point_swap';
       bet_status:
         | 'pending_acceptance'
         | 'canceled_by_requester'
@@ -1201,6 +1226,12 @@ export type Database = {
         | 'requester_won'
         | 'opponent_won'
         | 'push';
+      bet_type: 'duel';
+      chaos_space_event_type:
+        | 'everyone_gains_points_based_on_rank'
+        | 'everyone_loses_percentage_of_their_points'
+        | 'everyone_loses_percentage_of_their_points_based_on_task_failure'
+        | 'point_swap';
       duel_status:
         | 'opponent_not_selected'
         | 'wager_not_selected'
