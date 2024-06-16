@@ -20,7 +20,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { BetModel } from '../../shared/util/supabase-types';
 
 @Component({
-  selector: 'joshies-place-bet-choose-player-page',
+  selector: 'joshies-accept-bets-page',
   standalone: true,
   imports: [
     PageHeaderComponent,
@@ -34,7 +34,7 @@ import { BetModel } from '../../shared/util/supabase-types';
   template: `
     <joshies-page-header headerText="Accept Bets" alwaysSmall>
       <joshies-header-link
-        text="GM Tools"
+        text="Betting"
         routerLink=".."
         chevronDirection="left"
       />
@@ -42,16 +42,13 @@ import { BetModel } from '../../shared/util/supabase-types';
 
     @if (displayBets()?.length) {
       @if (displayBets(); as bets) {
-        <p-table
-          [value]="bets"
-          [defaultSortOrder]="-1"
-          sortField="score"
-          [sortOrder]="-1"
-          [scrollable]="true"
-        >
+        <p class="mt-5">Review bets that are awaiting your approval.</p>
+        <p-table [value]="bets" [scrollable]="true">
           <ng-template pTemplate="header">
             <tr>
-              <th style="width: 60%;"></th>
+              <th style="width: 60%;">
+                Bet Terms (Your score: {{ userPlayer()?.score }})
+              </th>
               <th></th>
             </tr>
           </ng-template>
@@ -63,16 +60,17 @@ import { BetModel } from '../../shared/util/supabase-types';
             <tr>
               <!-- Bet Terms -->
               <td>
-                <div class="flex flex-column gap-2 -py-2">
-                  <div>
-                    {{ bet.requesterName }} wagers:
-                    {{ bet.requesterWager }}
-                  </div>
-                  <div>
-                    {{ userNameAndScore() }} wagers:
-                    {{ bet.yourWager }}
-                  </div>
-                  <div>{{ bet.description }}</div>
+                <div>
+                  {{
+                    bet.requesterName +
+                      ' bets ' +
+                      bet.requesterWager +
+                      (bet.yourWager === bet.requesterWager
+                        ? ''
+                        : ' against your ' + bet.yourWager) +
+                      ' that ' +
+                      bet.description
+                  }}
                 </div>
               </td>
               <!-- Accept/Reject Buttons -->

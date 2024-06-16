@@ -26,5 +26,10 @@ export default class BettingPageComponent {
       iconClass: 'pi pi-check bg-green-500',
       routerLink: './accept-bets',
     },
+    {
+      text: 'Review your open bets',
+      iconClass: 'pi pi-list bg-orange-500',
+      routerLink: './review-user-bets',
+    },
   ];
 }

@@ -1136,6 +1136,30 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_bet_opponent_won: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_bet_push: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_bet_requester_won: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
+      submit_bet_canceled_by_gm: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
       submit_duel_results: {
         Args: {
           duel_id: number;
