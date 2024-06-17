@@ -1178,7 +1178,7 @@ export type Database = {
         | 'requester_won'
         | 'opponent_won'
         | 'push';
-      bet_type: 'duel';
+      bet_type: 'duel' | 'special_space_event';
       chaos_space_event_type:
         | 'everyone_gains_points_based_on_rank'
         | 'everyone_loses_percentage_of_their_points'

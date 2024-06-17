@@ -20,7 +20,10 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { BetService } from '../../shared/data-access/bet.service';
-import { DuelModel } from '../../shared/util/supabase-types';
+import {
+  DuelModel,
+  SpecialSpaceEventModel,
+} from '../../shared/util/supabase-types';
 import { SessionService } from '../../shared/data-access/session.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
@@ -28,9 +31,13 @@ import {
   BetStatus,
   BetType,
   DuelStatus,
+  SpaceEventStatus,
 } from '../../shared/util/supabase-helpers';
 import { DuelService } from '../../shared/data-access/duel.service';
 import { Json } from '../../shared/util/schema';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { GameboardService } from '../../shared/data-access/gameboard.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-override-points-page',
@@ -44,6 +51,7 @@ import { Json } from '../../shared/util/schema';
     CheckboxModule,
     InputNumberModule,
     DropdownModule,
+    RadioButtonModule,
   ],
   template: `
     <joshies-page-header headerText="Place a Bet" alwaysSmall>
@@ -107,6 +115,62 @@ import { Json } from '../../shared/util/schema';
           optionLabel="display_name"
           styleClass="flex"
           placeholder="Select a winner"
+        />
+      </label>
+    } @else if (selectedBetType() === BetType.SpecialSpaceEvent) {
+      <!-- SS Event Dropdown -->
+      <!-- eslint-disable-next-line -->
+      <label class="flex flex-column gap-2 mt-5">
+        Special Space Event
+        <p-dropdown
+          [options]="openSsEvents()"
+          [(ngModel)]="selectedSsEvent"
+          optionLabel="ssEventName"
+          styleClass="flex"
+          emptyMessage="No open special space events"
+          placeholder="Select a special space event"
+        />
+      </label>
+
+      <!-- Over/Under Radio Buttons -->
+      <div class="flex flex-wrap gap-3 mt-5">
+        <div class="flex align-items-center">
+          <p-radioButton
+            name="overUnder"
+            value="Over"
+            inputId="over"
+            [(ngModel)]="selectedOuOption"
+            styleClass="flex"
+          />
+          <label for="over" class="ml-2"> Over </label>
+        </div>
+        <div class="flex align-items-center">
+          <p-radioButton
+            name="overUnder"
+            value="Under"
+            inputId="under"
+            [(ngModel)]="selectedOuOption"
+            styleClass="flex"
+          />
+          <label for="under" class="ml-2"> Under </label>
+        </div>
+      </div>
+
+      <!-- Over/Under Value -->
+      <!-- eslint-disable-next-line -->
+      <label class="flex flex-column gap-2 mt-5">
+        Over/Under Value
+        <p-inputNumber
+          [(ngModel)]="ouValue"
+          [showButtons]="true"
+          buttonLayout="horizontal"
+          [step]="0.5"
+          min="0.5"
+          [allowEmpty]="false"
+          incrementButtonIcon="pi pi-plus"
+          decrementButtonIcon="pi pi-minus"
+          inputStyleClass="w-full font-semibold text-right"
+          styleClass="w-full"
         />
       </label>
     } @else {
@@ -195,8 +259,12 @@ export default class PlaceBetPageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly duelService = inject(DuelService);
+  private readonly gameboardService = inject(GameboardService);
   readonly BetType = BetType;
 
+  private readonly ssEvents = toSignal(
+    this.gameboardService.specialSpaceEventsForThisTurn$,
+  );
   readonly terms = signal('');
   readonly requesterBet = signal(1);
   readonly opponentBet = signal(1);
@@ -207,10 +275,17 @@ export default class PlaceBetPageComponent {
   readonly selectedDuel = signal<DuelModel | null>(null);
   readonly betTypes = [
     this.generateBetTypeObject(BetType.DuelWinner),
+    this.generateBetTypeObject(BetType.SpecialSpaceEvent),
     this.generateBetTypeObject(BetType.Manual),
   ];
   readonly selectedBetType = signal<BetType>(BetType.Manual);
   readonly selectedWinner = signal<PlayerWithUserAndRankInfo | null>(null);
+  readonly selectedSsEvent = signal<{
+    ssEventName: string;
+    ssEvent: SpecialSpaceEventModel;
+  } | null>(null);
+  readonly selectedOuOption = signal<'Over' | 'Under'>('Over');
+  readonly ouValue = signal<number>(0.5);
 
   readonly playersWithoutUser = computed(() => {
     return this.playerService
@@ -240,6 +315,13 @@ export default class PlaceBetPageComponent {
       return true;
     }
 
+    if (
+      this.selectedBetType() === BetType.SpecialSpaceEvent &&
+      (!this.selectedSsEvent() || !this.ouValue() || this.betInvolvesLoser())
+    ) {
+      return true;
+    }
+
     if (this.selectedBetType() === BetType.Manual && !this.terms()) {
       return true;
     }
@@ -253,7 +335,6 @@ export default class PlaceBetPageComponent {
     );
   });
 
-  //TODO make sure you can't bet against yourself
   readonly openDuels = computed(() => {
     let duels = this.duelService.duelsForThisTurn();
     duels = duels?.filter((duel) => duel.status === DuelStatus.WaitingToBegin);
@@ -282,6 +363,21 @@ export default class PlaceBetPageComponent {
       return [];
     }
     return [selectedDuel.challenger, selectedDuel.opponent];
+  });
+
+  readonly openSsEvents = computed(() => {
+    return this.ssEvents()
+      ?.filter((event) => event.status === SpaceEventStatus.WaitingToBegin)
+      .map((event) => {
+        return {
+          ssEventName:
+            event.player?.display_name +
+            "'s " +
+            event.template?.name +
+            ' Event',
+          ssEvent: event,
+        };
+      });
   });
 
   private readonly betInvolvesLoser = computed(() => {
@@ -317,6 +413,26 @@ export default class PlaceBetPageComponent {
       if (
         opponentPlayerId === this.selectedOpponent()?.player_id &&
         opponentPlayerId === this.selectedWinner()?.player_id
+      ) {
+        return true;
+      }
+    }
+
+    if (this.selectedBetType() === BetType.SpecialSpaceEvent) {
+      const eventPlayerId = this.selectedSsEvent()?.ssEvent?.player_id;
+
+      // If bet opponent is event player and you're betting the over (i.e. they're betting their own under)
+      if (
+        this.selectedOuOption() === 'Over' &&
+        this.selectedOpponent()?.player_id === eventPlayerId
+      ) {
+        return true;
+      }
+
+      // If you are event player and you're betting the under
+      if (
+        this.selectedOuOption() === 'Under' &&
+        this.playerService.userPlayer()?.player_id === eventPlayerId
       ) {
         return true;
       }
@@ -365,6 +481,11 @@ export default class PlaceBetPageComponent {
     switch (type) {
       case BetType.DuelWinner:
         return { betType: type, betTypeString: 'Duel Winner' };
+      case BetType.SpecialSpaceEvent:
+        return {
+          betType: type,
+          betTypeString: 'Special Space Event Over/Under',
+        };
       default:
         return { betType: BetType.Manual, betTypeString: 'Manual' };
     }
@@ -378,6 +499,12 @@ export default class PlaceBetPageComponent {
           challengerWins:
             this.selectedWinner()?.player_id ===
             this.selectedDuel()?.challenger?.player_id,
+        };
+      case BetType.SpecialSpaceEvent:
+        return {
+          ssEventId: this.selectedSsEvent()?.ssEvent?.id,
+          directionIsOver: this.selectedOuOption() === 'Over',
+          ouValue: this.ouValue(),
         };
       default:
         return {};
@@ -398,6 +525,18 @@ export default class PlaceBetPageComponent {
           loserName +
           ' in ' +
           duel?.game_name
+        );
+      case BetType.SpecialSpaceEvent:
+        const ssEvent = this.selectedSsEvent();
+        return (
+          this.selectedOuOption() +
+          ' ' +
+          this.ouValue() +
+          ' in ' +
+          ssEvent?.ssEvent?.player?.display_name +
+          "'s " +
+          ssEvent?.ssEvent?.template?.name +
+          ' Event'
         );
       default:
         return this.terms();
