@@ -121,7 +121,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
             @switch (vm.duel.status) {
               @case (DuelStatus.OpponentNotSelected) {
                 <!-- Select Game -->
-                <!-- eslint-disable-next-line -->
                 <label class="mt-5 flex flex-column gap-2">
                   Select Opponent
                   <p-dropdown
@@ -153,7 +152,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (DuelStatus.WagerNotSelected) {
                 <!-- Select Wager -->
-                <!-- eslint-disable-next-line -->
                 <label class="mt-5 flex flex-column gap-2">
                   Select Wager
 
@@ -197,7 +195,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 </p>
 
                 <!-- Select Game -->
-                <!-- eslint-disable-next-line -->
                 <label class="mt-5 flex flex-column gap-2">
                   Select Game
                   <p-dropdown
@@ -250,7 +247,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   of the loser's points
                 </p>
 
-                <!-- eslint-disable-next-line -->
                 <label class="flex align-items-center gap-3 mt-5 mb-4">
                   Winner:
                   <p-selectButton

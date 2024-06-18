@@ -65,7 +65,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     <h4>Your score: {{ userPlayer()?.score }}</h4>
 
     <!-- Opponent Dropdown -->
-    <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
       Opponent
       <p-dropdown
@@ -78,7 +77,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     </label>
 
     <!-- Bet Type Dropdown -->
-    <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
       Bet Type
       <p-dropdown
@@ -86,104 +84,110 @@ import { toSignal } from '@angular/core/rxjs-interop';
         [(ngModel)]="selectedBetType"
         optionLabel="betTypeString"
         optionValue="betType"
-        styleClass="flex"
+        styleClass="w-full"
       />
     </label>
 
-    @if (selectedBetType() === BetType.DuelWinner) {
-      <!-- Duel Dropdown -->
-      <!-- eslint-disable-next-line -->
-      <label class="flex flex-column gap-2 mt-5">
-        Duel
-        <p-dropdown
-          [options]="openDuels()"
-          [(ngModel)]="selectedDuel"
-          optionLabel="duelName"
-          styleClass="flex"
-          emptyMessage="No open duels"
-          placeholder="Select a duel"
-        />
-      </label>
-
-      <!-- Duel Winner Dropdown -->
-      <!-- eslint-disable-next-line -->
-      <label class="flex flex-column gap-2 mt-5">
-        Duel
-        <p-dropdown
-          [options]="competitors()"
-          [(ngModel)]="selectedWinner"
-          optionLabel="display_name"
-          styleClass="flex"
-          placeholder="Select a winner"
-        />
-      </label>
-    } @else if (selectedBetType() === BetType.SpecialSpaceEvent) {
-      <!-- SS Event Dropdown -->
-      <!-- eslint-disable-next-line -->
-      <label class="flex flex-column gap-2 mt-5">
-        Special Space Event
-        <p-dropdown
-          [options]="openSsEvents()"
-          [(ngModel)]="selectedSsEvent"
-          optionLabel="ssEventName"
-          styleClass="flex"
-          emptyMessage="No open special space events"
-          placeholder="Select a special space event"
-        />
-      </label>
-
-      <!-- Over/Under Radio Buttons -->
-      <div class="flex flex-wrap gap-3 mt-5">
-        <div class="flex align-items-center">
-          <p-radioButton
-            name="overUnder"
-            value="Over"
-            inputId="over"
-            [(ngModel)]="selectedOuOption"
-            styleClass="flex"
+    @switch (selectedBetType()) {
+      @case (BetType.DuelWinner) {
+        <!-- Duel Dropdown -->
+        <label class="flex flex-column gap-2 mt-5">
+          Duel
+          <p-dropdown
+            [options]="openDuels()"
+            [(ngModel)]="selectedDuel"
+            optionLabel="duelName"
+            styleClass="w-full"
+            emptyMessage="No open duels"
+            placeholder="Select a duel"
           />
-          <label for="over" class="ml-2"> Over </label>
-        </div>
-        <div class="flex align-items-center">
-          <p-radioButton
-            name="overUnder"
-            value="Under"
-            inputId="under"
-            [(ngModel)]="selectedOuOption"
-            styleClass="flex"
-          />
-          <label for="under" class="ml-2"> Under </label>
-        </div>
-      </div>
+        </label>
 
-      <!-- Over/Under Value -->
-      <!-- eslint-disable-next-line -->
-      <label class="flex flex-column gap-2 mt-5">
-        Over/Under Value
-        <p-inputNumber
-          [(ngModel)]="ouValue"
-          [showButtons]="true"
-          buttonLayout="horizontal"
-          [step]="0.5"
-          min="0.5"
-          [allowEmpty]="false"
-          incrementButtonIcon="pi pi-plus"
-          decrementButtonIcon="pi pi-minus"
-          inputStyleClass="w-full font-semibold text-right"
-          styleClass="w-full"
-        />
-      </label>
-    } @else {
-      <!-- Bet terms -->
-      <label class="flex flex-column gap-2 mt-5">
-        Bet Terms
-        <textarea rows="2" pInputTextarea [(ngModel)]="terms" [required]="true">
-        </textarea>
-      </label>
+        <!-- Duel Winner Dropdown -->
+        <label class="flex flex-column gap-2 mt-5">
+          Winner
+          <p-dropdown
+            [options]="competitors()"
+            [(ngModel)]="selectedWinner"
+            optionLabel="display_name"
+            styleClass="w-full"
+            placeholder="Select a winner"
+          />
+        </label>
+      }
+      @case (BetType.SpecialSpaceEvent) {
+        <!-- SS Event Dropdown -->
+        <!-- eslint-disable-next-line -->
+        <label class="flex flex-column gap-2 mt-5">
+          Special Space Event
+          <p-dropdown
+            [options]="openSsEvents()"
+            [(ngModel)]="selectedSsEvent"
+            optionLabel="ssEventName"
+            styleClass="flex"
+            emptyMessage="No open special space events"
+            placeholder="Select a special space event"
+          />
+        </label>
+
+        <!-- Over/Under Radio Buttons -->
+        <div class="flex flex-wrap gap-3 mt-5">
+          <div class="flex align-items-center">
+            <p-radioButton
+              name="overUnder"
+              value="Over"
+              inputId="over"
+              [(ngModel)]="selectedOuOption"
+              styleClass="flex"
+            />
+            <label for="over" class="ml-2"> Over </label>
+          </div>
+          <div class="flex align-items-center">
+            <p-radioButton
+              name="overUnder"
+              value="Under"
+              inputId="under"
+              [(ngModel)]="selectedOuOption"
+              styleClass="flex"
+            />
+            <label for="under" class="ml-2"> Under </label>
+          </div>
+        </div>
+
+        <!-- Over/Under Value -->
+        <!-- eslint-disable-next-line -->
+        <label class="flex flex-column gap-2 mt-5">
+          Over/Under Value
+          <p-inputNumber
+            [(ngModel)]="ouValue"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [step]="0.5"
+            min="0.5"
+            [allowEmpty]="false"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            inputStyleClass="w-full font-semibold text-right"
+            styleClass="w-full"
+          />
+        </label>
+      }
+      @default {
+        <!-- Bet terms -->
+        <label class="flex flex-column gap-2 mt-5">
+          Bet Terms
+          <textarea
+            rows="2"
+            pInputTextarea
+            [(ngModel)]="terms"
+            [required]="true"
+          >
+          </textarea>
+        </label>
+      }
     }
 
     <!-- Even Odds Checkbox -->
-    <!-- eslint-disable-next-line -->
     <label class="mt-5">
       <p-checkbox
         class="mt-5"
@@ -195,7 +199,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     </label>
 
     <!-- Requester bet -->
-    <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
       {{
         evenOdds()
@@ -220,7 +223,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
     @if (!evenOdds()) {
       <!-- Opponent bet -->
-      <!-- eslint-disable-next-line -->
       <label class="flex flex-column gap-2 mt-5">
         {{ selectedOpponent()?.display_name ?? 'Opponent' }} Bets
         <p-inputNumber
