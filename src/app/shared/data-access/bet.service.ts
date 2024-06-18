@@ -9,7 +9,6 @@ import {
   BetStatus,
 } from '../util/supabase-helpers';
 import { map, Observable, shareReplay, combineLatest } from 'rxjs';
-import { GameStateService } from './game-state.service';
 import { PlayerService } from './player.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../util/rxjs-helpers';
@@ -19,7 +18,6 @@ import { whenNotNull } from '../util/rxjs-helpers';
 })
 export class BetService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
-  private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
 
   readonly bets$: Observable<BetModel[] | null> =

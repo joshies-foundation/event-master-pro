@@ -34,10 +34,13 @@ import {
   SpaceEventStatus,
 } from '../../shared/util/supabase-helpers';
 import { DuelService } from '../../shared/data-access/duel.service';
-import { Json } from '../../shared/util/schema';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  generateBetDescription,
+  generateBetDetails,
+} from '../util/place-bet-helpers';
 
 @Component({
   selector: 'joshies-override-points-page',
@@ -117,14 +120,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
       }
       @case (BetType.SpecialSpaceEvent) {
         <!-- SS Event Dropdown -->
-        <!-- eslint-disable-next-line -->
         <label class="flex flex-column gap-2 mt-5">
           Special Space Event
           <p-dropdown
             [options]="openSsEvents()"
             [(ngModel)]="selectedSsEvent"
             optionLabel="ssEventName"
-            styleClass="flex"
+            styleClass="w-full"
             emptyMessage="No open special space events"
             placeholder="Select a special space event"
           />
@@ -138,7 +140,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
               value="Over"
               inputId="over"
               [(ngModel)]="selectedOuOption"
-              styleClass="flex"
+              styleClass="w-full"
             />
             <label for="over" class="ml-2"> Over </label>
           </div>
@@ -148,14 +150,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
               value="Under"
               inputId="under"
               [(ngModel)]="selectedOuOption"
-              styleClass="flex"
+              styleClass="w-full"
             />
             <label for="under" class="ml-2"> Under </label>
           </div>
         </div>
 
         <!-- Over/Under Value -->
-        <!-- eslint-disable-next-line -->
         <label class="flex flex-column gap-2 mt-5">
           Over/Under Value
           <p-inputNumber
@@ -448,11 +449,33 @@ export default class PlaceBetPageComponent {
     }
   }
 
+  generateBetTypeObject(type: BetType) {
+    switch (type) {
+      case BetType.DuelWinner:
+        return { betType: type, betTypeString: 'Duel Winner' };
+      case BetType.SpecialSpaceEvent:
+        return {
+          betType: type,
+          betTypeString: 'Special Space Event Over/Under',
+        };
+      default:
+        return { betType: BetType.Manual, betTypeString: 'Manual' };
+    }
+  }
+
   async confirmSubmit(): Promise<void> {
     const betType = this.selectedBetType();
 
     const bet = {
-      description: this.generateDescription(),
+      description: generateBetDescription(
+        this.selectedBetType(),
+        this.selectedDuel(),
+        this.selectedWinner(),
+        this.selectedSsEvent()?.ssEvent,
+        this.selectedOuOption(),
+        this.ouValue(),
+        this.terms(),
+      ),
       requester_player_id: this.userPlayer()?.player_id ?? 0,
       opponent_player_id: this.selectedOpponent()?.player_id ?? 0,
       requester_wager: this.requesterBet(),
@@ -460,7 +483,14 @@ export default class PlaceBetPageComponent {
       session_id: this.sessionService.session()?.id ?? 0,
       status: BetStatus.PendingAcceptance,
       bet_type: betType === BetType.Manual ? null : betType,
-      details: this.generateDetails(),
+      details: generateBetDetails(
+        this.selectedBetType(),
+        this.selectedDuel(),
+        this.selectedWinner(),
+        this.selectedSsEvent()?.ssEvent,
+        this.selectedOuOption(),
+        this.ouValue(),
+      ),
     };
 
     const opponentDisplayName =
@@ -477,72 +507,6 @@ export default class PlaceBetPageComponent {
       activatedRoute: this.activatedRoute,
       router: this.router,
     });
-  }
-
-  generateBetTypeObject(type: BetType) {
-    switch (type) {
-      case BetType.DuelWinner:
-        return { betType: type, betTypeString: 'Duel Winner' };
-      case BetType.SpecialSpaceEvent:
-        return {
-          betType: type,
-          betTypeString: 'Special Space Event Over/Under',
-        };
-      default:
-        return { betType: BetType.Manual, betTypeString: 'Manual' };
-    }
-  }
-
-  private generateDetails(): Json {
-    switch (this.selectedBetType()) {
-      case BetType.DuelWinner:
-        return {
-          duelId: this.selectedDuel()?.id,
-          challengerWins:
-            this.selectedWinner()?.player_id ===
-            this.selectedDuel()?.challenger?.player_id,
-        };
-      case BetType.SpecialSpaceEvent:
-        return {
-          ssEventId: this.selectedSsEvent()?.ssEvent?.id,
-          directionIsOver: this.selectedOuOption() === 'Over',
-          ouValue: this.ouValue(),
-        };
-      default:
-        return {};
-    }
-  }
-
-  private generateDescription() {
-    switch (this.selectedBetType()) {
-      case BetType.DuelWinner:
-        const duel = this.selectedDuel();
-        const loserName =
-          this.selectedWinner()?.player_id === duel?.challenger?.player_id
-            ? duel?.opponent?.display_name
-            : duel?.challenger?.display_name;
-        return (
-          this.selectedWinner()?.display_name +
-          ' beats ' +
-          loserName +
-          ' in ' +
-          duel?.game_name
-        );
-      case BetType.SpecialSpaceEvent:
-        const ssEvent = this.selectedSsEvent();
-        return (
-          this.selectedOuOption() +
-          ' ' +
-          this.ouValue() +
-          ' in ' +
-          ssEvent?.ssEvent?.player?.display_name +
-          "'s " +
-          ssEvent?.ssEvent?.template?.name +
-          ' Event'
-        );
-      default:
-        return this.terms();
-    }
   }
 
   // When parent changes (e.g. someone's score changes externally)
