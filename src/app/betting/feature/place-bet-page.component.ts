@@ -57,7 +57,6 @@ import { Json } from '../../shared/util/schema';
     <h4>Your score: {{ userPlayer()?.score }}</h4>
 
     <!-- Opponent Dropdown -->
-    <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
       Opponent
       <p-dropdown
@@ -70,7 +69,6 @@ import { Json } from '../../shared/util/schema';
     </label>
 
     <!-- Bet Type Dropdown -->
-    <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
       Bet Type
       <p-dropdown
@@ -78,48 +76,53 @@ import { Json } from '../../shared/util/schema';
         [(ngModel)]="selectedBetType"
         optionLabel="betTypeString"
         optionValue="betType"
-        styleClass="flex"
+        styleClass="w-full"
       />
     </label>
 
-    @if (selectedBetType() === BetType.DuelWinner) {
-      <!-- Duel Dropdown -->
-      <!-- eslint-disable-next-line -->
-      <label class="flex flex-column gap-2 mt-5">
-        Duel
-        <p-dropdown
-          [options]="openDuels()"
-          [(ngModel)]="selectedDuel"
-          optionLabel="duelName"
-          styleClass="flex"
-          emptyMessage="No open duels"
-          placeholder="Select a duel"
-        />
-      </label>
+    @switch (selectedBetType()) {
+      @case (BetType.DuelWinner) {
+        <!-- Duel Dropdown -->
+        <label class="flex flex-column gap-2 mt-5">
+          Duel
+          <p-dropdown
+            [options]="openDuels()"
+            [(ngModel)]="selectedDuel"
+            optionLabel="duelName"
+            styleClass="w-full"
+            emptyMessage="No open duels"
+            placeholder="Select a duel"
+          />
+        </label>
 
-      <!-- Duel Winner Dropdown -->
-      <!-- eslint-disable-next-line -->
-      <label class="flex flex-column gap-2 mt-5">
-        Duel
-        <p-dropdown
-          [options]="competitors()"
-          [(ngModel)]="selectedWinner"
-          optionLabel="display_name"
-          styleClass="flex"
-          placeholder="Select a winner"
-        />
-      </label>
-    } @else {
-      <!-- Bet terms -->
-      <label class="flex flex-column gap-2 mt-5">
-        Bet Terms
-        <textarea rows="2" pInputTextarea [(ngModel)]="terms" [required]="true">
-        </textarea>
-      </label>
+        <!-- Duel Winner Dropdown -->
+        <label class="flex flex-column gap-2 mt-5">
+          Winner
+          <p-dropdown
+            [options]="competitors()"
+            [(ngModel)]="selectedWinner"
+            optionLabel="display_name"
+            styleClass="w-full"
+            placeholder="Select a winner"
+          />
+        </label>
+      }
+      @default {
+        <!-- Bet terms -->
+        <label class="flex flex-column gap-2 mt-5">
+          Bet Terms
+          <textarea
+            rows="2"
+            pInputTextarea
+            [(ngModel)]="terms"
+            [required]="true"
+          >
+          </textarea>
+        </label>
+      }
     }
 
     <!-- Even Odds Checkbox -->
-    <!-- eslint-disable-next-line -->
     <label class="mt-5">
       <p-checkbox
         class="mt-5"
@@ -131,7 +134,6 @@ import { Json } from '../../shared/util/schema';
     </label>
 
     <!-- Requester bet -->
-    <!-- eslint-disable-next-line -->
     <label class="flex flex-column gap-2 mt-5">
       {{
         evenOdds()
@@ -156,7 +158,6 @@ import { Json } from '../../shared/util/schema';
 
     @if (!evenOdds()) {
       <!-- Opponent bet -->
-      <!-- eslint-disable-next-line -->
       <label class="flex flex-column gap-2 mt-5">
         {{ selectedOpponent()?.display_name ?? 'Opponent' }} Bets
         <p-inputNumber
