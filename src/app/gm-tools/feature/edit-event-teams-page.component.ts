@@ -78,16 +78,17 @@ enum TeamIds {
       </div>
     </joshies-page-header>
 
-    @if (eventTeamsWithParticipantInfo(); as teams) {
+    @if (!submitting() && eventTeamsWithParticipantInfo(); as teams) {
       <!-- Unassigned players -->
       <p class="mb-1">Unassigned Players</p>
       <div
         class="flex flex-wrap border-1 border-200 border-round-md surface-50 relative"
+        style="min-height: 3.2rem;"
+        [id]="DropListIds.UnassignedTeam"
         cdkDropList
+        [cdkDropListConnectedTo]="dropListIds()"
         [cdkDropListData]="teams[0]"
         (cdkDropListDropped)="onEventParticipantDrop($event)"
-        [cdkDropListConnectedTo]="dropListIds()"
-        [id]="DropListIds.UnassignedTeam"
       >
         @for (
           participant of teams[0].participants;
@@ -97,22 +98,26 @@ enum TeamIds {
           <div
             class="flex border-round-md p-2 m-1 text-color no-underline surface-200"
             cdkDrag
-            [cdkDragDisabled]="!userIsGameMaster()"
             [cdkDragData]="participant"
+            [cdkDragDisabled]="!userIsGameMaster()"
           >
             <img
               [ngSrc]="participant.avatar_url"
               alt=""
               width="24"
               height="24"
-              class="border-circle surface-100 mr-1"
+              class="align-self-center border-circle surface-100 mr-1"
             />
             <span class="align-self-center">
               {{ participant.display_name }}
             </span>
+            <div
+              class="absolute top-0 left-0 w-full h-full border-round-md surface-300"
+              *cdkDragPlaceholder
+            ></div>
           </div>
         } @empty {
-          <p class="text-center text-400 ml-2">
+          <p class="align-self-center text-400 ml-2 my-0">
             Drag players here to remove them from a team
           </p>
         }
@@ -129,7 +134,7 @@ enum TeamIds {
           let index = $index, first = $first, last = $last
         ) {
           @if (!(first || last)) {
-            <div class="flex" cdkDrag>
+            <div class="flex draggable-event-team" cdkDrag>
               @if (userIsGameMaster()) {
                 <div class="flex" cdkDragHandle>
                   <i
@@ -140,56 +145,67 @@ enum TeamIds {
 
               <!-- Drop List for Adding/Removing Players from Teams -->
               <div
-                class="flex flex-wrap flex-grow-1 border-1 border-200 border-round-md my-2 surface-50 relative"
-                cdkDropList
-                [cdkDropListData]="team"
-                [cdkDropListConnectedTo]="dropListIds()"
-                (cdkDropListDropped)="onEventParticipantDrop($event)"
+                class="flex flex-grow-1 border-1 border-200 border-round-md my-2 surface-50 relative"
+                style="min-height: 3.2rem;"
                 [id]="team.id!.toString()"
+                cdkDropList
+                [cdkDropListConnectedTo]="dropListIds()"
+                [cdkDropListData]="team"
+                (cdkDropListDropped)="onEventParticipantDrop($event)"
               >
-                <p class="text-sm text-400 px-2 mb-0">{{ index }}</p>
-                <p class="text-sm text-400 px-2 mb-0">{{ team.id! }}</p>
-                @for (
-                  participant of team.participants;
-                  track participant.participant_id;
-                  let first = $first
-                ) {
-                  <div
-                    class="flex border-round-md p-2 m-1 text-color no-underline surface-200"
-                    cdkDrag
-                    [cdkDragData]="participant"
-                  >
-                    <img
-                      [ngSrc]="participant.avatar_url"
-                      alt=""
-                      width="24"
-                      height="24"
-                      class="border-circle surface-100 mr-1"
-                    />
-                    <span class="align-self-center">
-                      {{ participant.display_name }}
-                    </span>
-                  </div>
-                } @empty {
-                  <p class="text-center font-italic text-400">
-                    No participants assigned to this team
-                  </p>
-                }
+                <p class="align-self-center text-sm text-400 px-2 my-0">
+                  {{ index }}
+                </p>
+                <div class="flex flex-wrap">
+                  @for (
+                    participant of team.participants;
+                    track participant.participant_id;
+                    let first = $first
+                  ) {
+                    <div
+                      class="flex border-round-md p-2 m-1 text-color no-underline surface-200"
+                      cdkDrag
+                      [cdkDragData]="participant"
+                    >
+                      <img
+                        [ngSrc]="participant.avatar_url"
+                        alt=""
+                        width="24"
+                        height="24"
+                        class="border-circle surface-100 mr-1"
+                      />
+                      <span class="align-self-center">
+                        {{ participant.display_name }}
+                      </span>
+                      <div
+                        class="absolute top-0 left-0 w-full h-full border-round-md surface-300"
+                        *cdkDragPlaceholder
+                      ></div>
+                    </div>
+                  } @empty {
+                    <p class="font-italic text-400">
+                      Oops, I shouldn't be here...
+                    </p>
+                  }
+                </div>
               </div>
-
-              <div class="surface-200 h-3rem w-full" *cdkDragPlaceholder></div>
+              <div
+                class="surface-200 h-3rem w-full draggable-event-team"
+                *cdkDragPlaceholder
+              ></div>
             </div>
           }
         }
         <div
-          class="flex w-full border-1 border-200 border-round-md my-2 surface-50"
+          class="flex border-1 border-200 border-round-md surface-50 mt-2 relative"
+          style="min-height: 3.2rem;"
+          [id]="DropListIds.NewTeam"
           cdkDropList
+          [cdkDropListConnectedTo]="dropListIds()"
           [cdkDropListData]="teams[teams.length - 1]"
           (cdkDropListDropped)="onEventParticipantDrop($event)"
-          [cdkDropListConnectedTo]="dropListIds()"
-          [id]="DropListIds.NewTeam"
         >
-          <p class="text-center text-400 ml-2">
+          <p class="align-self-center text-400 ml-2 my-0">
             Drag players here to create a new team
           </p>
         </div>
@@ -204,6 +220,16 @@ enum TeamIds {
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" />
+    }
+  `,
+  styles: `
+    .cdk-drag:not(.cdk-drag-preview, .draggable-event-team) {
+      transform: none !important;
+    }
+
+    .cdk-drag-placeholder:not(.draggable-event-team) {
+      transform: none !important;
+      opacity: 0.5;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -227,14 +253,8 @@ export default class EditEventTeamsPageComponent {
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
-  // make the DropListIds enum available in component template
-  readonly DropListIds = DropListIds;
-
+  private readonly players = this.playerService.players;
   readonly userIsGameMaster = this.playerService.userIsGameMaster;
-
-  readonly headerText = computed(
-    () => `Edit ${this.originalEvent()?.name ?? ''} Teams`,
-  );
 
   readonly eventId: Signal<number> = input(0, {
     transform: numberAttribute,
@@ -242,8 +262,14 @@ export default class EditEventTeamsPageComponent {
 
   readonly originalEvent: Signal<EventModel | null> = input.required(); // route resolve data
 
-  private readonly players = this.playerService.players;
-  private readonly submitting = signal(false);
+  // make the DropListIds enum available in component template
+  readonly DropListIds = DropListIds;
+
+  readonly headerText = computed(
+    () => `Edit ${this.originalEvent()?.name ?? ''} Teams`,
+  );
+
+  readonly submitting = signal(false);
 
   private readonly newTeamTemplate = computed(() => ({
     created_at: '',
@@ -569,8 +595,8 @@ export default class EditEventTeamsPageComponent {
     };
 
     confirmBackendAction({
-      confirmationMessageText: `Save changes to ${this.originalEvent()?.name ?? ''} teams?`,
-      successMessageText: `Teams updated successfully for ${this.originalEvent()?.name ?? ''}`,
+      confirmationMessageText: `Save changes to ${this.originalEvent()?.name ?? 'event'} teams?`,
+      successMessageText: `${this.originalEvent()?.name ?? 'Event'} teams updated successfully`,
       action: async () =>
         this.eventService.updateEventTeams(
           JSON.parse(JSON.stringify(eventTeamUpdates)),

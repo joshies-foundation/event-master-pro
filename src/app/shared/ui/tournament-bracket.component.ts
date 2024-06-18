@@ -34,9 +34,12 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
         <div class="flex align-items-center rotate-180 w-15rem h-3rem">
           <span class="text-sm text-400 mr-1">{{ node.data?.seed }}</span>
           <p-avatarGroup styleClass="mr-2">
-            @for (player of node.data.players; track player.player_id) {
+            @for (
+              participant of node.data.participants;
+              track participant.participant_id
+            ) {
               <p-avatar
-                [image]="player.avatar_url"
+                [image]="participant.avatar_url"
                 size="large"
                 shape="circle"
               />
@@ -44,14 +47,14 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
           </p-avatarGroup>
           <span class="text-800">
             @for (
-              player of node.data.players;
-              track player.player_id;
+              participant of node.data.participants;
+              track participant.participant_id;
               let index = $index, last = $last
             ) {
               {{
                 (last && index !== 0 ? '& ' : '') +
-                  player.display_name +
-                  (index < node.data.players.length - 2 ? ',' : '')
+                  participant.display_name +
+                  (index < node.data.participants.length - 2 ? ',' : '')
               }}
             }
           </span>

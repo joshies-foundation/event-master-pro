@@ -119,21 +119,23 @@ import { EventModel } from '../../shared/util/supabase-types';
             </div>
 
             <!-- Event Edit Links -->
-            <div class="flex flex-column">
-              <a
-                class="text-center w-full px-2 py-1 mb-2 bg-primary border-round-md"
-                [routerLink]="'edit/' + [event.id]"
-              >
-                <i class="pi pi-pencil"></i>
-              </a>
-              <a
-                class="text-center w-full px-2 py-1 mb-2 bg-primary border-round-md"
-                [routerLink]="'teams/' + [event.id]"
-              >
-                <i class="pi pi-users"></i>
-              </a>
-            </div>
-            <div class="surface-200 h-6rem w-full" *cdkDragPlaceholder></div>
+            @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
+              <div class="flex flex-column">
+                <a
+                  class="text-center px-2 py-1 mb-2 bg-primary border-round-md"
+                  [routerLink]="'edit/' + [event.id]"
+                >
+                  <i class="pi pi-pencil"></i>
+                </a>
+                <a
+                  class="text-center px-2 py-1 bg-primary border-round-md"
+                  [routerLink]="'teams/' + [event.id]"
+                >
+                  <i class="pi pi-users"></i>
+                </a>
+              </div>
+              <div class="surface-200 h-6rem w-full" *cdkDragPlaceholder></div>
+            }
           </div>
         } @empty {
           <p class="mt-5 text-center font-italic text-400">No events</p>
