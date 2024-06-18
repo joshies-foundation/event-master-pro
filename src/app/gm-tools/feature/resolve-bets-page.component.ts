@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -18,6 +17,7 @@ import { BetService } from '../../shared/data-access/bet.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BetModel } from '../../shared/util/supabase-types';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-resolve-bets-page',
@@ -40,7 +40,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
       />
     </joshies-page-header>
 
-    @if (displayBets(); as bets) {
+    @if (bets(); as bets) {
       <p-table [value]="bets" [scrollable]="true">
         <ng-template pTemplate="header">
           <tr>
@@ -57,7 +57,8 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
             <!-- Bet Terms -->
             <td>
               <div class="flex flex-column gap-2 -py-2">
-                {{ bet.requesterName }} bets {{ bet.opponentName }} that
+                {{ bet.requester?.display_name }} bets
+                {{ bet.opponent?.display_name }} that
                 {{ bet.description }}
               </div>
             </td>
@@ -67,21 +68,31 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
                 class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
               >
                 <p-button
-                  [label]="bet.requesterName + ' Wins'"
+                  [label]="bet.requester?.display_name + ' Wins'"
                   severity="success"
                   icon="pi pi-check"
                   styleClass="w-full"
-                  (onClick)="submitRequesterWins(bet.id, bet.requesterName)"
-                  [hidden]="bet.status === betStatus.PendingAcceptance"
+                  (onClick)="
+                    submitRequesterWins(
+                      bet.id,
+                      bet.requester?.display_name ?? 'the requester'
+                    )
+                  "
+                  [hidden]="bet.status === BetStatus.PendingAcceptance"
                   [loading]="submitting()"
                 />
                 <p-button
-                  [label]="bet.opponentName + ' Wins'"
+                  [label]="bet.opponent?.display_name + ' Wins'"
                   severity="success"
                   icon="pi pi-check"
                   styleClass="w-full"
-                  (onClick)="submitOpponentWins(bet.id, bet.opponentName)"
-                  [hidden]="bet.status === betStatus.PendingAcceptance"
+                  (onClick)="
+                    submitOpponentWins(
+                      bet.id,
+                      bet.opponent?.display_name ?? 'the requester'
+                    )
+                  "
+                  [hidden]="bet.status === BetStatus.PendingAcceptance"
                   [loading]="submitting()"
                 />
                 <p-button
@@ -89,7 +100,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
                   icon="pi pi-equals"
                   styleClass="w-full"
                   (onClick)="pushBet(bet.id)"
-                  [hidden]="bet.status === betStatus.PendingAcceptance"
+                  [hidden]="bet.status === BetStatus.PendingAcceptance"
                   [loading]="submitting()"
                 />
                 <p-button
@@ -115,42 +126,11 @@ export default class ResolveBetsPageComponent {
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
-  readonly betStatus = BetStatus;
-  readonly userPlayer = this.playerService.userPlayer;
-  readonly bets = this.betService.bets;
+  readonly BetStatus = BetStatus;
 
   readonly submitting = signal(false);
 
-  readonly displayBets = computed(() =>
-    this.betService
-      .allBets()
-      ?.filter(
-        (bet) =>
-          bet.status === BetStatus.Active ||
-          bet.status === BetStatus.PendingAcceptance,
-      )
-      ?.map((bet) => {
-        const players = this.playerService.players();
-        const requester = players?.filter(
-          (player) => player.player_id === bet.requester_player_id,
-        )[0];
-        const opponent = players?.filter(
-          (player) => player.player_id === bet.opponent_player_id,
-        )[0];
-
-        return {
-          requesterName: requester?.display_name ?? 'Requester',
-          requesterScore: requester?.score,
-          requesterWager: bet.requester_wager,
-          opponentName: opponent?.display_name ?? 'Opponent',
-          opponentScore: opponent?.score,
-          opponentWager: bet.opponent_wager,
-          description: bet.description,
-          id: bet.id,
-          status: bet.status,
-        };
-      }),
-  );
+  readonly bets = toSignal(this.betService.allBets$);
 
   pushBet(betId: BetModel['id']) {
     confirmBackendAction({
@@ -168,7 +148,7 @@ export default class ResolveBetsPageComponent {
   submitRequesterWins(betId: BetModel['id'], requesterName: string) {
     confirmBackendAction({
       action: async () => this.betService.submitBetRequesterWon(betId),
-      confirmationMessageText: `Are you sure you want to mark this bet as won by ${requesterName}?`,
+      confirmationMessageText: `Are you sure ${requesterName} won?`,
       successMessageText: 'Bet resolved',
       submittingSignal: this.submitting,
       confirmationService: this.confirmationService,

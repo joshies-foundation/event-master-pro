@@ -11,6 +11,11 @@ import { ChartModule } from 'primeng/chart';
 import { GetPlayerRoundScoreFunctionReturnType } from '../../shared/util/supabase-types';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { ChartOptions, ChartData } from 'chart.js';
+import { getCssVariableValue } from '../../shared/util/css-helpers';
+
+const textColor = getCssVariableValue('--text-color');
+const textColorSecondary = getCssVariableValue('--text-color-secondary');
+const surfaceBorder = getCssVariableValue('--surface-border');
 
 @Component({
   selector: 'joshies-compare-points-over-time-page',
@@ -42,13 +47,6 @@ export default class ComparePointsOverTimePageComponent {
     >(); // route resolve data
 
   private readonly documentStyle = getComputedStyle(document.documentElement);
-  private readonly textColor =
-    this.documentStyle.getPropertyValue('--text-color');
-  private readonly textColorSecondary = this.documentStyle.getPropertyValue(
-    '--text-color-secondary',
-  );
-  private readonly surfaceBorder =
-    this.documentStyle.getPropertyValue('--surface-border');
 
   readonly options: ChartOptions = {
     maintainAspectRatio: false,
@@ -56,25 +54,25 @@ export default class ComparePointsOverTimePageComponent {
     plugins: {
       legend: {
         labels: {
-          color: this.textColor,
+          color: textColor,
         },
       },
     },
     scales: {
       x: {
         ticks: {
-          color: this.textColorSecondary,
+          color: textColorSecondary,
         },
         grid: {
-          color: this.surfaceBorder,
+          color: surfaceBorder,
         },
       },
       y: {
         ticks: {
-          color: this.textColorSecondary,
+          color: textColorSecondary,
         },
         grid: {
-          color: this.surfaceBorder,
+          color: surfaceBorder,
         },
       },
     },

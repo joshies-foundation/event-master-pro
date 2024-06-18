@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { PlayerDuelStats } from '../../shared/util/supabase-types';
 import { ChartData } from 'chart.js';
+import { getCssVariableValue } from '../../shared/util/css-helpers';
 
 const maxBarThickness = 24;
 const borderWidth = 2;
@@ -44,10 +45,4 @@ export class PlayerDuelStatsChartDataPipe implements PipeTransform {
       ],
     };
   }
-}
-
-function getCssVariableValue(varName: string): string {
-  return window
-    .getComputedStyle(window.document.documentElement)
-    .getPropertyValue(varName);
 }

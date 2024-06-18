@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 const bettingRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./betting-page.component'),
+    loadComponent: () => import('./betting-dashboard-page.component'),
     data: { pageAnimationLayer: 0 },
   },
 
