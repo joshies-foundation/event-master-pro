@@ -42,6 +42,7 @@ import { BetModel } from '../../shared/util/supabase-types';
 
     @if (displayBets()?.length) {
       @if (displayBets(); as bets) {
+        <p class="mt-5">Review bets that are awaiting your approval.</p>
         <p-table [value]="bets" [scrollable]="true">
           <ng-template pTemplate="header">
             <tr>

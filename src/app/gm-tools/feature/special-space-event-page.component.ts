@@ -106,7 +106,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
             @switch (vm.specialSpaceEvent.status) {
               @case (SpaceEventStatus.EventNotSelected) {
                 <!-- Select Event -->
-                <!-- eslint-disable-next-line -->
                 <label class="mt-5 flex flex-column gap-2">
                   Select Event
                   <p-dropdown
@@ -235,7 +234,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                     vm.specialSpaceEvent.template.description
                   }}</pre>
 
-                  <!-- eslint-disable-next-line -->
                   <label class="flex flex-column gap-2">
                     {{
                       $any(vm.specialSpaceEvent.template.details)
