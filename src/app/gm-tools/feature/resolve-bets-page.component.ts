@@ -40,8 +40,8 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
       />
     </joshies-page-header>
 
-    @if (displayBets(); as bets) {
-      <p-table [value]="bets" [scrollable]="true">
+    @if (displayBets(); as displayBets) {
+      <p-table [value]="displayBets" [scrollable]="true">
         <ng-template pTemplate="header">
           <tr>
             <th style="width: 60%;"></th>
@@ -50,15 +50,17 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
         </ng-template>
         <ng-template
           pTemplate="body"
-          [joshiesStronglyTypedTableRow]="bets"
-          let-bet
+          [joshiesStronglyTypedTableRow]="displayBets"
+          let-displayBet
         >
           <tr>
             <!-- Bet Terms -->
             <td>
               <div class="flex flex-column gap-2 -py-2">
-                {{ bet.requesterName }} bets {{ bet.opponentName }} that
-                {{ bet.description }}
+                {{ generateBetPrefix(displayBet.bet) }}
+                {{ displayBet.requesterName }} bets
+                {{ displayBet.opponentName }} that
+                {{ displayBet.bet.description }}
               </div>
             </td>
             <!-- Status Buttons -->
@@ -67,29 +69,52 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
                 class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
               >
                 <p-button
-                  [label]="bet.requesterName + ' Wins'"
-                  severity="success"
+                  [label]="displayBet.requesterName + ' Wins'"
+                  [severity]="
+                    displayBet.bet.bet_type === null ? 'success' : 'secondary'
+                  "
                   icon="pi pi-check"
                   styleClass="w-full"
-                  (onClick)="submitRequesterWins(bet.id, bet.requesterName)"
-                  [hidden]="bet.status === betStatus.PendingAcceptance"
+                  (onClick)="
+                    submitRequesterWins(
+                      displayBet.bet.id,
+                      displayBet.requesterName
+                    )
+                  "
+                  [hidden]="
+                    displayBet.bet.status === betStatus.PendingAcceptance
+                  "
                   [loading]="submitting()"
                 />
                 <p-button
-                  [label]="bet.opponentName + ' Wins'"
-                  severity="success"
+                  [label]="displayBet.opponentName + ' Wins'"
+                  [severity]="
+                    displayBet.bet.bet_type === null ? 'success' : 'secondary'
+                  "
                   icon="pi pi-check"
                   styleClass="w-full"
-                  (onClick)="submitOpponentWins(bet.id, bet.opponentName)"
-                  [hidden]="bet.status === betStatus.PendingAcceptance"
+                  (onClick)="
+                    submitOpponentWins(
+                      displayBet.bet.id,
+                      displayBet.opponentName
+                    )
+                  "
+                  [hidden]="
+                    displayBet.bet.status === betStatus.PendingAcceptance
+                  "
                   [loading]="submitting()"
                 />
                 <p-button
                   label="Push"
                   icon="pi pi-equals"
+                  [severity]="
+                    displayBet.bet.bet_type === null ? 'primary' : 'secondary'
+                  "
                   styleClass="w-full"
-                  (onClick)="pushBet(bet.id)"
-                  [hidden]="bet.status === betStatus.PendingAcceptance"
+                  (onClick)="pushBet(displayBet.bet.id)"
+                  [hidden]="
+                    displayBet.bet.status === betStatus.PendingAcceptance
+                  "
                   [loading]="submitting()"
                 />
                 <p-button
@@ -97,7 +122,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
                   severity="danger"
                   icon="pi pi-times"
                   styleClass="w-full"
-                  (onClick)="cancelBet(bet.id)"
+                  (onClick)="cancelBet(displayBet.bet.id)"
                   [loading]="submitting()"
                 />
               </div>
@@ -141,16 +166,27 @@ export default class ResolveBetsPageComponent {
         return {
           requesterName: requester?.display_name ?? 'Requester',
           requesterScore: requester?.score,
-          requesterWager: bet.requester_wager,
           opponentName: opponent?.display_name ?? 'Opponent',
           opponentScore: opponent?.score,
-          opponentWager: bet.opponent_wager,
-          description: bet.description,
-          id: bet.id,
-          status: bet.status,
+          bet: bet,
         };
       }),
   );
+
+  generateBetPrefix(bet: BetModel) {
+    const pending = bet.status === BetStatus.PendingAcceptance;
+    const auto = bet.bet_type !== null;
+    if (pending && auto) {
+      return 'PEND, AUTO: ';
+    }
+    if (pending) {
+      return 'PEND: ';
+    }
+    if (auto) {
+      return 'AUTO: ';
+    }
+    return '';
+  }
 
   pushBet(betId: BetModel['id']) {
     confirmBackendAction({
