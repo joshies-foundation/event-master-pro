@@ -40,6 +40,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import {
   generateBetDescription,
   generateBetDetails,
+  generateBetTypeObject,
 } from '../util/place-bet-helpers';
 
 @Component({
@@ -135,24 +136,26 @@ import {
         <!-- Over/Under Radio Buttons -->
         <div class="flex flex-wrap gap-3 mt-5">
           <div class="flex align-items-center">
-            <p-radioButton
-              name="overUnder"
-              value="Over"
-              inputId="over"
-              [(ngModel)]="selectedOuOption"
-              styleClass="w-full"
-            />
-            <label for="over" class="ml-2"> Over </label>
+            <label class="ml-2">
+              <p-radioButton
+                name="overUnder"
+                value="Over"
+                [(ngModel)]="selectedOuOption"
+                styleClass="w-full"
+              />
+              Over
+            </label>
           </div>
           <div class="flex align-items-center">
-            <p-radioButton
-              name="overUnder"
-              value="Under"
-              inputId="under"
-              [(ngModel)]="selectedOuOption"
-              styleClass="w-full"
-            />
-            <label for="under" class="ml-2"> Under </label>
+            <label class="ml-2">
+              <p-radioButton
+                name="overUnder"
+                value="Under"
+                [(ngModel)]="selectedOuOption"
+                styleClass="w-full"
+              />
+              Under
+            </label>
           </div>
         </div>
 
@@ -277,9 +280,9 @@ export default class PlaceBetPageComponent {
   readonly selectedOpponent = signal<PlayerWithUserAndRankInfo | null>(null);
   readonly selectedDuel = signal<DuelModel | null>(null);
   readonly betTypes = [
-    this.generateBetTypeObject(BetType.DuelWinner),
-    this.generateBetTypeObject(BetType.SpecialSpaceEvent),
-    this.generateBetTypeObject(BetType.Manual),
+    generateBetTypeObject(BetType.DuelWinner),
+    generateBetTypeObject(BetType.SpecialSpaceEvent),
+    generateBetTypeObject(BetType.Manual),
   ];
   readonly selectedBetType = signal<BetType>(BetType.Manual);
   readonly selectedWinner = signal<PlayerWithUserAndRankInfo | null>(null);
@@ -446,20 +449,6 @@ export default class PlaceBetPageComponent {
   checkEvenOdds(): void {
     if (this.evenOdds()) {
       this.opponentBet.set(this.requesterBet());
-    }
-  }
-
-  generateBetTypeObject(type: BetType) {
-    switch (type) {
-      case BetType.DuelWinner:
-        return { betType: type, betTypeString: 'Duel Winner' };
-      case BetType.SpecialSpaceEvent:
-        return {
-          betType: type,
-          betTypeString: 'Special Space Event Over/Under',
-        };
-      default:
-        return { betType: BetType.Manual, betTypeString: 'Manual' };
     }
   }
 
