@@ -129,6 +129,7 @@ export enum BetStatus {
 export enum BetType {
   Manual = 'manual',
   DuelWinner = 'duel',
+  SpecialSpaceEvent = 'special_space_event',
 }
 
 export type TTable = keyof Database['public']['Tables'];
