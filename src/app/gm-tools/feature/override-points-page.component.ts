@@ -75,7 +75,6 @@ import {
       <p class="mb-3">Override Type</p>
       <div class="flex flex-column gap-3 mb-5">
         @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
-          <!-- eslint-disable-next-line -->
           <label class="ml-2">
             <p-radioButton
               name="category"

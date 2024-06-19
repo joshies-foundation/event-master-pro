@@ -121,7 +121,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
             @switch (vm.chaosSpaceEvent.status) {
               @case (SpaceEventStatus.EventNotSelected) {
                 <!-- Select Event -->
-                <!-- eslint-disable-next-line -->
                 <label class="mt-5 flex flex-column gap-2">
                   Select Event
                   <p-dropdown
