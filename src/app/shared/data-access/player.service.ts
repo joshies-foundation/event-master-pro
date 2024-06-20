@@ -140,10 +140,14 @@ export class PlayerService {
     this.userPlayer$,
   );
 
-  readonly userPlayerId$: Observable<number | null> = this.userPlayer$.pipe(
-    map((userPlayer) => userPlayer?.player_id ?? null),
-    shareReplay(1),
-  );
+  readonly userPlayerId$: Observable<PlayerModel['id'] | null> =
+    this.userPlayer$.pipe(
+      map((userPlayer) => userPlayer?.player_id ?? null),
+      shareReplay(1),
+    );
+
+  readonly userPlayerId: Signal<PlayerModel['id'] | null | undefined> =
+    toSignal(this.userPlayerId$);
 
   readonly userIsGameMaster$: Observable<boolean> = combineLatest({
     user: this.authService.user$,

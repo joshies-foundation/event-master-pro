@@ -17,6 +17,7 @@ import { layerPages } from '../../route-animations';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-helpers';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { BetService } from '../../shared/data-access/bet.service';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
@@ -45,6 +46,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 export default class LoggedInAppShellComponent {
   private readonly sessionService = inject(SessionService);
   private readonly playerService = inject(PlayerService);
+  private readonly betService = inject(BetService);
   private readonly footerService = inject(FooterService);
   private readonly router = inject(Router);
 
@@ -75,12 +77,17 @@ export default class LoggedInAppShellComponent {
       iconClass: 'pi pi-book',
       iconClassFill: 'ci-book-fill',
     },
-    {
-      text: 'Betting',
-      href: '/betting',
-      iconClass: 'pi pi-money-bill',
-      iconClassFill: 'pi pi-money-bill', //TODO add fill class
-    },
+    ...(this.playerService.userPlayer()
+      ? [
+          {
+            text: 'Betting',
+            href: '/betting',
+            hasBadge: this.betService.userHasBetRequests(),
+            iconClass: 'pi pi-money-bill',
+            iconClassFill: 'pi pi-money-bill', //TODO add fill class
+          },
+        ]
+      : []),
     ...(this.playerService.userIsGameMaster()
       ? [
           {

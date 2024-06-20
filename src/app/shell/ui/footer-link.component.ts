@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgClass } from '@angular/common';
+import { BadgeModule } from 'primeng/badge';
 
 export interface FooterLinkModel {
   href: string;
   text: string;
+  hasBadge?: boolean;
   iconClass: string;
   iconClassFill: string;
 }
@@ -12,7 +14,7 @@ export interface FooterLinkModel {
 @Component({
   selector: 'joshies-footer-link',
   standalone: true,
-  imports: [RouterLink, NgClass, RouterLinkActive],
+  imports: [RouterLink, NgClass, RouterLinkActive, BadgeModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 
   template: `
@@ -22,9 +24,17 @@ export interface FooterLinkModel {
       routerLinkActive="text-primary-500"
       #rla="routerLinkActive"
     >
-      <i
-        [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
-      ></i>
+      @if (model().hasBadge) {
+        <i
+          pBadge
+          severity="danger"
+          [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
+        ></i>
+      } @else {
+        <i
+          [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
+        ></i>
+      }
       <span class="text-xs">{{ model().text }}</span>
     </a>
   `,

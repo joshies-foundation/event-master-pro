@@ -6,6 +6,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { BetService } from '../../shared/data-access/bet.service';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -17,6 +18,17 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
 import { ChartModule } from 'primeng/chart';
 import { ChartOptions } from 'chart.js';
 import { getCssVariableValue } from '../../shared/util/css-helpers';
+import { BetComponent } from '../../shared/ui/bet.component';
+import { PlayerService } from '../../shared/data-access/player.service';
+import { Button } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
+import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
+import { BetRequestComponent } from '../ui/bet-request.component';
+import { getUserBetData } from '../../shared/util/bet-helpers';
+import { AccordionModule } from 'primeng/accordion';
+import { RouterLink } from '@angular/router';
 
 // const textColor = getCssVariableValue('--text-color');
 const textColorSecondary = getCssVariableValue('--text-color-secondary');
@@ -34,24 +46,31 @@ const surfaceBorder = getCssVariableValue('--surface-border');
     NgClass,
     NumberSignColorClassPipe,
     ChartModule,
+    BetComponent,
+    Button,
+    DividerModule,
+    BetRequestComponent,
+    AccordionModule,
+    RouterLink,
   ],
   template: `
     <joshies-page-header headerText="Betting" />
 
+    <!-- Stats -->
     <div class="grid align-items-stretch">
       @if (stats(); as stats) {
         <!-- Resolved Bets -->
         <div class="col">
-          <div class="h-full surface-100 p-2 border-round text-center">
+          <div class="h-full surface-50 p-2 border-round text-center">
             <p class="text-sm m-0">Resolved Bets</p>
-            @if (stats.totalResolvedBets === null) {
+            @if (stats.numResolvedBets === null) {
               <p class="text-xl my-2">—</p>
             } @else {
               <p
                 class="text-xl my-2 font-semibold"
-                [ngClass]="stats.totalResolvedBets | numberSignColorClass"
+                [ngClass]="stats.numResolvedBets | numberSignColorClass"
               >
-                {{ stats.totalResolvedBets | number }}
+                {{ stats.numResolvedBets | number }}
               </p>
             }
           </div>
@@ -59,7 +78,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
         <!-- Total Profit -->
         <div class="col">
-          <div class="h-full surface-100 p-2 border-round text-center">
+          <div class="h-full surface-50 p-2 border-round text-center">
             <p class="text-sm m-0">Total Profit</p>
             @if (stats.totalProfit === null) {
               <p class="text-xl my-2">—</p>
@@ -74,7 +93,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
         <!-- Overall Win % -->
         <div class="col">
-          <div class="h-full surface-100 p-2 border-round text-center">
+          <div class="h-full surface-50 p-2 border-round text-center">
             <p class="text-sm m-0">Overall Win %</p>
             @if (stats.totalProfit === null) {
               <p class="text-xl my-2">—</p>
@@ -110,31 +129,213 @@ const surfaceBorder = getCssVariableValue('--surface-border');
       </div>
     }
 
-    <joshies-card headerText="Placing Bets" [links]="placingBetsLinks" />
+    <!-- Bet Requests -->
+    @if (userPlayerId(); as userPlayerId) {
+      @if (betsPendingUsersAcceptance(); as betRequests) {
+        @if (betRequests.length > 0) {
+          <joshies-card
+            padded
+            [headerText]="betRequestsHeaderText()"
+            headerIconClass="pi pi-info-circle text-primary mr-2"
+            class="-mt-4 mb-4"
+          >
+            <!-- Always show 1st bet request -->
+            <joshies-bet-request
+              [bet]="betRequests[0]"
+              [userPlayerId]="userPlayerId"
+              [submitting]="submitting()"
+              [acceptingBetId]="acceptingBetId()"
+              [rejectingBetId]="rejectingBetId()"
+              (accept)="confirmAcceptBet(betRequests[0], userPlayerId)"
+              (reject)="confirmRejectBet(betRequests[0], userPlayerId)"
+            />
+
+            @if (showViewAllBetRequestsAccordion()) {
+              <p-accordion>
+                <p-accordionTab
+                  header="All Requests"
+                  headerStyleClass="px-0 pb-2 bg-none"
+                  contentStyleClass="p-0 mt-3 bg-none"
+                >
+                  @for (
+                    bet of betRequests;
+                    track bet.id;
+                    let first = $first;
+                    let last = $last
+                  ) {
+                    @if (!first) {
+                      <joshies-bet-request
+                        [bet]="bet"
+                        [userPlayerId]="userPlayerId"
+                        [submitting]="submitting()"
+                        [acceptingBetId]="acceptingBetId()"
+                        [rejectingBetId]="rejectingBetId()"
+                        (accept)="confirmAcceptBet(bet, userPlayerId)"
+                        (reject)="confirmRejectBet(bet, userPlayerId)"
+                      />
+
+                      @if (!last) {
+                        <p-divider />
+                      }
+                    }
+                  }
+                </p-accordionTab>
+              </p-accordion>
+            }
+          </joshies-card>
+        }
+      }
+
+      <!-- Pace Bet -->
+      <h3 class="my-2">
+        <i class="pi pi-plus text-primary mr-2"></i> Place Bet For
+      </h3>
+      <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-3 px-3">
+        @for (
+          betTypeButtonModel of betTypeButtonModels;
+          track betTypeButtonModel.label
+        ) {
+          <a
+            [routerLink]="betTypeButtonModel.routerLink"
+            class="flex flex-column flex-shrink-0 gap-1 text-xs h-4rem w-6rem p-2 justify-content-center text-center align-items-center no-underline p-button p-button-outlined"
+          >
+            <i [class]="betTypeButtonModel.iconClass"></i>
+            {{ betTypeButtonModel.label }}
+          </a>
+        }
+      </div>
+
+      <!-- Active Bets -->
+      <joshies-card
+        padded
+        [headerText]="activeBetsHeaderText()"
+        headerIconClass="pi pi-hourglass text-primary mr-2"
+      >
+        @if (activeBets(); as activeBets) {
+          @if (activeBets.length) {
+            <joshies-bet [bet]="activeBets[0]" [userPlayerId]="userPlayerId" />
+          } @else {
+            <p class="m-0 font-italic text-600">No active bets</p>
+          }
+        }
+
+        @if (showViewActiveBetsAccordion()) {
+          <p-accordion>
+            <p-accordionTab
+              header="All Active Bets"
+              headerStyleClass="px-0 pb-2 bg-none"
+              contentStyleClass="p-0 mt-3 bg-none"
+            >
+              @for (
+                bet of activeBets();
+                track bet.id;
+                let first = $first;
+                let last = $last
+              ) {
+                @if (!first) {
+                  <joshies-bet [bet]="bet" [userPlayerId]="userPlayerId" />
+
+                  @if (!last) {
+                    <p-divider />
+                  }
+                }
+              }
+            </p-accordionTab>
+          </p-accordion>
+        }
+      </joshies-card>
+
+      <!-- Resolved Bets -->
+      <joshies-card
+        padded
+        [headerText]="resolvedBetsHeaderText()"
+        headerIconClass="pi pi-check-circle text-primary mr-2"
+      >
+        @for (bet of firstFewResolvedBets(); track bet.id; let last = $last) {
+          <joshies-bet [bet]="bet" [userPlayerId]="userPlayerId" />
+
+          @if (!last) {
+            <p-divider />
+          }
+        } @empty {
+          <p class="m-0 font-italic text-600">No resolved bets</p>
+        }
+
+        @if (showViewAllResolvedBetsLink()) {
+          <p-divider styleClass="mb-2" />
+          <p-button
+            label="All Resolved Bets"
+            icon="pi pi-angle-right"
+            iconPos="right"
+            styleClass="w-full"
+            routerLink="review-user-bets"
+            severity="secondary"
+            [text]="true"
+          />
+        }
+      </joshies-card>
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class BettingDashboardPageComponent {
   private readonly betService = inject(BetService);
+  private readonly playerService = inject(PlayerService);
+  private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly chartData = this.betService.betSummaryChartData;
 
   readonly overallWinPercentage = toSignal(
     this.betService.overallWinPercentage$,
   );
-  readonly totalResolvedBets = toSignal(this.betService.totalResolvedBets$);
+  readonly numResolvedBets = toSignal(this.betService.numResolvedBets$);
   readonly totalProfit = toSignal(this.betService.totalProfit$);
 
   readonly stats = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       totalProfit: this.totalProfit(),
-      totalResolvedBets: this.totalResolvedBets(),
+      numResolvedBets: this.numResolvedBets(),
       overallWinPercentage: this.overallWinPercentage(),
     }),
   );
 
+  readonly betsPendingUsersAcceptance = toSignal(
+    this.betService.betsPendingUsersAcceptance$,
+  );
+
+  readonly betRequestsHeaderText = computed(
+    () => `Bet Requests (${this.betsPendingUsersAcceptance()?.length})`,
+  );
+
+  readonly userPlayerId = this.playerService.userPlayerId;
+
+  readonly showViewAllBetRequestsAccordion = computed(
+    () => (this.betsPendingUsersAcceptance()?.length ?? 0) > 1,
+  );
+
+  readonly activeBets = toSignal(this.betService.activeBets$);
+  readonly showViewActiveBetsAccordion = computed(
+    () => (this.activeBets()?.length ?? 0) > 1,
+  );
+  readonly activeBetsHeaderText = computed(
+    () => `Active Bets (${this.activeBets()?.length})`,
+  );
+
+  private readonly resolvedBets = toSignal(this.betService.resolvedBets$);
+  readonly firstFewResolvedBets = computed(() =>
+    this.resolvedBets()?.slice(0, 3),
+  );
+  readonly showViewAllResolvedBetsLink = computed(
+    () =>
+      (this.numResolvedBets() ?? 0) >
+      (this.firstFewResolvedBets()?.length ?? 0),
+  );
+  readonly resolvedBetsHeaderText = computed(
+    () => `Resolved Bets (${this.numResolvedBets()})`,
+  );
+
   readonly chartOptions: ChartOptions = {
-    // responsive: true,
     animation: false,
     plugins: {
       legend: {
@@ -161,10 +362,7 @@ export default class BettingDashboardPageComponent {
           color: textColorSecondary,
         },
         grid: {
-          // display: false,
           color: surfaceBorder,
-          // color: (context) =>
-          //   context.tick.value === 0 ? surfaceBorder : undefined,
         },
       },
     },
@@ -187,4 +385,86 @@ export default class BettingDashboardPageComponent {
       routerLink: './review-user-bets',
     },
   ];
+
+  readonly betTypeButtonModels: {
+    iconClass: string;
+    label: string;
+    routerLink: string;
+  }[] = [
+    {
+      iconClass: PrimeIcons.STAR,
+      label: 'Main Event',
+      routerLink: './place-bet',
+    },
+    {
+      iconClass: PrimeIcons.BOLT,
+      label: 'Duel',
+      routerLink: './place-bet',
+    },
+    {
+      iconClass: PrimeIcons.QUESTION_CIRCLE,
+      label: 'Special Space Event',
+      routerLink: './place-bet',
+    },
+    {
+      iconClass: PrimeIcons.EXCLAMATION_CIRCLE,
+      label: 'Chaos Space Event',
+      routerLink: './place-bet',
+    },
+    {
+      iconClass: 'ci-space-entry',
+      label: 'Gameboard Move',
+      routerLink: './place-bet',
+    },
+    {
+      iconClass: PrimeIcons.PENCIL,
+      label: 'Manual',
+      routerLink: './place-bet',
+    },
+  ];
+
+  readonly acceptingBetId = signal<BetModel['id'] | null>(null);
+  readonly rejectingBetId = signal<BetModel['id'] | null>(null);
+  readonly submitting = signal(false);
+
+  async confirmAcceptBet(
+    bet: BetModel,
+    userPlayerId: PlayerModel['id'],
+  ): Promise<void> {
+    this.acceptingBetId.set(bet.id);
+
+    const { userWager, userOpponentName, pointWord, thoseWord } =
+      getUserBetData(bet, userPlayerId);
+
+    confirmBackendAction({
+      confirmationHeaderText: 'Confirm Accept',
+      confirmationMessageText: `Are you sure you want to wager ${userWager} ${pointWord} against ${userOpponentName}? ${thoseWord} ${userWager} ${pointWord} will be tied up in the bet until the bet is resolved.`,
+      successMessageText: `ACCEPTED ${userOpponentName}'s bet`,
+      action: async () => this.betService.acceptBet(bet.id),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.submitting,
+      successNavigation: null,
+    });
+  }
+
+  async confirmRejectBet(
+    bet: BetModel,
+    userPlayerId: PlayerModel['id'],
+  ): Promise<void> {
+    this.rejectingBetId.set(bet.id);
+
+    const { userOpponentName } = getUserBetData(bet, userPlayerId);
+
+    confirmBackendAction({
+      confirmationHeaderText: 'Confirm Reject',
+      confirmationMessageText: `Are you sure you want to REJECT ${userOpponentName}'s bet request?`,
+      successMessageText: `REJECTED ${userOpponentName}'s bet`,
+      action: async () => this.betService.rejectBet(bet.id),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.submitting,
+      successNavigation: null,
+    });
+  }
 }

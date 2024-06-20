@@ -130,7 +130,7 @@ export default class ResolveBetsPageComponent {
 
   readonly submitting = signal(false);
 
-  readonly bets = toSignal(this.betService.allBets$);
+  readonly bets = toSignal(this.betService.allBetsForThisSession$);
 
   pushBet(betId: BetModel['id']) {
     confirmBackendAction({

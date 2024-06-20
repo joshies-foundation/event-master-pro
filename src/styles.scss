@@ -215,6 +215,16 @@ $sizeVariants: (
   color: var(--red-700);
 }
 
+.bg-none {
+  background: unset !important;
+}
+
+.hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .bg-header-footer-alpha {
     background-color: color-mix(
