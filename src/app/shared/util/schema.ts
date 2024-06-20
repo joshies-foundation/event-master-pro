@@ -1142,6 +1142,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_bet_canceled_by_gm: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
       submit_bet_opponent_won: {
         Args: {
           bet_id: number;
@@ -1155,12 +1161,6 @@ export type Database = {
         Returns: undefined;
       };
       submit_bet_requester_won: {
-        Args: {
-          bet_id: number;
-        };
-        Returns: undefined;
-      };
-      submit_bet_canceled_by_gm: {
         Args: {
           bet_id: number;
         };
@@ -1202,7 +1202,8 @@ export type Database = {
         | 'requester_won'
         | 'opponent_won'
         | 'push';
-      bet_type: 'duel' | 'special_space_event';
+      bet_subtype: 'player_loses';
+      bet_type: 'duel' | 'special_space_event' | 'chaos_space_event';
       chaos_space_event_type:
         | 'everyone_gains_points_based_on_rank'
         | 'everyone_loses_percentage_of_their_points'

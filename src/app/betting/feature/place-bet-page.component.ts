@@ -21,6 +21,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { BetService } from '../../shared/data-access/bet.service';
 import {
+  ChaosSpaceEventModel,
+  ChaosSpaceEventType,
   DuelModel,
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
@@ -176,6 +178,84 @@ import {
           />
         </label>
       }
+      @case (BetType.ChaosSpaceEvent) {
+        <!-- Chaos Space Event Dropdown -->
+        <label class="flex flex-column gap-2 mt-5">
+          Chaos Space Event
+          <p-dropdown
+            [options]="openChaosEvents()"
+            [(ngModel)]="selectedChaosEvent"
+            optionLabel="template.name"
+            styleClass="w-full"
+            emptyMessage="No open chaos space events"
+            placeholder="Select a chaos space event"
+          />
+        </label>
+
+        <!-- Subtype Radio Buttons -->
+        <div class="flex flex-wrap gap-3 mt-5">
+          <div class="flex align-items-center">
+            <label class="ml-2">
+              <p-radioButton
+                name="chaosBetSubtype"
+                value="playerLoses"
+                [(ngModel)]="selectedChaosBetSubtype"
+                styleClass="w-full"
+              />
+              Selected Player's Result
+            </label>
+          </div>
+          <!-- <div class="flex align-items-center">
+            <label class="ml-2">
+              <p-radioButton
+                name="overUnder"
+                value="Under"
+                [(ngModel)]="selectedOuOption"
+                styleClass="w-full"
+              />
+              Under
+            </label>
+          </div> -->
+        </div>
+
+        <!-- Bet Player Dropdown -->
+        <label class="flex flex-column gap-2 mt-5">
+          Player
+          <p-dropdown
+            [options]="playerService.players() ?? []"
+            [(ngModel)]="selectedChaosPlayer"
+            optionLabel="display_name"
+            styleClass="flex"
+            placeholder="Select a player"
+          />
+        </label>
+
+        <!-- Subtype Radio Buttons -->
+        <div class="flex flex-wrap gap-3 mt-5">
+          <div class="flex align-items-center">
+            <label class="ml-2">
+              <p-radioButton
+                name="winsLoses"
+                value="Wins"
+                [(ngModel)]="selectedWinsLoses"
+                styleClass="w-full"
+              />
+              Wins
+            </label>
+          </div>
+          <div class="flex align-items-center">
+            <label class="ml-2">
+              <p-radioButton
+                name="winsLoses"
+                value="Loses"
+                [(ngModel)]="selectedWinsLoses"
+                styleClass="w-full"
+              />
+              Loses
+            </label>
+          </div>
+        </div>
+      }
       @default {
         <!-- Bet terms -->
         <label class="flex flex-column gap-2 mt-5">
@@ -257,7 +337,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaceBetPageComponent {
-  private readonly playerService = inject(PlayerService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -266,10 +345,14 @@ export default class PlaceBetPageComponent {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly duelService = inject(DuelService);
   private readonly gameboardService = inject(GameboardService);
+  readonly playerService = inject(PlayerService);
   readonly BetType = BetType;
 
   private readonly ssEvents = toSignal(
     this.gameboardService.specialSpaceEventsForThisTurn$,
+  );
+  private readonly chaosEvents = toSignal(
+    this.gameboardService.chaosSpaceEventsForThisTurn$,
   );
   readonly terms = signal('');
   readonly requesterBet = signal(1);
@@ -282,6 +365,7 @@ export default class PlaceBetPageComponent {
   readonly betTypes = [
     generateBetTypeObject(BetType.DuelWinner),
     generateBetTypeObject(BetType.SpecialSpaceEvent),
+    generateBetTypeObject(BetType.ChaosSpaceEvent),
     generateBetTypeObject(BetType.Manual),
   ];
   readonly selectedBetType = signal<BetType>(BetType.Manual);
@@ -292,6 +376,10 @@ export default class PlaceBetPageComponent {
   } | null>(null);
   readonly selectedOuOption = signal<'Over' | 'Under'>('Over');
   readonly ouValue = signal<number>(0.5);
+  readonly selectedChaosEvent = signal<ChaosSpaceEventModel | null>(null);
+  readonly selectedChaosBetSubtype = signal<'playerLoses'>('playerLoses');
+  readonly selectedChaosPlayer = signal<PlayerWithUserAndRankInfo | null>(null);
+  readonly selectedWinsLoses = signal<'Wins' | 'Loses'>('Loses');
 
   readonly playersWithoutUser = computed(() => {
     return this.playerService
@@ -312,6 +400,7 @@ export default class PlaceBetPageComponent {
     const userScore = this.userPlayer()?.score ?? 0;
     const opponentScore = this.selectedOpponent()?.score ?? 0;
 
+    // Duel bet requirements
     if (
       this.selectedBetType() === BetType.DuelWinner &&
       (!this.selectedDuel() ||
@@ -321,6 +410,7 @@ export default class PlaceBetPageComponent {
       return true;
     }
 
+    // Special space event bet requirements
     if (
       this.selectedBetType() === BetType.SpecialSpaceEvent &&
       (!this.selectedSsEvent() || !this.ouValue() || this.betInvolvesLoser())
@@ -328,10 +418,22 @@ export default class PlaceBetPageComponent {
       return true;
     }
 
+    if (
+      this.selectedBetType() === BetType.ChaosSpaceEvent &&
+      (!this.selectedChaosEvent() ||
+        !this.selectedChaosBetSubtype() ||
+        !this.selectedChaosPlayer() ||
+        this.betInvolvesLoser())
+    ) {
+      return true;
+    }
+
+    // Manual bet requirements
     if (this.selectedBetType() === BetType.Manual && !this.terms()) {
       return true;
     }
 
+    // Universal bet requirements
     return (
       this.submitting() ||
       !this.selectedOpponent() ||
@@ -386,6 +488,15 @@ export default class PlaceBetPageComponent {
       });
   });
 
+  readonly openChaosEvents = computed(() => {
+    return this.chaosEvents()?.filter(
+      (event) =>
+        event.status === SpaceEventStatus.WaitingToBegin &&
+        event.template?.type ===
+          ChaosSpaceEventType.EveryoneLosesPercentageOfTheirPointsBasedOnTaskFailure,
+    );
+  });
+
   private readonly betInvolvesLoser = computed(() => {
     if (this.selectedBetType() === BetType.DuelWinner) {
       const challengerPlayerId = this.selectedDuel()?.challenger?.player_id;
@@ -427,6 +538,14 @@ export default class PlaceBetPageComponent {
     if (this.selectedBetType() === BetType.SpecialSpaceEvent) {
       const eventPlayerId = this.selectedSsEvent()?.ssEvent?.player_id;
 
+      // If you are event player and you're betting the under
+      if (
+        this.selectedOuOption() === 'Under' &&
+        this.playerService.userPlayer()?.player_id === eventPlayerId
+      ) {
+        return true;
+      }
+
       // If bet opponent is event player and you're betting the over (i.e. they're betting their own under)
       if (
         this.selectedOuOption() === 'Over' &&
@@ -434,11 +553,23 @@ export default class PlaceBetPageComponent {
       ) {
         return true;
       }
+    }
 
-      // If you are event player and you're betting the under
+    if (this.selectedBetType() === BetType.ChaosSpaceEvent) {
+      const eventPlayerId = this.selectedChaosPlayer()?.player_id;
+
+      // If you are chosen player and you're betting on a loss
       if (
-        this.selectedOuOption() === 'Under' &&
+        this.selectedWinsLoses() === 'Loses' &&
         this.playerService.userPlayer()?.player_id === eventPlayerId
+      ) {
+        return true;
+      }
+
+      // If bet opponent is chosen player and you're betting on a win (i.e. they're betting to lose)
+      if (
+        this.selectedWinsLoses() === 'Wins' &&
+        this.selectedOpponent()?.player_id === eventPlayerId
       ) {
         return true;
       }
@@ -464,6 +595,10 @@ export default class PlaceBetPageComponent {
         this.selectedOuOption(),
         this.ouValue(),
         this.terms(),
+        this.selectedChaosBetSubtype(),
+        this.selectedChaosEvent(),
+        this.selectedChaosPlayer(),
+        this.selectedWinsLoses(),
       ),
       requester_player_id: this.userPlayer()?.player_id ?? 0,
       opponent_player_id: this.selectedOpponent()?.player_id ?? 0,
@@ -479,6 +614,10 @@ export default class PlaceBetPageComponent {
         this.selectedSsEvent()?.ssEvent,
         this.selectedOuOption(),
         this.ouValue(),
+        this.selectedChaosBetSubtype(),
+        this.selectedChaosEvent(),
+        this.selectedChaosPlayer(),
+        this.selectedWinsLoses(),
       ),
     };
 
