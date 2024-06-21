@@ -135,6 +135,7 @@ export enum BetType {
 
 export enum BetSubtype {
   PlayerLoses = 'player_loses',
+  NumberOfLosers = 'number_of_losers',
 }
 
 export type TTable = keyof Database['public']['Tables'];

@@ -31,6 +31,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import {
   BetStatus,
+  BetSubtype,
   BetType,
   DuelStatus,
   SpaceEventStatus,
@@ -44,21 +45,11 @@ import {
   generateBetDetails,
   generateBetTypeObject,
 } from '../util/place-bet-helpers';
+import { OverUnderComponent } from '../ui/over-under.component';
 
 @Component({
   selector: 'joshies-place-bet-page',
   standalone: true,
-  imports: [
-    PageHeaderComponent,
-    HeaderLinkComponent,
-    FormsModule,
-    ButtonModule,
-    InputTextareaModule,
-    CheckboxModule,
-    InputNumberModule,
-    DropdownModule,
-    RadioButtonModule,
-  ],
   template: `
     <joshies-page-header headerText="Place a Bet" alwaysSmall>
       <joshies-header-link
@@ -135,48 +126,10 @@ import {
           />
         </label>
 
-        <!-- Over/Under Radio Buttons -->
-        <div class="flex flex-wrap gap-3 mt-5">
-          <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="overUnder"
-                value="Over"
-                [(ngModel)]="selectedOuOption"
-                styleClass="w-full"
-              />
-              Over
-            </label>
-          </div>
-          <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="overUnder"
-                value="Under"
-                [(ngModel)]="selectedOuOption"
-                styleClass="w-full"
-              />
-              Under
-            </label>
-          </div>
-        </div>
-
-        <!-- Over/Under Value -->
-        <label class="flex flex-column gap-2 mt-5">
-          Over/Under Value
-          <p-inputNumber
-            [(ngModel)]="ouValue"
-            [showButtons]="true"
-            buttonLayout="horizontal"
-            [step]="0.5"
-            min="0.5"
-            [allowEmpty]="false"
-            incrementButtonIcon="pi pi-plus"
-            decrementButtonIcon="pi pi-minus"
-            inputStyleClass="w-full font-semibold text-right"
-            styleClass="w-full"
-          />
-        </label>
+        <joshies-over-under
+          [(ouValue)]="ouValue"
+          [(selectedOuOption)]="selectedOuOption"
+        />
       }
       @case (BetType.ChaosSpaceEvent) {
         <!-- Chaos Space Event Dropdown -->
@@ -198,63 +151,73 @@ import {
             <label class="ml-2">
               <p-radioButton
                 name="chaosBetSubtype"
-                value="playerLoses"
+                [value]="BetSubtype.NumberOfLosers"
+                [(ngModel)]="selectedChaosBetSubtype"
+                styleClass="w-full"
+              />
+              Number of Losers
+            </label>
+          </div>
+          <div class="flex align-items-center">
+            <label class="ml-2">
+              <p-radioButton
+                name="chaosBetSubtype"
+                [value]="BetSubtype.PlayerLoses"
                 [(ngModel)]="selectedChaosBetSubtype"
                 styleClass="w-full"
               />
               Selected Player's Result
             </label>
           </div>
-          <!-- <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="overUnder"
-                value="Under"
-                [(ngModel)]="selectedOuOption"
-                styleClass="w-full"
-              />
-              Under
-            </label>
-          </div> -->
         </div>
 
-        <!-- Bet Player Dropdown -->
-        <label class="flex flex-column gap-2 mt-5">
-          Player
-          <p-dropdown
-            [options]="playerService.players() ?? []"
-            [(ngModel)]="selectedChaosPlayer"
-            optionLabel="display_name"
-            styleClass="flex"
-            placeholder="Select a player"
-          />
-        </label>
+        @switch (selectedChaosBetSubtype()) {
+          @case (BetSubtype.NumberOfLosers) {
+            <joshies-over-under
+              [(ouValue)]="ouValue"
+              [(selectedOuOption)]="selectedOuOption"
+            />
+          }
+          @case (BetSubtype.PlayerLoses) {
+            <!-- Bet Player Dropdown -->
+            <label class="flex flex-column gap-2 mt-5">
+              Player
+              <p-dropdown
+                [options]="playerService.players() ?? []"
+                [(ngModel)]="selectedChaosPlayer"
+                optionLabel="display_name"
+                styleClass="flex"
+                placeholder="Select a player"
+              />
+            </label>
 
-        <!-- Subtype Radio Buttons -->
-        <div class="flex flex-wrap gap-3 mt-5">
-          <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="winsLoses"
-                value="Wins"
-                [(ngModel)]="selectedWinsLoses"
-                styleClass="w-full"
-              />
-              Wins
-            </label>
-          </div>
-          <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="winsLoses"
-                value="Loses"
-                [(ngModel)]="selectedWinsLoses"
-                styleClass="w-full"
-              />
-              Loses
-            </label>
-          </div>
-        </div>
+            <!-- Wins/Loses Radio Buttons -->
+            <div class="flex flex-wrap gap-3 mt-5">
+              <div class="flex align-items-center">
+                <label class="ml-2">
+                  <p-radioButton
+                    name="winsLoses"
+                    value="Wins"
+                    [(ngModel)]="selectedWinsLoses"
+                    styleClass="w-full"
+                  />
+                  Wins
+                </label>
+              </div>
+              <div class="flex align-items-center">
+                <label class="ml-2">
+                  <p-radioButton
+                    name="winsLoses"
+                    value="Loses"
+                    [(ngModel)]="selectedWinsLoses"
+                    styleClass="w-full"
+                  />
+                  Loses
+                </label>
+              </div>
+            </div>
+          }
+        }
       }
       @default {
         <!-- Bet terms -->
@@ -335,6 +298,18 @@ import {
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    PageHeaderComponent,
+    HeaderLinkComponent,
+    FormsModule,
+    ButtonModule,
+    InputTextareaModule,
+    CheckboxModule,
+    InputNumberModule,
+    DropdownModule,
+    RadioButtonModule,
+    OverUnderComponent,
+  ],
 })
 export default class PlaceBetPageComponent {
   private readonly messageService = inject(MessageService);
@@ -347,6 +322,7 @@ export default class PlaceBetPageComponent {
   private readonly gameboardService = inject(GameboardService);
   readonly playerService = inject(PlayerService);
   readonly BetType = BetType;
+  readonly BetSubtype = BetSubtype;
 
   private readonly ssEvents = toSignal(
     this.gameboardService.specialSpaceEventsForThisTurn$,
@@ -377,7 +353,9 @@ export default class PlaceBetPageComponent {
   readonly selectedOuOption = signal<'Over' | 'Under'>('Over');
   readonly ouValue = signal<number>(0.5);
   readonly selectedChaosEvent = signal<ChaosSpaceEventModel | null>(null);
-  readonly selectedChaosBetSubtype = signal<'playerLoses'>('playerLoses');
+  readonly selectedChaosBetSubtype = signal<BetSubtype>(
+    BetSubtype.NumberOfLosers,
+  );
   readonly selectedChaosPlayer = signal<PlayerWithUserAndRankInfo | null>(null);
   readonly selectedWinsLoses = signal<'Wins' | 'Loses'>('Loses');
 
@@ -418,14 +396,22 @@ export default class PlaceBetPageComponent {
       return true;
     }
 
-    if (
-      this.selectedBetType() === BetType.ChaosSpaceEvent &&
-      (!this.selectedChaosEvent() ||
-        !this.selectedChaosBetSubtype() ||
-        !this.selectedChaosPlayer() ||
-        this.betInvolvesLoser())
-    ) {
-      return true;
+    // Chaos space event bet requirements
+    if (this.selectedBetType() === BetType.ChaosSpaceEvent) {
+      // All such bets require an event and a subtype
+      if (!this.selectedChaosEvent() || !this.selectedChaosBetSubtype()) {
+        return true;
+      }
+
+      // number_of_losers bets have no further requirements
+
+      // player_loses bet requirements
+      if (
+        this.selectedChaosBetSubtype() === BetSubtype.PlayerLoses &&
+        (!this.selectedChaosPlayer() || this.betInvolvesLoser())
+      ) {
+        return true;
+      }
     }
 
     // Manual bet requirements
