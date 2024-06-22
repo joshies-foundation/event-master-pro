@@ -57,6 +57,7 @@ import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
 import { DuelService } from '../../../shared/data-access/duel.service';
 import { DuelTableAvatarsComponent } from '../../../shared/ui/duel-table-avatars.component';
 import { SpaceEventTableComponent } from '../../ui/space-event-table.component';
+import { CountdownTimerComponent } from '../../../shared/ui/countdown-timer.component';
 
 interface Countdown {
   days: number;
@@ -92,6 +93,7 @@ interface Countdown {
     StatusTagComponent,
     DuelTableAvatarsComponent,
     SpaceEventTableComponent,
+    CountdownTimerComponent,
   ],
 })
 export default class HomePageComponent {
@@ -224,7 +226,7 @@ export default class HomePageComponent {
       players: this.playerService.players()!,
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userId: this.authService.user()?.id,
-      countdown: this.countdown(),
+      countdown: this.sessionService.countdown(),
       specialSpaceEvents: this.specialSpaceEvents(),
       allSpecialSpaceEventsAreResolved: this.allSpecialSpaceEventsAreResolved(),
       chaosSpaceEvents: this.chaosSpaceEvents(),
