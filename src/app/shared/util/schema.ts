@@ -1142,6 +1142,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_bet_canceled_by_gm: {
+        Args: {
+          bet_id: number;
+        };
+        Returns: undefined;
+      };
       submit_bet_opponent_won: {
         Args: {
           bet_id: number;
@@ -1155,12 +1161,6 @@ export type Database = {
         Returns: undefined;
       };
       submit_bet_requester_won: {
-        Args: {
-          bet_id: number;
-        };
-        Returns: undefined;
-      };
-      submit_bet_canceled_by_gm: {
         Args: {
           bet_id: number;
         };
@@ -1188,6 +1188,12 @@ export type Database = {
         Args: {
           special_space_event_id: number;
           score: number;
+        };
+        Returns: undefined;
+      };
+      update_event_teams: {
+        Args: {
+          event_team_updates: Json;
         };
         Returns: undefined;
       };

@@ -84,10 +84,9 @@ import { EventModel } from '../../shared/util/supabase-types';
           let first = $first;
           let index = $index
         ) {
-          <a
-            class="w-full h-5rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline surface-card"
+          <div
+            class="w-full h-6rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline surface-card"
             [class.mt-2]="first"
-            [routerLink]="[event.id]"
             cdkDrag
             [cdkDragDisabled]="
               !userIsGameMaster() || index + 1 < currentRoundNumber()
@@ -113,14 +112,31 @@ import { EventModel } from '../../shared/util/supabase-types';
 
               <!-- Event Description -->
               <p
-                class="m-0 w-13rem white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                class="mt-2 w-11rem white-space-nowrap overflow-hidden text-overflow-ellipsis"
               >
                 {{ event.description }}
               </p>
             </div>
-            <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
-            <div class="surface-200 h-5rem w-full" *cdkDragPlaceholder></div>
-          </a>
+
+            <!-- Event Edit Links -->
+            @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
+              <div class="flex flex-column">
+                <a
+                  class="text-center px-2 py-1 mb-2 bg-primary border-round-md"
+                  [routerLink]="'edit/' + [event.id]"
+                >
+                  <i class="pi pi-pencil"></i>
+                </a>
+                <a
+                  class="text-center px-2 py-1 bg-primary border-round-md"
+                  [routerLink]="'teams/' + [event.id]"
+                >
+                  <i class="pi pi-users"></i>
+                </a>
+              </div>
+              <div class="surface-200 h-6rem w-full" *cdkDragPlaceholder></div>
+            }
+          </div>
         } @empty {
           <p class="mt-5 text-center font-italic text-400">No events</p>
         }

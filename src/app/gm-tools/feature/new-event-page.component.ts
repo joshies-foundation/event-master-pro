@@ -76,7 +76,7 @@ export default class NewEventPageComponent {
       eventFormValue: this.eventFormValue,
     } = eventFormFactory(
       async (event) => this.eventService.createEvent(event),
-      `Create Event`,
+      `Create Event & Select Teams`,
       (name) => `${name} event created`,
       this.formBuilder,
       this.submitting,

@@ -193,15 +193,6 @@ export function eventFormFactory(
     confirmBackendAction({
       action: () =>
         saveMethod({
-          round_number:
-            (eventService
-              .events()
-              ?.map((ev) => ev.round_number)
-              ?.reduce(
-                (maxRound, currentRound) =>
-                  currentRound > maxRound ? currentRound : maxRound,
-                0,
-              ) ?? 0) + 1,
           name,
           description: description ?? null,
           rules: rules ?? null,
@@ -212,6 +203,7 @@ export function eventFormFactory(
           lower_scores_are_better: lowerScoresAreBetter,
           format,
           session_id: sessionId,
+          round_number: -1,
         }),
       successMessageText: successText(name),
       successNavigation: '..',
