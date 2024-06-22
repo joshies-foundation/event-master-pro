@@ -113,6 +113,11 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./resolve-bets-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+  {
+    path: 'bet-bulk-cancel',
+    loadComponent: () => import('./bet-bulk-cancel-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 
   // players
   {

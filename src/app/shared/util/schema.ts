@@ -1047,6 +1047,13 @@ export type Database = {
       };
     };
     Functions: {
+      bulk_cancel_bets: {
+        Args: {
+          player_id: number;
+          includeactive: boolean;
+        };
+        Returns: undefined;
+      };
       create_session: {
         Args: {
           session_name: string;
