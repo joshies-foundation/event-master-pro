@@ -6,11 +6,28 @@ import {
   SessionStatus,
 } from '../util/supabase-helpers';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
-import { Observable, map, shareReplay, switchMap } from 'rxjs';
+import {
+  Observable,
+  concat,
+  map,
+  of,
+  shareReplay,
+  switchMap,
+  takeWhile,
+  timer,
+} from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SessionModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
 import { GameStateService } from './game-state.service';
+import { whenNotNull } from '../util/rxjs-helpers';
+
+export interface Countdown {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +49,34 @@ export class SessionService {
     );
 
   readonly session: Signal<SessionModel | undefined> = toSignal(this.session$);
+
+  private readonly countdown$: Observable<Countdown | null> =
+    this.session$.pipe(
+      whenNotNull((session) =>
+        concat(
+          timer(0, 1000).pipe(
+            map(
+              () =>
+                (new Date(session.start_date).getTime() - Date.now()) / 1000,
+            ),
+            takeWhile((secondsRemaining) => secondsRemaining >= 0),
+            map(
+              (secondsRemaining): Countdown => ({
+                days: Math.floor(secondsRemaining / (3600 * 24)),
+                hours: Math.floor((secondsRemaining % (3600 * 24)) / 3600),
+                minutes: Math.floor((secondsRemaining % 3600) / 60),
+                seconds: Math.floor(secondsRemaining % 60),
+              }),
+            ),
+          ),
+          of(null),
+        ),
+      ),
+    );
+
+  readonly countdown: Signal<Countdown | null | undefined> = toSignal(
+    this.countdown$,
+  );
 
   async createSession(
     sessionName: string,

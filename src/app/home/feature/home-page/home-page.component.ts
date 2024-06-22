@@ -24,9 +24,8 @@ import { SessionService } from '../../../shared/data-access/session.service';
 import { RankingsTableComponent } from '../../../shared/ui/rankings-table.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { GameStateService } from '../../../shared/data-access/game-state.service';
-import { concat, map, Observable, of, switchMap, takeWhile, timer } from 'rxjs';
+import { of, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { whenNotNull } from '../../../shared/util/rxjs-helpers';
 import {
   DuelStatus,
   GameboardSpaceEffect,
@@ -48,13 +47,7 @@ import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
 import { DuelService } from '../../../shared/data-access/duel.service';
 import { DuelTableAvatarsComponent } from '../../../shared/ui/duel-table-avatars.component';
 import { SpaceEventTableComponent } from '../../ui/space-event-table.component';
-
-interface Countdown {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
+import { CountdownTimerComponent } from '../../../shared/ui/countdown-timer.component';
 
 @Component({
   selector: 'joshies-home-page',
@@ -83,6 +76,7 @@ interface Countdown {
     StatusTagComponent,
     DuelTableAvatarsComponent,
     SpaceEventTableComponent,
+    CountdownTimerComponent,
   ],
 })
 export default class HomePageComponent {
@@ -104,34 +98,6 @@ export default class HomePageComponent {
     this.gameStateService.sessionIsInProgress()
       ? 'Current Rankings'
       : 'Final Results',
-  );
-
-  private readonly countdown$: Observable<Countdown | null> =
-    this.sessionService.session$.pipe(
-      whenNotNull((session) =>
-        concat(
-          timer(0, 1000).pipe(
-            map(
-              () =>
-                (new Date(session.start_date).getTime() - Date.now()) / 1000,
-            ),
-            takeWhile((secondsRemaining) => secondsRemaining >= 0),
-            map(
-              (secondsRemaining): Countdown => ({
-                days: Math.floor(secondsRemaining / (3600 * 24)),
-                hours: Math.floor((secondsRemaining % (3600 * 24)) / 3600),
-                minutes: Math.floor((secondsRemaining % 3600) / 60),
-                seconds: Math.floor(secondsRemaining % 60),
-              }),
-            ),
-          ),
-          of(null),
-        ),
-      ),
-    );
-
-  private readonly countdown: Signal<Countdown | null | undefined> = toSignal(
-    this.countdown$,
   );
 
   readonly specialSpaceEvents = toSignal(
@@ -192,7 +158,7 @@ export default class HomePageComponent {
       players: this.playerService.players()!,
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userId: this.authService.user()?.id,
-      countdown: this.countdown(),
+      countdown: this.sessionService.countdown(),
       specialSpaceEvents: this.specialSpaceEvents(),
       allSpecialSpaceEventsAreResolved: this.allSpecialSpaceEventsAreResolved(),
       chaosSpaceEvents: this.chaosSpaceEvents(),
