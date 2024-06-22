@@ -14,12 +14,21 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
   imports: [NgClass, RouterLink, CardLinkComponent, RouterLink],
   template: `
     @if (headerText()) {
-      <h3 class="mt-4 mb-2">
-        @if (headerIconClass()) {
-          <i [ngClass]="headerIconClass()"></i>
-        }
-        {{ headerText() }}
-      </h3>
+      @if (isDashboardCard()) {
+        <h2 class="mt-0 mb-2">
+          @if (headerIconClass()) {
+            <i [ngClass]="headerIconClass()"></i>
+          }
+          {{ headerText() }}
+        </h2>
+      } @else {
+        <h3 class="mt-4 mb-2">
+          @if (headerIconClass()) {
+            <i [ngClass]="headerIconClass()"></i>
+          }
+          {{ headerText() }}
+        </h3>
+      }
     }
 
     <div class="surface-50 border-round-xl" [class.padded]="padded()">
@@ -45,4 +54,5 @@ export class CardComponent {
   headerIconClass = input<string>();
   padded = input(false, { transform: booleanAttribute });
   links = input<CardLinkModel[]>();
+  isDashboardCard = input(false, { transform: booleanAttribute });
 }
