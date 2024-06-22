@@ -150,37 +150,35 @@ export default class GmToolsPageComponent {
   };
 
   readonly sessionLinks: Signal<CardLinkModel[]> = computed(
-    (): CardLinkModel[] => {
-      return [
-        {
-          text: 'Manage Gameboard Spaces',
-          iconClass: 'ci-space-entry bg-gray-500',
-          routerLink: './space-types',
-        },
-        {
-          text: 'Manage Special Space Events',
-          iconClass: 'pi pi-question-circle bg-green-500',
-          routerLink: './special-space-event-templates',
-        },
-        {
-          text: 'Manage Chaos Space Events',
-          iconClass: 'pi pi-exclamation-circle surface-0',
-          routerLink: './chaos-space-event-templates',
-        },
-        {
-          text: 'Manage Events',
-          iconClass: 'pi pi-flag bg-purple-500',
-          routerLink: './events',
-        },
-        {
-          text: 'Create Brackets',
-          iconClass: 'pi pi-sitemap bg-yellow-500',
-          routerLink: './bracket',
-        },
-        ...this.sessionStatusDependentLinks[
-          this.gameStateService.sessionStatus() ?? 'undefined'
-        ],
-      ];
-    },
+    (): CardLinkModel[] => [
+      {
+        text: 'Manage Gameboard Spaces',
+        iconClass: 'ci-space-entry bg-gray-500',
+        routerLink: './space-types',
+      },
+      {
+        text: 'Manage Special Space Events',
+        iconClass: 'pi pi-question-circle bg-green-500',
+        routerLink: './special-space-event-templates',
+      },
+      {
+        text: 'Manage Chaos Space Events',
+        iconClass: 'pi pi-exclamation-circle surface-0',
+        routerLink: './chaos-space-event-templates',
+      },
+      {
+        text: 'Manage Events',
+        iconClass: 'pi pi-flag bg-purple-500',
+        routerLink: './events',
+      },
+      {
+        text: 'Create Brackets',
+        iconClass: 'pi pi-sitemap bg-yellow-500',
+        routerLink: './bracket',
+      },
+      ...this.sessionStatusDependentLinks[
+        this.gameStateService.sessionStatus() ?? 'undefined'
+      ],
+    ],
   );
 }

@@ -27,7 +27,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { resizeImage } from '../util/image-helpers';
 import { MessageService } from 'primeng/api';
-import { PlayerService, PlayerWithUserInfo } from './player.service';
+import { PlayerService } from './player.service';
 
 export interface EventParticipantWithPlayerInfo {
   participant_id: number;
@@ -142,7 +142,7 @@ export class EventService {
   readonly events = toSignal(this.events$);
 
   readonly eventTeams$: Observable<EventTeamModel[] | null> = this.events$.pipe(
-    map((events) => events?.map((ev) => ev.id)),
+    map((events) => events?.map((ev) => ev.id) ?? null),
     whenNotNull((eventIds) =>
       realtimeUpdatesFromTable(
         this.supabase,
@@ -156,19 +156,27 @@ export class EventService {
   readonly eventTeams = toSignal(this.eventTeams$);
 
   readonly eventTeamsWithParticipantInfo: Signal<
-    EventTeamWithParticipantInfo[] | undefined
-  > = computed(() =>
-    this.eventTeams()?.map((eventTeam) => ({
+    EventTeamWithParticipantInfo[] | undefined | null
+  > = computed(() => {
+    const eventTeams = this.eventTeams();
+    const eventParticipantsWithPlayerInfo =
+      this.eventParticipantsWithPlayerInfo();
+
+    if (!eventTeams) return eventTeams;
+    if (!eventParticipantsWithPlayerInfo)
+      return eventParticipantsWithPlayerInfo;
+
+    return eventTeams.map((eventTeam) => ({
       ...eventTeam,
       participants: this.eventParticipantsWithPlayerInfo()?.filter(
         (eventParticipant) => eventParticipant.team_id === eventTeam.id,
       ),
-    })),
-  );
+    }));
+  });
 
   readonly eventParticipants$: Observable<EventParticipantModel[] | null> =
     this.eventTeams$.pipe(
-      map((eventTeams) => eventTeams?.map((eventTeam) => eventTeam.id)),
+      map((eventTeams) => eventTeams?.map((eventTeam) => eventTeam.id) ?? null),
       whenNotNull((eventTeamIds) =>
         realtimeUpdatesFromTable(
           this.supabase,

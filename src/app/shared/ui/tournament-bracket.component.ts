@@ -11,6 +11,7 @@ import { EventTeamModel } from '../util/supabase-types';
 import { EventService } from '../data-access/event.service';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
+import { ParticipantListPipe } from './participant-list.pipe';
 
 interface EventTeamModelWithWinnerFlag extends EventTeamModel {
   isWinner: boolean;
@@ -46,17 +47,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
             }
           </p-avatarGroup>
           <span class="text-800">
-            @for (
-              participant of node.data.participants;
-              track participant.participant_id;
-              let index = $index, last = $last
-            ) {
-              {{
-                (last && index !== 0 ? '& ' : '') +
-                  participant.display_name +
-                  (index < node.data.participants.length - 2 ? ',' : '')
-              }}
-            }
+            {{ node.data.participants | participantList }}
           </span>
         </div>
       </ng-template>
@@ -70,7 +61,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TreeModule, AvatarModule, AvatarGroupModule],
+  imports: [TreeModule, AvatarModule, AvatarGroupModule, ParticipantListPipe],
 })
 export class TournamentBracketComponent {
   private readonly eventService = inject(EventService);

@@ -1,9 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  WritableSignal,
-  computed,
   inject,
+  signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -13,7 +12,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.component';
 import { EventService } from '../../shared/data-access/event.service';
 import { DropdownModule } from 'primeng/dropdown';
-import { EventModel } from '../../shared/util/supabase-types';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'joshies-create-bracket-page',
@@ -27,30 +26,30 @@ import { EventModel } from '../../shared/util/supabase-types';
       />
     </joshies-page-header>
     <div class="flex flex-column mt-5 font-semibold">
-      @if (events()) {
+      @if (events(); as events) {
         <p-dropdown
-          [options]="events()!"
-          [(ngModel)]="selectedEvent"
-          optionLabel="id"
+          [options]="events"
+          [(ngModel)]="selectedEventId"
+          optionValue="id"
+          optionLabel="name"
           placeholder="Select an Event"
           styleClass=" w-full"
-        >
-          <ng-template let-ev pTemplate="selectedItem">
-            <div class="flex align-items-center gap-2">
-              <div>{{ ev.name }}</div>
-            </div>
-          </ng-template>
-          <ng-template let-ev pTemplate="item">
-            <div class="flex align-items-center gap-2">
-              <div>{{ ev.name }}</div>
-            </div>
-          </ng-template>
-        </p-dropdown>
+        />
+
+        @if (selectedEventId(); as selectedEventId) {
+          <joshies-tournament-bracket [eventId]="selectedEventId" />
+        } @else {
+          <p class="font-normal">Select an event to view its bracket here</p>
+        }
+      } @else if (events === null) {
+        <p class="mt-6 pt-6 text-center text-500 font-italic">
+          No active session
+        </p>
+      } @else {
+        <p-skeleton height="2rem" styleClass="mt-5" />
       }
     </div>
-    <joshies-tournament-bracket [eventId]="selectedEvent.id!" />
   `,
-  styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
@@ -60,18 +59,12 @@ import { EventModel } from '../../shared/util/supabase-types';
     InputNumberModule,
     TournamentBracketComponent,
     DropdownModule,
+    SkeletonModule,
   ],
 })
 export default class CreateBracketPageComponent {
   private readonly eventService = inject(EventService);
 
-  readonly events = computed(() => this.eventService.events());
-  selectedEvent: Partial<EventModel> = {};
-
-  updateNumberOfTeams(
-    newNumberOfTeams: number,
-    numberOfTeamsSignal: WritableSignal<number>,
-  ) {
-    numberOfTeamsSignal.set(newNumberOfTeams);
-  }
+  readonly events = this.eventService.events;
+  readonly selectedEventId = signal<number | null>(null);
 }
