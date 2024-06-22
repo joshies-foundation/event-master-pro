@@ -1,6 +1,7 @@
 import { PlayerWithUserAndRankInfo } from '../../shared/data-access/player.service';
-import { BetType } from '../../shared/util/supabase-helpers';
+import { BetSubtype, BetType } from '../../shared/util/supabase-helpers';
 import {
+  ChaosSpaceEventModel,
   DuelModel,
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
@@ -12,6 +13,10 @@ export function generateBetDetails(
   ssEvent?: SpecialSpaceEventModel | null | undefined,
   ouOption?: 'Over' | 'Under',
   ouValue?: number,
+  betSubtype?: BetSubtype,
+  chaosEvent?: ChaosSpaceEventModel | null | undefined,
+  chaosPlayer?: PlayerWithUserAndRankInfo | null,
+  winsLoses?: 'Wins' | 'Loses',
 ): BetDetails {
   switch (betType) {
     case BetType.DuelWinner:
@@ -25,6 +30,24 @@ export function generateBetDetails(
         directionIsOver: ouOption === 'Over',
         ouValue: ouValue ?? 0.5,
       };
+    case BetType.ChaosSpaceEvent:
+      if (betSubtype === BetSubtype.PlayerLoses) {
+        return {
+          chaosEventId: chaosEvent?.id ?? 0,
+          subtype: BetSubtype.PlayerLoses,
+          playerId: chaosPlayer?.player_id ?? 0,
+          isLoser: winsLoses === 'Loses',
+        };
+      }
+      if (betSubtype === BetSubtype.NumberOfLosers) {
+        return {
+          chaosEventId: chaosEvent?.id ?? 0,
+          subtype: BetSubtype.NumberOfLosers,
+          directionIsOver: ouOption === 'Over',
+          ouValue: ouValue ?? 0.5,
+        };
+      }
+      return {};
     default:
       return {};
   }
@@ -38,6 +61,10 @@ export function generateBetDescription(
   ouOption?: 'Over' | 'Under',
   ouValue?: number,
   terms: string = '',
+  betSubtype?: BetSubtype,
+  chaosEvent?: ChaosSpaceEventModel | null | undefined,
+  chaosPlayer?: PlayerWithUserAndRankInfo | null,
+  winsLoses?: 'Wins' | 'Loses',
 ) {
   switch (betType) {
     case BetType.DuelWinner:
@@ -59,6 +86,28 @@ export function generateBetDescription(
         ssEvent?.template?.name +
         ' Event'
       );
+    case BetType.ChaosSpaceEvent:
+      if (betSubtype === BetSubtype.PlayerLoses) {
+        return (
+          chaosPlayer?.display_name +
+          ' ' +
+          winsLoses +
+          ' in the ' +
+          chaosEvent?.template?.name +
+          ' Event'
+        );
+      }
+      if (betSubtype === BetSubtype.NumberOfLosers) {
+        return (
+          ouOption +
+          ' ' +
+          ouValue +
+          ' losers in the ' +
+          chaosEvent?.template?.name +
+          ' Event'
+        );
+      }
+      return '';
     default:
       return terms;
   }
@@ -72,6 +121,11 @@ export function generateBetTypeObject(type: BetType) {
       return {
         betType: type,
         betTypeString: 'Special Space Event Over/Under',
+      };
+    case BetType.ChaosSpaceEvent:
+      return {
+        betType: type,
+        betTypeString: 'Chaos Space Event',
       };
     default:
       return { betType: BetType.Manual, betTypeString: 'Manual' };
@@ -89,8 +143,31 @@ type SpecialSpaceEventBetDetails = {
   ouValue: number;
 };
 
+type ChaosSpaceEventBetDetails<T extends BetSubtype> =
+  T extends BetSubtype.PlayerLoses
+    ? ChaosSpaceEventPlayerLosesBetDetails
+    : T extends BetSubtype.NumberOfLosers
+      ? ChaosSpaceEventNummberOfLosersBetDetails
+      : Record<string, never>;
+
+type ChaosSpaceEventPlayerLosesBetDetails = {
+  chaosEventId: ChaosSpaceEventModel['id'];
+  subtype: BetSubtype.PlayerLoses;
+  playerId: number;
+  isLoser: boolean;
+};
+
+type ChaosSpaceEventNummberOfLosersBetDetails = {
+  chaosEventId: ChaosSpaceEventModel['id'];
+  subtype: BetSubtype.NumberOfLosers;
+  directionIsOver: boolean;
+  ouValue: number;
+};
+
 type BetDetails<T extends BetType = BetType> = T extends BetType.DuelWinner
   ? DuelWinnerBetDetails
   : T extends BetType.SpecialSpaceEvent
     ? SpecialSpaceEventBetDetails
-    : Record<string, never>;
+    : T extends BetType.ChaosSpaceEvent
+      ? ChaosSpaceEventBetDetails<BetSubtype>
+      : Record<string, never>;
