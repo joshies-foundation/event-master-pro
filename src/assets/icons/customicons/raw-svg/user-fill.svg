@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   viewBox="0 0 15.5 14.5"
+   viewBox="0 0 17.104584 16"
    version="1.1"
    id="svg2119"
    sodipodi:docname="user-fill.svg"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
-   width="15.5"
-   height="14.5"
+   width="17.104584"
+   height="16"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -24,22 +24,25 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="16"
-     inkscape:cx="7.9375"
+     inkscape:cx="1.96875"
      inkscape:cy="14.625"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
-     inkscape:window-x="-8"
-     inkscape:window-y="-3"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2119" />
   <g
      id="g2854"
-     transform="translate(-4.25,-4.7509615)">
+     transform="matrix(1.1035215,0,0,1.1035215,-4.6899664,-5.2427882)"
+     style="stroke-width:0.90619">
     <path
        id="path2114"
-       d="M 11.466797,4.7890625 A 3.75,3.75 0 0 0 12,12.25 3.75,3.75 0 0 0 15.75,8.5 3.75,3.75 0 0 0 11.466797,4.7890625 Z" />
+       d="M 11.466797,4.7890625 A 3.75,3.75 0 0 0 12,12.25 3.75,3.75 0 0 0 15.75,8.5 3.75,3.75 0 0 0 11.466797,4.7890625 Z"
+       style="stroke-width:0.90619" />
     <path
        id="path2116"
-       d="m 12,13.75 c -2.3199977,0 -7.75,5e-6 -7.75,4.75 A 0.75,0.75 0 0 0 5,19.25 h 14 a 0.75,0.75 0 0 0 0.75,-0.75 c 0,-4.749995 -5.430002,-4.75 -7.75,-4.75 z" />
+       d="m 12,13.75 c -2.3199977,0 -7.75,5e-6 -7.75,4.75 A 0.75,0.75 0 0 0 5,19.25 h 14 a 0.75,0.75 0 0 0 0.75,-0.75 c 0,-4.749995 -5.430002,-4.75 -7.75,-4.75 z"
+       style="stroke-width:0.90619" />
   </g>
 </svg>
