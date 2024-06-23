@@ -40,7 +40,10 @@ import { ConfirmationService, MessageService } from 'primeng/api';
       />
     </joshies-page-header>
 
-    <p class="mt-5">Cancel all bets that are pending or (optionally) active.</p>
+    <p class="mt-5">
+      Cancel all bets where the given user is the requester. Can choose to
+      cancel just pending (P) bets or all bets that are pending or active (A).
+    </p>
 
     @if (displayPlayers(); as players) {
       <p-table
@@ -51,9 +54,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
       >
         <ng-template pTemplate="header">
           <tr>
-            <th>Player</th>
-            <th class="text-right">Pending</th>
-            <th class="text-right">Active</th>
+            <th pFrozenColumn>Player</th>
+            <th class="text-right">P</th>
+            <th class="text-right">A</th>
             <th></th>
           </tr>
         </ng-template>
@@ -64,7 +67,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
         >
           <tr>
             <!-- Player -->
-            <td>
+            <td pFrozenColumn>
               <div class="flex align-items-center gap-2 -py-2">
                 <img
                   [ngSrc]="displayPlayer.player.avatar_url"
@@ -89,25 +92,25 @@ import { ConfirmationService, MessageService } from 'primeng/api';
                 class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
               >
                 <p-button
-                  label="Cancel Pending"
+                  label="Cancel Pend."
                   icon="pi pi-times"
                   styleClass="w-full"
                   [loading]="submitting()"
                   (onClick)="
-                    cancelPending(
+                    confirmCancelPending(
                       displayPlayer.player.player_id,
                       displayPlayer.player.display_name
                     )
                   "
                 />
                 <p-button
-                  label="Cancel All Bets"
+                  label="Cancel All"
                   severity="danger"
                   icon="pi pi-trash"
                   styleClass="w-full"
                   [loading]="submitting()"
                   (onClick)="
-                    cancelAll(
+                    confirmCancelAll(
                       displayPlayer.player.player_id,
                       displayPlayer.player.display_name
                     )
@@ -159,7 +162,7 @@ export default class BetBulkCancelPageComponent {
     });
   });
 
-  cancelPending(
+  confirmCancelPending(
     playerId: PlayerModel['id'],
     display_name: UserModel['display_name'],
   ) {
@@ -175,7 +178,7 @@ export default class BetBulkCancelPageComponent {
     });
   }
 
-  cancelAll(
+  confirmCancelAll(
     playerId: PlayerModel['id'],
     display_name: UserModel['display_name'],
   ) {
