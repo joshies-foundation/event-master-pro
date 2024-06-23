@@ -37,6 +37,7 @@ export interface PlayerWithUserInfo {
   display_name: string;
   avatar_url: string;
   can_edit_profile: boolean;
+  can_place_bets: boolean;
 }
 
 export interface PlayerWithUserAndRankInfo extends PlayerWithUserInfo {
@@ -100,6 +101,7 @@ export class PlayerService {
                 display_name: user.display_name,
                 avatar_url: user.avatar_url,
                 can_edit_profile: user.can_edit_profile,
+                can_place_bets: user.can_place_bets,
               };
             })
             .sort((a, b) => b.score - a.score),

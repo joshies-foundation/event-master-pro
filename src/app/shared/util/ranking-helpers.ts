@@ -33,6 +33,7 @@ export function addRankingInfoToPlayers(
             ? '💩'
             : undefined,
       can_edit_profile: player.can_edit_profile,
+      can_place_bets: player.can_place_bets,
     };
   });
 }

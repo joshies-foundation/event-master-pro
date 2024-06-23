@@ -3,6 +3,7 @@ import {
   redirectLoggedInToHomePage,
   redirectUnauthorizedToLoginPage,
 } from './auth/data-access/auth.guard';
+import { canAccessGmTools } from './auth/data-access/auth.gm.guard';
 
 export const routes: Routes = [
   {
@@ -33,6 +34,7 @@ export const routes: Routes = [
       {
         path: 'gm-tools',
         loadChildren: () => import('./gm-tools/feature/lib.routes'),
+        canActivate: [canAccessGmTools],
       },
       {
         path: 'analytics',
