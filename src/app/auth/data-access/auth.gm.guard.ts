@@ -6,7 +6,7 @@ import { inject } from '@angular/core';
 export const canAccessGmTools: CanActivateFn = () => {
   const playerService = inject(PlayerService);
   const router = inject(Router);
-  const isGm = playerService.userIsGameMaster();
+  const isGm = playerService.getIsGm();
   if (!isGm) {
     alert('You are not authorized to view this page.');
     return router.parseUrl('/home');

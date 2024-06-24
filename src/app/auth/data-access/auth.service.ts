@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { MessageService } from 'primeng/api';
 import { Database } from '../../shared/util/schema';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,7 @@ export class AuthService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
+  private readonly cookieService = inject(CookieService);
 
   readonly user$: Observable<User | undefined> = concat(
     from(this.supabase.auth.getSession()).pipe(
@@ -57,6 +59,7 @@ export class AuthService {
   }
 
   signOut(): void {
+    this.cookieService.deleteAll('/');
     showMessageOnError(this.supabase.auth.signOut(), this.messageService).then(
       ({ error }) => {
         if (!error) {

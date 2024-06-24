@@ -28,6 +28,7 @@ import { PlayerModel, UserModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
 import { GameStateService } from './game-state.service';
 import { addRankingInfoToPlayers } from '../util/ranking-helpers';
+import { CookieService } from 'ngx-cookie-service';
 
 export interface PlayerWithUserInfo {
   player_id: number;
@@ -53,6 +54,7 @@ export class PlayerService {
   private readonly authService = inject(AuthService);
   private readonly sessionService = inject(SessionService);
   private readonly gameStateService = inject(GameStateService);
+  private readonly cookieService = inject(CookieService);
 
   readonly playersWithoutDisplayNames$: Observable<PlayerModel[] | null> =
     this.sessionService.session$.pipe(
@@ -188,4 +190,43 @@ export class PlayerService {
       .update({ enabled })
       .eq('id', playerId);
   }
+
+  getIsGm() {
+    const cookieSet = this.cookieService.check('user');
+
+    if (cookieSet) {
+      const { isGm, userPlayerId }: UserCookie = JSON.parse(
+        this.cookieService.get('user'),
+      );
+      const currentUserPlayerId = this.userPlayer()?.player_id;
+
+      if (
+        currentUserPlayerId === undefined ||
+        currentUserPlayerId === userPlayerId
+      ) {
+        return isGm;
+      }
+    }
+
+    //If there's no cookie set or the user doesn't match the cookie, reset the cookie
+    this.setUserCookie();
+    return this.userIsGameMaster();
+  }
+
+  private setUserCookie() {
+    const isGm = this.userIsGameMaster();
+    const userPlayer = this.userPlayer();
+    if (isGm !== undefined && userPlayer !== undefined) {
+      const cookie: UserCookie = {
+        isGm: isGm,
+        userPlayerId: this.userPlayer()?.player_id ?? 0,
+      };
+      this.cookieService.set('user', JSON.stringify(cookie), 1);
+    }
+  }
 }
+
+type UserCookie = {
+  isGm: boolean;
+  userPlayerId: number;
+};
