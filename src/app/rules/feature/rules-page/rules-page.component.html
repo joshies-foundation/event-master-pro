@@ -69,11 +69,10 @@
             {{ event.name }}
 
             <!-- Edit Button -->
-            <!-- TODO: Link to event edit page -->
             <i
               tabindex="0"
               class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
-              [routerLink]="'/gm-tools/events'"
+              [routerLink]="['/gm-tools/events/edit', event.id]"
               (click)="$event.stopPropagation()"
             ></i>
           </h3>
