@@ -18,6 +18,7 @@ import { BetService } from '../../shared/data-access/bet.service';
 import { PlayerModel, UserModel } from '../../shared/util/supabase-types';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-bet-bulk-cancel-page',
@@ -137,27 +138,27 @@ export default class BetBulkCancelPageComponent {
 
   protected readonly trackByPlayerId = trackByPlayerId;
 
+  private readonly allBetsForThisSession = toSignal(
+    this.betService.allBetsForThisSession$,
+  );
+
   readonly players = this.playerService.players;
   readonly displayPlayers = computed(() => {
     return this.playerService.players()?.map((player) => {
       return {
         player: player,
         numPending:
-          this.betService
-            .allBets()
-            ?.filter(
-              (bet) =>
-                bet.requester_player_id === player.player_id &&
-                bet.status === BetStatus.PendingAcceptance,
-            )?.length ?? 0,
+          this.allBetsForThisSession()?.filter(
+            (bet) =>
+              bet.requester_player_id === player.player_id &&
+              bet.status === BetStatus.PendingAcceptance,
+          )?.length ?? 0,
         numActive:
-          this.betService
-            .allBets()
-            ?.filter(
-              (bet) =>
-                bet.requester_player_id === player.player_id &&
-                bet.status === BetStatus.Active,
-            )?.length ?? 0,
+          this.allBetsForThisSession()?.filter(
+            (bet) =>
+              bet.requester_player_id === player.player_id &&
+              bet.status === BetStatus.Active,
+          )?.length ?? 0,
       };
     });
   });

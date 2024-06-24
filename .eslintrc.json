@@ -52,7 +52,8 @@
               "p-checkbox",
               "p-selectButton",
               "p-radioButton",
-              "p-inputNumber"
+              "p-inputNumber",
+              "p-inputSwitch"
             ]
           }
         ]

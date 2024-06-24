@@ -27,7 +27,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ChartData } from 'chart.js';
 import { getCssVariableValue } from '../util/css-helpers';
 import { betGainOrLossAmount, betIsResolved } from '../util/bet-helpers';
-import { GameStateService } from './game-state.service';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +35,6 @@ export class BetService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
-  private readonly gameStateService = inject(GameStateService);
 
   readonly bets$: Observable<BetModel[] | null> =
     // get user player id

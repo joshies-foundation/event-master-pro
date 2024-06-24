@@ -8,7 +8,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
   standalone: true,
   template: `
     <!-- Over/Under Radio Buttons -->
-    <div class="flex flex-wrap gap-3 mt-5">
+    <div class="flex flex-wrap gap-3 mt-2">
       <div class="flex align-items-center">
         <label class="ml-2">
           <p-radioButton
@@ -34,7 +34,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     </div>
 
     <!-- Over/Under Value -->
-    <label class="flex flex-column gap-2 mt-5">
+    <label class="flex flex-column gap-2 mt-3">
       Over/Under Value
       <p-inputNumber
         [(ngModel)]="ouValue"
