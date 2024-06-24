@@ -95,7 +95,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
         <p class="my-6 py-6 text-center text-500 font-italic">No duels yet</p>
       }
     } @else {
-      <p class="text-red-700">Error loading data</p>
+      <p class="text-red700">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -53,6 +53,9 @@ function valueIsNot(invalidValue: string): ValidatorFn {
   selector: 'joshies-rules-page',
   standalone: true,
   templateUrl: './rules-page.component.html',
+  host: {
+    class: 'block pb-6',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,

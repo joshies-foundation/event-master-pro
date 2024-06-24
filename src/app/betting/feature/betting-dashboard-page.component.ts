@@ -364,6 +364,9 @@ const surfaceBorder = getCssVariableValue('--surface-border');
       <p-skeleton height="9.5rem" />
     }
   `,
+  host: {
+    class: 'block pb-6',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class BettingDashboardPageComponent {

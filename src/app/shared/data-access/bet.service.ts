@@ -61,8 +61,8 @@ export class BetService {
               // sort by date, descending (newest first)
               .sort(
                 (a, b) =>
-                  new Date(a.updated_at).getTime() -
-                  new Date(b.updated_at).getTime(),
+                  new Date(b.updated_at).getTime() -
+                  new Date(a.updated_at).getTime(),
               ),
           ),
           map((bets) => linkPlayersToBets(bets, players)),
@@ -139,7 +139,7 @@ export class BetService {
 
   readonly activeBets$ = this.bets$.pipe(
     whenNotNull((bets) =>
-      of(bets.filter((bet) => bet.status === BetStatus.Active)),
+      of([...bets].filter((bet) => bet.status === BetStatus.Active).reverse()),
     ),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
@@ -175,7 +175,9 @@ export class BetService {
 
   readonly betSummaryChartData$: Observable<ChartData | null> = combineLatest({
     userPlayerId: this.playerService.userPlayerId$,
-    bets: this.resolvedBets$,
+    bets: this.resolvedBets$.pipe(
+      map((bets) => (bets ? [...bets].reverse() : bets)),
+    ),
   }).pipe(
     whenAllValuesNotNull(
       ({ userPlayerId, bets }): Observable<ChartData> =>

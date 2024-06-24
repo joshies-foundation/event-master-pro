@@ -72,7 +72,7 @@ export class GameboardService {
           `session_id=eq.${activeSessionId}`,
         ) as unknown as Observable<SpecialSpaceEventTemplateModel[]>,
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay(1),
   );
 
   readonly gameboardSpaces: Signal<GameboardSpaceModel[] | null | undefined> =
@@ -164,7 +164,7 @@ export class GameboardService {
           `session_id=eq.${activeSessionId}`,
         ) as unknown as Observable<ChaosSpaceEventTemplateModel[]>,
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay(1),
   );
 
   readonly chaosSpaceEvents$: Observable<ChaosSpaceEventModel[]> =

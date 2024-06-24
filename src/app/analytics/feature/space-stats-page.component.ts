@@ -97,7 +97,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
         </ng-template>
       </p-table>
     } @else {
-      <p class="text-red-700">Error loading data</p>
+      <p class="text-red700">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -28,6 +28,9 @@ import { RoundPhase, SessionStatus } from '../../shared/util/supabase-helpers';
 
     <joshies-card headerText="Session" [links]="sessionLinks()" />
   `,
+  host: {
+    class: 'block pb-6',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class GmToolsPageComponent {
