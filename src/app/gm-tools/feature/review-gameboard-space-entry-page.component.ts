@@ -38,7 +38,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
   standalone: true,
-  template: ` <joshies-page-header headerText="Review Spaces" alwaysSmall>
+  template: ` <joshies-page-header headerText="Review Moves" alwaysSmall>
       <joshies-header-link
         text="Space Entry"
         routerLink=".."
@@ -46,11 +46,10 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
       />
     </joshies-page-header>
     @if (viewModel(); as vm) {
-      <h4 class="mt-6">
-        Moves for round {{ vm.roundNumber }} of
-        {{ vm.numRounds }}
+      <p class="mt-5">
+        Gameboard moves for turn {{ vm.roundNumber }}
         <span class="text-500 font-italic">(Draft)</span>
-      </h4>
+      </p>
       <!-- Fixed layout allows indivdual scrolling of cells instead of whole table -->
       <p-table
         [value]="vm.players!"
@@ -179,7 +178,6 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       roundNumber: this.roundNumber(),
-      numRounds: this.sessionService.session()?.num_rounds,
       players: this.players(),
       gameboardSpaces: this.gameboardService.gameboardSpaces(),
       playerSpaceChanges: this.playerSpaceChanges,

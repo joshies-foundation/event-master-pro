@@ -128,7 +128,7 @@ export function generateBetTypeObject(type: BetType) {
         betTypeString: 'Chaos Space Event',
       };
     default:
-      return { betType: BetType.Manual, betTypeString: 'Manual' };
+      return { betType: BetType.Custom, betTypeString: 'Manual' };
   }
 }
 

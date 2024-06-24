@@ -45,7 +45,7 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
     @if (playerDuelStatsSortedByAverage(); as playerDuelStats) {
       @for (player of playerDuelStats; track player.user_id) {
         <div
-          class="surface-50 border-round-lg px-3 py-4 mt-5"
+          class="surface-card border-round-lg px-3 py-4 mt-5"
           [class.bg-highlight]="player.user_id === userId()"
         >
           <!-- Player -->
@@ -118,7 +118,7 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
         </div>
       }
     } @else {
-      <p class="text-red-700">Error loading data</p>
+      <p class="text-red700">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

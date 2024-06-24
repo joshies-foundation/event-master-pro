@@ -54,7 +54,7 @@ export class FooterComponent {
   readonly dynamicClasses = computed(() =>
     this.isScrolledToBottom()
       ? 'border-transparent'
-      : 'border-100 blur-background bg-header-footer-alpha',
+      : 'border-50 blur-background bg-header-footer-alpha',
   );
 
   readonly largeHeaderDynamicClasses = computed(() =>

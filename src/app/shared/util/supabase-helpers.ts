@@ -129,7 +129,7 @@ export enum BetStatus {
 }
 
 export enum BetType {
-  Manual = 'manual',
+  Custom = 'custom',
   DuelWinner = 'duel',
   SpecialSpaceEvent = 'special_space_event',
   ChaosSpaceEvent = 'chaos_space_event',

@@ -15,7 +15,7 @@
         <!-- Edit Button -->
         <i
           tabindex="0"
-          class="pi pi-pencil text-700 p-2 ml-auto"
+          class="pi pi-pencil text-700 p-2 ml-auto cursor"
           (click)="enterEditMode()"
           (keyup.enter)="enterEditMode()"
         ></i>
@@ -31,14 +31,111 @@
       <joshies-form [form]="vm.form" />
     } @else {
       <!-- Rules -->
-      <div [innerHTML]="vm.rules" class="content"></div>
+      <div
+        [innerHTML]="vm.rules"
+        class="content surface-card border-round-xl p-3"
+      ></div>
 
       <!-- Event Rules -->
-      <h2>Events</h2>
+      <h2 class="mt-5 mb-3">Events</h2>
       @for (event of vm.events; track event.id) {
+        <joshies-card padded styleClass="mb-3" class="relative">
+          <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link -->
+          <span
+            #eventInfo
+            [id]="'event-rules-' + event.id"
+            class="absolute"
+            style="top: -6.5rem"
+          ></span>
+          <h3
+            [routerLink]="[]"
+            [fragment]="eventInfo.id"
+            routerLinkActive="bg-highlight-fadeout"
+            [routerLinkActiveOptions]="{
+              paths: 'exact',
+              fragment: 'exact',
+              matrixParams: 'ignored',
+              queryParams: 'ignored',
+            }"
+            class="flex align-items-center gap-3 mt-0 border-round"
+          >
+            <img
+              [ngSrc]="event.image_url || '/assets/icons/icon-96x96.png'"
+              alt=""
+              height="48"
+              width="48"
+              class="border-round"
+            />
+            {{ event.name }}
+
+            <!-- Edit Button -->
+            <!-- TODO: Link to event edit page -->
+            <i
+              tabindex="0"
+              class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+              [routerLink]="'/gm-tools/events'"
+              (click)="$event.stopPropagation()"
+            ></i>
+          </h3>
+          <p class="pre-wrap mb-0">{{ event.description }}</p>
+          <p class="pre-wrap mb-0">{{ event.rules }}</p>
+        </joshies-card>
+      }
+    }
+
+    <!-- Gameboard Spaces -->
+    <h2 class="mt-5 mb-3">Gameboard Spaces</h2>
+    @for (space of vm.spaces; track space.id) {
+      <joshies-card padded styleClass="mb-3" class="relative">
+        <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link  -->
+        <span
+          #spaceInfo
+          [id]="'gameboard-space-' + space.id"
+          class="absolute"
+          style="top: -6.5rem"
+        ></span>
         <h3
+          [routerLink]="[]"
+          [fragment]="spaceInfo.id"
+          routerLinkActive="bg-highlight-fadeout"
+          [routerLinkActiveOptions]="{
+            paths: 'exact',
+            fragment: 'exact',
+            matrixParams: 'ignored',
+            queryParams: 'ignored',
+          }"
+          class="flex align-items-center gap-3 mt-0 border-round"
+        >
+          <joshies-gameboard-space [model]="space" />
+          {{ space.name }} Space
+
+          <!-- Edit Button -->
+          <i
+            tabindex="0"
+            class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+            [routerLink]="['/gm-tools/space-types', space.id]"
+            (click)="$event.stopPropagation()"
+          ></i>
+        </h3>
+        <div class="mb-0" [innerHTML]="space | gameboardSpaceDescription"></div>
+      </joshies-card>
+    }
+
+    <!-- Special Space Event Rules -->
+    <h2 class="mt-5 mb-3">Special Space Events</h2>
+    @for (
+      specialSpaceEvent of vm.specialSpaceEvents;
+      track specialSpaceEvent.id
+    ) {
+      <joshies-card padded styleClass="mb-3" class="relative">
+        <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link -->
+        <span
           #eventInfo
-          [id]="'event-rules-' + event.id"
+          [id]="'special-space-event-' + specialSpaceEvent.id"
+          class="absolute"
+          style="top: -6.5rem"
+        ></span>
+        <h3
           [routerLink]="[]"
           [fragment]="eventInfo.id"
           routerLinkActive="bg-highlight-fadeout"
@@ -46,22 +143,65 @@
             paths: 'exact',
             fragment: 'exact',
             matrixParams: 'ignored',
-            queryParams: 'ignored'
+            queryParams: 'ignored',
           }"
-          class="flex align-items-center gap-3"
-          [style]="{ 'padding-top': '6.5rem' }"
+          class="flex align-items-center gap-3 mt-0 border-round mb-2"
         >
-          <img
-            [ngSrc]="event.image_url || '/assets/icons/icon-96x96.png'"
-            alt=""
-            height="48"
-            width="48"
-            class="border-round"
-          />
-          {{ event.name }} Rules
+          {{ specialSpaceEvent.name }}
+
+          <!-- Edit Button -->
+          <i
+            tabindex="0"
+            class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+            [routerLink]="[
+              '/gm-tools/special-space-event-templates',
+              specialSpaceEvent.id,
+            ]"
+            (click)="$event.stopPropagation()"
+          ></i>
         </h3>
-        <p class="mb-5">{{ event.rules }}</p>
-      }
+        <p class="pre-wrap my-0">{{ specialSpaceEvent.description }}</p>
+      </joshies-card>
+    }
+
+    <!-- Chaos Space Event Rules -->
+    <h2 class="mt-5 mb-3">Chaos Space Events</h2>
+    @for (chaosSpaceEvent of vm.chaosSpaceEvents; track chaosSpaceEvent.id) {
+      <joshies-card padded styleClass="mb-3" class="relative">
+        <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link -->
+        <span
+          #eventInfo
+          [id]="'chaos-space-event-' + chaosSpaceEvent.id"
+          class="absolute"
+          style="top: -6.5rem"
+        ></span>
+        <h3
+          [routerLink]="[]"
+          [fragment]="eventInfo.id"
+          routerLinkActive="bg-highlight-fadeout"
+          [routerLinkActiveOptions]="{
+            paths: 'exact',
+            fragment: 'exact',
+            matrixParams: 'ignored',
+            queryParams: 'ignored',
+          }"
+          class="flex align-items-center gap-3 mt-0 border-round mb-2"
+        >
+          {{ chaosSpaceEvent.name }}
+
+          <!-- Edit Button -->
+          <i
+            tabindex="0"
+            class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+            [routerLink]="[
+              '/gm-tools/chaos-space-event-templates',
+              chaosSpaceEvent.id,
+            ]"
+            (click)="$event.stopPropagation()"
+          ></i>
+        </h3>
+        <p class="pre-wrap my-0">{{ chaosSpaceEvent.description }}</p>
+      </joshies-card>
     }
   }
 } @else {

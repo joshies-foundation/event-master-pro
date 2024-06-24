@@ -6,8 +6,12 @@ import {
   GameboardSpaceEffect,
   SpaceEventStatus,
   DuelStatus,
+  BetStatus,
 } from './supabase-helpers';
-import { PlayerWithUserAndRankInfo } from '../data-access/player.service';
+import {
+  PlayerWithUserAndRankInfo,
+  PlayerWithUserInfo,
+} from '../data-access/player.service';
 
 type PublicSchema = Database[Extract<keyof Database, 'public'>];
 
@@ -241,6 +245,12 @@ export interface PlayerDuelStats {
   total_points_lost: number;
 }
 
+export type BetModel = Omit<Tables<Table.Bet>, 'status'> & {
+  status: BetStatus;
+  requester: PlayerWithUserInfo | undefined;
+  opponent: PlayerWithUserInfo | undefined;
+};
+
 // tables
 export type GameStateModel = Tables<Table.GameState>;
 export type PlayerModel = Tables<Table.Player>;
@@ -257,7 +267,6 @@ export type EventFormatStandardScoringFormulaModel =
 export type EventParticipantModel = Tables<Table.EventParticipant>;
 export type EventTeamModel = Tables<Table.EventTeam>;
 export type EventTeamRoundScoreModel = Tables<Table.EventTeamRoundScore>;
-export type BetModel = Tables<Table.Bet>;
 export type GameboardMoveModel = Tables<Table.GameboardMove>;
 
 // views

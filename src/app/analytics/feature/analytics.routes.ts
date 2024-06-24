@@ -11,6 +11,9 @@ const analyticsRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./analytics-tab.component'),
+    resolve: {
+      playerRoundScoresResponse: playerRoundScoresResolver,
+    },
     data: { pageAnimationLayer: 0 },
   },
   {
@@ -21,14 +24,6 @@ const analyticsRoutes: Routes = [
   {
     path: 'current-rankings',
     loadComponent: () => import('./current-rankings-page.component'),
-    data: { pageAnimationLayer: 1 },
-  },
-  {
-    path: 'points-over-time',
-    loadComponent: () => import('./compare-points-over-time-page.component'),
-    resolve: {
-      playerRoundScoresResponse: playerRoundScoresResolver,
-    },
     data: { pageAnimationLayer: 1 },
   },
   {

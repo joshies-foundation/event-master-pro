@@ -108,7 +108,7 @@ import {
     } @else {
       <!-- Data Not Found Message -->
       <p class="mt-6">
-        No gameboard space found in this session with ID
+        No special space event template found in this session with ID
         <span class="font-bold">{{ specialSpaceEventTemplateId() }}</span>
       </p>
     }

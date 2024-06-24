@@ -73,7 +73,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
         <p-table [value]="duels" [rowTrackBy]="trackById">
           <ng-template pTemplate="header">
             <tr>
-              <th class="px-0">Players</th>
+              <th class="pr-0">Players</th>
               <th>Game</th>
               <th class="text-right px-0">Status</th>
               <th class="px-0"></th>
@@ -86,7 +86,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
             [joshiesStronglyTypedTableRow]="duels"
           >
             <tr [routerLink]="[duel.id]">
-              <td class="px-0">
+              <td class="pr-0">
                 <joshies-duel-table-avatars [duel]="duel" />
               </td>
               <td class="text-sm">
@@ -95,7 +95,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
               <td class="text-right px-0">
                 <joshies-status-tag [status]="duel.status" />
               </td>
-              <td class="pl-1 pr-0">
+              <td class="px-1">
                 <i class="pi pi-angle-right text-400"></i>
               </td>
             </tr>

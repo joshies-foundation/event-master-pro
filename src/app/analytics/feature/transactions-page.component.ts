@@ -8,6 +8,7 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { trackById } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
+import { TransactionTableComponent } from '../ui/transaction-table.component';
 
 @Component({
   selector: 'joshies-transactions-page',
@@ -21,6 +22,7 @@ import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and
     HeaderLinkComponent,
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,
+    TransactionTableComponent,
   ],
   template: `
     <joshies-page-header headerText="Transactions" alwaysSmall>
@@ -33,32 +35,10 @@ import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and
 
     @if (transactions(); as transactions) {
       @if (transactions.length > 0) {
-        <p-table
-          [value]="transactions"
-          [rowTrackBy]="trackById"
-          styleClass="mt-5"
-        >
-          <ng-template
-            pTemplate="body"
-            [joshiesStronglyTypedTableRow]="transactions"
-            let-transaction
-          >
-            <tr>
-              <td>
-                <p class="m-0">
-                  {{ transaction.description }}
-                </p>
-                <p class="text-sm m-0 text-400">
-                  {{ transaction.created_at | date: 'short' }}
-                </p>
-              </td>
-              <td
-                class="text-right"
-                [innerHTML]="transaction.num_points | numberWithSignAndColor"
-              ></td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <joshies-transaction-table
+          [transactions]="transactions"
+          class="block mt-5"
+        />
       } @else {
         <p class="mt-6 pt-6 text-center text-500 font-italic">
           No transactions yet

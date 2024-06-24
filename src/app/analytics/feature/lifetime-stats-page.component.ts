@@ -72,7 +72,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         >
           <tr
             [ngClass]="{
-              'font-semibold bg-highlight': row.user_id === userId()
+              'font-semibold bg-highlight': row.user_id === userId(),
             }"
           >
             <td pFrozenColumn>
@@ -100,7 +100,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         </ng-template>
       </p-table>
     } @else {
-      <p class="text-red-700">Error loading data</p>
+      <p class="text-red700">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

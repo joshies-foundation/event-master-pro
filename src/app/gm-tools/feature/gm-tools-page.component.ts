@@ -28,6 +28,9 @@ import { RoundPhase, SessionStatus } from '../../shared/util/supabase-helpers';
 
     <joshies-card headerText="Session" [links]="sessionLinks()" />
   `,
+  host: {
+    class: 'block pb-6',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class GmToolsPageComponent {
@@ -61,7 +64,7 @@ export default class GmToolsPageComponent {
     [RoundPhase.ChaosSpaceEvents]: [
       {
         text: 'Resolve Chaos Space Events',
-        iconClass: 'pi pi-exclamation-circle surface-0',
+        iconClass: 'pi pi-exclamation-circle bg-black',
         routerLink: './resolve-chaos-space-events',
       },
     ],
@@ -92,7 +95,7 @@ export default class GmToolsPageComponent {
 
   readonly bettingLinks: CardLinkModel[] = [
     {
-      text: 'Resolve Bets',
+      text: 'Settle or Cancel Bets',
       iconClass: 'pi pi-check bg-green-500',
       routerLink: './resolve-bets',
     },
@@ -168,7 +171,7 @@ export default class GmToolsPageComponent {
       },
       {
         text: 'Manage Chaos Space Events',
-        iconClass: 'pi pi-exclamation-circle surface-0',
+        iconClass: 'pi pi-exclamation-circle bg-black',
         routerLink: './chaos-space-event-templates',
       },
       {

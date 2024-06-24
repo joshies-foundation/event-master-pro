@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   Signal,
   signal,
@@ -24,7 +25,16 @@ import { SessionService } from '../../../shared/data-access/session.service';
 import { RankingsTableComponent } from '../../../shared/ui/rankings-table.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { GameStateService } from '../../../shared/data-access/game-state.service';
-import { concat, map, Observable, of, switchMap, takeWhile, timer } from 'rxjs';
+import {
+  concat,
+  iif,
+  map,
+  Observable,
+  of,
+  switchMap,
+  takeWhile,
+  timer,
+} from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../../../shared/util/rxjs-helpers';
 import {
@@ -62,7 +72,7 @@ interface Countdown {
   templateUrl: './home-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'h-full',
+    class: 'h-full block pb-6',
   },
   imports: [
     CardComponent,
@@ -109,21 +119,26 @@ export default class HomePageComponent {
   private readonly countdown$: Observable<Countdown | null> =
     this.sessionService.session$.pipe(
       whenNotNull((session) =>
-        concat(
-          timer(0, 1000).pipe(
-            map(
-              () =>
-                (new Date(session.start_date).getTime() - Date.now()) / 1000,
+        iif(
+          // only start countdown when `start_date` is after `now`
+          () => new Date(session.start_date).getTime() > Date.now(),
+          concat(
+            timer(0, 1000).pipe(
+              map(
+                () =>
+                  (new Date(session.start_date).getTime() - Date.now()) / 1000,
+              ),
+              takeWhile((secondsRemaining) => secondsRemaining >= 0),
+              map(
+                (secondsRemaining): Countdown => ({
+                  days: Math.floor(secondsRemaining / (3600 * 24)),
+                  hours: Math.floor((secondsRemaining % (3600 * 24)) / 3600),
+                  minutes: Math.floor((secondsRemaining % 3600) / 60),
+                  seconds: Math.floor(secondsRemaining % 60),
+                }),
+              ),
             ),
-            takeWhile((secondsRemaining) => secondsRemaining >= 0),
-            map(
-              (secondsRemaining): Countdown => ({
-                days: Math.floor(secondsRemaining / (3600 * 24)),
-                hours: Math.floor((secondsRemaining % (3600 * 24)) / 3600),
-                minutes: Math.floor((secondsRemaining % 3600) / 60),
-                seconds: Math.floor(secondsRemaining % 60),
-              }),
-            ),
+            of(null),
           ),
           of(null),
         ),
@@ -144,10 +159,15 @@ export default class HomePageComponent {
     ),
   );
 
-  readonly allSpecialSpaceEventsAreResolved: Signal<boolean | undefined> =
-    toSignal(
-      this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$,
-    );
+  readonly allSpecialSpaceEventsAreResolved = toSignal(
+    this.gameStateService.roundPhase$.pipe(
+      switchMap((roundPhase) =>
+        roundPhase === RoundPhase.SpecialSpaceEvents
+          ? this.gameboardService.allSpecialSpaceEventsForThisTurnAreResolved$
+          : of(null),
+      ),
+    ),
+  );
 
   readonly chaosSpaceEvents = toSignal(
     this.gameStateService.roundPhase$.pipe(
@@ -159,8 +179,15 @@ export default class HomePageComponent {
     ),
   );
 
-  readonly allChaosSpaceEventsAreResolved: Signal<boolean | undefined> =
-    toSignal(this.gameboardService.allChaosSpaceEventsForThisTurnAreResolved$);
+  readonly allChaosSpaceEventsAreResolved = toSignal(
+    this.gameStateService.roundPhase$.pipe(
+      switchMap((roundPhase) =>
+        roundPhase === RoundPhase.ChaosSpaceEvents
+          ? this.gameboardService.allChaosSpaceEventsForThisTurnAreResolved$
+          : of(null),
+      ),
+    ),
+  );
 
   readonly duels = toSignal(
     this.gameStateService.roundPhase$.pipe(
@@ -172,8 +199,14 @@ export default class HomePageComponent {
     ),
   );
 
-  readonly allDuelsAreResolved: Signal<boolean | undefined> = toSignal(
-    this.duelService.allDuelsForThisTurnAreResolved$,
+  readonly allDuelsAreResolved = toSignal(
+    this.gameStateService.roundPhase$.pipe(
+      switchMap((roundPhase) =>
+        roundPhase === RoundPhase.Duels
+          ? this.duelService.allDuelsForThisTurnAreResolved$
+          : of(null),
+      ),
+    ),
   );
 
   readonly viewModel = computed(() =>
@@ -201,6 +234,36 @@ export default class HomePageComponent {
       allDuelsAreResolved: this.allDuelsAreResolved(),
     }),
   );
+
+  private readonly asdf = effect(() => {
+    const signals = {
+      session: this.sessionService.session(),
+      showRankingsTable: this.showRankingsTable(),
+      rankingsTableHeader: this.rankingsTableHeader(),
+      sessionHasNotStarted: this.gameStateService.sessionHasNotStarted(),
+      roundNumber: this.gameStateService.roundNumber(),
+      numRounds: this.sessionService.session()?.num_rounds,
+      roundPhase: this.gameStateService.roundPhase(),
+      eventForThisRound: this.eventService.eventForThisRound(),
+      eventForNextRound: this.eventService.eventForNextRound(),
+      sessionIsInProgress: this.gameStateService.sessionIsInProgress(),
+      bankBalance: this.gameStateService.bankBalance(),
+      players: this.playerService.players()!,
+      userIsGameMaster: this.playerService.userIsGameMaster(),
+      userId: this.authService.user()?.id,
+      countdown: this.countdown(),
+      specialSpaceEvents: this.specialSpaceEvents(),
+      allSpecialSpaceEventsAreResolved: this.allSpecialSpaceEventsAreResolved(),
+      chaosSpaceEvents: this.chaosSpaceEvents(),
+      allChaosSpaceEventsAreResolved: this.allChaosSpaceEventsAreResolved(),
+      duels: this.duels(),
+      allDuelsAreResolved: this.allDuelsAreResolved(),
+    };
+
+    Object.entries(signals).forEach(([key, value]) => {
+      if (value === undefined) console.log(key);
+    });
+  });
 
   readonly sessionStarting = signal(false);
 

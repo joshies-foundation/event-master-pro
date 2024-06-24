@@ -24,9 +24,7 @@ export type ConfirmBackendActionConfig = {
   | { successNavigation: null }
 );
 
-export async function confirmBackendAction(
-  config: ConfirmBackendActionConfig,
-): Promise<void> {
+export function confirmBackendAction(config: ConfirmBackendActionConfig): void {
   config.confirmationService.confirm({
     header: config.confirmationHeaderText ?? 'Confirmation',
     message:

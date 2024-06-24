@@ -77,11 +77,10 @@ export type GameboardSpaceEntryFormModel = Record<
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="mt-6">
-        Enter moves for round
-        {{ vm.roundNumber }} of
-        {{ vm.numRounds }}
-      </h4>
+      <p class="mt-5">
+        Enter gameboard moves for turn
+        <strong>{{ vm.roundNumber }}</strong>
+      </p>
       <!-- Fixed layout allows individual scrolling of cells instead of whole table -->
       <p-table
         [value]="vm.players!"
@@ -164,14 +163,14 @@ export type GameboardSpaceEntryFormModel = Record<
                         ($any(space.effect_data)?.pointsGained ?? 0
                           | loseOrGain
                           | titlecase) + ' points',
-                      value: 'points'
+                      value: 'points',
                     },
                     {
                       label:
                         $any(space.effect_data)?.alternativeActivity ??
                         'Do activity',
-                      value: 'activity'
-                    }
+                      value: 'activity',
+                    },
                   ]"
                   formControlName="decision"
                   styleClass="mt-2"
@@ -298,7 +297,6 @@ export default class GameboardSpaceEntryPageComponent {
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       roundNumber: this.roundNumber(),
-      numRounds: this.sessionService.session()?.num_rounds,
       formGroup: this.formGroup(),
       formValue: this.formValue(),
       players: this.playerService.players(),

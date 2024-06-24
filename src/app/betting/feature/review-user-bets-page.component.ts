@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   inject,
   signal,
@@ -18,7 +17,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 import { BetService } from '../../shared/data-access/bet.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { BetModel } from '../../shared/util/supabase-types';
+import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-review-user-bets-page',
@@ -41,8 +40,8 @@ import { BetModel } from '../../shared/util/supabase-types';
       />
     </joshies-page-header>
 
-    @if (displayBets()?.length) {
-      @if (displayBets(); as bets) {
+    @if (bets()?.length) {
+      @if (bets(); as bets) {
         <p class="mt-5">Review bets that are open or awaiting approval.</p>
         <p-table
           [value]="bets"
@@ -86,8 +85,8 @@ import { BetModel } from '../../shared/util/supabase-types';
                       styleClass="w-full"
                       (onClick)="acceptBet(bet.id)"
                       [disabled]="
-                        bet.opponentWager > (userPlayer()?.score ?? 0) ||
-                        bet.requesterWager > bet.requesterScore
+                        bet.opponent_wager > (userPlayer()?.score ?? 0) ||
+                        bet.requester_wager > (bet.requester?.score ?? Infinity)
                       "
                       [loading]="submitting()"
                       [hidden]="!canAcceptReject(bet, userPlayer()?.player_id)"
@@ -145,32 +144,6 @@ export default class ReviewUserBetsPageComponent {
     );
   });
 
-  readonly displayBets: Signal<DisplayBet[] | undefined> = computed(() =>
-    this.openOrActiveBets()?.map((bet) => {
-      const players = this.playerService.players();
-      const requester = players?.filter(
-        (player) => player.player_id === bet.requester_player_id,
-      )[0];
-      const opponent = players?.filter(
-        (player) => player.player_id === bet.opponent_player_id,
-      )[0];
-
-      return {
-        requesterName: requester?.display_name ?? 'Requester',
-        requesterScore: requester?.score ?? 0,
-        requesterWager: bet.requester_wager,
-        requesterId: bet.requester_player_id,
-        opponentName: opponent?.display_name ?? 'Opponent',
-        opponentScore: opponent?.score ?? 0,
-        opponentWager: bet.opponent_wager,
-        opponentId: bet.opponent_player_id,
-        description: bet.description,
-        id: bet.id,
-        status: bet.status,
-      };
-    }),
-  );
-
   readonly userNameAndScore = computed(() => {
     const userPlayer = this.userPlayer();
     return (
@@ -217,46 +190,36 @@ export default class ReviewUserBetsPageComponent {
     });
   }
 
-  generateTerms(bet: DisplayBet) {
-    let terms = bet.requesterName + ' bets ';
-    const unevenOdds = bet.requesterWager !== bet.opponentWager;
+  generateTerms(bet: BetModel) {
+    let terms = bet.requester?.display_name + ' bets ';
+    const unevenOdds = bet.requester_wager !== bet.opponent_wager;
     if (unevenOdds) {
       terms +=
-        bet.requesterWager +
+        bet.requester_wager +
         ' against ' +
-        bet.opponentName +
+        bet.opponent?.display_name +
         "'s " +
-        bet.opponentWager;
+        bet.opponent_wager;
     } else {
-      terms += bet.opponentName + ' ' + bet.requesterWager;
+      terms += bet.opponent?.display_name + ' ' + bet.requester_wager;
     }
     terms += ' that ' + bet.description;
     return terms;
   }
 
-  canAcceptReject(bet: DisplayBet, playerId: BetModel['id'] | undefined) {
+  canAcceptReject(bet: BetModel, playerId: PlayerModel['id'] | undefined) {
     return (
-      bet.opponentId === playerId && bet.status === BetStatus.PendingAcceptance
+      bet.opponent_player_id === playerId &&
+      bet.status === BetStatus.PendingAcceptance
     );
   }
 
-  canCancel(bet: DisplayBet, playerId: BetModel['id'] | undefined) {
+  canCancel(bet: BetModel, playerId: PlayerModel['id'] | undefined) {
     return (
-      bet.requesterId === playerId && bet.status === BetStatus.PendingAcceptance
+      bet.requester_player_id === playerId &&
+      bet.status === BetStatus.PendingAcceptance
     );
   }
-}
 
-class DisplayBet {
-  requesterName = '';
-  requesterScore = 0;
-  requesterWager = 0;
-  requesterId = 0;
-  opponentName = '';
-  opponentScore = 0;
-  opponentWager = 0;
-  opponentId = 0;
-  description = '';
-  id: BetModel['id'] = 0;
-  status: BetModel['status'] = 'active';
+  protected readonly Infinity = Infinity;
 }

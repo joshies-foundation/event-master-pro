@@ -36,6 +36,7 @@ import {
 
             <td class="pt-1 text-right">
               @if (spaceEvent.status === SpaceEventStatus.WaitingToBegin) {
+                <!-- TODO: Link to pre-populated place bet page -->
                 <p-button size="small" label="Place Bet" />
               } @else {
                 <joshies-status-tag [status]="spaceEvent.status" />

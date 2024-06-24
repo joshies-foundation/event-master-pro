@@ -53,7 +53,10 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
                 <p-sortIcon field="round_number" />
               </th>
               <th>Players</th>
-              <th>Game</th>
+              <th pSortableColumn="game_name">
+                Game
+                <p-sortIcon field="game_name" />
+              </th>
               <th class="text-right" pSortableColumn="points_gained_by_winner">
                 Points <p-sortIcon field="points_gained_by_winner" />
               </th>
@@ -92,7 +95,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
         <p class="my-6 py-6 text-center text-500 font-italic">No duels yet</p>
       }
     } @else {
-      <p class="text-red-700">Error loading data</p>
+      <p class="text-red700">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

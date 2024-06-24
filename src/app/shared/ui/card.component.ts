@@ -22,7 +22,11 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
       </h3>
     }
 
-    <div class="surface-50 border-round-xl" [class.padded]="padded()">
+    <div
+      class="surface-card border-round-xl"
+      [class.padded]="padded()"
+      [ngClass]="styleClass()"
+    >
       @for (link of links(); track $index; let last = $last) {
         <joshies-card-link [model]="link" [last]="last" />
       } @empty {
@@ -45,4 +49,5 @@ export class CardComponent {
   headerIconClass = input<string>();
   padded = input(false, { transform: booleanAttribute });
   links = input<CardLinkModel[]>();
+  styleClass = input<string>();
 }
