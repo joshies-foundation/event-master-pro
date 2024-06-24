@@ -910,6 +910,7 @@ export type Database = {
         Row: {
           avatar_url: string;
           can_edit_profile: boolean;
+          can_place_bets: boolean;
           created_at: string;
           display_name: string;
           id: string;
@@ -918,6 +919,7 @@ export type Database = {
         Insert: {
           avatar_url?: string;
           can_edit_profile?: boolean;
+          can_place_bets?: boolean;
           created_at?: string;
           display_name?: string;
           id: string;
@@ -926,6 +928,7 @@ export type Database = {
         Update: {
           avatar_url?: string;
           can_edit_profile?: boolean;
+          can_place_bets?: boolean;
           created_at?: string;
           display_name?: string;
           id?: string;

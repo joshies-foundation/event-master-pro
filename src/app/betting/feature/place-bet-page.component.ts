@@ -59,222 +59,205 @@ import { OverUnderComponent } from '../ui/over-under.component';
       />
     </joshies-page-header>
 
-    <h4>Your score: {{ userPlayer()?.score }}</h4>
+    @if (loadMessage(); as loadMessage) {
+      <h4>{{ loadMessage }}</h4>
+    } @else {
+      <h4>Your score: {{ userPlayer()?.score }}</h4>
 
-    <!-- Opponent Dropdown -->
-    <label class="flex flex-column gap-2 mt-5">
-      Opponent
-      <p-dropdown
-        [options]="playersWithoutUser()"
-        [(ngModel)]="selectedOpponent"
-        optionLabel="nameAndScore"
-        styleClass="flex"
-        placeholder="Select an opponent"
-      />
-    </label>
-
-    <!-- Bet Type Dropdown -->
-    <label class="flex flex-column gap-2 mt-5">
-      Bet Type
-      <p-dropdown
-        [options]="betTypes"
-        [(ngModel)]="selectedBetType"
-        optionLabel="betTypeString"
-        optionValue="betType"
-        styleClass="w-full"
-      />
-    </label>
-
-    @switch (selectedBetType()) {
-      @case (BetType.DuelWinner) {
-        <!-- Duel Dropdown -->
-        <label class="flex flex-column gap-2 mt-5">
-          Duel
-          <p-dropdown
-            [options]="openDuels()"
-            [(ngModel)]="selectedDuel"
-            optionLabel="duelName"
-            styleClass="w-full"
-            emptyMessage="No open duels"
-            placeholder="Select a duel"
-          />
-        </label>
-
-        <!-- Duel Winner Dropdown -->
-        <label class="flex flex-column gap-2 mt-5">
-          Winner
-          <p-dropdown
-            [options]="competitors()"
-            [(ngModel)]="selectedWinner"
-            optionLabel="display_name"
-            styleClass="w-full"
-            placeholder="Select a winner"
-          />
-        </label>
-      }
-      @case (BetType.SpecialSpaceEvent) {
-        <!-- SS Event Dropdown -->
-        <label class="flex flex-column gap-2 mt-5">
-          Special Space Event
-          <p-dropdown
-            [options]="openSsEvents()"
-            [(ngModel)]="selectedSsEvent"
-            optionLabel="ssEventName"
-            styleClass="w-full"
-            emptyMessage="No open special space events"
-            placeholder="Select a special space event"
-          />
-        </label>
-
-        <joshies-over-under
-          [(ouValue)]="ouValue"
-          [(selectedOuOption)]="selectedOuOption"
+      <!-- Opponent Dropdown -->
+      <label class="flex flex-column gap-2 mt-5">
+        Opponent
+        <p-dropdown
+          [options]="playersWithoutUser()"
+          [(ngModel)]="selectedOpponent"
+          optionLabel="nameAndScore"
+          styleClass="flex"
+          placeholder="Select an opponent"
         />
-      }
-      @case (BetType.ChaosSpaceEvent) {
-        <!-- Chaos Space Event Dropdown -->
-        <label class="flex flex-column gap-2 mt-5">
-          Chaos Space Event
-          <p-dropdown
-            [options]="openChaosEvents()"
-            [(ngModel)]="selectedChaosEvent"
-            optionLabel="template.name"
-            styleClass="w-full"
-            emptyMessage="No open chaos space events"
-            placeholder="Select a chaos space event"
-          />
-        </label>
+      </label>
 
-        <!-- Subtype Radio Buttons -->
-        <div class="flex flex-wrap gap-3 mt-5">
-          <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="chaosBetSubtype"
-                [value]="BetSubtype.NumberOfLosers"
-                [(ngModel)]="selectedChaosBetSubtype"
-                styleClass="w-full"
-              />
-              Number of Losers
-            </label>
-          </div>
-          <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="chaosBetSubtype"
-                [value]="BetSubtype.PlayerLoses"
-                [(ngModel)]="selectedChaosBetSubtype"
-                styleClass="w-full"
-              />
-              Selected Player's Result
-            </label>
-          </div>
-        </div>
+      <!-- Bet Type Dropdown -->
+      <label class="flex flex-column gap-2 mt-5">
+        Bet Type
+        <p-dropdown
+          [options]="betTypes"
+          [(ngModel)]="selectedBetType"
+          optionLabel="betTypeString"
+          optionValue="betType"
+          styleClass="w-full"
+        />
+      </label>
 
-        @switch (selectedChaosBetSubtype()) {
-          @case (BetSubtype.NumberOfLosers) {
-            <joshies-over-under
-              [(ouValue)]="ouValue"
-              [(selectedOuOption)]="selectedOuOption"
+      @switch (selectedBetType()) {
+        @case (BetType.DuelWinner) {
+          <!-- Duel Dropdown -->
+          <label class="flex flex-column gap-2 mt-5">
+            Duel
+            <p-dropdown
+              [options]="openDuels()"
+              [(ngModel)]="selectedDuel"
+              optionLabel="duelName"
+              styleClass="w-full"
+              emptyMessage="No open duels"
+              placeholder="Select a duel"
             />
-          }
-          @case (BetSubtype.PlayerLoses) {
-            <!-- Bet Player Dropdown -->
-            <label class="flex flex-column gap-2 mt-5">
-              Player
-              <p-dropdown
-                [options]="playerService.players() ?? []"
-                [(ngModel)]="selectedChaosPlayer"
-                optionLabel="display_name"
-                styleClass="flex"
-                placeholder="Select a player"
-              />
-            </label>
+          </label>
 
-            <!-- Wins/Loses Radio Buttons -->
-            <div class="flex flex-wrap gap-3 mt-5">
-              <div class="flex align-items-center">
-                <label class="ml-2">
-                  <p-radioButton
-                    name="winsLoses"
-                    value="Wins"
-                    [(ngModel)]="selectedWinsLoses"
-                    styleClass="w-full"
-                  />
-                  Wins
-                </label>
-              </div>
-              <div class="flex align-items-center">
-                <label class="ml-2">
-                  <p-radioButton
-                    name="winsLoses"
-                    value="Loses"
-                    [(ngModel)]="selectedWinsLoses"
-                    styleClass="w-full"
-                  />
-                  Loses
-                </label>
-              </div>
+          <!-- Duel Winner Dropdown -->
+          <label class="flex flex-column gap-2 mt-5">
+            Winner
+            <p-dropdown
+              [options]="competitors()"
+              [(ngModel)]="selectedWinner"
+              optionLabel="display_name"
+              styleClass="w-full"
+              placeholder="Select a winner"
+            />
+          </label>
+        }
+        @case (BetType.SpecialSpaceEvent) {
+          <!-- SS Event Dropdown -->
+          <label class="flex flex-column gap-2 mt-5">
+            Special Space Event
+            <p-dropdown
+              [options]="openSsEvents()"
+              [(ngModel)]="selectedSsEvent"
+              optionLabel="ssEventName"
+              styleClass="w-full"
+              emptyMessage="No open special space events"
+              placeholder="Select a special space event"
+            />
+          </label>
+
+          <joshies-over-under
+            [(ouValue)]="ouValue"
+            [(selectedOuOption)]="selectedOuOption"
+          />
+        }
+        @case (BetType.ChaosSpaceEvent) {
+          <!-- Chaos Space Event Dropdown -->
+          <label class="flex flex-column gap-2 mt-5">
+            Chaos Space Event
+            <p-dropdown
+              [options]="openChaosEvents()"
+              [(ngModel)]="selectedChaosEvent"
+              optionLabel="template.name"
+              styleClass="w-full"
+              emptyMessage="No open chaos space events"
+              placeholder="Select a chaos space event"
+            />
+          </label>
+
+          <!-- Subtype Radio Buttons -->
+          <div class="flex flex-wrap gap-3 mt-5">
+            <div class="flex align-items-center">
+              <label class="ml-2">
+                <p-radioButton
+                  name="chaosBetSubtype"
+                  [value]="BetSubtype.NumberOfLosers"
+                  [(ngModel)]="selectedChaosBetSubtype"
+                  styleClass="w-full"
+                />
+                Number of Losers
+              </label>
             </div>
+            <div class="flex align-items-center">
+              <label class="ml-2">
+                <p-radioButton
+                  name="chaosBetSubtype"
+                  [value]="BetSubtype.PlayerLoses"
+                  [(ngModel)]="selectedChaosBetSubtype"
+                  styleClass="w-full"
+                />
+                Selected Player's Result
+              </label>
+            </div>
+          </div>
+
+          @switch (selectedChaosBetSubtype()) {
+            @case (BetSubtype.NumberOfLosers) {
+              <joshies-over-under
+                [(ouValue)]="ouValue"
+                [(selectedOuOption)]="selectedOuOption"
+              />
+            }
+            @case (BetSubtype.PlayerLoses) {
+              <!-- Bet Player Dropdown -->
+              <label class="flex flex-column gap-2 mt-5">
+                Player
+                <p-dropdown
+                  [options]="playerService.players() ?? []"
+                  [(ngModel)]="selectedChaosPlayer"
+                  optionLabel="display_name"
+                  styleClass="flex"
+                  placeholder="Select a player"
+                />
+              </label>
+
+              <!-- Wins/Loses Radio Buttons -->
+              <div class="flex flex-wrap gap-3 mt-5">
+                <div class="flex align-items-center">
+                  <label class="ml-2">
+                    <p-radioButton
+                      name="winsLoses"
+                      value="Wins"
+                      [(ngModel)]="selectedWinsLoses"
+                      styleClass="w-full"
+                    />
+                    Wins
+                  </label>
+                </div>
+                <div class="flex align-items-center">
+                  <label class="ml-2">
+                    <p-radioButton
+                      name="winsLoses"
+                      value="Loses"
+                      [(ngModel)]="selectedWinsLoses"
+                      styleClass="w-full"
+                    />
+                    Loses
+                  </label>
+                </div>
+              </div>
+            }
           }
         }
+        @default {
+          <!-- Bet terms -->
+          <label class="flex flex-column gap-2 mt-5">
+            Bet Terms
+            <textarea
+              rows="2"
+              pInputTextarea
+              [(ngModel)]="terms"
+              [required]="true"
+            >
+            </textarea>
+          </label>
+        }
       }
-      @default {
-        <!-- Bet terms -->
-        <label class="flex flex-column gap-2 mt-5">
-          Bet Terms
-          <textarea
-            rows="2"
-            pInputTextarea
-            [(ngModel)]="terms"
-            [required]="true"
-          >
-          </textarea>
-        </label>
-      }
-    }
 
-    <!-- Even Odds Checkbox -->
-    <label class="mt-5">
-      <p-checkbox
-        class="mt-5"
-        [(ngModel)]="evenOdds"
-        binary="true"
-        (ngModelChange)="checkEvenOdds()"
-      />
-      Even Odds
-    </label>
+      <!-- Even Odds Checkbox -->
+      <label class="mt-5">
+        <p-checkbox
+          class="mt-5"
+          [(ngModel)]="evenOdds"
+          binary="true"
+          (ngModelChange)="checkEvenOdds()"
+        />
+        Even Odds
+      </label>
 
-    <!-- Requester bet -->
-    <label class="flex flex-column gap-2 mt-5">
-      {{
-        evenOdds()
-          ? 'Both Bet'
-          : (userPlayer()?.display_name ?? 'Bettor') + ' Bets'
-      }}
-      <p-inputNumber
-        #inputRequesterBet
-        [(ngModel)]="requesterBet"
-        [showButtons]="true"
-        buttonLayout="horizontal"
-        [step]="1"
-        min="1"
-        [allowEmpty]="false"
-        incrementButtonIcon="pi pi-plus"
-        decrementButtonIcon="pi pi-minus"
-        inputStyleClass="w-full font-semibold text-right"
-        styleClass="w-full"
-        (ngModelChange)="checkEvenOdds()"
-      />
-    </label>
-
-    @if (!evenOdds()) {
-      <!-- Opponent bet -->
+      <!-- Requester bet -->
       <label class="flex flex-column gap-2 mt-5">
-        {{ selectedOpponent()?.display_name ?? 'Opponent' }} Bets
+        {{
+          evenOdds()
+            ? 'Both Bet'
+            : (userPlayer()?.display_name ?? 'Bettor') + ' Bets'
+        }}
         <p-inputNumber
-          #inputOpponentBet
-          [(ngModel)]="opponentBet"
+          #inputRequesterBet
+          [(ngModel)]="requesterBet"
           [showButtons]="true"
           buttonLayout="horizontal"
           [step]="1"
@@ -284,18 +267,39 @@ import { OverUnderComponent } from '../ui/over-under.component';
           decrementButtonIcon="pi pi-minus"
           inputStyleClass="w-full font-semibold text-right"
           styleClass="w-full"
+          (ngModelChange)="checkEvenOdds()"
         />
       </label>
-    }
 
-    <!-- Submit Button -->
-    <p-button
-      label="Submit Bet"
-      styleClass="w-full mt-5"
-      (onClick)="confirmSubmit()"
-      [disabled]="submitButtonDisabled()"
-      [loading]="submitting()"
-    />
+      @if (!evenOdds()) {
+        <!-- Opponent bet -->
+        <label class="flex flex-column gap-2 mt-5">
+          {{ selectedOpponent()?.display_name ?? 'Opponent' }} Bets
+          <p-inputNumber
+            #inputOpponentBet
+            [(ngModel)]="opponentBet"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            [step]="1"
+            min="1"
+            [allowEmpty]="false"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            inputStyleClass="w-full font-semibold text-right"
+            styleClass="w-full"
+          />
+        </label>
+      }
+
+      <!-- Submit Button -->
+      <p-button
+        label="Submit Bet"
+        styleClass="w-full mt-5"
+        (onClick)="confirmSubmit()"
+        [disabled]="submitButtonDisabled()"
+        [loading]="submitting()"
+      />
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -358,6 +362,17 @@ export default class PlaceBetPageComponent {
   );
   readonly selectedChaosPlayer = signal<PlayerWithUserAndRankInfo | null>(null);
   readonly selectedWinsLoses = signal<'Wins' | 'Loses'>('Loses');
+
+  readonly loadMessage = computed(() => {
+    const userPlayer = this.playerService.userPlayer();
+    if (!userPlayer) {
+      return 'Loading...';
+    }
+    if (!userPlayer.can_place_bets) {
+      return 'You are not authorized to place bets.';
+    }
+    return '';
+  });
 
   readonly playersWithoutUser = computed(() => {
     return this.playerService

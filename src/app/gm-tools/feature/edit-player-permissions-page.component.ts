@@ -60,6 +60,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
             <th pFrozenColumn>Player</th>
             <th class="text-center">Include in Rankings</th>
             <th class="text-center">Edit Profile</th>
+            <th class="text-center">Place Bets</th>
           </tr>
         </ng-template>
         <ng-template
@@ -96,6 +97,14 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                 inputId="binary"
               />
             </td>
+            <td class="text-center">
+              <p-checkbox
+                [ngModel]="player.can_place_bets"
+                (ngModelChange)="setCanPlaceBets(player.user_id, $event)"
+                [binary]="true"
+                inputId="binary"
+              />
+            </td>
           </tr>
         </ng-template>
       </p-table>
@@ -126,6 +135,13 @@ export default class EditPlayerPermissionsPageComponent {
   setCanEditProfile(userId: string, canEditProfile: boolean): void {
     showMessageOnError(
       this.userService.setCanEditProfile(userId, canEditProfile),
+      this.messageService,
+    );
+  }
+
+  setCanPlaceBets(userId: string, canPlaceBets: boolean): void {
+    showMessageOnError(
+      this.userService.setCanPlaceBets(userId, canPlaceBets),
       this.messageService,
     );
   }

@@ -101,4 +101,14 @@ export class UserService {
       .update({ can_edit_profile: canEditProfile })
       .eq('id', userId);
   }
+
+  async setCanPlaceBets(
+    userId: string,
+    canPlaceBets: boolean,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ can_place_bets: canPlaceBets })
+      .eq('id', userId);
+  }
 }
