@@ -125,6 +125,7 @@ p-editor {
 .p-datatable {
   border-radius: 0.75rem;
   overflow: hidden;
+  background-color: var(--surface-card);
 
   .p-datatable-tbody {
     :last-child {
@@ -260,11 +261,15 @@ $sizeVariants: (
 
 @media (prefers-color-scheme: light) {
   :root {
-    --surface-ground: #f3f2f8;
+    --surface-ground: #f3f2f8; // iOS app surface color
   }
 }
 
 @media (prefers-color-scheme: dark) {
+  :root {
+    --surface-ground: black; // iOS app surface color
+  }
+
   .bg-header-footer-alpha {
     background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
   }
