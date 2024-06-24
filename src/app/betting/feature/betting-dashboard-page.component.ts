@@ -131,7 +131,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
               padded
               [headerText]="betRequestsHeaderText()"
               headerIconClass="pi pi-info-circle text-primary mr-2"
-              class="-mt-4 mb-4"
+              class="mb-4"
             >
               <!-- Always show 1st bet request -->
               <joshies-bet-request
