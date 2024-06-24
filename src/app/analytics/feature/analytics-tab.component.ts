@@ -54,16 +54,16 @@ const numTransactionsToShow = 3;
         headerText="Points Over Time"
         headerIconClass="pi pi-chart-line text-primary mr-2"
       >
-        @if (playerRoundScoresResponse()?.data; as playerRoundScores) {
+        @if (playerRoundScoresResponse().data; as playerRoundScores) {
           <p-chart
             type="line"
             [data]="pointsOverTimeChartData()"
             [options]="pointsOverTimeChartOptions"
             height="20rem"
           />
-        } @else if (playerRoundScoresResponse()?.error) {
+        } @else if (playerRoundScoresResponse().error) {
           <h4 class="mt-0 text-red">Error Loading Chart:</h4>
-          <p>{{ playerRoundScoresResponse()?.error }}</p>
+          <p>{{ playerRoundScoresResponse().error }}</p>
         }
       </joshies-card>
     }
