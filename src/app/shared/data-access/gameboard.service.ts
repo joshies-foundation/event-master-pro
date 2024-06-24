@@ -271,7 +271,7 @@ export class GameboardService {
     gameboardSpaceId: number,
   ): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.DeleteGameboardSpace, {
-      gameboard_space_id: gameboardSpaceId,
+      v_gameboard_space_id: gameboardSpaceId,
     });
   }
 

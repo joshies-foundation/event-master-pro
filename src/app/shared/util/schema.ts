@@ -1069,7 +1069,7 @@ export type Database = {
       };
       delete_gameboard_space: {
         Args: {
-          gameboard_space_id: number;
+          v_gameboard_space_id: number;
         };
         Returns: undefined;
       };
