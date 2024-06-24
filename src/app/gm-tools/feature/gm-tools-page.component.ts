@@ -96,6 +96,11 @@ export default class GmToolsPageComponent {
       iconClass: 'pi pi-check bg-green-500',
       routerLink: './resolve-bets',
     },
+    {
+      text: 'Bulk Cancel Bets',
+      iconClass: 'pi pi-trash bg-red-500',
+      routerLink: './bet-bulk-cancel',
+    },
   ];
 
   readonly playersLinks: CardLinkModel[] = [

@@ -39,6 +39,7 @@ export enum View {
 }
 
 export enum Function {
+  BulkCancelBets = 'bulk_cancel_bets',
   CreateSession = 'create_session',
   EndRound = 'end_round',
   GetAllScoresFromSession = 'get_all_scores_from_session',
