@@ -71,7 +71,7 @@ const numTransactionsToShow = 3;
     @if (userIsAPlayer()) {
       <joshies-card
         headerText="Latest Transactions"
-        headerIconClass="pi pi-chart-line text-primary mr-2"
+        headerIconClass="pi pi-list text-primary mr-2"
       >
         <!-- Latest Transactions -->
         @if (firstFewTransactions(); as transactions) {
