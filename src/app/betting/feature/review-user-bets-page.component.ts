@@ -118,7 +118,9 @@ import { BetModel } from '../../shared/util/supabase-types';
         </p-table>
       }
     } @else {
-      <p class="text-500 font-italic text-center mt-5">No open bets</p>
+      <p class="text-500 font-italic text-center mt-5">
+        No open or pending bets
+      </p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

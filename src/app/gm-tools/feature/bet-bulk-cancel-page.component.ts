@@ -42,7 +42,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
     <p class="mt-5">
       Cancel all bets where the given user is the requester. Can choose to
-      cancel just pending (P) bets or all bets that are pending or active (A).
+      cancel just pending bets or all bets that are pending (P) or open (O).
     </p>
 
     @if (displayPlayers(); as players) {
@@ -56,7 +56,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
           <tr>
             <th pFrozenColumn>Player</th>
             <th class="text-right">P</th>
-            <th class="text-right">A</th>
+            <th class="text-right">O</th>
             <th></th>
           </tr>
         </ng-template>
