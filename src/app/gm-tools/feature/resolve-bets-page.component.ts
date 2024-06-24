@@ -1,23 +1,29 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { PlayerService } from '../../shared/data-access/player.service';
 import { TableModule } from 'primeng/table';
 import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import { BetStatus } from '../../shared/util/supabase-helpers';
+import { BetStatus, BetType } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BetModel } from '../../shared/util/supabase-types';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { BetComponent } from '../../shared/ui/bet.component';
+import { DividerModule } from 'primeng/divider';
+import { SkeletonModule } from 'primeng/skeleton';
+import { BetToResolveComponent } from '../../betting/ui/bet-to-resolve.component';
+import { AccordionModule } from 'primeng/accordion';
+import { CardComponent } from '../../shared/ui/card.component';
 
 @Component({
   selector: 'joshies-resolve-bets-page',
@@ -30,9 +36,19 @@ import { toSignal } from '@angular/core/rxjs-interop';
     ButtonModule,
     RouterLink,
     StronglyTypedTableRowDirective,
+    BetComponent,
+    DividerModule,
+    SkeletonModule,
+    BetToResolveComponent,
+    AccordionModule,
+    CardComponent,
   ],
   template: `
-    <joshies-page-header headerText="Resolve Bets" alwaysSmall>
+    <joshies-page-header
+      headerText="Settle Bets"
+      alwaysSmall
+      class="block mb-5"
+    >
       <joshies-header-link
         text="GM Tools"
         routerLink=".."
@@ -40,101 +56,220 @@ import { toSignal } from '@angular/core/rxjs-interop';
       />
     </joshies-page-header>
 
-    @if (bets(); as bets) {
-      <p-table [value]="bets" [scrollable]="true">
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="width: 60%;"></th>
-            <th></th>
-          </tr>
-        </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="bets"
-          let-bet
-        >
-          <tr>
-            <!-- Bet Terms -->
-            <td>
-              <div class="flex flex-column gap-2 -py-2">
-                {{ bet.requester?.display_name }} bets
-                {{ bet.opponent?.display_name }} that
-                {{ bet.description }}
-              </div>
-            </td>
-            <!-- Status Buttons -->
-            <td>
-              <div
-                class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
-              >
-                <p-button
-                  [label]="bet.requester?.display_name + ' Wins'"
-                  severity="success"
-                  icon="pi pi-check"
-                  styleClass="w-full"
-                  (onClick)="
-                    submitRequesterWins(
-                      bet.id,
-                      bet.requester?.display_name ?? 'the requester'
-                    )
-                  "
-                  [hidden]="bet.status === BetStatus.PendingAcceptance"
-                  [loading]="submitting()"
-                />
-                <p-button
-                  [label]="bet.opponent?.display_name + ' Wins'"
-                  severity="success"
-                  icon="pi pi-check"
-                  styleClass="w-full"
-                  (onClick)="
-                    submitOpponentWins(
-                      bet.id,
-                      bet.opponent?.display_name ?? 'the requester'
-                    )
-                  "
-                  [hidden]="bet.status === BetStatus.PendingAcceptance"
-                  [loading]="submitting()"
-                />
-                <p-button
-                  label="Push"
-                  icon="pi pi-equals"
-                  styleClass="w-full"
-                  (onClick)="pushBet(bet.id)"
-                  [hidden]="bet.status === BetStatus.PendingAcceptance"
-                  [loading]="submitting()"
-                />
-                <p-button
-                  label="Cancel Bet"
-                  severity="danger"
-                  icon="pi pi-times"
-                  styleClass="w-full"
-                  (onClick)="cancelBet(bet.id)"
-                  [loading]="submitting()"
-                />
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+    @if (allBets(); as bets) {
+      <joshies-card styleClass="px-3 py-1">
+        <p-accordion [multiple]="true" [activeIndex]="[0]">
+          <!-- Custom Bets -->
+          <p-accordionTab
+            [header]="customBetsHeader()"
+            headerStyleClass="px-0"
+            contentStyleClass="px-0 pt-2"
+          >
+            @for (bet of customBets(); track bet.id; let last = $last) {
+              <joshies-bet-to-resolve
+                [bet]="bet"
+                [submitting]="submitting()"
+                [requesterWinningBetId]="requesterWinningBetId()"
+                [opponentWinningBetId]="opponentWinningBetId()"
+                [pushingBetId]="pushingBetId()"
+                [cancelingBetId]="cancelingBetId()"
+                (requesterWins)="
+                  confirmRequesterWins(
+                    bet.id,
+                    bet.requester?.display_name ?? 'Requester'
+                  )
+                "
+                (opponentWins)="
+                  confirmOpponentWins(
+                    bet.id,
+                    bet.opponent?.display_name ?? 'Opponent'
+                  )
+                "
+                (push)="confirmPushBet(bet.id)"
+                (cancelBet)="confirmCancelBet(bet.id)"
+              />
+
+              @if (!last) {
+                <p-divider />
+              }
+            } @empty {
+              <p class="font-italic text-center text-500 mt-0 mb-2">
+                No active custom bets
+              </p>
+            }
+          </p-accordionTab>
+
+          <!-- Auto-Resolve Bets -->
+          <p-accordionTab
+            [header]="autoResolveBetsHeader()"
+            headerStyleClass="px-0"
+            contentStyleClass="px-0 pt-2"
+          >
+            @for (bet of autoResolveBets(); track bet.id; let last = $last) {
+              <joshies-bet-to-resolve
+                [bet]="bet"
+                [submitting]="submitting()"
+                [requesterWinningBetId]="requesterWinningBetId()"
+                [opponentWinningBetId]="opponentWinningBetId()"
+                [pushingBetId]="pushingBetId()"
+                [cancelingBetId]="cancelingBetId()"
+                (requesterWins)="
+                  confirmRequesterWins(
+                    bet.id,
+                    bet.requester?.display_name ?? 'Requester'
+                  )
+                "
+                (opponentWins)="
+                  confirmOpponentWins(
+                    bet.id,
+                    bet.opponent?.display_name ?? 'Opponent'
+                  )
+                "
+                (push)="confirmPushBet(bet.id)"
+                (cancelBet)="confirmCancelBet(bet.id)"
+              />
+
+              @if (!last) {
+                <p-divider />
+              }
+            } @empty {
+              <p class="font-italic text-center text-500 mt-0 mb-2">
+                No active auto-resolve bets
+              </p>
+            }
+          </p-accordionTab>
+
+          <!-- Bets Pending Acceptance -->
+          <p-accordionTab
+            [header]="betsPendingAcceptanceHeader()"
+            headerStyleClass="px-0"
+            contentStyleClass="px-0 pt-2"
+          >
+            @for (
+              bet of betsPendingAcceptance();
+              track bet.id;
+              let last = $last
+            ) {
+              <joshies-bet-to-resolve
+                [bet]="bet"
+                [submitting]="submitting()"
+                [requesterWinningBetId]="requesterWinningBetId()"
+                [opponentWinningBetId]="opponentWinningBetId()"
+                [pushingBetId]="pushingBetId()"
+                [cancelingBetId]="cancelingBetId()"
+                (push)="confirmPushBet(bet.id)"
+                (cancelBet)="confirmCancelBet(bet.id)"
+              />
+
+              @if (!last) {
+                <p-divider />
+              }
+            } @empty {
+              <p class="font-italic text-center text-500 mt-0 mb-2">
+                No bets pending acceptance
+              </p>
+            }
+          </p-accordionTab>
+        </p-accordion>
+      </joshies-card>
+    } @else {
+      <p-skeleton height="2rem" styleClass="mt-6 mb-3" />
+
+      @for (i of [1, 2]; track i) {
+        <p-skeleton height="9rem" styleClass="mb-2" />
+        <div class="grid">
+          <p-skeleton class="col" height="37px" />
+          <p-skeleton class="col" height="37px" />
+        </div>
+        <div class="grid mb-3">
+          <p-skeleton class="col" height="37px" />
+          <p-skeleton class="col" height="37px" />
+        </div>
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ResolveBetsPageComponent {
-  private readonly playerService = inject(PlayerService);
   private readonly betService = inject(BetService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
-  readonly BetStatus = BetStatus;
+  readonly allBets = toSignal(this.betService.allBetsForThisSession$);
+
+  private readonly activeBets = computed(() =>
+    this.allBets()?.filter((bet) => bet.status === BetStatus.Active),
+  );
+
+  readonly customBets = computed(() =>
+    this.activeBets()?.filter((bet) => betIsCustom(bet.bet_type)),
+  );
+
+  readonly autoResolveBets = computed(() =>
+    this.activeBets()?.filter((bet) => !betIsCustom(bet.bet_type)),
+  );
+
+  readonly betsPendingAcceptance = computed(() =>
+    this.allBets()?.filter((bet) => bet.status === BetStatus.PendingAcceptance),
+  );
+
+  readonly customBetsHeader = computed(
+    () => `Custom Bets (${this.customBets()?.length})`,
+  );
+
+  readonly autoResolveBetsHeader = computed(
+    () => `Auto-Settling Bets (${this.autoResolveBets()?.length})`,
+  );
+
+  readonly betsPendingAcceptanceHeader = computed(
+    () => `Pending Acceptance (${this.betsPendingAcceptance()?.length})`,
+  );
 
   readonly submitting = signal(false);
+  readonly requesterWinningBetId = signal<BetModel['id'] | null>(null);
+  readonly opponentWinningBetId = signal<BetModel['id'] | null>(null);
+  readonly pushingBetId = signal<BetModel['id'] | null>(null);
+  readonly cancelingBetId = signal<BetModel['id'] | null>(null);
 
-  readonly bets = toSignal(this.betService.allBetsForThisSession$);
+  confirmRequesterWins(betId: BetModel['id'], requesterName: string) {
+    this.resetInProgressSignals();
+    this.requesterWinningBetId.set(betId);
 
-  pushBet(betId: BetModel['id']) {
+    confirmBackendAction({
+      action: async () => this.betService.submitBetRequesterWon(betId),
+      confirmationHeaderText: `${requesterName} won?`,
+      confirmationMessageText: `Are you sure ${requesterName} won?`,
+      successMessageText: 'Bet resolved',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
+  }
+
+  confirmOpponentWins(betId: BetModel['id'], opponentName: string) {
+    this.resetInProgressSignals();
+    this.opponentWinningBetId.set(betId);
+
+    confirmBackendAction({
+      action: async () => this.betService.submitBetOpponentWon(betId),
+      confirmationHeaderText: `${opponentName} won?`,
+      confirmationMessageText: `Are you sure ${opponentName} won?`,
+      successMessageText: 'Bet resolved',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
+  }
+
+  confirmPushBet(betId: BetModel['id']) {
+    this.resetInProgressSignals();
+    this.pushingBetId.set(betId);
+
     confirmBackendAction({
       action: async () => this.betService.pushBet(betId),
+      confirmationHeaderText: 'Push?',
       confirmationMessageText:
         'Are you sure you want to mark this bet as a push?',
       successMessageText: 'Bet resolved',
@@ -145,34 +280,14 @@ export default class ResolveBetsPageComponent {
     });
   }
 
-  submitRequesterWins(betId: BetModel['id'], requesterName: string) {
-    confirmBackendAction({
-      action: async () => this.betService.submitBetRequesterWon(betId),
-      confirmationMessageText: `Are you sure ${requesterName} won?`,
-      successMessageText: 'Bet resolved',
-      submittingSignal: this.submitting,
-      confirmationService: this.confirmationService,
-      messageService: this.messageService,
-      successNavigation: null,
-    });
-  }
+  confirmCancelBet(betId: BetModel['id']) {
+    this.resetInProgressSignals();
+    this.cancelingBetId.set(betId);
 
-  submitOpponentWins(betId: BetModel['id'], opponentName: string) {
-    confirmBackendAction({
-      action: async () => this.betService.submitBetOpponentWon(betId),
-      confirmationMessageText: `Are you sure you want to mark this bet as won by ${opponentName}?`,
-      successMessageText: 'Bet resolved',
-      submittingSignal: this.submitting,
-      confirmationService: this.confirmationService,
-      messageService: this.messageService,
-      successNavigation: null,
-    });
-  }
-
-  cancelBet(betId: BetModel['id']) {
     confirmBackendAction({
       action: async () => this.betService.cancelBetByGM(betId),
-      confirmationMessageText: `Are you sure you want to cancel this bet?`,
+      confirmationHeaderText: 'Cancel Bet?',
+      confirmationMessageText: 'Are you sure you want to cancel this bet?',
       successMessageText: 'Bet canceled',
       submittingSignal: this.submitting,
       confirmationService: this.confirmationService,
@@ -180,4 +295,15 @@ export default class ResolveBetsPageComponent {
       successNavigation: null,
     });
   }
+
+  private resetInProgressSignals(): void {
+    this.requesterWinningBetId.set(null);
+    this.opponentWinningBetId.set(null);
+    this.pushingBetId.set(null);
+    this.cancelingBetId.set(null);
+  }
+}
+
+function betIsCustom(betType: BetModel['bet_type']): boolean {
+  return !betType || betType === BetType.Custom;
 }

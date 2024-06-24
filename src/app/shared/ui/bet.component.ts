@@ -8,9 +8,11 @@ import { BetModel, PlayerModel } from '../util/supabase-types';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { AvatarModule } from 'primeng/avatar';
 import { BetStatus } from '../util/supabase-helpers';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { betGainOrLossAmount, betIsResolved } from '../util/bet-helpers';
 import { NumberWithSignAndColorPipe } from './number-with-sign-and-color.pipe';
+import { NumberWithSignPipe } from './number-with-sign.pipe';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'joshies-bet',
@@ -20,6 +22,9 @@ import { NumberWithSignAndColorPipe } from './number-with-sign-and-color.pipe';
     AvatarModule,
     DecimalPipe,
     NumberWithSignAndColorPipe,
+    NumberWithSignPipe,
+    TagModule,
+    NgClass,
   ],
   template: `
     <table class="w-full">
@@ -49,15 +54,29 @@ import { NumberWithSignAndColorPipe } from './number-with-sign-and-color.pipe';
             <p class="mt-0 mb-2">{{ bet().description }}</p>
           </td>
 
-          @if (bet().status === BetStatus.Active) {
-            <td class="vertical-align-top text-right text-xl">
-              <span class="pl-2 pb-2">⏳</span>
-            </td>
-          } @else if (resultAmount() !== null) {
-            <td class="vertical-align-top text-right text-xl">
-              <span
-                [innerHTML]="resultAmount()! | numberWithSignAndColor"
-              ></span>
+          @if (resultAmount() !== null) {
+            <td class="vertical-align-top text-right text-xl pl-2">
+              <div
+                class="ml-auto text-center flex flex-column w-max px-2 py-1 border-round"
+                [ngClass]="{
+                  'surface-100 text-600': resultAmount()! === 0,
+                  'bg-red text-red': resultAmount()! < 0,
+                  'bg-green text-green': resultAmount()! > 0,
+                }"
+              >
+                <p class="m-0 text-xs font-semibold">
+                  {{
+                    resultAmount()! === 0
+                      ? 'Push'
+                      : resultAmount()! > 0
+                        ? 'Won'
+                        : 'Lost'
+                  }}
+                </p>
+                <p class="m-0 text-xl font-bold">
+                  {{ resultAmount()! | numberWithSign }}
+                </p>
+              </div>
             </td>
           }
         </tr>
@@ -157,7 +176,7 @@ import { NumberWithSignAndColorPipe } from './number-with-sign-and-color.pipe';
 export class BetComponent {
   bet = input.required<BetModel>();
   userPlayerId = input<PlayerModel['id']>();
-  avatarBorderColorClass = input('border-50');
+  avatarBorderColorClass = input('border-card');
 
   readonly userIsPartOfBet = computed(() =>
     [this.bet().requester_player_id, this.bet().opponent_player_id].includes(
@@ -169,14 +188,28 @@ export class BetComponent {
     () => this.userPlayerId() === this.bet().requester_player_id,
   );
 
+  readonly usingPastTense = computed(
+    () => this.bet().status !== BetStatus.PendingAcceptance,
+  );
+
+  readonly youOrBothWagerWord = computed(() =>
+    this.usingPastTense() ? 'wagered' : 'wager',
+  );
+
+  readonly betWord = computed(() => (this.usingPastTense() ? 'bet' : 'bets'));
+
+  readonly otherPlayerWagerWord = computed(() =>
+    this.usingPastTense() ? 'wagered' : 'wagers',
+  );
+
   readonly titleText = computed(() => {
     if (!this.userIsPartOfBet())
-      return `${this.bet().requester?.display_name} bets ${this.bet().opponent?.display_name}`;
+      return `${this.bet().requester?.display_name} ${this.betWord()} ${this.bet().opponent?.display_name}`;
 
     if (this.userIsRequester())
       return `You bet ${this.bet().opponent?.display_name}`;
 
-    return `${this.bet().requester?.display_name} bets You`;
+    return `${this.bet().requester?.display_name} ${this.betWord()} You`;
   });
 
   readonly mainAvatarUrls = computed(() => {
@@ -194,18 +227,6 @@ export class BetComponent {
 
   readonly bothWagersAreEqual = computed(
     () => this.bet().requester_wager === this.bet().opponent_wager,
-  );
-
-  readonly usingPastTense = computed(
-    () => this.bet().status !== BetStatus.PendingAcceptance,
-  );
-
-  readonly youOrBothWagerWord = computed(() =>
-    this.usingPastTense() ? 'wagered' : 'wager',
-  );
-
-  readonly otherPlayerWagerWord = computed(() =>
-    this.usingPastTense() ? 'wagered' : 'wagers',
   );
 
   readonly resultAmount = computed(() => {

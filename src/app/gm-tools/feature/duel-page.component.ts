@@ -89,11 +89,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
             <div
               class="mt-5 flex align-items-center justify-content-center gap-3"
             >
-              <div
-                class="flex flex-column align-items-center gap-1 text-sm text-500"
-              >
+              <div class="flex flex-column align-items-center gap-1 text-500">
                 <p-avatar
-                  size="large"
+                  size="xlarge"
                   shape="circle"
                   [image]="vm.duel.challenger?.avatar_url ?? ''"
                 />
@@ -103,11 +101,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               <span class="mb-4">vs.</span>
 
               @if (vm.duel.opponent; as opponent) {
-                <div
-                  class="flex flex-column align-items-center gap-1 text-sm text-500"
-                >
+                <div class="flex flex-column align-items-center gap-1 text-500">
                   <p-avatar
-                    size="large"
+                    size="xlarge"
                     shape="circle"
                     [image]="opponent.avatar_url"
                   />

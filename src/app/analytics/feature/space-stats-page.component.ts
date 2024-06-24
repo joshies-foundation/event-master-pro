@@ -86,7 +86,11 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 
             @for (space of gameboardSpaces(); track space.id) {
               <td class="text-center">
-                {{ player.space_stats[space.id] ?? 0 | number }}
+                @if (player.space_stats[space.id]; as numTimesLandedOnSpace) {
+                  {{ numTimesLandedOnSpace | number }}
+                } @else {
+                  <span class="text-300">–</span>
+                }
               </td>
             }
           </tr>

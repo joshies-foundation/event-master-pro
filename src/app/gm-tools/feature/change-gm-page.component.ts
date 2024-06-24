@@ -60,11 +60,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
         [scrollable]="true"
         [rowTrackBy]="trackById"
       >
-        <ng-template pTemplate="header">
-          <tr>
-            <th colspan="2"></th>
-          </tr>
-        </ng-template>
         <ng-template
           pTemplate="body"
           [joshiesStronglyTypedTableRow]="users"

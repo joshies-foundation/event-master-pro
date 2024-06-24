@@ -71,7 +71,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
         <p-table [value]="chaosSpaceEvents" [rowTrackBy]="trackById">
           <ng-template pTemplate="header">
             <tr>
-              <th class="px-0">Player</th>
+              <th class="pr-0">Player</th>
               <th>Event</th>
               <th class="text-right px-0">Status</th>
               <th class="px-0"></th>
@@ -84,7 +84,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
             [joshiesStronglyTypedTableRow]="chaosSpaceEvents"
           >
             <tr [routerLink]="[chaosSpaceEvent.id]">
-              <td class="px-0">
+              <td class="pr-0">
                 <div class="flex align-items-center">
                   <p-avatar
                     [image]="chaosSpaceEvent.player?.avatar_url!"
@@ -94,13 +94,13 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
                   {{ chaosSpaceEvent.player?.display_name }}
                 </div>
               </td>
-              <td>
+              <td class="text-sm">
                 {{ chaosSpaceEvent.template?.name ?? '?' }}
               </td>
               <td class="text-right px-0">
                 <joshies-status-tag [status]="chaosSpaceEvent.status" />
               </td>
-              <td class="pl-1 pr-0">
+              <td class="px-1">
                 <i class="pi pi-angle-right text-400"></i>
               </td>
             </tr>

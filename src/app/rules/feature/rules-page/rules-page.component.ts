@@ -36,6 +36,11 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
+import { CardComponent } from '../../../shared/ui/card.component';
+import { GameboardService } from '../../../shared/data-access/gameboard.service';
+import { GameboardSpaceComponent } from '../../../gm-tools/ui/gameboard-space.component';
+import { GameboardSpaceDescriptionPipe } from '../../../gm-tools/ui/gameboard-space-description.pipe';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 function valueIsNot(invalidValue: string): ValidatorFn {
   return (control) =>
@@ -60,6 +65,9 @@ function valueIsNot(invalidValue: string): ValidatorFn {
     RouterLink,
     RouterLinkActive,
     NgOptimizedImage,
+    CardComponent,
+    GameboardSpaceComponent,
+    GameboardSpaceDescriptionPipe,
   ],
 })
 export default class RulesPageComponent {
@@ -68,6 +76,7 @@ export default class RulesPageComponent {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly playerService = inject(PlayerService);
   private readonly eventService = inject(EventService);
+  private readonly gameboardService = inject(GameboardService);
   private readonly footerService = inject(FooterService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -128,6 +137,13 @@ export default class RulesPageComponent {
     });
   });
 
+  readonly specialSpaceEvents = toSignal(
+    this.gameboardService.specialSpaceEventTemplates$,
+  );
+  readonly chaosSpaceEvents = toSignal(
+    this.gameboardService.chaosSpaceEventTemplates$,
+  );
+
   readonly pagePaddingXCssClass = pagePaddingXCssClass;
 
   readonly viewModel = computed(() =>
@@ -137,6 +153,9 @@ export default class RulesPageComponent {
       rules: this.rules(),
       form: this.form(),
       events: this.eventService.events(),
+      spaces: this.gameboardService.gameboardSpaces(),
+      specialSpaceEvents: this.specialSpaceEvents(),
+      chaosSpaceEvents: this.chaosSpaceEvents(),
     }),
   );
 

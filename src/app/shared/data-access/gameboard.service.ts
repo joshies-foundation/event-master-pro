@@ -117,7 +117,7 @@ export class GameboardService {
           ),
         );
       }),
-      shareReplay(1),
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
 
   readonly specialSpaceEventsForThisTurn$: Observable<
@@ -150,7 +150,7 @@ export class GameboardService {
           (event) => event.status !== SpaceEventStatus.Canceled,
         ) ?? null,
     ),
-    shareReplay(1),
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   readonly chaosSpaceEventTemplates$: Observable<
@@ -205,7 +205,7 @@ export class GameboardService {
           ),
         );
       }),
-      shareReplay(1),
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
 
   readonly chaosSpaceEventsForThisTurn$: Observable<
@@ -220,13 +220,13 @@ export class GameboardService {
         ),
       ),
     ),
-    shareReplay(1),
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   readonly allChaosSpaceEventsForThisTurnAreResolved$: Observable<boolean> =
     this.chaosSpaceEventsForThisTurn$.pipe(
       map(allSpaceEventsAreResolved),
-      shareReplay(1),
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
 
   readonly nonCanceledChaosSpaceEventsForThisTurn$: Observable<

@@ -21,7 +21,7 @@ body {
 }
 
 body {
-  background-color: var(--surface-card);
+  background-color: var(--surface-ground);
 }
 
 pre {
@@ -63,6 +63,14 @@ p-tabmenu {
   * {
     margin-top: 0;
   }
+
+  p {
+    line-height: 1.25;
+  }
+
+  :last-child {
+    margin-bottom: 0;
+  }
 }
 
 p-editor {
@@ -102,6 +110,10 @@ p-editor {
   }
 }
 
+.bg-black {
+  background-color: black;
+}
+
 .blur-background {
   backdrop-filter: blur(0.75rem);
 }
@@ -110,14 +122,15 @@ p-editor {
   white-space: pre-wrap;
 }
 
-// round corners of table header
-.p-datatable .p-datatable-thead > tr > {
-  th {
-    &:first-child {
-      border-top-left-radius: 0.5rem;
-    }
-    &:last-child {
-      border-top-right-radius: 0.5rem;
+.p-datatable {
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  .p-datatable-tbody {
+    :last-child {
+      td {
+        border-bottom: none;
+      }
     }
   }
 }
@@ -200,11 +213,15 @@ $sizeVariants: (
 // ~~~ Classes that are different in light vs. dark mode ~~~
 
 .bg-header-footer-alpha {
-  background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
+  background-color: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--surface-ground) 25%, var(--surface-0)) 80%,
+    transparent
+  );
 }
 
 .bg-highlight {
-  background-color: var(--yellow-200) !important;
+  background-color: var(--yellow-100) !important;
 }
 
 .text-green {
@@ -215,8 +232,24 @@ $sizeVariants: (
   color: var(--red-700);
 }
 
+.bg-green {
+  background: color-mix(in srgb, var(--green-300) 50%, var(--surface-0));
+}
+
+.bg-red {
+  background: color-mix(in srgb, var(--red-300) 50%, var(--surface-0));
+}
+
 .bg-none {
   background: unset !important;
+}
+
+.border-ground {
+  border-color: var(--surface-ground);
+}
+
+.border-card {
+  border-color: var(--surface-card);
 }
 
 .hide-scrollbar {
@@ -225,13 +258,15 @@ $sizeVariants: (
   }
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    --surface-ground: #f3f2f8;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .bg-header-footer-alpha {
-    background-color: color-mix(
-      in srgb,
-      color-mix(in srgb, var(--surface-50) 60%, var(--surface-0)) 80%,
-      transparent
-    );
+    background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
   }
 
   .bg-highlight {
@@ -244,5 +279,13 @@ $sizeVariants: (
 
   .text-red {
     color: var(--red-300);
+  }
+
+  .bg-green {
+    background: color-mix(in srgb, var(--green-700) 25%, var(--surface-0));
+  }
+
+  .bg-red {
+    background: color-mix(in srgb, var(--red-700) 25%, var(--surface-0));
   }
 }

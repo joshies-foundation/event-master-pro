@@ -71,7 +71,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
         <p-table [value]="specialSpaceEvents" [rowTrackBy]="trackById">
           <ng-template pTemplate="header">
             <tr>
-              <th class="px-0">Player</th>
+              <th class="pr-0">Player</th>
               <th>Event</th>
               <th class="text-right px-0">Status</th>
               <th class="px-0"></th>
@@ -84,7 +84,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
             [joshiesStronglyTypedTableRow]="specialSpaceEvents"
           >
             <tr [routerLink]="[specialSpaceEvent.id]">
-              <td class="px-0">
+              <td class="pr-0">
                 <div class="flex align-items-center">
                   <p-avatar
                     [image]="specialSpaceEvent.player?.avatar_url!"
@@ -94,13 +94,13 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
                   {{ specialSpaceEvent.player?.display_name }}
                 </div>
               </td>
-              <td>
+              <td class="text-sm">
                 {{ specialSpaceEvent.template?.name ?? '?' }}
               </td>
               <td class="text-right px-0">
                 <joshies-status-tag [status]="specialSpaceEvent.status" />
               </td>
-              <td class="pl-1 pr-0">
+              <td class="px-1">
                 <i class="pi pi-angle-right text-400"></i>
               </td>
             </tr>

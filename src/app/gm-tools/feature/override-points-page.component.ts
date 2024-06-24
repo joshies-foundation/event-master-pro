@@ -33,6 +33,7 @@ import {
   OverrideDefinitionTableComponent,
   OverrideDefinitionTableModel,
 } from '../ui/override-definition-table.component';
+import { CardComponent } from '../../shared/ui/card.component';
 
 @Component({
   selector: 'joshies-override-points-page',
@@ -48,6 +49,7 @@ import {
     InputTextModule,
     ConfirmOverrideDialogComponent,
     OverrideDefinitionTableComponent,
+    CardComponent,
   ],
   template: `
     <joshies-page-header headerText="Override Points" alwaysSmall>
@@ -71,35 +73,37 @@ import {
         {{ player.display_name }}
       </h2>
 
-      <!-- Override Type -->
-      <p class="mb-3">Override Type</p>
-      <div class="flex flex-column gap-3 mb-5">
-        @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
-          <label class="ml-2">
-            <p-radioButton
-              name="category"
-              [value]="option.addOrSubtractMode"
-              [(ngModel)]="inAddOrSubtractMode"
-              styleClass="mr-1"
-              [disabled]="submitting()"
-            />
-            {{ option.label }}
-          </label>
-        }
-      </div>
+      <joshies-card padded>
+        <!-- Override Type -->
+        <p class="mt-0 mb-3">Override Type</p>
+        <div class="flex flex-column gap-3 mb-5">
+          @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
+            <label class="ml-2">
+              <p-radioButton
+                name="category"
+                [value]="option.addOrSubtractMode"
+                [(ngModel)]="inAddOrSubtractMode"
+                styleClass="mr-1"
+                [disabled]="submitting()"
+              />
+              {{ option.label }}
+            </label>
+          }
+        </div>
 
-      <!-- Table -->
-      <joshies-override-definition-table
-        [model]="overrideDefinitionTableMode()"
-        [(userDefinedChangeValue)]="userDefinedChangeValue"
-        [(userDefinedReplacementValue)]="userDefinedReplacementValue"
-      />
+        <!-- Table -->
+        <joshies-override-definition-table
+          [model]="overrideDefinitionTableMode()"
+          [(userDefinedChangeValue)]="userDefinedChangeValue"
+          [(userDefinedReplacementValue)]="userDefinedReplacementValue"
+        />
 
-      <!-- Comment -->
-      <label class="flex flex-column gap-2 mt-5">
-        Reason for Override (Optional)
-        <input pInputText [(ngModel)]="comment" />
-      </label>
+        <!-- Comment -->
+        <label class="flex flex-column gap-2 mt-5">
+          Reason for Override (Optional)
+          <input pInputText [(ngModel)]="comment" />
+        </label>
+      </joshies-card>
 
       <!-- Submit Button -->
       <p-button

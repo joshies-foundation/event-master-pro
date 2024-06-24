@@ -53,7 +53,10 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
                 <p-sortIcon field="round_number" />
               </th>
               <th>Players</th>
-              <th>Game</th>
+              <th pSortableColumn="game_name">
+                Game
+                <p-sortIcon field="game_name" />
+              </th>
               <th class="text-right" pSortableColumn="points_gained_by_winner">
                 Points <p-sortIcon field="points_gained_by_winner" />
               </th>

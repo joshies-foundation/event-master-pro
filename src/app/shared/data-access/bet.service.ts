@@ -61,8 +61,8 @@ export class BetService {
               // sort by date, descending (newest first)
               .sort(
                 (a, b) =>
-                  new Date(b.created_at).getTime() -
-                  new Date(a.created_at).getTime(),
+                  new Date(a.updated_at).getTime() -
+                  new Date(b.updated_at).getTime(),
               ),
           ),
           map((bets) => linkPlayersToBets(bets, players)),
@@ -73,7 +73,7 @@ export class BetService {
 
   readonly bets = toSignal(this.bets$);
 
-  readonly betsPendingUsersAcceptance$ = combineLatest({
+  readonly betRequests$ = combineLatest({
     bets: this.bets$,
     userPlayerId: this.playerService.userPlayerId$,
   }).pipe(
@@ -96,7 +96,30 @@ export class BetService {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  readonly userHasBetRequests$ = this.betsPendingUsersAcceptance$.pipe(
+  readonly betsAwaitingAcceptance$ = combineLatest({
+    bets: this.bets$,
+    userPlayerId: this.playerService.userPlayerId$,
+  }).pipe(
+    whenAllValuesNotNull(({ bets, userPlayerId }) =>
+      of(
+        [...bets]
+          .filter(
+            (bet) =>
+              bet.status === BetStatus.PendingAcceptance &&
+              userPlayerId === bet.requester_player_id,
+          )
+          // sort by date, ascending (oldest first)
+          .sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime(),
+          ),
+      ),
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  readonly userHasBetRequests$ = this.betRequests$.pipe(
     map((betRequests) => (betRequests?.length ?? 0) > 0),
   );
 
@@ -152,7 +175,7 @@ export class BetService {
 
   readonly betSummaryChartData$: Observable<ChartData | null> = combineLatest({
     userPlayerId: this.playerService.userPlayerId$,
-    bets: this.resolvedBets$.pipe(map((bets) => bets?.reverse() ?? null)),
+    bets: this.resolvedBets$,
   }).pipe(
     whenAllValuesNotNull(
       ({ userPlayerId, bets }): Observable<ChartData> =>
@@ -221,10 +244,8 @@ export class BetService {
       sessionId: this.gameStateService.sessionId$,
       players: this.playerService.playersIncludingDisabled$,
     }).pipe(
-      switchMap(({ sessionId, players }) => {
-        if (!players || !sessionId) return of(null);
-
-        return realtimeUpdatesFromTable(
+      whenAllValuesNotNull(({ sessionId, players }) =>
+        realtimeUpdatesFromTable(
           this.supabase,
           Table.Bet,
           `session_id=eq.${sessionId}`,
@@ -239,8 +260,8 @@ export class BetService {
               ),
           ),
           map((bets) => linkPlayersToBets(bets, players)),
-        );
-      }),
+        ),
+      ),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
 

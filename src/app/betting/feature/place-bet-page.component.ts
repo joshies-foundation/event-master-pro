@@ -285,9 +285,9 @@ export default class PlaceBetPageComponent {
   readonly betTypes = [
     generateBetTypeObject(BetType.DuelWinner),
     generateBetTypeObject(BetType.SpecialSpaceEvent),
-    generateBetTypeObject(BetType.Manual),
+    generateBetTypeObject(BetType.Custom),
   ];
-  readonly selectedBetType = signal<BetType>(BetType.Manual);
+  readonly selectedBetType = signal<BetType>(BetType.Custom);
   readonly selectedWinner = signal<PlayerWithUserAndRankInfo | null>(null);
   readonly selectedSsEvent = signal<{
     ssEventName: string;
@@ -331,7 +331,7 @@ export default class PlaceBetPageComponent {
       return true;
     }
 
-    if (this.selectedBetType() === BetType.Manual && !this.terms()) {
+    if (this.selectedBetType() === BetType.Custom && !this.terms()) {
       return true;
     }
 
@@ -474,7 +474,7 @@ export default class PlaceBetPageComponent {
       opponent_wager: this.opponentBet(),
       session_id: this.sessionService.session()?.id ?? 0,
       status: BetStatus.PendingAcceptance,
-      bet_type: betType === BetType.Manual ? null : betType,
+      bet_type: betType === BetType.Custom ? null : betType,
       details: generateBetDetails(
         this.selectedBetType(),
         this.selectedDuel(),
