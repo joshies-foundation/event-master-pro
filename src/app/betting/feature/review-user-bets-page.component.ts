@@ -21,7 +21,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { BetModel } from '../../shared/util/supabase-types';
 
 @Component({
-  selector: 'joshies-place-bet-choose-player-page',
+  selector: 'joshies-review-user-bets-page',
   standalone: true,
   imports: [
     PageHeaderComponent,
@@ -33,7 +33,7 @@ import { BetModel } from '../../shared/util/supabase-types';
     StronglyTypedTableRowDirective,
   ],
   template: `
-    <joshies-page-header headerText="Open Bets" alwaysSmall>
+    <joshies-page-header headerText="Current Bets" alwaysSmall>
       <joshies-header-link
         text="Betting"
         routerLink=".."
@@ -43,7 +43,7 @@ import { BetModel } from '../../shared/util/supabase-types';
 
     @if (displayBets()?.length) {
       @if (displayBets(); as bets) {
-        <p class="mt-5">Review bets that are active or awaiting approval.</p>
+        <p class="mt-5">Review bets that are open or awaiting approval.</p>
         <p-table
           [value]="bets"
           [defaultSortOrder]="-1"
@@ -77,7 +77,7 @@ import { BetModel } from '../../shared/util/supabase-types';
                   class="text-left flex gap-2 flex-column md:flex-row justify-content-end"
                 >
                   @if (bet.status === BetStatus.Active) {
-                    Active
+                    Open
                   } @else {
                     <p-button
                       label="Accept Bet"
@@ -118,12 +118,14 @@ import { BetModel } from '../../shared/util/supabase-types';
         </p-table>
       }
     } @else {
-      <p class="text-500 font-italic text-center mt-5">No open bets</p>
+      <p class="text-500 font-italic text-center mt-5">
+        No open or pending bets
+      </p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class PlaceBetChoosePlayerPageComponent {
+export default class ReviewUserBetsPageComponent {
   private readonly playerService = inject(PlayerService);
   private readonly betService = inject(BetService);
   private readonly messageService = inject(MessageService);
