@@ -30,7 +30,7 @@ export interface CardLinkModel {
         [ngClass]="model().iconClass"
       ></i>
       <div
-        class="flex align-items-center w-full justify-content-between pl-0 p-2 border-50"
+        class="flex align-items-center w-full justify-content-between pl-0 p-2 surface-border"
         [class.border-bottom-1]="!last()"
       >
         @if (model().subtext || model().pretext) {
