@@ -58,9 +58,11 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         <ng-template pTemplate="header">
           <tr>
             <th pFrozenColumn>Player</th>
-            <th class="text-center">Include in Rankings</th>
+            <th class="text-center">Enabled</th>
             <th class="text-center">Edit Profile</th>
             <th class="text-center">Place Bets</th>
+            <th class="text-center">Squidward Mode</th>
+            <th class="text-center">Can Toggle Squidward Mode</th>
           </tr>
         </ng-template>
         <ng-template
@@ -105,6 +107,24 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                 inputId="binary"
               />
             </td>
+            <td class="text-center">
+              <p-checkbox
+                [ngModel]="player.squidward_mode"
+                (ngModelChange)="setSquidwardMode(player.user_id, $event)"
+                [binary]="true"
+                inputId="binary"
+              />
+            </td>
+            <td class="text-center">
+              <p-checkbox
+                [ngModel]="player.can_toggle_squidward_mode"
+                (ngModelChange)="
+                  setCanToggleSquidwardMode(player.user_id, $event)
+                "
+                [binary]="true"
+                inputId="binary"
+              />
+            </td>
           </tr>
         </ng-template>
       </p-table>
@@ -142,6 +162,26 @@ export default class EditPlayerPermissionsPageComponent {
   setCanPlaceBets(userId: string, canPlaceBets: boolean): void {
     showMessageOnError(
       this.userService.setCanPlaceBets(userId, canPlaceBets),
+      this.messageService,
+    );
+  }
+
+  setSquidwardMode(userId: string, squidwardMode: boolean): void {
+    showMessageOnError(
+      this.userService.setSquidwardMode(userId, squidwardMode),
+      this.messageService,
+    );
+  }
+
+  setCanToggleSquidwardMode(
+    userId: string,
+    canToggleSquidwardMode: boolean,
+  ): void {
+    showMessageOnError(
+      this.userService.setCanToggleSquidwardMode(
+        userId,
+        canToggleSquidwardMode,
+      ),
       this.messageService,
     );
   }

@@ -38,6 +38,8 @@ export interface PlayerWithUserInfo {
   avatar_url: string;
   can_edit_profile: boolean;
   can_place_bets: boolean;
+  squidward_mode: boolean;
+  can_toggle_squidward_mode: boolean;
 }
 
 export interface PlayerWithUserAndRankInfo extends PlayerWithUserInfo {
@@ -102,6 +104,8 @@ export class PlayerService {
                 avatar_url: user.avatar_url,
                 can_edit_profile: user.can_edit_profile,
                 can_place_bets: user.can_place_bets,
+                squidward_mode: user.squidward_mode,
+                can_toggle_squidward_mode: user.can_toggle_squidward_mode,
               };
             })
             .sort((a, b) => b.score - a.score),

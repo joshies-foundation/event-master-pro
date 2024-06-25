@@ -13,18 +13,30 @@ import { DatePipe } from '@angular/common';
 import { SkeletonModule } from 'primeng/skeleton';
 import { NotificationsService } from '../../../shared/data-access/notifications.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
+import { UserModel } from '../../../shared/util/supabase-types';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { FormsModule } from '@angular/forms';
+import { SquidwardService } from '../../../shared/data-access/squidward.service';
 
 @Component({
   selector: 'joshies-profile-page',
   standalone: true,
   templateUrl: './profile-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonModule, DatePipe, SkeletonModule, PageHeaderComponent],
+  imports: [
+    ButtonModule,
+    DatePipe,
+    SkeletonModule,
+    PageHeaderComponent,
+    InputSwitchModule,
+    FormsModule,
+  ],
 })
 export default class ProfilePageComponent {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
   private readonly notificationsService = inject(NotificationsService);
+  private readonly squidwardService = inject(SquidwardService);
 
   private readonly updatedAvatarLoading = signal(false);
 
@@ -35,6 +47,7 @@ export default class ProfilePageComponent {
       pushNotificationsAreEnabled:
         this.notificationsService.pushNotificationsAreEnabled(),
       updatedAvatarLoading: this.updatedAvatarLoading(),
+      squidwardMode: this.squidwardService.squidwardMode(),
     }),
   );
 
@@ -67,6 +80,10 @@ export default class ProfilePageComponent {
     }
 
     void this.userService.setDisplayName(userId, newDisplayName);
+  }
+
+  setSquidwardMode(userId: UserModel['id'], squidwardMode: boolean) {
+    this.userService.setSquidwardMode(userId, squidwardMode);
   }
 
   async enablePushNotifications(userId: string): Promise<void> {
