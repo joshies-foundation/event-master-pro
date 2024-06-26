@@ -1184,6 +1184,13 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_event_scores: {
+        Args: {
+          event_id: number;
+          team_scores: Json;
+        };
+        Returns: undefined;
+      };
       submit_space_event_player_score_changes: {
         Args: {
           space_event_id: number;
