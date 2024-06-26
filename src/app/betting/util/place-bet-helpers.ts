@@ -135,6 +135,21 @@ export function generateBetTypeObject(type: BetType) {
   }
 }
 
+export function getBetType(typeString: string) {
+  switch (typeString) {
+    case 'duel':
+      return BetType.DuelWinner;
+    case 'chaos':
+      return BetType.ChaosSpaceEvent;
+    case 'special':
+      return BetType.SpecialSpaceEvent;
+    case 'event': //TODO
+    case 'move': //TODO
+    default:
+      return BetType.Custom;
+  }
+}
+
 type DuelWinnerBetDetails = {
   duelId: DuelModel['id'];
   challengerWins: boolean;

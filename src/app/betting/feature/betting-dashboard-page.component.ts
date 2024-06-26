@@ -191,6 +191,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
           ) {
             <a
               [routerLink]="betTypeButtonModel.routerLink"
+              [queryParams]="betTypeButtonModel.queryParams"
               class="flex flex-column flex-shrink-0 gap-1 text-xs h-4rem w-6rem p-2 justify-content-center text-center align-items-center no-underline p-button p-button-outlined"
               pRipple
             >
@@ -500,36 +501,43 @@ export default class BettingDashboardPageComponent {
     iconClass: string;
     label: string;
     routerLink: string;
+    queryParams: { betType: string };
   }[] = [
     {
       iconClass: PrimeIcons.STAR,
       label: 'Main Event',
       routerLink: './place-bet',
+      queryParams: { betType: 'event' },
     },
     {
       iconClass: PrimeIcons.BOLT,
       label: 'Duel',
       routerLink: './place-bet',
+      queryParams: { betType: 'duel' },
     },
     {
       iconClass: PrimeIcons.QUESTION_CIRCLE,
       label: 'Special Space Event',
       routerLink: './place-bet',
+      queryParams: { betType: 'special' },
     },
     {
       iconClass: PrimeIcons.EXCLAMATION_CIRCLE,
       label: 'Chaos Space Event',
       routerLink: './place-bet',
+      queryParams: { betType: 'chaos' },
     },
     {
       iconClass: 'ci-space-entry',
       label: 'Gameboard Move',
       routerLink: './place-bet',
+      queryParams: { betType: 'move' },
     },
     {
       iconClass: PrimeIcons.PENCIL,
       label: 'Custom',
       routerLink: './place-bet',
+      queryParams: { betType: 'custom' },
     },
   ];
 

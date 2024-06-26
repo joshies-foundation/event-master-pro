@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   effect,
   inject,
@@ -46,6 +47,7 @@ import {
   generateBetDescription,
   generateBetDetails,
   generateBetTypeObject,
+  getBetType,
 } from '../util/place-bet-helpers';
 import { OverUnderComponent } from '../ui/over-under.component';
 import { Tables } from '../../shared/util/schema';
@@ -329,7 +331,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     InputSwitchModule,
   ],
 })
-export default class PlaceBetPageComponent {
+export default class PlaceBetPageComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -654,7 +656,7 @@ export default class PlaceBetPageComponent {
 
   // When parent changes (e.g. someone's score changes externally)
   // clear child dropdown selection
-  constructor() {
+  constructor(private route: ActivatedRoute) {
     effect(
       () => {
         this.playersWithoutUser();
@@ -670,5 +672,12 @@ export default class PlaceBetPageComponent {
       },
       { allowSignalWrites: true },
     );
+  }
+
+  ngOnInit() {
+    this.route.queryParamMap.subscribe((params) => {
+      const betTypeParam = params.get('betType') ?? '';
+      this.selectedBetType.set(getBetType(betTypeParam));
+    });
   }
 }
