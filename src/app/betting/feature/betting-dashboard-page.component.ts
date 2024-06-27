@@ -29,6 +29,7 @@ import { BetRequestComponent } from '../ui/bet-request.component';
 import { getUserBetData } from '../../shared/util/bet-helpers';
 import { AccordionModule } from 'primeng/accordion';
 import { RouterLink } from '@angular/router';
+import { BetType } from '../../shared/util/supabase-helpers';
 
 // const textColor = getCssVariableValue('--text-color');
 const textColorSecondary = getCssVariableValue('--text-color-secondary');
@@ -501,43 +502,43 @@ export default class BettingDashboardPageComponent {
     iconClass: string;
     label: string;
     routerLink: string;
-    queryParams: { betType: string };
+    queryParams: { betType: BetType };
   }[] = [
     {
       iconClass: PrimeIcons.STAR,
       label: 'Main Event',
       routerLink: './place-bet',
-      queryParams: { betType: 'event' },
+      queryParams: { betType: BetType.Custom }, //TODO
     },
     {
       iconClass: PrimeIcons.BOLT,
       label: 'Duel',
       routerLink: './place-bet',
-      queryParams: { betType: 'duel' },
+      queryParams: { betType: BetType.DuelWinner },
     },
     {
       iconClass: PrimeIcons.QUESTION_CIRCLE,
       label: 'Special Space Event',
       routerLink: './place-bet',
-      queryParams: { betType: 'special' },
+      queryParams: { betType: BetType.SpecialSpaceEvent },
     },
     {
       iconClass: PrimeIcons.EXCLAMATION_CIRCLE,
       label: 'Chaos Space Event',
       routerLink: './place-bet',
-      queryParams: { betType: 'chaos' },
+      queryParams: { betType: BetType.ChaosSpaceEvent },
     },
     {
       iconClass: 'ci-space-entry',
       label: 'Gameboard Move',
       routerLink: './place-bet',
-      queryParams: { betType: 'move' },
+      queryParams: { betType: BetType.Custom }, //TODO
     },
     {
       iconClass: PrimeIcons.PENCIL,
       label: 'Custom',
       routerLink: './place-bet',
-      queryParams: { betType: 'custom' },
+      queryParams: { betType: BetType.Custom },
     },
   ];
 

@@ -5,6 +5,7 @@ import {
   computed,
   effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -47,7 +48,6 @@ import {
   generateBetDescription,
   generateBetDetails,
   generateBetTypeObject,
-  getBetType,
 } from '../util/place-bet-helpers';
 import { OverUnderComponent } from '../ui/over-under.component';
 import { Tables } from '../../shared/util/schema';
@@ -344,6 +344,7 @@ export default class PlaceBetPageComponent implements OnInit {
   readonly BetType = BetType;
   readonly BetSubtype = BetSubtype;
 
+  readonly betType = input<BetType>();
   private readonly ssEvents = toSignal(
     this.gameboardService.specialSpaceEventsForThisTurn$,
   );
@@ -656,7 +657,7 @@ export default class PlaceBetPageComponent implements OnInit {
 
   // When parent changes (e.g. someone's score changes externally)
   // clear child dropdown selection
-  constructor(private route: ActivatedRoute) {
+  constructor() {
     effect(
       () => {
         this.playersWithoutUser();
@@ -675,9 +676,6 @@ export default class PlaceBetPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParamMap.subscribe((params) => {
-      const betTypeParam = params.get('betType') ?? '';
-      this.selectedBetType.set(getBetType(betTypeParam));
-    });
+    this.selectedBetType.set(this.betType() ?? BetType.Custom);
   }
 }
