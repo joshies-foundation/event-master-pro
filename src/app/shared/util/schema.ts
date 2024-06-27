@@ -911,27 +911,33 @@ export type Database = {
           avatar_url: string;
           can_edit_profile: boolean;
           can_place_bets: boolean;
+          can_toggle_squidward_mode: boolean;
           created_at: string;
           display_name: string;
           id: string;
+          squidward_mode: boolean;
           updated_at: string;
         };
         Insert: {
           avatar_url?: string;
           can_edit_profile?: boolean;
           can_place_bets?: boolean;
+          can_toggle_squidward_mode?: boolean;
           created_at?: string;
           display_name?: string;
           id: string;
+          squidward_mode?: boolean;
           updated_at?: string;
         };
         Update: {
           avatar_url?: string;
           can_edit_profile?: boolean;
           can_place_bets?: boolean;
+          can_toggle_squidward_mode?: boolean;
           created_at?: string;
           display_name?: string;
           id?: string;
+          squidward_mode?: boolean;
           updated_at?: string;
         };
         Relationships: [

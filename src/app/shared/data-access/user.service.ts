@@ -111,4 +111,24 @@ export class UserService {
       .update({ can_place_bets: canPlaceBets })
       .eq('id', userId);
   }
+
+  async setSquidwardMode(
+    userId: string,
+    squidwardMode: boolean,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ squidward_mode: squidwardMode })
+      .eq('id', userId);
+  }
+
+  async setCanToggleSquidwardMode(
+    userId: string,
+    canToggleSquidwardMode: boolean,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ can_toggle_squidward_mode: canToggleSquidwardMode })
+      .eq('id', userId);
+  }
 }

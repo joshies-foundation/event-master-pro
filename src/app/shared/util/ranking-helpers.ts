@@ -34,6 +34,8 @@ export function addRankingInfoToPlayers(
             : undefined,
       can_edit_profile: player.can_edit_profile,
       can_place_bets: player.can_place_bets,
+      squidward_mode: player.squidward_mode,
+      can_toggle_squidward_mode: player.can_toggle_squidward_mode,
     };
   });
 }
