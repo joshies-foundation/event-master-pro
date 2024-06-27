@@ -12,6 +12,7 @@ import { EventService } from '../data-access/event.service';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { ParticipantListPipe } from './participant-list.pipe';
+import { ButtonModule } from 'primeng/button';
 
 interface EventTeamModelWithWinnerFlag extends EventTeamModel {
   isWinner: boolean;
@@ -26,7 +27,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       layout="horizontal"
       [styleClass]="bracket().length ? 'rotate-180' : ''"
       selectionMode="checkbox"
-      (onNodeSelect)="setMatchWinner($event, bracket(), selectedNodes)"
+      (onNodeSelect)="setMatchWinnerEvent($event, bracket(), selectedNodes)"
       [(selection)]="selectedNodes"
       propagateSelectionUp="false"
       propagateSelectionDown="false"
@@ -52,6 +53,14 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
         </div>
       </ng-template>
     </p-tree>
+
+    <!-- Submit Button -->
+    <p-button
+      label="Submit Bet"
+      styleClass="w-full mt-2"
+      [hidden]="!hasSubmit()"
+      (onClick)="confirmSubmit()"
+    />
   `,
   styles: `
     :host ::ng-deep {
@@ -61,10 +70,18 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TreeModule, AvatarModule, AvatarGroupModule, ParticipantListPipe],
+  imports: [
+    TreeModule,
+    AvatarModule,
+    AvatarGroupModule,
+    ParticipantListPipe,
+    ButtonModule,
+  ],
 })
 export class TournamentBracketComponent {
   private readonly eventService = inject(EventService);
+
+  readonly hasSubmit = input<boolean>();
 
   private readonly eventTeams = computed(() =>
     this.eventService
@@ -74,7 +91,61 @@ export class TournamentBracketComponent {
 
   readonly eventId = input.required<number>();
 
-  readonly bracket = computed(() => this.generateBracket(this.eventTeams()));
+  readonly bracket = computed(() => {
+    const bracket = this.generateBracket(this.eventTeams());
+    bracket[0].children?.forEach((node) => {
+      this.setWinnersRecursively(node, bracket, 0);
+    });
+    return bracket;
+  });
+
+  private setWinnersRecursively(
+    node: TreeNode<Partial<EventTeamModelWithWinnerFlag>>,
+    bracket: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
+    depth: number,
+  ) {
+    const winners = [[3], [3, 1]];
+    node.children?.forEach((child) => {
+      this.setWinnersRecursively(child, bracket, depth + 1);
+    });
+    if (
+      node.data &&
+      node.data.seed &&
+      winners[depth] &&
+      winners[depth].includes(node.data.seed)
+    ) {
+      this.selectedNodes.push(node);
+      this.setMatchWinner(node, bracket, this.selectedNodes);
+    }
+  }
+
+  confirmSubmit() {
+    const winners: number[][] = [];
+
+    this.bracket()[0].children?.forEach((node) =>
+      this.addWinnersRecursively(winners, node, 0),
+    );
+    console.log('winners: ' + JSON.stringify(winners));
+  }
+
+  private addWinnersRecursively(
+    winners: number[][],
+    node: TreeNode<Partial<EventTeamModelWithWinnerFlag>>,
+    depth: number,
+  ) {
+    if (!winners[depth]) {
+      winners.push([]);
+    }
+
+    if (node.data && this.selectedNodes.includes(node)) {
+      winners[depth].push(node.data.seed ?? 0);
+    }
+
+    node.children?.forEach((node) =>
+      this.addWinnersRecursively(winners, node, depth + 1),
+    );
+  }
+
   readonly selectedNodes: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[] =
     [];
 
@@ -151,18 +222,26 @@ export class TournamentBracketComponent {
     return bracketNode;
   }
 
-  setMatchWinner(
+  setMatchWinnerEvent(
     ev: TreeNodeSelectEvent,
     bracket: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
     selectedNodes: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
   ) {
-    const parent = this.getNodeParent(ev.node, bracket[0]);
+    this.setMatchWinner(ev.node, bracket, selectedNodes);
+  }
+
+  setMatchWinner(
+    node: TreeNode<Partial<EventTeamModelWithWinnerFlag>>,
+    bracket: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
+    selectedNodes: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
+  ) {
+    const parent = this.getNodeParent(node, bracket[0]);
 
     if (parent) {
-      parent.data = ev.node.data;
+      parent.data = node.data;
     }
 
-    const sibling = parent?.children?.find((child) => child !== ev.node);
+    const sibling = parent?.children?.find((child) => child !== node);
 
     const siblingIndex =
       selectedNodes.findIndex((node) => node === sibling) ?? -1;
