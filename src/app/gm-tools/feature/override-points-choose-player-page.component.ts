@@ -67,7 +67,10 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                   height="32"
                   class="border-circle surface-100"
                 />
-                {{ player.display_name }}
+                <div>
+                  <p class="m-0">{{ player.display_name }}</p>
+                  <p class="m-0 text-500 text-xs">{{ player.real_name }}</p>
+                </div>
               </div>
             </td>
             <!-- Score -->

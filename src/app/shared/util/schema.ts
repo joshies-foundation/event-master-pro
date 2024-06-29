@@ -915,6 +915,7 @@ export type Database = {
           created_at: string;
           display_name: string;
           id: string;
+          real_name: string;
           squidward_mode: boolean;
           updated_at: string;
         };
@@ -926,6 +927,7 @@ export type Database = {
           created_at?: string;
           display_name?: string;
           id: string;
+          real_name?: string;
           squidward_mode?: boolean;
           updated_at?: string;
         };
@@ -937,6 +939,7 @@ export type Database = {
           created_at?: string;
           display_name?: string;
           id?: string;
+          real_name?: string;
           squidward_mode?: boolean;
           updated_at?: string;
         };

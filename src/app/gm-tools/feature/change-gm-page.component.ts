@@ -76,7 +76,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
                   height="32"
                   class="border-circle surface-100"
                 />
-                {{ user.display_name }}
+                <div>
+                  <p class="m-0">{{ user.display_name }}</p>
+                  <p class="m-0 text-500 text-xs">{{ user.real_name }}</p>
+                </div>
               </div>
             </td>
             <!-- Make GM Button -->
@@ -116,8 +119,8 @@ export default class ChangeGmPageComponent {
 
   confirmChangeGameMaster(newGmUser: UserModel): void {
     this.confirmationService.confirm({
-      header: `Really? ${newGmUser.display_name}?`,
-      message: `Are you sure you want to make ${newGmUser.display_name} the new GM? You will immediately lose all GM privileges.`,
+      header: `Really? ${newGmUser.real_name}?`,
+      message: `Are you sure you want to make ${newGmUser.real_name} the new GM? You will immediately lose all GM privileges.`,
       icon: 'pi pi-exclamation-triangle',
       acceptIcon: 'none',
       rejectIcon: 'none',
@@ -136,7 +139,7 @@ export default class ChangeGmPageComponent {
         }
 
         showSuccessMessage(
-          `${newGmUser.display_name} is the new GM`,
+          `${newGmUser.real_name} is the new GM`,
           this.messageService,
         );
         this.router.navigate(['/']);
