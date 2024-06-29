@@ -142,6 +142,11 @@ export default class GmToolsPageComponent {
     ],
     [SessionStatus.InProgress]: [
       {
+        text: 'Override Bank Balance',
+        iconClass: 'pi pi-building-columns bg-yellow-500',
+        routerLink: './override-bank-balance',
+      },
+      {
         text: 'End Session',
         iconClass: 'pi pi-stop-circle bg-red-600',
         routerLink: './end-session',

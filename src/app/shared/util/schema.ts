@@ -1137,6 +1137,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      override_bank_balance: {
+        Args: {
+          data: Json;
+        };
+        Returns: undefined;
+      };
       override_points: {
         Args: {
           data: Json;

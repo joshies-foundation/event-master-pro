@@ -5,22 +5,18 @@ import {
   input,
 } from '@angular/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { PlayerWithUserInfo } from '../../shared/data-access/player.service';
 import {
   OverrideDefinitionTableComponent,
   OverrideDefinitionTableModel,
 } from './override-definition-table.component';
 
-export interface ConfirmOverrideDialogModel
-  extends Omit<OverrideDefinitionTableModel, 'inputDisabled'> {
-  player: PlayerWithUserInfo;
-  comment: string;
-}
+export interface ConfirmBankBalanceOverrideDialogModel
+  extends Omit<OverrideDefinitionTableModel, 'inputDisabled'> {}
 
 export const confirmOverrideDialogKey = 'confirm-override';
 
 @Component({
-  selector: 'joshies-confirm-override-dialog',
+  selector: 'joshies-confirm-bank-balance-override-dialog',
   standalone: true,
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
@@ -29,20 +25,11 @@ export const confirmOverrideDialogKey = 'confirm-override';
         <div>
           <!-- Prompt -->
           <p class="mt-0 mb-4">
-            Do you want to submit this override for
-            <strong>{{ model().player.display_name }}</strong
-            >?
+            Do you want to submit this override for the Bank balance?
           </p>
 
           <!-- Data Table -->
           <joshies-override-definition-table [model]="tableModel()" />
-
-          <!-- Comment -->
-          @if (model().comment) {
-            <p class="font-italic text-500 mx-3 mb-0">
-              GM Discretion: {{ model().comment }}
-            </p>
-          }
         </div>
       </ng-template>
     </p-confirmDialog>
@@ -63,8 +50,8 @@ export const confirmOverrideDialogKey = 'confirm-override';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConfirmOverrideDialogComponent {
-  readonly model = input.required<ConfirmOverrideDialogModel>();
+export class ConfirmBankBalanceOverrideDialogComponent {
+  readonly model = input.required<ConfirmBankBalanceOverrideDialogModel>();
 
   protected readonly confirmOverrideDialogKey = confirmOverrideDialogKey;
 
