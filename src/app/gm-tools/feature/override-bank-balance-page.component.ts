@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { PlayerService } from '../../shared/data-access/player.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -102,7 +101,6 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OverridePointsPageComponent {
-  private readonly playerService = inject(PlayerService);
   private readonly gameStateService = inject(GameStateService);
   private readonly sessionService = inject(SessionService);
   private readonly confirmationService = inject(ConfirmationService);
