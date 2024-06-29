@@ -70,7 +70,12 @@ import { CardComponent } from '../../shared/ui/card.component';
           width="48"
           class="border-circle surface-100"
         />
-        {{ player.display_name }}
+        <div>
+          <p class="m-0">{{ player.display_name }}</p>
+          <p class="m-0 text-500 text-base font-normal">
+            {{ player.real_name }}
+          </p>
+        </div>
       </h2>
 
       <joshies-card padded>
