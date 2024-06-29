@@ -23,6 +23,7 @@ export function addRankingInfoToPlayers(
       user_id: player.user_id,
       player_id: player.player_id,
       display_name: player.display_name,
+      real_name: player.real_name,
       score: player.score,
       avatar_url: player.avatar_url,
       rank: currentRank,
@@ -34,6 +35,8 @@ export function addRankingInfoToPlayers(
             : undefined,
       can_edit_profile: player.can_edit_profile,
       can_place_bets: player.can_place_bets,
+      squidward_mode: player.squidward_mode,
+      can_toggle_squidward_mode: player.can_toggle_squidward_mode,
     };
   });
 }

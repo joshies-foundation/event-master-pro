@@ -75,7 +75,7 @@ export class PageHeaderComponent {
 
   readonly smallHeaderContainerDynamicClasses = computed(() =>
     this.inSmallMode() && this.pageIsScrolledBeyondTop()
-      ? 'border-50 blur-background bg-header-footer-alpha'
+      ? 'surface-border blur-background bg-header-footer-alpha'
       : 'border-transparent surface-ground',
   );
 

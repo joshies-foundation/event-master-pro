@@ -45,6 +45,7 @@ export enum Function {
   GetAllScoresFromSession = 'get_all_scores_from_session',
   GetPlayerRoundScoresFromSession = 'get_player_round_scores_from_session',
   OverridePoints = 'override_points',
+  OverrideBankBalance = 'override_bank_balance',
   StartSessionEarly = 'start_session_early',
   LogRoundMoves = 'log_round_moves',
   ReorderEvents = 'reorder_events',
@@ -81,6 +82,7 @@ export enum GameboardSpaceEffect {
   Special = 'special',
   Duel = 'duel',
   Chaos = 'chaos',
+  Bank = 'bank',
 }
 
 export enum SpaceEventStatus {
