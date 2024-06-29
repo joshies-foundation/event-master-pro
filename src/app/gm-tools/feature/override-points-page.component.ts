@@ -34,6 +34,7 @@ import {
   OverrideDefinitionTableModel,
 } from '../ui/override-definition-table.component';
 import { CardComponent } from '../../shared/ui/card.component';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'joshies-override-points-page',
@@ -50,6 +51,7 @@ import { CardComponent } from '../../shared/ui/card.component';
     ConfirmScoreOverrideDialogComponent,
     OverrideDefinitionTableComponent,
     CardComponent,
+    CheckboxModule,
   ],
   template: `
     <joshies-page-header headerText="Override Points" alwaysSmall>
@@ -103,8 +105,18 @@ import { CardComponent } from '../../shared/ui/card.component';
           [(userDefinedReplacementValue)]="userDefinedReplacementValue"
         />
 
+        @if (changeValue() < 0) {
+          <label class="flex align-items-center gap-2 mt-4">
+            <p-checkbox
+              [binary]="true"
+              [(ngModel)]="addLostPointsToBankBalance"
+            />
+            Add lost points to Bank Balance
+          </label>
+        }
+
         <!-- Comment -->
-        <label class="flex flex-column gap-2 mt-5">
+        <label class="flex flex-column gap-2 mt-4">
           Reason for Override (Optional)
           <input pInputText [(ngModel)]="comment" />
         </label>
@@ -156,6 +168,7 @@ export default class OverridePointsPageComponent {
   readonly userDefinedChangeValue = signal(0);
   readonly userDefinedReplacementValue = signal(0);
   readonly comment = signal('');
+  readonly addLostPointsToBankBalance = signal(true);
 
   readonly submitting = signal(false);
 
@@ -239,11 +252,13 @@ export default class OverridePointsPageComponent {
                 this.playerId(),
                 this.userDefinedChangeValue(),
                 this.comment(),
+                this.addLostPointsToBankBalance(),
               )
             : this.playerService.overridePointsReplace(
                 this.playerId(),
                 this.userDefinedReplacementValue(),
                 this.comment(),
+                this.addLostPointsToBankBalance(),
               ),
           this.messageService,
         );

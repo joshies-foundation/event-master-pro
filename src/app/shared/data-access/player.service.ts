@@ -173,9 +173,11 @@ export class PlayerService {
     playerId: number,
     numPointsToAdd: number,
     comment: string,
+    addLostPointsToBankBalance: boolean,
   ): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.OverridePoints, {
       data: { playerId, change: numPointsToAdd, comment, replace: false },
+      add_lost_points_to_bank_balance: addLostPointsToBankBalance,
     });
   }
 
@@ -183,9 +185,11 @@ export class PlayerService {
     playerId: number,
     newScore: number,
     comment: string,
+    addLostPointsToBankBalance: boolean,
   ): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.OverridePoints, {
       data: { playerId, change: newScore, comment, replace: true },
+      add_lost_points_to_bank_balance: addLostPointsToBankBalance,
     });
   }
 

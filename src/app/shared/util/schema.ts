@@ -1146,6 +1146,7 @@ export type Database = {
       override_points: {
         Args: {
           data: Json;
+          add_lost_points_to_bank_balance: boolean;
         };
         Returns: undefined;
       };
