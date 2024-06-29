@@ -1206,6 +1206,7 @@ export type Database = {
           player_score_changes: Json;
           event_description: string;
           is_chaos_space_event: boolean;
+          add_lost_points_to_bank_balance?: boolean;
         };
         Returns: undefined;
       };
