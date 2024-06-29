@@ -86,6 +86,9 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
       case GameboardSpaceEffect.Chaos:
         return `<p class="m-0">Trigger a chaotic event</p>`;
 
+      case GameboardSpaceEffect.Bank:
+        return `<p class="m-0">Get all the points in the Bank</p>`;
+
       default:
         return `Unknown gameboard_space_effect: "${(gameboardSpace as { effect: string }).effect}"`;
     }

@@ -46,10 +46,6 @@ export class GameStateService {
     this.gameState$,
     'round_phase',
   ) as Observable<RoundPhase>;
-  readonly bankBalance$: Observable<number> = createSelector(
-    this.gameState$,
-    'bank_balance',
-  );
   readonly gameMasterUserId$: Observable<string> = createSelector(
     this.gameState$,
     'game_master_user_id',
@@ -68,9 +64,6 @@ export class GameStateService {
   );
   readonly roundPhase: Signal<RoundPhase | undefined> = toSignal(
     this.roundPhase$,
-  );
-  readonly bankBalance: Signal<number | undefined> = toSignal(
-    this.bankBalance$,
   );
   readonly gameMasterUserId: Signal<string | undefined> = toSignal(
     this.gameMasterUserId$,

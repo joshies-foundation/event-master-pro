@@ -134,7 +134,9 @@ export type GameboardSpaceEffectData<T extends GameboardSpaceEffect> =
           ? DuelSpaceEffectData
           : T extends GameboardSpaceEffect.Chaos
             ? ChaosSpaceEffectData
-            : never;
+            : T extends GameboardSpaceEffect.Bank
+              ? null
+              : never;
 
 export interface GameboardSpaceEffectWithData<
   T extends GameboardSpaceEffect = GameboardSpaceEffect,

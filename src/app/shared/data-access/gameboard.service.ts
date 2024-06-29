@@ -481,6 +481,7 @@ export class GameboardService {
       player_score_changes: playerScoreChanges,
       event_description: `Everyone loses ${percentageLoss}% of their points`,
       is_chaos_space_event: true,
+      add_lost_points_to_bank_balance: true,
     });
   }
 
@@ -497,6 +498,7 @@ export class GameboardService {
       player_score_changes: playerScoreChanges,
       event_description: `Lose ${percentageLoss}% of your points if you fail to ${taskName}`,
       is_chaos_space_event: true,
+      add_lost_points_to_bank_balance: true,
     });
   }
 

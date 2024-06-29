@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   Signal,
   signal,
@@ -221,7 +220,7 @@ export default class HomePageComponent {
       eventForThisRound: this.eventService.eventForThisRound(),
       eventForNextRound: this.eventService.eventForNextRound(),
       sessionIsInProgress: this.gameStateService.sessionIsInProgress(),
-      bankBalance: this.gameStateService.bankBalance(),
+      bankBalance: this.sessionService.session()?.bank_balance,
       players: this.playerService.players()!,
       userIsGameMaster: this.playerService.userIsGameMaster(),
       userId: this.authService.user()?.id,
@@ -234,36 +233,6 @@ export default class HomePageComponent {
       allDuelsAreResolved: this.allDuelsAreResolved(),
     }),
   );
-
-  private readonly asdf = effect(() => {
-    const signals = {
-      session: this.sessionService.session(),
-      showRankingsTable: this.showRankingsTable(),
-      rankingsTableHeader: this.rankingsTableHeader(),
-      sessionHasNotStarted: this.gameStateService.sessionHasNotStarted(),
-      roundNumber: this.gameStateService.roundNumber(),
-      numRounds: this.sessionService.session()?.num_rounds,
-      roundPhase: this.gameStateService.roundPhase(),
-      eventForThisRound: this.eventService.eventForThisRound(),
-      eventForNextRound: this.eventService.eventForNextRound(),
-      sessionIsInProgress: this.gameStateService.sessionIsInProgress(),
-      bankBalance: this.gameStateService.bankBalance(),
-      players: this.playerService.players()!,
-      userIsGameMaster: this.playerService.userIsGameMaster(),
-      userId: this.authService.user()?.id,
-      countdown: this.countdown(),
-      specialSpaceEvents: this.specialSpaceEvents(),
-      allSpecialSpaceEventsAreResolved: this.allSpecialSpaceEventsAreResolved(),
-      chaosSpaceEvents: this.chaosSpaceEvents(),
-      allChaosSpaceEventsAreResolved: this.allChaosSpaceEventsAreResolved(),
-      duels: this.duels(),
-      allDuelsAreResolved: this.allDuelsAreResolved(),
-    };
-
-    Object.entries(signals).forEach(([key, value]) => {
-      if (value === undefined) console.log(key);
-    });
-  });
 
   readonly sessionStarting = signal(false);
 
