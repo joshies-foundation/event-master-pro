@@ -85,11 +85,17 @@ export default class GmToolsPageComponent {
             iconClass: 'pi pi-bolt bg-orange-500',
             routerLink: './enter-event-scores',
           }
-        : {
-            text: 'No Event Found',
-            iconClass: 'pi pi-question bg-red-500',
-            routerLink: '.',
-          },
+        : this.eventFormat() === EventFormat.SingleEliminationTournament
+          ? {
+              text: 'Enter Tournament Results',
+              iconClass: 'pi pi-bolt bg-orange-500',
+              routerLink: './enter-tournament-results',
+            }
+          : {
+              text: 'No Event Found',
+              iconClass: 'pi pi-question bg-red-500',
+              routerLink: '.',
+            },
     ],
     [RoundPhase.WaitingForNextRound]: [
       {
