@@ -359,6 +359,12 @@ function getGameboardSpaceEffectWithData(
           chaosSpaceEventTemplateIds,
         },
       };
+
+    case GameboardSpaceEffect.Bank:
+      return {
+        effect,
+        effect_data: null,
+      };
   }
 }
 

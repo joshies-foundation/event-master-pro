@@ -482,7 +482,6 @@ export type Database = {
       };
       game_state: {
         Row: {
-          bank_balance: number;
           created_at: string;
           game_master_user_id: string;
           id: number;
@@ -493,7 +492,6 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          bank_balance?: number;
           created_at?: string;
           game_master_user_id: string;
           id?: number;
@@ -504,7 +502,6 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          bank_balance?: number;
           created_at?: string;
           game_master_user_id?: string;
           id?: number;
@@ -581,7 +578,7 @@ export type Database = {
           color: string;
           created_at: string;
           effect: Database['public']['Enums']['gameboard_space_effect'];
-          effect_data: Json;
+          effect_data: Json | null;
           icon_class: string | null;
           id: number;
           name: string;
@@ -592,7 +589,7 @@ export type Database = {
           color?: string;
           created_at?: string;
           effect?: Database['public']['Enums']['gameboard_space_effect'];
-          effect_data?: Json;
+          effect_data?: Json | null;
           icon_class?: string | null;
           id?: number;
           name?: string;
@@ -603,7 +600,7 @@ export type Database = {
           color?: string;
           created_at?: string;
           effect?: Database['public']['Enums']['gameboard_space_effect'];
-          effect_data?: Json;
+          effect_data?: Json | null;
           icon_class?: string | null;
           id?: number;
           name?: string;
@@ -734,6 +731,7 @@ export type Database = {
       };
       session: {
         Row: {
+          bank_balance: number;
           created_at: string;
           end_date: string;
           id: number;
@@ -743,6 +741,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          bank_balance?: number;
           created_at?: string;
           end_date?: string;
           id?: number;
@@ -752,6 +751,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          bank_balance?: number;
           created_at?: string;
           end_date?: string;
           id?: number;
@@ -1132,8 +1132,8 @@ export type Database = {
       };
       log_round_moves: {
         Args: {
-          roundnumber: number;
           playermoves: Json;
+          roundnumber: number;
         };
         Returns: undefined;
       };
@@ -1252,7 +1252,8 @@ export type Database = {
         | 'gain_points_or_do_activity'
         | 'special'
         | 'duel'
-        | 'chaos';
+        | 'chaos'
+        | 'bank';
       round_phase:
         | 'gameboard_moves'
         | 'special_space_events'

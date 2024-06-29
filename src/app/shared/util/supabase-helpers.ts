@@ -81,6 +81,7 @@ export enum GameboardSpaceEffect {
   Special = 'special',
   Duel = 'duel',
   Chaos = 'chaos',
+  Bank = 'bank',
 }
 
 export enum SpaceEventStatus {
