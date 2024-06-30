@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   inject,
   signal,
@@ -89,7 +90,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
               </div>
             </td>
             <td>
-              {{ team.position }}
+              {{ positions[team.id] }}
             </td>
             <td>
               <p-inputNumber
@@ -123,7 +124,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class EnterEventScoresPageComponent {
+export default class EnterEventScoresPageComponent implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
@@ -132,6 +133,8 @@ export default class EnterEventScoresPageComponent {
 
   private readonly teams = this.eventService.eventTeamsWithParticipantInfo;
   readonly eventForThisRound = this.eventService.eventForThisRound;
+
+  positions: Record<number, number> = {};
 
   readonly submitting = signal<boolean>(false);
 
@@ -165,7 +168,7 @@ export default class EnterEventScoresPageComponent {
       const position =
         1 + (scores.findIndex((score) => team.score === score) ?? -1);
       if (position > 0) {
-        team.position = position;
+        this.positions = { ...this.positions, [team.id]: position };
       }
     });
   }
@@ -196,5 +199,9 @@ export default class EnterEventScoresPageComponent {
       activatedRoute: this.activatedRoute,
       router: this.router,
     });
+  }
+
+  ngOnInit() {
+    this.calculatePositions();
   }
 }
