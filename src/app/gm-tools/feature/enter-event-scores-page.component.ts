@@ -146,15 +146,10 @@ export default class EnterEventScoresPageComponent implements OnInit {
   readonly submitting = signal<boolean>(false);
 
   readonly eventTeams = computed(() => {
-    return this.teams()
-      ?.filter(
-        (team) =>
-          team.event_id ===
-          (this.eventService.eventForThisRound()?.id ?? false),
-      )
-      .map((team) => {
-        return { ...team, score: 0, position: 1 };
-      });
+    return this.teams()?.filter(
+      (team) =>
+        team.event_id === (this.eventService.eventForThisRound()?.id ?? false),
+    );
   });
 
   readonly formGroup = computed(() => {
@@ -212,17 +207,12 @@ export default class EnterEventScoresPageComponent implements OnInit {
       this.eventTeams()?.map((team) => {
         return {
           team_id: team.id,
-          score: team.score,
-          position: team.position,
+          score: this.formGroup()?.get([team.id])?.value ?? 0,
         };
       }) ?? [];
 
     confirmBackendAction({
-      action: async () =>
-        this.eventService.submitEventScores(
-          this.eventService.eventForThisRound()?.id ?? -1,
-          teamScores,
-        ),
+      action: async () => this.eventService.submitEventScores(teamScores),
       confirmationMessageText: `Are you sure you want to submit these scores?`,
       successMessageText: 'Event scores submitted',
       submittingSignal: this.submitting,

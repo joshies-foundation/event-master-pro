@@ -277,9 +277,8 @@ export class EventService {
     });
   }
 
-  async submitEventScores(eventId: EventModel['id'], teamScores: TeamScores) {
+  async submitEventScores(teamScores: TeamScores) {
     return this.supabase.rpc(Function.SubmitEventScores, {
-      event_id: eventId,
       team_scores: teamScores,
     });
   }
@@ -295,5 +294,4 @@ export class EventService {
 export type TeamScores = {
   team_id: EventTeamModel['id'];
   score: number;
-  position: number;
 }[];

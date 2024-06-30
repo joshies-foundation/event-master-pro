@@ -1186,7 +1186,6 @@ export type Database = {
       };
       submit_event_scores: {
         Args: {
-          event_id: number;
           team_scores: Json;
         };
         Returns: undefined;
