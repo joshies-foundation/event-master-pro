@@ -58,9 +58,11 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         <ng-template pTemplate="header">
           <tr>
             <th pFrozenColumn>Player</th>
-            <th class="text-center">Include in Rankings</th>
+            <th class="text-center">Enabled</th>
             <th class="text-center">Edit Profile</th>
             <th class="text-center">Place Bets</th>
+            <th class="text-center">Squidward Mode</th>
+            <th class="text-center">Can Toggle Squidward Mode</th>
           </tr>
         </ng-template>
         <ng-template
@@ -78,7 +80,10 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                   class="border-circle surface-100"
                   alt=""
                 />
-                {{ player.display_name }}
+                <div>
+                  <p class="m-0">{{ player.display_name }}</p>
+                  <p class="m-0 text-500 text-xs">{{ player.real_name }}</p>
+                </div>
               </div>
             </td>
             <td class="text-center">
@@ -101,6 +106,24 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
               <p-checkbox
                 [ngModel]="player.can_place_bets"
                 (ngModelChange)="setCanPlaceBets(player.user_id, $event)"
+                [binary]="true"
+                inputId="binary"
+              />
+            </td>
+            <td class="text-center">
+              <p-checkbox
+                [ngModel]="player.squidward_mode"
+                (ngModelChange)="setSquidwardMode(player.user_id, $event)"
+                [binary]="true"
+                inputId="binary"
+              />
+            </td>
+            <td class="text-center">
+              <p-checkbox
+                [ngModel]="player.can_toggle_squidward_mode"
+                (ngModelChange)="
+                  setCanToggleSquidwardMode(player.user_id, $event)
+                "
                 [binary]="true"
                 inputId="binary"
               />
@@ -142,6 +165,26 @@ export default class EditPlayerPermissionsPageComponent {
   setCanPlaceBets(userId: string, canPlaceBets: boolean): void {
     showMessageOnError(
       this.userService.setCanPlaceBets(userId, canPlaceBets),
+      this.messageService,
+    );
+  }
+
+  setSquidwardMode(userId: string, squidwardMode: boolean): void {
+    showMessageOnError(
+      this.userService.setSquidwardMode(userId, squidwardMode),
+      this.messageService,
+    );
+  }
+
+  setCanToggleSquidwardMode(
+    userId: string,
+    canToggleSquidwardMode: boolean,
+  ): void {
+    showMessageOnError(
+      this.userService.setCanToggleSquidwardMode(
+        userId,
+        canToggleSquidwardMode,
+      ),
       this.messageService,
     );
   }

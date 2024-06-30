@@ -294,7 +294,8 @@
       />
     }
 
-    @if (vm.sessionIsInProgress && vm.bankBalance) {
+    @if (vm.showRankingsTable) {
+      <!-- Bank Balance -->
       <joshies-card
         headerText="Bank Balance"
         headerIconClass="pi pi-building-columns text-primary mr-2"
@@ -303,11 +304,9 @@
         <span class="font-semibold">
           {{ vm.bankBalance | number }}
         </span>
-        point{{ vm.bankBalance > 1 ? 's' : '' }}
+        point{{ vm.bankBalance === 1 ? '' : 's' }}
       </joshies-card>
-    }
 
-    @if (vm.showRankingsTable) {
       <!-- Rankings Table -->
       <h3 class="pt-2 mb-2">
         <i class="pi pi-trophy text-primary mr-2"></i>

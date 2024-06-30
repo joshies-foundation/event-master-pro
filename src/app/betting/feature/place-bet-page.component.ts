@@ -1,9 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -329,7 +331,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     InputSwitchModule,
   ],
 })
-export default class PlaceBetPageComponent {
+export default class PlaceBetPageComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -342,6 +344,7 @@ export default class PlaceBetPageComponent {
   readonly BetType = BetType;
   readonly BetSubtype = BetSubtype;
 
+  readonly betType = input<BetType>();
   private readonly ssEvents = toSignal(
     this.gameboardService.specialSpaceEventsForThisTurn$,
   );
@@ -670,5 +673,9 @@ export default class PlaceBetPageComponent {
       },
       { allowSignalWrites: true },
     );
+  }
+
+  ngOnInit() {
+    this.selectedBetType.set(this.betType() ?? BetType.Custom);
   }
 }

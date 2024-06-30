@@ -35,9 +35,12 @@ export interface PlayerWithUserInfo {
   score: number;
   enabled: boolean;
   display_name: string;
+  real_name: string;
   avatar_url: string;
   can_edit_profile: boolean;
   can_place_bets: boolean;
+  squidward_mode: boolean;
+  can_toggle_squidward_mode: boolean;
 }
 
 export interface PlayerWithUserAndRankInfo extends PlayerWithUserInfo {
@@ -99,9 +102,12 @@ export class PlayerService {
                 score: player.score,
                 enabled: player.enabled,
                 display_name: user.display_name,
+                real_name: user.real_name,
                 avatar_url: user.avatar_url,
                 can_edit_profile: user.can_edit_profile,
                 can_place_bets: user.can_place_bets,
+                squidward_mode: user.squidward_mode,
+                can_toggle_squidward_mode: user.can_toggle_squidward_mode,
               };
             })
             .sort((a, b) => b.score - a.score),
@@ -167,9 +173,11 @@ export class PlayerService {
     playerId: number,
     numPointsToAdd: number,
     comment: string,
+    addLostPointsToBankBalance: boolean,
   ): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.OverridePoints, {
       data: { playerId, change: numPointsToAdd, comment, replace: false },
+      add_lost_points_to_bank_balance: addLostPointsToBankBalance,
     });
   }
 
@@ -177,9 +185,11 @@ export class PlayerService {
     playerId: number,
     newScore: number,
     comment: string,
+    addLostPointsToBankBalance: boolean,
   ): Promise<PostgrestSingleResponse<undefined>> {
     return this.supabase.rpc(Function.OverridePoints, {
       data: { playerId, change: newScore, comment, replace: true },
+      add_lost_points_to_bank_balance: addLostPointsToBankBalance,
     });
   }
 

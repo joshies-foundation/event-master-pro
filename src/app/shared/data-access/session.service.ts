@@ -95,4 +95,22 @@ export class SessionService {
       team_score_changes: teamScoreChanges,
     });
   }
+
+  async overrideBankBalanceAdd(
+    sessionId: number,
+    numPointsToAdd: number,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.OverrideBankBalance, {
+      data: { sessionId, change: numPointsToAdd, replace: false },
+    });
+  }
+
+  async overrideBankBalanceReplace(
+    sessionId: number,
+    newBankBalance: number,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.OverrideBankBalance, {
+      data: { sessionId, change: newBankBalance, replace: true },
+    });
+  }
 }
