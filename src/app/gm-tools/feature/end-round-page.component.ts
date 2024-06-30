@@ -151,6 +151,28 @@ export default class EndRoundPageComponent {
   private readonly initialFormValue: Record<string, number> =
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
 
+  private readonly scoresForThisEvent = computed(() => {
+    const eventTeamsForThisRound = this.eventService
+      .eventTeams()
+      ?.filter(
+        (eventTeam) =>
+          eventTeam.event_id === this.eventService.eventForThisRound()?.id,
+      );
+    const eventTeamRoundScores = this.eventService.eventTeamRoundScores();
+    const eventTeamRoundScoresForThisEvent = eventTeamRoundScores?.filter(
+      (teamScore) => {
+        const indexOf = eventTeamsForThisRound?.findIndex(
+          (eventTeam) => eventTeam.id === teamScore.team_id,
+        );
+        return indexOf != undefined && indexOf > -1;
+      },
+    );
+    return (
+      eventTeamRoundScoresForThisEvent?.map((teamScore) => teamScore.score) ??
+      []
+    );
+  });
+
   readonly eventTeams = computed(() => {
     const eventTeams = this.eventService
       .eventTeamsWithParticipantInfo()
@@ -171,7 +193,7 @@ export default class EndRoundPageComponent {
     if (!eventTeamsRoundScores) {
       return eventTeams;
     }
-    const scores = eventTeamsRoundScores.map((teamScore) => teamScore.score);
+    const scores = this.scoresForThisEvent();
 
     const sortAsc = function (a: number, b: number) {
       return a - b;
@@ -228,7 +250,6 @@ export default class EndRoundPageComponent {
       roundNumber: this.roundNumber(),
       numRounds: this.sessionService.session()?.num_rounds,
       formGroup: this.formGroup(),
-      players: this.playerService.players(),
       teams: this.eventTeams(),
     }),
   );

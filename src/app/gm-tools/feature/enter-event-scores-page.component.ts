@@ -18,9 +18,10 @@ import { EventService } from '../../shared/data-access/event.service';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 
 @Component({
   selector: 'joshies-enter-event-scores-page',
@@ -37,7 +38,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     AvatarModule,
     AvatarGroupModule,
     InputNumberModule,
-    FormsModule,
+    ReactiveFormsModule,
   ],
   template: `
     <joshies-page-header headerText="Enter Event Scores" alwaysSmall>
@@ -57,8 +58,12 @@ import { ConfirmationService, MessageService } from 'primeng/api';
       }}
     </p>
 
-    @if (eventTeams(); as teams) {
-      <p-table [value]="teams" [scrollable]="true">
+    @if (viewModel(); as vm) {
+      <p-table
+        [value]="vm.teams!"
+        [scrollable]="true"
+        [formGroup]="vm.formGroup"
+      >
         <ng-template pTemplate="header">
           <tr>
             <th>Team</th>
@@ -68,7 +73,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
         </ng-template>
         <ng-template
           pTemplate="body"
-          [joshiesStronglyTypedTableRow]="teams"
+          [joshiesStronglyTypedTableRow]="vm.teams!"
           let-team
         >
           <tr>
@@ -94,7 +99,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
             </td>
             <td>
               <p-inputNumber
-                [(ngModel)]="team.score"
+                [formControlName]="team.id"
                 [showButtons]="true"
                 buttonLayout="horizontal"
                 [step]="1"
@@ -104,6 +109,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
                 inputStyleClass="w-full font-semibold text-right"
                 class="w-full"
                 styleClass="w-full"
+                chan
                 (ngModelChange)="calculatePositions()"
               />
             </td>
@@ -130,6 +136,7 @@ export default class EnterEventScoresPageComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
 
   private readonly teams = this.eventService.eventTeamsWithParticipantInfo;
   readonly eventForThisRound = this.eventService.eventForThisRound;
@@ -150,9 +157,34 @@ export default class EnterEventScoresPageComponent implements OnInit {
       });
   });
 
+  readonly formGroup = computed(() => {
+    return this.formBuilder.nonNullable.group(
+      this.eventTeams()!.reduce(
+        (prev, team) => ({
+          ...prev,
+          [team.id]: [0, Validators.required],
+        }),
+        {},
+      ),
+    );
+  });
+
+  readonly viewModel = computed(() =>
+    undefinedUntilAllPropertiesAreDefined({
+      formGroup: this.formGroup(),
+      teams: this.eventTeams(),
+    }),
+  );
+
   calculatePositions() {
     const eventTeams = this.eventTeams() ?? [];
-    const scores = eventTeams.map((team) => team.score) ?? [];
+
+    let scores: number[] = [];
+    const formGroup = this.formGroup();
+    this.eventTeams()?.forEach((team) => {
+      scores = [...scores, formGroup?.get([team.id])?.value];
+    });
+
     const sortAsc = function (a: number, b: number) {
       return a - b;
     };
@@ -165,8 +197,9 @@ export default class EnterEventScoresPageComponent implements OnInit {
       : sortDesc;
     scores.sort(sortFunc);
     eventTeams.forEach((team) => {
+      const teamScore: number = this.formGroup().get([team.id])?.value;
       const position =
-        1 + (scores.findIndex((score) => team.score === score) ?? -1);
+        1 + (scores.findIndex((score) => teamScore === score) ?? -1);
       if (position > 0) {
         this.positions = { ...this.positions, [team.id]: position };
       }
