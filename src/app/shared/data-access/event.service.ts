@@ -35,6 +35,7 @@ export interface EventParticipantWithPlayerInfo {
   player_id: number;
   display_name: string;
   avatar_url: string;
+  score: number;
 }
 
 export interface EventTeamWithParticipantInfo extends EventTeamModel {
@@ -207,6 +208,7 @@ export class EventService {
             player_id: participant.player_id,
             display_name: player.display_name,
             avatar_url: player.avatar_url,
+            score: player.score,
           };
         }),
       ),
@@ -281,6 +283,13 @@ export class EventService {
       team_scores: teamScores,
     });
   }
+
+  readonly eventTeamRoundScores$ = realtimeUpdatesFromTable(
+    this.supabase,
+    Table.EventTeamRoundScore,
+  );
+
+  readonly eventTeamRoundScores = toSignal(this.eventTeamRoundScores$);
 }
 
 export type TeamScores = {

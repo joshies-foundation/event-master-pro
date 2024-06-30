@@ -1076,7 +1076,7 @@ export type Database = {
       end_round: {
         Args: {
           _round_number: number;
-          player_score_changes: Json;
+          team_score_changes: Json;
         };
         Returns: undefined;
       };

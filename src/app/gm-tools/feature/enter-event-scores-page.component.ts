@@ -136,7 +136,6 @@ export default class EnterEventScoresPageComponent {
   readonly submitting = signal<boolean>(false);
 
   readonly eventTeams = computed(() => {
-    this.eventService.eventForThisRound()?.lower_scores_are_better;
     return this.teams()
       ?.filter(
         (team) =>

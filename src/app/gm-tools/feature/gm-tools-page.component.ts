@@ -46,65 +46,66 @@ export default class GmToolsPageComponent {
     return this.eventService.eventForThisRound()?.format;
   });
 
-  private readonly roundPhaseDependentLinks: Record<
-    RoundPhase | 'undefined',
-    CardLinkModel[] | null
-  > = {
-    [RoundPhase.GameboardMoves]: [
-      {
-        text: 'Enter Gameboard Moves',
-        iconClass: 'ci-space-entry bg-gray-500',
-        routerLink: './space-entry',
-      },
-    ],
-    [RoundPhase.SpecialSpaceEvents]: [
-      {
-        text: 'Resolve Special Space Events',
-        iconClass: 'pi pi-question-circle bg-green-500',
-        routerLink: './resolve-special-space-events',
-      },
-    ],
-    [RoundPhase.Duels]: [
-      {
-        text: 'Resolve Duels',
-        iconClass: 'pi pi-bolt bg-purple-500',
-        routerLink: './resolve-duels',
-      },
-    ],
-    [RoundPhase.ChaosSpaceEvents]: [
-      {
-        text: 'Resolve Chaos Space Events',
-        iconClass: 'pi pi-exclamation-circle bg-black',
-        routerLink: './resolve-chaos-space-events',
-      },
-    ],
-    [RoundPhase.Event]: [
-      this.eventFormat() === EventFormat.ScoreBasedSingleRound
-        ? {
-            text: 'Enter Event Scores',
-            iconClass: 'pi pi-bolt bg-orange-500',
-            routerLink: './enter-event-scores',
-          }
-        : {
-            text: 'No Event Found',
-            iconClass: 'pi pi-question bg-red-500',
-            routerLink: '.',
-          },
-    ],
-    [RoundPhase.WaitingForNextRound]: [
-      {
-        text: 'End Round & Tally Points',
-        iconClass: 'pi pi-check-circle bg-green-500',
-        routerLink: './end-round',
-      },
-    ],
-    undefined: null,
-  };
+  private readonly roundPhaseDependentLinks: Signal<
+    Record<RoundPhase | 'undefined', CardLinkModel[] | null>
+  > = computed(() => {
+    return {
+      [RoundPhase.GameboardMoves]: [
+        {
+          text: 'Enter Gameboard Moves',
+          iconClass: 'ci-space-entry bg-gray-500',
+          routerLink: './space-entry',
+        },
+      ],
+      [RoundPhase.SpecialSpaceEvents]: [
+        {
+          text: 'Resolve Special Space Events',
+          iconClass: 'pi pi-question-circle bg-green-500',
+          routerLink: './resolve-special-space-events',
+        },
+      ],
+      [RoundPhase.Duels]: [
+        {
+          text: 'Resolve Duels',
+          iconClass: 'pi pi-bolt bg-purple-500',
+          routerLink: './resolve-duels',
+        },
+      ],
+      [RoundPhase.ChaosSpaceEvents]: [
+        {
+          text: 'Resolve Chaos Space Events',
+          iconClass: 'pi pi-exclamation-circle bg-black',
+          routerLink: './resolve-chaos-space-events',
+        },
+      ],
+      [RoundPhase.Event]: [
+        this.eventFormat() === EventFormat.ScoreBasedSingleRound
+          ? {
+              text: 'Enter Event Scores',
+              iconClass: 'pi pi-bolt bg-orange-500',
+              routerLink: './enter-event-scores',
+            }
+          : {
+              text: 'No Event Found',
+              iconClass: 'pi pi-question bg-red-500',
+              routerLink: '.',
+            },
+      ],
+      [RoundPhase.WaitingForNextRound]: [
+        {
+          text: 'End Round & Tally Points',
+          iconClass: 'pi pi-check-circle bg-green-500',
+          routerLink: './end-round',
+        },
+      ],
+      undefined: null,
+    };
+  });
 
   readonly roundLinks: Signal<CardLinkModel[] | null> = computed(() => {
     if (!this.gameStateService.sessionIsInProgress()) return null;
 
-    return this.roundPhaseDependentLinks[
+    return this.roundPhaseDependentLinks()[
       this.gameStateService.roundPhase() ?? 'undefined'
     ];
   });
