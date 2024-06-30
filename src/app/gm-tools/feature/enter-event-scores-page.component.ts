@@ -112,7 +112,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
       <!-- Submit Button -->
       <p-button
-        label="Submit Bet"
+        label="Submit Event Scores"
         styleClass="w-full mt-2"
         (onClick)="confirmSubmit()"
         [loading]="submitting()"
