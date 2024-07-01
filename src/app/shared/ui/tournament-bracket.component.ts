@@ -4,8 +4,9 @@ import {
   computed,
   inject,
   input,
+  signal,
 } from '@angular/core';
-import { TreeNode } from 'primeng/api';
+import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { TreeModule, TreeNodeSelectEvent } from 'primeng/tree';
 import { EventTeamModel } from '../util/supabase-types';
 import { EventService } from '../data-access/event.service';
@@ -13,6 +14,8 @@ import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { ParticipantListPipe } from './participant-list.pipe';
 import { ButtonModule } from 'primeng/button';
+import { confirmBackendAction } from '../util/dialog-helpers';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface EventTeamModelWithWinnerFlag extends EventTeamModel {
   isWinner: boolean;
@@ -54,13 +57,25 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       </ng-template>
     </p-tree>
 
-    <!-- Submit Button -->
-    <p-button
-      label="Submit Bet"
-      styleClass="w-full mt-2"
-      [hidden]="!hasSubmit()"
-      (onClick)="confirmSubmit()"
-    />
+    <div class="flex flex-row gap-2">
+      <!-- Submit Button -->
+      <p-button
+        label="Save"
+        styleClass="w-full mt-2"
+        class="flex-1"
+        [hidden]="!hasSubmit()"
+        (onClick)="save()"
+      />
+      <p-button
+        label="Submit & End Event"
+        styleClass="w-full mt-2"
+        class="flex-1"
+        severity="success"
+        [hidden]="!hasSubmit()"
+        [disabled]="submitDisabled()"
+        (onClick)="confirmSubmit()"
+      />
+    </div>
   `,
   styles: `
     :host ::ng-deep {
@@ -80,6 +95,10 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
 })
 export class TournamentBracketComponent {
   private readonly eventService = inject(EventService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly messageService = inject(MessageService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly hasSubmit = input<boolean>();
 
@@ -91,58 +110,64 @@ export class TournamentBracketComponent {
 
   readonly eventId = input.required<number>();
 
+  readonly submitting = signal<boolean>(false);
+
   readonly bracket = computed(() => {
     const bracket = this.generateBracket(this.eventTeams());
+
+    const teamsByRound = this.eventService.getTeamsByRound(
+      this.eventId(),
+      this.eventService.brackets(),
+    );
+
     bracket[0].children?.forEach((node) => {
-      this.setWinnersRecursively(node, bracket, 0);
+      this.setWinnersRecursively(node, bracket, 0, teamsByRound);
     });
     return bracket;
+  });
+
+  private readonly submitToggle = signal<boolean>(false);
+
+  readonly submitDisabled = computed(() => {
+    this.submitToggle(); // Call for dependency
+    return (this.bracket()[0].data?.seed ?? -1) < 0;
   });
 
   private setWinnersRecursively(
     node: TreeNode<Partial<EventTeamModelWithWinnerFlag>>,
     bracket: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
     depth: number,
+    teamsByRound: number[][],
   ) {
-    const winners = [[3], [3, 1]];
     node.children?.forEach((child) => {
-      this.setWinnersRecursively(child, bracket, depth + 1);
+      this.setWinnersRecursively(child, bracket, depth + 1, teamsByRound);
     });
     if (
       node.data &&
       node.data.seed &&
-      winners[depth] &&
-      winners[depth].includes(node.data.seed)
+      teamsByRound[depth] &&
+      teamsByRound[depth].includes(node.data.seed)
     ) {
       this.selectedNodes.push(node);
       this.setMatchWinner(node, bracket, this.selectedNodes);
     }
   }
 
-  confirmSubmit() {
-    const winners: number[][] = [];
-
-    this.bracket()[0].children?.forEach((node) =>
-      this.addWinnersRecursively(winners, node, 0),
-    );
-    console.log('winners: ' + JSON.stringify(winners));
-  }
-
-  private addWinnersRecursively(
-    winners: number[][],
+  private addTeamsByRoundRecursively(
+    teamsByRound: number[][],
     node: TreeNode<Partial<EventTeamModelWithWinnerFlag>>,
     depth: number,
   ) {
-    if (!winners[depth]) {
-      winners.push([]);
+    if (!teamsByRound[depth]) {
+      teamsByRound.push([]);
     }
 
-    if (node.data && this.selectedNodes.includes(node)) {
-      winners[depth].push(node.data.seed ?? 0);
+    if (node.data && node.data.seed) {
+      teamsByRound[depth].push(node.data.seed);
     }
 
     node.children?.forEach((node) =>
-      this.addWinnersRecursively(winners, node, depth + 1),
+      this.addTeamsByRoundRecursively(teamsByRound, node, depth + 1),
     );
   }
 
@@ -165,6 +190,7 @@ export class TournamentBracketComponent {
       nodeTemplate,
       false,
     );
+
     return [bracket];
   }
 
@@ -228,6 +254,7 @@ export class TournamentBracketComponent {
     selectedNodes: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
   ) {
     this.setMatchWinner(ev.node, bracket, selectedNodes);
+    this.submitToggle.set(!this.submitToggle()); // Force Submit button to re-evaluate
   }
 
   setMatchWinner(
@@ -269,5 +296,58 @@ export class TournamentBracketComponent {
     }
 
     return undefined;
+  }
+
+  save() {
+    const teamsByRound: number[][] = [];
+
+    const root = this.bracket()[0];
+    if (root.data && root.data.seed) {
+      teamsByRound.push([root.data?.seed]);
+    } else {
+      teamsByRound.push([]);
+    }
+
+    this.bracket()[0].children?.forEach((node) =>
+      this.addTeamsByRoundRecursively(teamsByRound, node, 1),
+    );
+
+    confirmBackendAction({
+      action: async () =>
+        this.eventService.saveTournamentState(this.eventId(), teamsByRound),
+      confirmationMessageText: `Are you sure you want to save the bracket state?`,
+      successMessageText: 'Bracket saved',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
+  }
+
+  confirmSubmit() {
+    const teamsByRound: number[][] = [];
+
+    const root = this.bracket()[0];
+    if (root.data && root.data.seed) {
+      teamsByRound.push([root.data?.seed]);
+    } else {
+      teamsByRound.push([]);
+    }
+
+    this.bracket()[0].children?.forEach((node) =>
+      this.addTeamsByRoundRecursively(teamsByRound, node, 1),
+    );
+    confirmBackendAction({
+      action: async () =>
+        this.eventService.submitTournamentResults(this.eventId(), teamsByRound),
+      confirmationMessageText: `Are you sure you want to submit the bracket and end the event?`,
+      successMessageText: 'Event completed',
+      submittingSignal: this.submitting,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: '..',
+      activatedRoute: this.activatedRoute,
+      router: this.router,
+    });
   }
 }

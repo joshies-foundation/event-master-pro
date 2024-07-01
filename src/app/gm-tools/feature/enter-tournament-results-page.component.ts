@@ -54,14 +54,13 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
     TournamentBracketComponent,
   ],
 })
-export default class EnterEventScoresPageComponent {
+export default class EnterTournamentResultsPageComponent {
   private readonly eventService = inject(EventService);
 
   private readonly teams = this.eventService.eventTeamsWithParticipantInfo;
   readonly eventForThisRound = this.eventService.eventForThisRound;
 
   readonly eventTeams = computed(() => {
-    this.eventService.eventForThisRound()?.lower_scores_are_better;
     return this.teams()
       ?.filter(
         (team) =>
