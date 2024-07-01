@@ -3,6 +3,7 @@ import {
   Component,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -22,24 +23,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
+import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
 @Component({
   selector: 'joshies-enter-event-scores-page',
   standalone: true,
-  imports: [
-    PageHeaderComponent,
-    HeaderLinkComponent,
-    TableModule,
-    NgOptimizedImage,
-    ButtonModule,
-    RouterLink,
-    StronglyTypedTableRowDirective,
-    SkeletonModule,
-    AvatarModule,
-    AvatarGroupModule,
-    InputNumberModule,
-    ReactiveFormsModule,
-  ],
   template: `
     <joshies-page-header headerText="Enter Event Scores" alwaysSmall>
       <joshies-header-link
@@ -78,20 +66,24 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
         >
           <tr>
             <td>
-              <div class="flex align-items-center gap-2">
-                {{ team.seed }}
-                <p-avatarGroup styleClass="mr-2">
-                  @for (
-                    participant of team.participants;
-                    track participant.participant_id
-                  ) {
-                    <p-avatar
-                      [image]="participant.avatar_url"
-                      size="large"
-                      shape="circle"
-                    />
-                  }
-                </p-avatarGroup>
+              <div class="flex flex-column align-items-center gap-2">
+                <div class="flex flex-row align-items-center gap-2">
+                  <p-avatarGroup styleClass="mr-2">
+                    @for (
+                      participant of team.participants;
+                      track participant.participant_id
+                    ) {
+                      <p-avatar
+                        [image]="participant.avatar_url"
+                        size="large"
+                        shape="circle"
+                      />
+                    }
+                  </p-avatarGroup>
+                </div>
+                <div class="text-xs">
+                  {{ team.participants | participantList }}
+                </div>
               </div>
             </td>
             <td>
@@ -129,6 +121,21 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    PageHeaderComponent,
+    HeaderLinkComponent,
+    TableModule,
+    NgOptimizedImage,
+    ButtonModule,
+    RouterLink,
+    StronglyTypedTableRowDirective,
+    SkeletonModule,
+    AvatarModule,
+    AvatarGroupModule,
+    InputNumberModule,
+    ReactiveFormsModule,
+    ParticipantListPipe,
+  ],
 })
 export default class EnterEventScoresPageComponent implements OnInit {
   private readonly eventService = inject(EventService);
@@ -154,13 +161,13 @@ export default class EnterEventScoresPageComponent implements OnInit {
 
   readonly formGroup = computed(() => {
     return this.formBuilder.nonNullable.group(
-      this.eventTeams()!.reduce(
+      this.eventTeams()?.reduce(
         (prev, team) => ({
           ...prev,
           [team.id]: [0, Validators.required],
         }),
         {},
-      ),
+      ) ?? [],
     );
   });
 
@@ -224,7 +231,17 @@ export default class EnterEventScoresPageComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  constructor() {
+    // This handles first time loads and refreshes
+    effect(() => {
+      this.eventTeams();
+      this.formGroup();
+      this.calculatePositions();
+    });
+  }
+
+  ngOnInit(): void {
+    // This handles revisiting the page
     this.calculatePositions();
   }
 }

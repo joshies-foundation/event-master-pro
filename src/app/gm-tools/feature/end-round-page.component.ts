@@ -33,6 +33,7 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
 import { AvatarModule } from 'primeng/avatar';
 import { switchMap } from 'rxjs';
 import { CardComponent } from '../../shared/ui/card.component';
+import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
 @Component({
   selector: 'joshies-end-round-page',
@@ -67,7 +68,7 @@ import { CardComponent } from '../../shared/ui/card.component';
         >
           <ng-template pTemplate="header">
             <tr>
-              <th>Team Seed</th>
+              <th>Team</th>
               <th>Pos</th>
               <th class="text-right">Score Change</th>
             </tr>
@@ -79,8 +80,7 @@ import { CardComponent } from '../../shared/ui/card.component';
           >
             <tr>
               <td>
-                <div class="flex align-items-center gap-2">
-                  {{ team.seed }}
+                <div class="flex flex-column align-items-center gap-2">
                   <p-avatarGroup styleClass="mr-2">
                     @for (
                       participant of team.participants;
@@ -93,6 +93,9 @@ import { CardComponent } from '../../shared/ui/card.component';
                       />
                     }
                   </p-avatarGroup>
+                  <div class="text-xs">
+                    {{ team.participants | participantList }}
+                  </div>
                 </div>
               </td>
               <td>
@@ -146,6 +149,7 @@ import { CardComponent } from '../../shared/ui/card.component';
     AvatarGroupModule,
     AvatarModule,
     CardComponent,
+    ParticipantListPipe,
   ],
 })
 export default class EndRoundPageComponent {
