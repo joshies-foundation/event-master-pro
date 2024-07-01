@@ -3,41 +3,34 @@ import {
   Component,
   computed,
   inject,
-  input,
-  numberAttribute,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { PlayerService } from '../../shared/data-access/player.service';
-import { withAllDefined } from '../../shared/util/signal-helpers';
 import { SkeletonModule } from 'primeng/skeleton';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ButtonModule } from 'primeng/button';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { defined } from '../../shared/util/rxjs-helpers';
-import { take } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { ActivatedRoute, Router } from '@angular/router';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
-  ConfirmScoreOverrideDialogComponent,
-  ConfirmOverrideDialogModel,
+  ConfirmBankBalanceOverrideDialogComponent,
   confirmOverrideDialogKey,
-} from '../ui/confirm-score-override-dialog.component';
+} from '../ui/confirm-bank-balance-override-dialog.component';
 import {
   OverrideDefinitionTableComponent,
   OverrideDefinitionTableModel,
 } from '../ui/override-definition-table.component';
 import { CardComponent } from '../../shared/ui/card.component';
-import { CheckboxModule } from 'primeng/checkbox';
+import { SessionService } from '../../shared/data-access/session.service';
+import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Component({
-  selector: 'joshies-override-points-page',
+  selector: 'joshies-override-bank-balance-page',
   standalone: true,
   imports: [
     PageHeaderComponent,
@@ -48,13 +41,12 @@ import { CheckboxModule } from 'primeng/checkbox';
     RadioButtonModule,
     ButtonModule,
     InputTextModule,
-    ConfirmScoreOverrideDialogComponent,
+    ConfirmBankBalanceOverrideDialogComponent,
     OverrideDefinitionTableComponent,
     CardComponent,
-    CheckboxModule,
   ],
   template: `
-    <joshies-page-header headerText="Override Points" alwaysSmall>
+    <joshies-page-header headerText="Override Bank Balance" alwaysSmall>
       <joshies-header-link
         text="Cancel"
         routerLink=".."
@@ -62,25 +54,8 @@ import { CheckboxModule } from 'primeng/checkbox';
       />
     </joshies-page-header>
 
-    @if (player(); as player) {
-      <!-- Player Header -->
-      <h2 class="flex align-items-center gap-3 mt-6 mb-5">
-        <img
-          [ngSrc]="player.avatar_url"
-          alt=""
-          height="48"
-          width="48"
-          class="border-circle surface-100"
-        />
-        <div>
-          <p class="m-0">{{ player.display_name }}</p>
-          <p class="m-0 text-500 text-base font-normal">
-            {{ player.real_name }}
-          </p>
-        </div>
-      </h2>
-
-      <joshies-card padded>
+    @if (oldBankBalance() !== undefined; as player) {
+      <joshies-card padded class="mt-5">
         <!-- Override Type -->
         <p class="mt-0 mb-3">Override Type</p>
         <div class="flex flex-column gap-3 mb-5">
@@ -100,26 +75,10 @@ import { CheckboxModule } from 'primeng/checkbox';
 
         <!-- Table -->
         <joshies-override-definition-table
-          [model]="overrideDefinitionTableMode()"
+          [model]="overrideDefinitionTableModel()"
           [(userDefinedChangeValue)]="userDefinedChangeValue"
           [(userDefinedReplacementValue)]="userDefinedReplacementValue"
         />
-
-        @if (changeValue() < 0) {
-          <label class="flex align-items-center gap-2 mt-4">
-            <p-checkbox
-              [binary]="true"
-              [(ngModel)]="addLostPointsToBankBalance"
-            />
-            Add lost points to Bank Balance
-          </label>
-        }
-
-        <!-- Comment -->
-        <label class="flex flex-column gap-2 mt-4">
-          Reason for Override (Optional)
-          <input pInputText [(ngModel)]="comment" />
-        </label>
       </joshies-card>
 
       <!-- Submit Button -->
@@ -132,12 +91,9 @@ import { CheckboxModule } from 'primeng/checkbox';
       />
 
       <!-- Confirm Dialog -->
-      <joshies-confirm-score-override-dialog [model]="confirmDialogModel()" />
-    } @else if (player() === null) {
-      <p class="mt-6">
-        No player found in this session with ID
-        <span class="font-bold">{{ playerId() }}</span>
-      </p>
+      <joshies-confirm-bank-balance-override-dialog
+        [model]="confirmDialogModel()"
+      />
     } @else {
       <p-skeleton height="35rem" styleClass="mt-5" />
     }
@@ -145,30 +101,23 @@ import { CheckboxModule } from 'primeng/checkbox';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OverridePointsPageComponent {
-  private readonly playerService = inject(PlayerService);
+  private readonly gameStateService = inject(GameStateService);
+  private readonly sessionService = inject(SessionService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  readonly playerId = input(0, { transform: numberAttribute }); // route param
+  private readonly sessionId = this.gameStateService.sessionId;
 
-  readonly player = computed(() =>
-    withAllDefined(
-      { players: this.playerService.players() },
-      ({ players }) =>
-        players?.find((player) => player.player_id === this.playerId()) ?? null,
-    ),
+  readonly oldBankBalance = computed(
+    () => this.sessionService.session()?.bank_balance ?? 0,
   );
-
-  readonly oldScore = computed(() => this.player()?.score ?? 0);
 
   // form values
   readonly inAddOrSubtractMode = signal(true);
   readonly userDefinedChangeValue = signal(0);
-  readonly userDefinedReplacementValue = signal(0);
-  readonly comment = signal('');
-  readonly addLostPointsToBankBalance = signal(true);
+  readonly userDefinedReplacementValue = signal(this.oldBankBalance() ?? 0);
 
   readonly submitting = signal(false);
 
@@ -181,13 +130,13 @@ export default class OverridePointsPageComponent {
       addOrSubtractMode: true,
     },
     {
-      label: 'Replace Score Entirely',
+      label: 'Replace Bank Balance Entirely',
       addOrSubtractMode: false,
     },
   ];
 
   private readonly changeValueDerivedFromReplacementValue = computed(
-    () => this.userDefinedReplacementValue() - this.oldScore(),
+    () => this.userDefinedReplacementValue() - this.oldBankBalance(),
   );
 
   readonly changeValue = computed(() =>
@@ -196,44 +145,27 @@ export default class OverridePointsPageComponent {
       : this.changeValueDerivedFromReplacementValue(),
   );
 
-  readonly newScore = computed(() => this.oldScore() + this.changeValue());
+  readonly newBankBalance = computed(
+    () => this.oldBankBalance() + this.changeValue(),
+  );
 
   readonly submitButtonDisabled = computed(() =>
     this.submitting() || this.inAddOrSubtractMode()
       ? this.userDefinedChangeValue() === 0
-      : this.userDefinedReplacementValue() === this.oldScore(),
+      : this.userDefinedReplacementValue() === this.oldBankBalance(),
   );
 
-  readonly overrideDefinitionTableMode = computed(
+  readonly overrideDefinitionTableModel = computed(
     (): OverrideDefinitionTableModel => ({
       inAddOrSubtractMode: this.inAddOrSubtractMode(),
-      oldScore: this.oldScore(),
+      oldScore: this.oldBankBalance(),
       changeValue: this.changeValue(),
-      newScore: this.newScore(),
+      newScore: this.newBankBalance(),
       inputDisabled: this.submitting(),
     }),
   );
 
-  readonly confirmDialogModel = computed(
-    (): ConfirmOverrideDialogModel => ({
-      ...this.overrideDefinitionTableMode(),
-      player: this.player()!,
-      comment: this.comment(),
-    }),
-  );
-
-  constructor() {
-    // initialize replacement value to be the old score
-    toObservable(this.player)
-      .pipe(
-        defined(),
-        take(1), // take 1 so a user changing their name or avatar does not reset the form
-        takeUntilDestroyed(),
-      )
-      .subscribe((player) =>
-        this.userDefinedReplacementValue.set(player.score),
-      );
-  }
+  readonly confirmDialogModel = this.overrideDefinitionTableModel;
 
   confirmSubmit(): void {
     this.confirmationService.confirm({
@@ -248,17 +180,13 @@ export default class OverridePointsPageComponent {
 
         const { error } = await showMessageOnError(
           this.inAddOrSubtractMode()
-            ? this.playerService.overridePointsAdd(
-                this.playerId(),
+            ? this.sessionService.overrideBankBalanceAdd(
+                this.sessionId()!,
                 this.userDefinedChangeValue(),
-                this.comment(),
-                this.addLostPointsToBankBalance(),
               )
-            : this.playerService.overridePointsReplace(
-                this.playerId(),
+            : this.sessionService.overrideBankBalanceReplace(
+                this.sessionId()!,
                 this.userDefinedReplacementValue(),
-                this.comment(),
-                this.addLostPointsToBankBalance(),
               ),
           this.messageService,
         );

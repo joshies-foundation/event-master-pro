@@ -80,7 +80,10 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                   class="border-circle surface-100"
                   alt=""
                 />
-                {{ player.display_name }}
+                <div>
+                  <p class="m-0">{{ player.display_name }}</p>
+                  <p class="m-0 text-500 text-xs">{{ player.real_name }}</p>
+                </div>
               </div>
             </td>
             <td class="text-center">

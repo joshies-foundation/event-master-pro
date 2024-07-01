@@ -23,6 +23,7 @@ export function addRankingInfoToPlayers(
       user_id: player.user_id,
       player_id: player.player_id,
       display_name: player.display_name,
+      real_name: player.real_name,
       score: player.score,
       avatar_url: player.avatar_url,
       rank: currentRank,
