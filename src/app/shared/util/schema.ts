@@ -79,21 +79,21 @@ export type Database = {
       bracket: {
         Row: {
           created_at: string;
-          data: Json | null;
+          data: string | null;
           event_id: number;
           id: number;
           updated_at: string;
         };
         Insert: {
           created_at?: string;
-          data?: Json | null;
+          data?: string | null;
           event_id: number;
           id?: number;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
-          data?: Json | null;
+          data?: string | null;
           event_id?: number;
           id?: number;
           updated_at?: string;
