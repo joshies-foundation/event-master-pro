@@ -34,6 +34,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { switchMap } from 'rxjs';
 import { CardComponent } from '../../shared/ui/card.component';
 import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
+import { EventFormat } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-end-round-page',
@@ -165,6 +166,12 @@ export default class EndRoundPageComponent {
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
 
   private readonly scoresForThisEvent = computed(() => {
+    if (
+      this.eventService.eventForThisRound()?.format !==
+      EventFormat.ScoreBasedSingleRound
+    ) {
+      return [];
+    }
     const eventTeamsForThisRound = this.eventService
       .eventTeams()
       ?.filter(
@@ -187,13 +194,10 @@ export default class EndRoundPageComponent {
   });
 
   readonly eventTeams = computed(() => {
+    const eventForThisRound = this.eventService.eventForThisRound();
     const eventTeams = this.eventService
       .eventTeamsWithParticipantInfo()
-      ?.filter(
-        (team) =>
-          team.event_id ===
-          (this.eventService.eventForThisRound()?.id ?? false),
-      )
+      ?.filter((team) => team.event_id === (eventForThisRound?.id ?? false))
       .map((team) => {
         return { ...team, score: 0, position: 1 };
       });
@@ -202,34 +206,53 @@ export default class EndRoundPageComponent {
       return;
     }
 
-    const eventTeamsRoundScores = this.eventService.eventTeamRoundScores();
-    if (!eventTeamsRoundScores) {
-      return eventTeams;
-    }
-    const scores = this.scoresForThisEvent();
-
-    const sortAsc = function (a: number, b: number) {
-      return a - b;
-    };
-    const sortDesc = function (a: number, b: number) {
-      return b - a;
-    };
-    const sortFunc = this.eventService.eventForThisRound()
-      ?.lower_scores_are_better
-      ? sortAsc
-      : sortDesc;
-    scores.sort(sortFunc);
-
-    eventTeams.forEach((team) => {
-      team.score =
-        eventTeamsRoundScores.find((teamScore) => teamScore.team_id === team.id)
-          ?.score ?? -1;
-      const position =
-        1 + (scores.findIndex((score) => team.score === score) ?? -1);
-      if (position > 0) {
-        team.position = position;
+    if (eventForThisRound?.format === EventFormat.ScoreBasedSingleRound) {
+      const eventTeamsRoundScores = this.eventService.eventTeamRoundScores();
+      if (!eventTeamsRoundScores) {
+        return eventTeams;
       }
-    });
+      const scores = this.scoresForThisEvent();
+
+      const sortAsc = function (a: number, b: number) {
+        return a - b;
+      };
+      const sortDesc = function (a: number, b: number) {
+        return b - a;
+      };
+      const sortFunc = eventForThisRound?.lower_scores_are_better
+        ? sortAsc
+        : sortDesc;
+      scores.sort(sortFunc);
+
+      eventTeams.forEach((team) => {
+        team.score =
+          eventTeamsRoundScores.find(
+            (teamScore) => teamScore.team_id === team.id,
+          )?.score ?? -1;
+        const position =
+          1 + (scores.findIndex((score) => team.score === score) ?? -1);
+        if (position > 0) {
+          team.position = position;
+        }
+      });
+    } else if (
+      eventForThisRound?.format === EventFormat.SingleEliminationTournament
+    ) {
+      const brackets = this.eventService.brackets();
+      const bracketArr = brackets?.filter(
+        (bracket) => bracket.event_id === eventForThisRound.id,
+      );
+      if (bracketArr && bracketArr.length > 0) {
+        const bracket = bracketArr[0];
+        const teamsByRound: number[][] = JSON.parse(bracket.data ?? '[]');
+        eventTeams.forEach((team) => {
+          team.position =
+            teamsByRound.findIndex((roundTeams) =>
+              roundTeams.includes(team.seed ?? -1),
+            ) + 1;
+        });
+      }
+    }
 
     return eventTeams;
   });
