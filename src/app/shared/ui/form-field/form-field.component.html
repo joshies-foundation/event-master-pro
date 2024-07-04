@@ -1,57 +1,235 @@
-<div class="flex flex-column gap-1">
-  @if (field.type !== FormFieldType.Submit) {
-    <label [for]="field.name">{{ field.label }}</label>
-  }
+@if (field(); as field) {
+  <div class="flex flex-column gap-1">
+    @if (field.type !== FormFieldType.Submit) {
+      <label [for]="field.name">{{ field.label }}</label>
+    }
 
-  @switch (field.type) {
-    @case (FormFieldType.Text) {
-      <input
-        [id]="field.name | lowercase"
-        [name]="field.name | lowercase"
-        [placeholder]="field.placeholder"
-        type="text"
-        pInputText
-        [formControl]="field.control"
-        [ngClass]="field.styleClass"
-      />
+    @switch (field.type) {
+      @case (FormFieldType.Text) {
+        <input
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          type="text"
+          pInputText
+          [formControl]="field.control"
+          [ngClass]="field.styleClass"
+        />
+      }
+      @case (FormFieldType.Number) {
+        <p-inputNumber
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          [showButtons]="field.showButtons ?? true"
+          [buttonLayout]="field.buttonLayout ?? 'horizontal'"
+          [step]="field.step ?? 1"
+          [incrementButtonIcon]="field.incrementButtonIcon ?? 'pi pi-plus'"
+          [decrementButtonIcon]="field.decrementButtonIcon ?? 'pi pi-minus'"
+          [min]="field.min"
+          [max]="field.max"
+          [suffix]="field.suffix"
+          [mode]="field.mode ?? 'decimal'"
+          [formControl]="field.control"
+          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [inputStyleClass]="field.inputStyleClass"
+        />
+      }
+      @case (FormFieldType.Dropdown) {
+        <p-dropdown
+          [inputId]="field.name"
+          [name]="field.name"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          [options]="field.options"
+          [formControl]="field.control"
+          [optionLabel]="field.optionLabel ?? 'label'"
+          [optionValue]="field.optionValue ?? 'value'"
+          [optionDisabled]="field.optionDisabled ?? 'disabled'"
+          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [overlayOptions]="{ styleClass: 'max-w-full' }"
+        />
+      }
+      @case (FormFieldType.MultiSelect) {
+        <p-multiSelect
+          [inputId]="field.name"
+          [name]="field.name"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          [options]="field.options"
+          [formControl]="field.control"
+          [optionLabel]="field.optionLabel ?? 'label'"
+          [optionValue]="field.optionValue ?? 'value'"
+          [optionDisabled]="field.optionDisabled ?? 'disabled'"
+          [display]="field.useChips ? 'chip' : 'comma'"
+          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+        />
+      }
+      @case (FormFieldType.Editor) {
+        <p-editor
+          [id]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          [formControl]="field.control"
+          [style]="{ height: 'calc(100vh - 23rem)' }"
+          [modules]="{
+            clipboard: {
+              matchVisual: false,
+            },
+          }"
+        >
+          <ng-template pTemplate="header">
+            <span class="ql-formats">
+              <select class="ql-header">
+                <option value="1">Heading</option>
+                <option value="2">Subheading</option>
+                <option selected></option>
+              </select>
+            </span>
+
+            <span class="ql-formats">
+              <button type="button" class="ql-bold" aria-label="Bold"></button>
+              <button
+                type="button"
+                class="ql-italic"
+                aria-label="Italic"
+              ></button>
+              <button
+                type="button"
+                class="ql-underline"
+                aria-label="Underline"
+              ></button>
+            </span>
+
+            <span class="ql-formats">
+              <button
+                type="button"
+                value="ordered"
+                class="ql-list"
+                aria-label="Ordered List"
+              ></button>
+              <button
+                type="button"
+                value="bullet"
+                class="ql-list"
+                aria-label="Unordered List"
+              ></button>
+            </span>
+
+            <span class="ql-formats">
+              <button
+                type="button"
+                class="ql-clean"
+                aria-label="Remove Styles"
+              ></button>
+            </span>
+          </ng-template>
+        </p-editor>
+      }
+      @case (FormFieldType.Calendar) {
+        <p-calendar
+          [inputId]="field.name"
+          [name]="field.name"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          [formControl]="field.control"
+          [minDate]="field.minDate!"
+          [maxDate]="field.maxDate!"
+          [selectionMode]="field.selectionMode ?? 'single'"
+          [touchUI]="field.touchUi"
+          [inline]="field.inline!"
+          [showTime]="field.showTime ?? false"
+          [timeOnly]="field.timeOnly ?? false"
+          hourFormat="12"
+          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+        />
+      }
+      @case (FormFieldType.Submit) {
+        <p-button
+          type="submit"
+          [styleClass]="
+            'mt-2 block ' +
+            (['left', 'center'].includes(field.position) ? 'mr-auto ' : '') +
+            (['right', 'center'].includes(field.position)
+              ? 'ml-auto '
+              : 'w-full ') +
+            (field.styleClass ?? '')
+          "
+          [disabled]="formDisabled() || formGroup().invalid"
+          [label]="field.label"
+          [loading]="field.loading ?? false"
+        />
+      }
+      @case (FormFieldType.TextArea) {
+        <textarea
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [placeholder]="field.placeholder"
+          type="text"
+          pInputText
+          [formControl]="field.control"
+          [ngClass]="field.styleClass"
+          [rows]="field.rows ?? 5"
+        ></textarea>
+      }
+      @case (FormFieldType.Checkbox) {
+        <p-checkbox
+          [id]="field.name | lowercase"
+          [name]="field.name | lowercase"
+          [required]="field.required ?? false"
+          [formControl]="field.control"
+          [ngClass]="field.styleClass"
+          [binary]="true"
+        />
+      }
+      @case (FormFieldType.Image) {
+        @if (uploading()) {
+          <p-skeleton
+            styleClass="border-round"
+            class="mx-auto"
+            [width]="field.previewWidth + 'px'"
+            [height]="field.previewHeight + 'px'"
+          />
+        } @else {
+          @if (fieldValue(); as imageUrl) {
+            <img
+              #image
+              [alt]="field.altText"
+              [ngSrc]="$any(imageUrl)"
+              class="border-round mx-auto max-w-full surface-200"
+              [width]="field.previewWidth"
+              [height]="field.previewHeight"
+            />
+          } @else {
+            <div
+              class="border-round mx-auto max-w-full surface-100 pi pi-question text-6xl text-center text-300 flex flex-column justify-content-center"
+              [style]="{
+                width: field.previewWidth + 'px',
+                height: field.previewHeight + 'px',
+              }"
+            ></div>
+          }
+        }
+
+        <p-button
+          label="Upload Image"
+          icon="pi pi-camera"
+          styleClass="w-full mt-2"
+          (onClick)="imageFileInput.click()"
+        />
+
+        <!-- Hidden File Input -->
+        <input
+          #imageFileInput
+          hidden
+          type="file"
+          accept="image/*"
+          (change)="onImageSelect(field.control, $event, field.uploadCallback)"
+        />
+      }
     }
-    @case (FormFieldType.Number) {
-      <input
-        [id]="field.name | lowercase"
-        [name]="field.name | lowercase"
-        [placeholder]="field.placeholder"
-        type="number"
-        pInputText
-        [formControl]="field.control"
-        [ngClass]="field.styleClass"
-      />
-    }
-    @case (FormFieldType.Dropdown) {
-      <p-dropdown
-        [inputId]="field.name"
-        [name]="field.name"
-        [placeholder]="field.placeholder"
-        [options]="field.options"
-        [formControl]="field.control"
-        [optionLabel]="field.optionLabel"
-        [optionValue]="field.optionValue"
-        [styleClass]="'w-full ' + (field.styleClass ?? '')"
-      />
-    }
-    @case (FormFieldType.Submit) {
-      <p-button
-        type="submit"
-        [styleClass]="
-          'mt-2 block ' +
-          (['left', 'center'].includes(field.position!) ? 'mr-auto ' : ' ') +
-          (['right', 'center'].includes(field.position!) ? 'ml-auto ' : ' ') +
-          (['full', undefined].includes(field.position!) ? 'w-full ' : ' ') +
-          (field.styleClass ?? '')
-        "
-        [disabled]="formDisabled() || formGroup.invalid"
-        [label]="field.label"
-        [loading]="field.loading ?? false"
-      />
-    }
-  }
-</div>
+  </div>
+}

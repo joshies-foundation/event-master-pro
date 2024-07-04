@@ -1,4 +1,12 @@
 <!-- Header -->
-<h1 class="mt-0">Send Notifications</h1>
+<joshies-page-header headerText="Send Notifications" />
 
-<joshies-form [form]="form" />
+@if (form.fields()) {
+  <!-- Form -->
+  <joshies-form [form]="form" />
+} @else {
+  <!-- Loading Skeleton -->
+  <div class="h-4rem"></div>
+  <p-skeleton height="2.25rem" styleClass="mb-4" />
+  <p-skeleton width="100%" height="19rem" />
+}

@@ -1,28 +1,31 @@
-import { Injectable, inject, computed } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
-import { map } from 'rxjs';
+import { map, shareReplay, startWith } from 'rxjs';
 import { environment } from 'environment';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
-import { showErrorMessage } from '../util/error-helpers';
+import { showErrorMessage } from '../util/message-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { FunctionsResponse } from '@supabase/functions-js';
 import { showMessageOnError, Table } from '../util/supabase-helpers';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Database, Json } from '../util/schema';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationsService {
   private readonly messageService = inject(MessageService);
-  private readonly supabase = inject(SupabaseClient);
+  private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly swPush = inject(SwPush);
 
-  readonly pushNotificationsSubscription = toSignal(this.swPush.subscription, {
-    initialValue: null,
-  });
+  readonly pushNotificationsAreEnabled$ = this.swPush.subscription.pipe(
+    map((subscription) => !!subscription),
+    startWith(false),
+    shareReplay(1),
+  );
 
-  readonly pushNotificationsAreEnabled = computed(
-    () => !!this.pushNotificationsSubscription(),
+  readonly pushNotificationsAreEnabled = toSignal(
+    this.pushNotificationsAreEnabled$,
   );
 
   constructor() {
@@ -52,12 +55,12 @@ export class NotificationsService {
 
   async saveUserNotificationsSubscription(
     userId: string,
-    notificationsSubscriptions: object,
+    pushSubscription: PushSubscription,
   ): Promise<void> {
     await showMessageOnError(
       this.supabase.from(Table.UserNotificationsSubscription).insert({
         user_id: userId,
-        notifications_subscription: notificationsSubscriptions,
+        notifications_subscription: pushSubscription as unknown as Json,
       }),
       this.messageService,
     );

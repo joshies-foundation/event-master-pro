@@ -1,77 +1,134 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { inject, Injectable, Signal } from '@angular/core';
 import {
-  realtimeUpdatesFromTableAsSignal,
+  realtimeUpdatesFromTable,
   showMessageOnError,
   StorageBucket,
   Table,
 } from '../util/supabase-helpers';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { MessageService } from 'primeng/api';
-import { showErrorMessage } from '../util/error-helpers';
 import { resizeImage } from '../util/image-helpers';
+import { map, Observable, shareReplay } from 'rxjs';
+import { whenNotUndefined } from '../util/rxjs-helpers';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Database } from '../util/schema';
+import { UserModel } from '../util/supabase-types';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private readonly supabase = inject(SupabaseClient);
+  private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly authService = inject(AuthService);
   private readonly messageService = inject(MessageService);
 
-  readonly allUsers = realtimeUpdatesFromTableAsSignal(Table.User);
+  readonly user$: Observable<UserModel | undefined> =
+    this.authService.user$.pipe(
+      whenNotUndefined((authUser) =>
+        realtimeUpdatesFromTable(
+          this.supabase,
+          Table.User,
+          `id=eq.${authUser.id}`,
+        ).pipe(map((userRecords) => userRecords[0])),
+      ),
+      shareReplay(1),
+    );
 
-  readonly user = computed(
-    () =>
-      this.allUsers().find((user) => user.id === this.authService.user()!.id)!,
-  );
+  readonly user: Signal<UserModel | undefined> = toSignal(this.user$);
 
-  async updateDisplayName(
+  readonly allUsers$: Observable<UserModel[] | undefined> =
+    realtimeUpdatesFromTable(this.supabase, Table.User).pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+
+  readonly allUsersExceptCurrentUser$: Observable<UserModel[] | undefined> =
+    this.authService.user$.pipe(
+      whenNotUndefined((authUser) =>
+        realtimeUpdatesFromTable(
+          this.supabase,
+          Table.User,
+          `id=neq.${authUser.id}`,
+        ),
+      ),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+
+  async setDisplayName(
     userId: string,
     newDisplayName: string,
-  ): Promise<void> {
-    await showMessageOnError(
-      this.supabase
-        .from(Table.User)
-        .update({ display_name: newDisplayName })
-        .eq('id', userId),
-      this.messageService,
-      'Cannot update display name',
-    );
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ display_name: newDisplayName })
+      .eq('id', userId);
   }
 
-  async setAvatar(file: File): Promise<void> {
-    const resizedImage = await resizeImage(file, 200);
-    const uploadPath = `${this.authService.loginUsername()}/${Date.now()}.webp`;
+  async setAvatar(userId: string, image: File): Promise<void> {
+    const resizedImage = await resizeImage(image, 200);
+    const uploadPath = `${userId}/${Date.now()}.webp`;
 
-    const { data: uploadData, error: uploadError } = await this.supabase.storage
-      .from(StorageBucket.Avatars)
-      .upload(uploadPath, resizedImage);
+    const { data: uploadData, error: uploadError } = await showMessageOnError(
+      this.supabase.storage
+        .from(StorageBucket.Avatars)
+        .upload(uploadPath, resizedImage),
+      this.messageService,
+    );
 
     if (uploadError) {
-      showErrorMessage(uploadError.message, this.messageService);
       return;
     }
 
     const avatarUrl = this.supabase.storage
       .from(StorageBucket.Avatars)
-      .getPublicUrl(uploadData?.path).data.publicUrl;
+      .getPublicUrl(uploadData.path).data.publicUrl;
 
-    const { error: updateError } = await this.supabase
-      .from(Table.User)
-      .update({ avatar_url: avatarUrl })
-      .eq('id', this.user()?.id ?? '');
-
-    if (updateError) {
-      showErrorMessage(updateError.message, this.messageService);
-    }
+    await showMessageOnError(
+      this.supabase
+        .from(Table.User)
+        .update({ avatar_url: avatarUrl })
+        .eq('id', userId),
+      this.messageService,
+    );
   }
 
-  async updateScore(userId: string, score: number): Promise<void> {
-    await showMessageOnError(
-      this.supabase.from(Table.User).update({ score }).eq('id', userId),
-      this.messageService,
-      'Cannot update score',
-    );
+  async setCanEditProfile(
+    userId: string,
+    canEditProfile: boolean,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ can_edit_profile: canEditProfile })
+      .eq('id', userId);
+  }
+
+  async setCanPlaceBets(
+    userId: string,
+    canPlaceBets: boolean,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ can_place_bets: canPlaceBets })
+      .eq('id', userId);
+  }
+
+  async setSquidwardMode(
+    userId: string,
+    squidwardMode: boolean,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ squidward_mode: squidwardMode })
+      .eq('id', userId);
+  }
+
+  async setCanToggleSquidwardMode(
+    userId: string,
+    canToggleSquidwardMode: boolean,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.User)
+      .update({ can_toggle_squidward_mode: canToggleSquidwardMode })
+      .eq('id', userId);
   }
 }

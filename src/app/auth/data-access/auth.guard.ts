@@ -6,7 +6,7 @@ import { map, take } from 'rxjs';
 
 type RedirectUrl = string;
 
-type RedirectFn = (user?: User) => true | RedirectUrl;
+type RedirectFn = (user: User | undefined) => true | RedirectUrl;
 
 function createAuthGuardFromRedirectFunction(
   redirectFn: RedirectFn,

@@ -1,0 +1,337 @@
+@if (viewModel(); as vm) {
+  @if (vm.countdown) {
+    <div class="h-full flex flex-column justify-content-center">
+      <h1
+        class="grid grid-nogutter text-center font-semibold mb-0"
+        style="font-size: 12vw"
+      >
+        <span class="col-3">{{ vm.countdown.days }}</span>
+        <span class="col-3">{{ vm.countdown.hours }}</span>
+        <span class="col-3">{{ vm.countdown.minutes }}</span>
+        <span class="col-3">{{ vm.countdown.seconds }}</span>
+      </h1>
+      <p
+        class="grid grid-nogutter text-center text-sm lg:text-2xl mt-0 lg:font-semibold text-primary"
+      >
+        <span class="col-3">Days</span>
+        <span class="col-3">Hours</span>
+        <span class="col-3">Minutes</span>
+        <span class="col-3">Seconds</span>
+      </p>
+    </div>
+  } @else {
+    <!-- Header -->
+    <joshies-page-header [headerText]="vm.session.name" />
+
+    <!-- Date Range -->
+    <p class="-mt-3 text-400">
+      {{ vm.session.start_date | date: 'longDate' }} -
+      {{ vm.session.end_date | date: 'longDate' }}
+    </p>
+
+    @if (vm.sessionIsInProgress) {
+      <!-- Happening Now -->
+      <joshies-card
+        headerText="Happening Now"
+        headerIconClass="pi pi-star text-primary mr-2"
+        padded
+      >
+        @switch (vm.roundPhase) {
+          @case (RoundPhase.GameboardMoves) {
+            <div class="flex gap-3">
+              <img
+                ngSrc="/assets/dice-roll.gif"
+                alt=""
+                width="48"
+                height="48"
+                class="border-round"
+              />
+              <div>
+                <p class="mt-0 mb-1">
+                  Gameboard moves for turn
+                  <strong>{{ vm.roundNumber | number }}</strong> of
+                  <strong>{{ vm.numRounds }}</strong
+                  >.
+                </p>
+                <p class="m-0">Let's get rolling!</p>
+              </div>
+            </div>
+            @if (vm.userIsGameMaster) {
+              <p-button
+                label="Enter Gameboard Moves"
+                styleClass="w-full mt-3"
+                routerLink="/gm-tools/space-entry"
+              />
+            }
+          }
+          @case (RoundPhase.SpecialSpaceEvents) {
+            <p class="mt-0 mb-2">Special Space Events:</p>
+
+            <joshies-space-event-table
+              [spaceEvents]="vm.specialSpaceEvents"
+              [spaceType]="GameboardSpaceEffect.Special"
+            />
+
+            @if (vm.userIsGameMaster) {
+              @if (vm.allSpecialSpaceEventsAreResolved) {
+                <p-button
+                  label="Proceed to Duel Phase"
+                  styleClass="w-full mt-2"
+                  (onClick)="proceedToDuelPhase()"
+                />
+              } @else {
+                <p-button
+                  label="Resolve Special Space Events"
+                  styleClass="mt-2 w-full"
+                  routerLink="/gm-tools/resolve-special-space-events"
+                />
+              }
+            }
+          }
+          @case (RoundPhase.Duels) {
+            <p class="mt-0 mb-2">Duels:</p>
+
+            <table class="w-full">
+              <tbody>
+                @for (duel of vm.duels; track duel.id) {
+                  <tr>
+                    <td class="pt-1 pr-2">
+                      <joshies-duel-table-avatars [duel]="duel" />
+                    </td>
+
+                    <td class="text-sm">{{ duel.game_name }}</td>
+
+                    <td class="pt-1 text-right">
+                      @if (duel.status === DuelStatus.WaitingToBegin) {
+                        <p-button size="small" label="Place Bet" />
+                      } @else {
+                        <joshies-status-tag [status]="duel.status" />
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td class="font-italic text-600">No duels for this turn</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            @if (vm.userIsGameMaster) {
+              @if (vm.allDuelsAreResolved) {
+                <p-button
+                  label="Proceed to Chaos Space Event Phase"
+                  styleClass="w-full mt-2"
+                  (onClick)="proceedToChaosSpaceEventsPhase()"
+                />
+              } @else {
+                <p-button
+                  label="Resolve Duels"
+                  styleClass="mt-2 w-full"
+                  routerLink="/gm-tools/resolve-duels"
+                />
+              }
+            }
+          }
+          @case (RoundPhase.ChaosSpaceEvents) {
+            <p class="mt-0 mb-2">Chaos Space Events:</p>
+
+            <joshies-space-event-table
+              [spaceEvents]="vm.chaosSpaceEvents"
+              [spaceType]="GameboardSpaceEffect.Chaos"
+            />
+
+            @if (vm.userIsGameMaster) {
+              @if (vm.allChaosSpaceEventsAreResolved) {
+                <p-button
+                  label="Proceed to Event Phase"
+                  styleClass="w-full mt-2"
+                  (onClick)="proceedToEventPhase()"
+                />
+              } @else {
+                <p-button
+                  label="Resolve Chaos Space Events"
+                  styleClass="mt-2 w-full"
+                  routerLink="/gm-tools/resolve-chaos-space-events"
+                />
+              }
+            }
+          }
+          @case (RoundPhase.Event) {
+            @if (vm.eventForThisRound; as event) {
+              <joshies-event-info [event]="event" />
+            } @else {
+              <span class="text-red font-semibold">
+                There's no event scheduled for this turn 😳 Tell the GM to get
+                on it 😤
+              </span>
+            }
+          }
+          @case (RoundPhase.WaitingForNextRound) {
+            @if (vm.roundNumber < vm.numRounds) {
+              Stretch those dice-rolling fingers in preparation for the next
+              turn.
+            } @else {
+              🏆 Awards Ceremony
+            }
+          }
+        }
+      </joshies-card>
+
+      <!-- Up Next -->
+      <joshies-card
+        headerText="Up Next"
+        headerIconClass="pi pi-arrow-circle-right text-primary mr-2"
+        padded
+      >
+        @switch (vm.roundPhase) {
+          @case (RoundPhase.GameboardMoves) {
+            <p class="mt-0 mb-1">
+              Special Space events, duels, and Chaos Space events.
+            </p>
+            <p class="mt-0">Then, our next event:</p>
+
+            @if (vm.eventForThisRound; as event) {
+              <joshies-event-info [event]="event" />
+            } @else {
+              <span class="text-red font-semibold">
+                There's no event scheduled for this turn 😳 Tell the GM to get
+                on it 😤
+              </span>
+            }
+          }
+          @case (RoundPhase.SpecialSpaceEvents) {
+            <p class="mt-0 mb-1">Duels and Chaos Space events.</p>
+            <p class="mt-0">Then, our next event:</p>
+
+            @if (vm.eventForThisRound; as event) {
+              <joshies-event-info [event]="event" />
+            } @else {
+              <span class="text-red font-semibold">
+                There's no event scheduled for this turn 😳 Tell the GM to get
+                on it 😤
+              </span>
+            }
+          }
+          @case (RoundPhase.Duels) {
+            <p class="mt-0">Chaos Space events, and then our next event:</p>
+
+            @if (vm.eventForThisRound; as event) {
+              <joshies-event-info [event]="event" />
+            } @else {
+              <span class="text-red font-semibold">
+                There's no event scheduled for this turn 😳 Tell the GM to get
+                on it 😤
+              </span>
+            }
+          }
+          @case (RoundPhase.ChaosSpaceEvents) {
+            @if (vm.eventForThisRound; as event) {
+              <joshies-event-info [event]="event" />
+            } @else {
+              <span class="text-red font-semibold">
+                There's no event scheduled for this turn 😳 Tell the GM to get
+                on it 😤
+              </span>
+            }
+          }
+          @case (RoundPhase.Event) {
+            @if (vm.roundNumber < vm.numRounds) {
+              <p class="mt-0 mb-1">
+                Gameboard moves for turn
+                <strong>{{ vm.roundNumber + 1 | number }}</strong> of
+                <strong>{{ vm.numRounds }}</strong
+                >.
+              </p>
+
+              <p class="mt-0">Then, our next event:</p>
+
+              @if (vm.eventForNextRound; as event) {
+                <joshies-event-info [event]="event" />
+              } @else {
+                <span class="text-red font-semibold">
+                  There's no event scheduled for this turn 😳 Tell the GM to get
+                  on it 😤
+                </span>
+              }
+            } @else {
+              🏆 Awards Ceremony
+            }
+          }
+          @case (RoundPhase.WaitingForNextRound) {
+            @if (vm.roundNumber < vm.numRounds) {
+              <p class="mt-0 mb-1">
+                Gameboard moves for turn
+                <strong>{{ vm.roundNumber + 1 | number }}</strong> of
+                <strong>{{ vm.numRounds }}</strong
+                >.
+              </p>
+
+              <p class="mt-0">Then, our next event:</p>
+
+              @if (vm.eventForNextRound; as event) {
+                <joshies-event-info [event]="event" />
+              } @else {
+                <span class="text-red font-semibold">
+                  There's no event scheduled for this turn 😳 Tell the GM to get
+                  on it 😤
+                </span>
+              }
+            } @else {
+              Go home
+            }
+          }
+        }
+      </joshies-card>
+    }
+
+    @if (vm.sessionHasNotStarted && vm.userIsGameMaster) {
+      <p-button
+        severity="success"
+        [label]="'Start ' + vm.session.name + '!'"
+        styleClass="w-full"
+        (onClick)="startSession()"
+      />
+    }
+
+    @if (vm.showRankingsTable) {
+      <!-- Bank Balance -->
+      <joshies-card
+        headerText="Bank Balance"
+        headerIconClass="pi pi-building-columns text-primary mr-2"
+        padded
+      >
+        <span class="font-semibold">
+          {{ vm.bankBalance | number }}
+        </span>
+        point{{ vm.bankBalance === 1 ? '' : 's' }}
+      </joshies-card>
+
+      <!-- Rankings Table -->
+      <h3 class="pt-2 mb-2">
+        <i class="pi pi-trophy text-primary mr-2"></i>
+        {{ vm.rankingsTableHeader }}
+      </h3>
+      <joshies-rankings-table [players]="vm.players" [userId]="vm.userId" />
+    }
+  }
+} @else {
+  <div class="h-4rem"></div>
+
+  <!-- Header -->
+  <p-skeleton height="2.25rem" styleClass="mb-2" />
+  <p-skeleton height="1.25rem" styleClass="mb-4" />
+
+  <!-- Happening Now -->
+  <p-skeleton height="1.5rem" width="10.5rem" styleClass="mb-2" />
+  <p-skeleton height="6rem" styleClass="mb-4" />
+
+  <!-- Up Next -->
+  <p-skeleton height="1.5rem" width="6.5rem" styleClass="mb-2" />
+  <p-skeleton height="6rem" styleClass="mb-4" />
+
+  <!-- Current Rankings -->
+  <div class="h-0.5rem"></div>
+  <p-skeleton height="1.7rem" width="11.5rem" styleClass="mb-2" />
+  <p-skeleton height="25rem" />
+}

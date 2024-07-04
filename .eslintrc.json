@@ -32,7 +32,9 @@
             "prefix": "joshies",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/no-host-metadata-property": "off",
+        "no-case-declarations": "off"
       }
     },
     {
@@ -41,7 +43,21 @@
         "plugin:@angular-eslint/template/recommended",
         "plugin:@angular-eslint/template/accessibility"
       ],
-      "rules": {}
+      "rules": {
+        "@angular-eslint/template/label-has-associated-control": [
+          "error",
+          {
+            "controlComponents": [
+              "p-dropdown",
+              "p-checkbox",
+              "p-selectButton",
+              "p-radioButton",
+              "p-inputNumber",
+              "p-inputSwitch"
+            ]
+          }
+        ]
+      }
     }
   ]
 }

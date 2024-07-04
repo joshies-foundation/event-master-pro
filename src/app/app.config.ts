@@ -1,20 +1,38 @@
 import {
   ApplicationConfig,
-  importProvidersFrom,
   isDevMode,
+  provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withInMemoryScrolling,
+} from '@angular/router';
 import { routes } from './app.routes';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import { NumberSignColorClassPipe } from './shared/ui/number-sign-color-class.pipe';
+import { NumberWithSignPipe } from './shared/ui/number-with-sign.pipe';
+import { NumberSignPipe } from './shared/ui/number-sign.pipe';
+import { LoseOrGainPipe } from './gm-tools/ui/lose-or-gain.pipe';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideExperimentalZonelessChangeDetection(),
+
     // router
-    provideRouter(routes),
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'enabled',
+      }),
+    ),
 
     // supabase
     provideSupabase(),
@@ -24,6 +42,7 @@ export const appConfig: ApplicationConfig = {
 
     // PrimeNG services
     MessageService,
+    ConfirmationService,
 
     // service worker
     provideServiceWorker('ngsw-worker.js', {
@@ -31,7 +50,15 @@ export const appConfig: ApplicationConfig = {
       registrationStrategy: 'registerWhenStable:30000',
     }),
 
+    // http client
+    provideHttpClient(),
+
     // other
-    importProvidersFrom(HttpClientModule),
+    DecimalPipe,
+    NumberSignPipe,
+    NumberSignColorClassPipe,
+    NumberWithSignPipe,
+    LoseOrGainPipe,
+    TitleCasePipe,
   ],
 };

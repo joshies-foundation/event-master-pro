@@ -3,6 +3,7 @@ import {
   redirectLoggedInToHomePage,
   redirectUnauthorizedToLoginPage,
 } from './auth/data-access/auth.guard';
+import { canAccessGmTools } from './auth/data-access/auth.gm.guard';
 
 export const routes: Routes = [
   {
@@ -19,12 +20,25 @@ export const routes: Routes = [
     canActivateChild: [redirectUnauthorizedToLoginPage],
     children: [
       {
-        path: 'rankings',
-        loadChildren: () => import('./rankings/feature/lib.routes'),
+        path: 'home',
+        loadChildren: () => import('./home/feature/lib.routes'),
       },
       {
         path: 'rules',
         loadChildren: () => import('./rules/feature/lib.routes'),
+      },
+      {
+        path: 'betting',
+        loadChildren: () => import('./betting/feature/lib.routes'),
+      },
+      {
+        path: 'gm-tools',
+        loadChildren: () => import('./gm-tools/feature/lib.routes'),
+        canActivate: [canAccessGmTools],
+      },
+      {
+        path: 'analytics',
+        loadChildren: () => import('./analytics/feature/analytics.routes'),
       },
       {
         path: 'notifications',
@@ -37,7 +51,7 @@ export const routes: Routes = [
       {
         path: '**',
         pathMatch: 'full',
-        redirectTo: 'profile',
+        redirectTo: 'home',
       },
     ],
   },
