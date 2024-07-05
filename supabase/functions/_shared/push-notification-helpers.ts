@@ -1,11 +1,16 @@
 import { supabaseAdmin } from './supabase-admin.ts';
 import { sendNotification } from './web-push.ts';
 
+// tables
 const userNotificationsSubscriptionTable = 'user_notifications_subscription';
 const playerTable = 'player';
+const userTable = 'user';
+
+// columns
 const notificationsSubscriptionColumn = 'notifications_subscription';
 const userIdColumn = 'user_id';
 const idColumn = 'id';
+const displayNameColumn = 'display_name';
 
 export async function sendPushNotificationToUsers(
   recipientUserIds: string[],
@@ -69,7 +74,7 @@ export async function sendPushNotificationToUsers(
 }
 
 export async function sendPushNotificationToPlayers(
-  recipientPlayerIds: string[],
+  recipientPlayerIds: number[],
   title: string,
   body: string,
   openUrl?: string,
@@ -91,4 +96,46 @@ export async function sendPushNotificationToPlayers(
   const recipientUserIds = data.map((record) => record.user_id as string);
 
   await sendPushNotificationToUsers(recipientUserIds, title, body, openUrl);
+}
+
+export async function getUserDisplayName(userId: string): Promise<string> {
+  console.log(
+    `Getting ${displayNameColumn} for ${userTable} with ${userIdColumn} ${userId}`,
+  );
+
+  const { data } = await supabaseAdmin
+    .from(userTable)
+    .select(displayNameColumn)
+    .eq(idColumn, userId);
+
+  const displayName: string | undefined = data?.[0]?.display_name;
+
+  if (displayName === undefined) {
+    throw new Error(
+      `Cannot find ${displayNameColumn} for ${userTable} with ${idColumn} ${userId}`,
+    );
+  }
+
+  return displayName;
+}
+
+export async function getPlayerDisplayName(playerId: number): Promise<string> {
+  console.log(
+    `Getting ${userIdColumn} for ${playerTable} with ${idColumn} ${playerId}`,
+  );
+
+  const { data } = await supabaseAdmin
+    .from(playerTable)
+    .select(userIdColumn)
+    .eq(idColumn, playerId);
+
+  const userId: string | undefined = data?.[0]?.user_id;
+
+  if (userId === undefined) {
+    throw new Error(
+      `Cannot find ${userIdColumn} for ${playerTable} with ${idColumn} ${userId}`,
+    );
+  }
+
+  return getUserDisplayName(userId);
 }
