@@ -14,7 +14,7 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
   imports: [NgClass, RouterLink, CardLinkComponent, RouterLink],
   template: `
     @if (headerText()) {
-      @if (isDashboardCard()) {
+      @if (readOnly()) {
         <h2 class="mt-0 mb-2">
           @if (headerIconClass()) {
             <i [ngClass]="headerIconClass()"></i>
@@ -59,5 +59,5 @@ export class CardComponent {
   padded = input(false, { transform: booleanAttribute });
   links = input<CardLinkModel[]>();
   styleClass = input<string>();
-  isDashboardCard = input(false, { transform: booleanAttribute });
+  readOnly = input(false, { transform: booleanAttribute });
 }
