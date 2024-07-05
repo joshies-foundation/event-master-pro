@@ -31,6 +31,10 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
 import { StatusTagComponent } from '../../gm-tools/ui/status-tag.component';
 import { EventInfoComponent } from '../../shared/ui/event-info.component';
 import { EventService } from '../../shared/data-access/event.service';
+import { ButtonModule } from 'primeng/button';
+import { CarouselModule } from 'primeng/carousel';
+import { BetService } from '../../shared/data-access/bet.service';
+import { BetComponent } from '../../shared/ui/bet.component';
 
 @Component({
   selector: 'joshies-dashboard-page',
@@ -46,6 +50,9 @@ import { EventService } from '../../shared/data-access/event.service';
     StatusTagComponent,
     EventInfoComponent,
     NgOptimizedImage,
+    ButtonModule,
+    CarouselModule,
+    BetComponent,
   ],
   template: `
     @if (viewModel(); as vm) {
@@ -294,58 +301,32 @@ import { EventService } from '../../shared/data-access/event.service';
               }
             </div>
           </div>
-          <div class="grid pb-5">
-            <!-- Open Bets -->
-            <div class="col-4 pr-5">
-              <joshies-card
-                class="fixed-height-card"
-                headerText="Open Bets"
-                headerIconClass="pi pi-money-bill text-primary mr-2"
-                readOnly
-                padded
-              >
-                <span>
-                  This is placeholder text. Eventually a ticker of recent duels,
-                  bets, and accolades will be shown here.<br /><br />
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </span>
-              </joshies-card>
-            </div>
-            <!-- Latest Duels -->
-            <div class="col-4 px-5">
-              <joshies-card
-                class="fixed-height-card"
-                headerText="Latest Duels"
-                headerIconClass="pi pi-bolt text-primary mr-2"
-                readOnly
-                padded
-              >
-                <span>
-                  This is placeholder text. Eventually a ticker of recent duels,
-                  bets, and accolades will be shown here.<br /><br />
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </span>
-              </joshies-card>
-            </div>
-            <!-- Accolades -->
-            <div class="col-4 pl-5">
-              <joshies-card
-                class="fixed-height-card"
-                headerText="Accolades"
-                headerIconClass="pi pi-star text-primary mr-2"
-                readOnly
-                padded
-              >
-                <span>
-                  This is placeholder text. Eventually a ticker of recent duels,
-                  bets, and accolades will be shown here.<br /><br />
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </span>
-              </joshies-card>
-            </div>
+          <!-- Open Bets -->
+          <div class="sticky" style="bottom: 5%;">
+            <joshies-card
+              headerText="Open Bets"
+              headerIconClass="pi pi-money-bill text-primary mr-2"
+              readOnly
+              padded
+            >
+              @if (vm.activeBets; as bets) {
+                <p-carousel
+                  [value]="bets"
+                  [numVisible]="5"
+                  [numScroll]="1"
+                  [circular]="true"
+                  [showIndicators]="false"
+                  [showNavigators]="false"
+                  autoplayInterval="5000"
+                >
+                  <ng-template let-bet pTemplate="item">
+                    <joshies-bet [bet]="bet"></joshies-bet>
+                  </ng-template>
+                </p-carousel>
+              } @else {
+                <span>No open bets to show</span>
+              }
+            </joshies-card>
           </div>
         </div>
       }
@@ -370,6 +351,7 @@ export default class DashboardPageComponent {
   private readonly gameboardService = inject(GameboardService);
   private readonly duelService = inject(DuelService);
   private readonly eventService = inject(EventService);
+  private readonly betService = inject(BetService);
 
   private readonly showRankingsTable = computed(
     () => this.gameStateService.sessionStatus() !== SessionStatus.NotStarted,
@@ -413,6 +395,8 @@ export default class DashboardPageComponent {
       ),
     ),
   );
+
+  private readonly activeBets = toSignal(this.betService.activeBets$);
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
@@ -474,6 +458,7 @@ export default class DashboardPageComponent {
       chaosSpaceEvents: this.chaosSpaceEvents(),
       eventForThisRound: this.eventService.eventForThisRound(),
       eventForNextRound: this.eventService.eventForNextRound(),
+      activeBets: this.activeBets(),
     }),
   );
 
