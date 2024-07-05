@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  booleanAttribute,
+  input,
+} from '@angular/core';
 import {
   GameboardSpaceEffect,
   SpaceEventStatus,
@@ -35,7 +40,10 @@ import {
             </td>
 
             <td class="pt-1 text-right">
-              @if (spaceEvent.status === SpaceEventStatus.WaitingToBegin) {
+              @if (
+                spaceEvent.status === SpaceEventStatus.WaitingToBegin &&
+                !readOnly()
+              ) {
                 <p-button size="small" label="Place Bet" />
               } @else {
                 <joshies-status-tag [status]="spaceEvent.status" />
@@ -60,6 +68,7 @@ export class SpaceEventTableComponent {
   >();
 
   spaceType = input.required<GameboardSpaceEffect>();
+  readOnly = input(false, { transform: booleanAttribute });
 
   protected readonly SpaceEventStatus = SpaceEventStatus;
 }

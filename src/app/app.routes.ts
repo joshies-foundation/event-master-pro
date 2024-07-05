@@ -14,6 +14,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./dashboard/feature/dashboard-page.component'),
+    canActivate: [redirectUnauthorizedToLoginPage],
   },
   {
     path: '',

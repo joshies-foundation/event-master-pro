@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  booleanAttribute,
+  input,
+} from '@angular/core';
 import { EventModel } from '../util/supabase-types';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -9,7 +14,7 @@ import { RouterLink } from '@angular/router';
   imports: [NgOptimizedImage, RouterLink],
   template: `
     <div
-      routerLink="/rules"
+      [routerLink]="readOnly() ? null : '/rules'"
       [fragment]="'event-rules-' + event().id"
       class="flex gap-3"
     >
@@ -26,11 +31,14 @@ import { RouterLink } from '@angular/router';
         <p class="m-0 text-500 text-sm">{{ event().description }}</p>
       </div>
 
-      <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
+      @if (!readOnly()) {
+        <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventInfoComponent {
   event = input.required<EventModel>();
+  readOnly = input(false, { transform: booleanAttribute });
 }
