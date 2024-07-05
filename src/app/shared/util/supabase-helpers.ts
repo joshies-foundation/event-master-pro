@@ -1,4 +1,4 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { Observable, switchMap } from 'rxjs';
 import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -220,10 +220,20 @@ export async function showMessageOnError<T>(
   const error = (response as { error?: { message?: string } }).error;
 
   if (error) {
-    showErrorMessage(
-      message ?? error.message ?? 'Please try again later',
-      messageService,
-    );
+    let errorMessage = message ?? error.message ?? 'Please try again later';
+
+    if (error instanceof FunctionsHttpError) {
+      try {
+        errorMessage = new TextDecoder().decode(
+          (await (error.context.body as ReadableStream).getReader().read())
+            .value,
+        ) as string;
+      } catch (e) {
+        // empty
+      }
+    }
+
+    showErrorMessage(errorMessage, messageService);
   }
 
   return response;

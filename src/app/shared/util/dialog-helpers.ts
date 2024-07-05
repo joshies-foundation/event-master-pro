@@ -4,9 +4,12 @@ import { showMessageOnError } from './supabase-helpers';
 import { showSuccessMessage } from './message-helpers';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
+import { FunctionsResponse } from '@supabase/functions-js';
 
 export type ConfirmBackendActionConfig = {
-  action: () => Promise<PostgrestSingleResponse<unknown>>;
+  action: () => Promise<
+    PostgrestSingleResponse<unknown> | FunctionsResponse<unknown>
+  >;
   confirmationHeaderText?: string;
   confirmationMessageText?: string;
   confirmDialogKey?: string;

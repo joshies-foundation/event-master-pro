@@ -127,6 +127,11 @@ export default class GmToolsPageComponent {
       iconClass: 'pi pi-crown bg-yellow-500',
       routerLink: './change-gm',
     },
+    {
+      text: 'Send Notifications',
+      iconClass: 'pi pi-send bg-blue-500',
+      routerLink: './send-notifications',
+    },
   ];
 
   private readonly sessionStatusDependentLinks: Record<

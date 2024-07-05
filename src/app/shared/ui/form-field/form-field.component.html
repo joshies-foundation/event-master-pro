@@ -150,13 +150,15 @@
         <p-button
           type="submit"
           [styleClass]="
-            'mt-2 block ' +
+            'mt-2 ' +
             (['left', 'center'].includes(field.position) ? 'mr-auto ' : '') +
             (['right', 'center'].includes(field.position)
               ? 'ml-auto '
               : 'w-full ') +
             (field.styleClass ?? '')
           "
+          [icon]="field.icon"
+          [iconPos]="field.iconPos ?? 'right'"
           [disabled]="formDisabled() || formGroup().invalid"
           [label]="field.label"
           [loading]="field.loading ?? false"

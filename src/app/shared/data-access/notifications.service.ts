@@ -26,6 +26,7 @@ export class NotificationsService {
 
   readonly pushNotificationsAreEnabled = toSignal(
     this.pushNotificationsAreEnabled$,
+    { requireSync: true },
   );
 
   constructor() {
@@ -66,11 +67,12 @@ export class NotificationsService {
     );
   }
 
-  async sendNotification(notification: {
-    recipient: string;
+  async sendPushNotificationToUsers(payload: {
+    recipientUserIds: string[];
     title: string;
     body: string;
+    openUrl?: string;
   }): Promise<FunctionsResponse<null>> {
-    return this.supabase.functions.invoke('push', { body: notification });
+    return this.supabase.functions.invoke('push/gm-message', { body: payload });
   }
 }
