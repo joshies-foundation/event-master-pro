@@ -465,7 +465,7 @@ export default class DashboardPageComponent {
       showRankingsTable: this.showRankingsTable(),
       rankingsTableHeader: this.rankingsTableHeader(),
       userId: this.authService.user()?.id,
-      bankBalance: this.gameStateService.bankBalance(),
+      bankBalance: this.sessionService.session()?.bank_balance,
       roundPhase: this.gameStateService.roundPhase(),
       roundNumber: this.gameStateService.roundNumber(),
       numRounds: this.sessionService.session()?.num_rounds,
