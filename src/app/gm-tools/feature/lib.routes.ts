@@ -147,6 +147,11 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./change-gm-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+  {
+    path: 'send-notifications',
+    loadComponent: () => import('./send-notifications-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 
   // session
   {

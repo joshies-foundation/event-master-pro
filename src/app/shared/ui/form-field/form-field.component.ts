@@ -144,6 +144,8 @@ export type FormField = {
       type: FormFieldType.Submit;
       loading?: boolean;
       position: 'left' | 'right' | 'center' | 'full';
+      icon?: string;
+      iconPos?: 'left' | 'right' | 'top' | 'bottom';
     }
 );
 

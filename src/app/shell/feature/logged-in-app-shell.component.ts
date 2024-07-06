@@ -104,11 +104,6 @@ export default class LoggedInAppShellComponent {
       iconClass: 'pi pi-chart-bar',
       iconClassFill: 'ci-chart-bar-fill',
     },
-    // {
-    //   text: 'Notifications',
-    //   href: '/notifications',
-    //   iconClass: 'pi pi-bell',
-    // },
     {
       text: 'Profile',
       href: '/profile',

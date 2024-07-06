@@ -6,7 +6,8 @@ import {
   inject,
   input,
   numberAttribute,
-  signal, OnInit,
+  signal,
+  OnInit,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
