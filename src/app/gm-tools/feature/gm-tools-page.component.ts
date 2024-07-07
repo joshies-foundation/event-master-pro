@@ -46,71 +46,72 @@ export default class GmToolsPageComponent {
     return this.eventService.eventForThisRound()?.format;
   });
 
-  private readonly roundPhaseDependentLinks: Record<
-    RoundPhase | 'undefined',
-    CardLinkModel[] | null
-  > = {
-    [RoundPhase.GameboardMoves]: [
-      {
-        text: 'Enter Gameboard Moves',
-        iconClass: 'ci-space-entry bg-gray-500',
-        routerLink: './space-entry',
-      },
-    ],
-    [RoundPhase.SpecialSpaceEvents]: [
-      {
-        text: 'Resolve Special Space Events',
-        iconClass: 'pi pi-question-circle bg-green-500',
-        routerLink: './resolve-special-space-events',
-      },
-    ],
-    [RoundPhase.Duels]: [
-      {
-        text: 'Resolve Duels',
-        iconClass: 'pi pi-bolt bg-purple-500',
-        routerLink: './resolve-duels',
-      },
-    ],
-    [RoundPhase.ChaosSpaceEvents]: [
-      {
-        text: 'Resolve Chaos Space Events',
-        iconClass: 'pi pi-exclamation-circle bg-black',
-        routerLink: './resolve-chaos-space-events',
-      },
-    ],
-    [RoundPhase.Event]: [
-      this.eventFormat() === EventFormat.ScoreBasedSingleRound
-        ? {
-            text: 'Enter Event Scores',
-            iconClass: 'pi pi-bolt bg-orange-500',
-            routerLink: './enter-event-scores',
-          }
-        : this.eventFormat() === EventFormat.SingleEliminationTournament
+  private readonly roundPhaseDependentLinks: Signal<
+    Record<RoundPhase | 'undefined', CardLinkModel[] | null>
+  > = computed(() => {
+    return {
+      [RoundPhase.GameboardMoves]: [
+        {
+          text: 'Enter Gameboard Moves',
+          iconClass: 'ci-space-entry bg-gray-500',
+          routerLink: './space-entry',
+        },
+      ],
+      [RoundPhase.SpecialSpaceEvents]: [
+        {
+          text: 'Resolve Special Space Events',
+          iconClass: 'pi pi-question-circle bg-green-500',
+          routerLink: './resolve-special-space-events',
+        },
+      ],
+      [RoundPhase.Duels]: [
+        {
+          text: 'Resolve Duels',
+          iconClass: 'pi pi-bolt bg-purple-500',
+          routerLink: './resolve-duels',
+        },
+      ],
+      [RoundPhase.ChaosSpaceEvents]: [
+        {
+          text: 'Resolve Chaos Space Events',
+          iconClass: 'pi pi-exclamation-circle bg-black',
+          routerLink: './resolve-chaos-space-events',
+        },
+      ],
+      [RoundPhase.Event]: [
+        this.eventFormat() === EventFormat.ScoreBasedSingleRound
           ? {
-              text: 'Enter Tournament Results',
+              text: 'Enter Event Scores',
               iconClass: 'pi pi-bolt bg-orange-500',
-              routerLink: './enter-tournament-results',
+              routerLink: './enter-event-scores',
             }
-          : {
-              text: 'No Event Found',
-              iconClass: 'pi pi-question bg-red-500',
-              routerLink: '.',
-            },
-    ],
-    [RoundPhase.WaitingForNextRound]: [
-      {
-        text: 'End Round & Tally Points',
-        iconClass: 'pi pi-check-circle bg-green-500',
-        routerLink: './end-round',
-      },
-    ],
-    undefined: null,
-  };
+          : this.eventFormat() === EventFormat.SingleEliminationTournament
+            ? {
+                text: 'Enter Tournament Results',
+                iconClass: 'pi pi-bolt bg-orange-500',
+                routerLink: './enter-tournament-results',
+              }
+            : {
+                text: 'No Event Found',
+                iconClass: 'pi pi-question bg-red-500',
+                routerLink: '.',
+              },
+      ],
+      [RoundPhase.WaitingForNextRound]: [
+        {
+          text: 'End Round & Tally Points',
+          iconClass: 'pi pi-check-circle bg-green-500',
+          routerLink: './end-round',
+        },
+      ],
+      undefined: null,
+    };
+  });
 
   readonly roundLinks: Signal<CardLinkModel[] | null> = computed(() => {
     if (!this.gameStateService.sessionIsInProgress()) return null;
 
-    return this.roundPhaseDependentLinks[
+    return this.roundPhaseDependentLinks()[
       this.gameStateService.roundPhase() ?? 'undefined'
     ];
   });
@@ -148,6 +149,11 @@ export default class GmToolsPageComponent {
       text: 'Make Someone Else the GM',
       iconClass: 'pi pi-crown bg-yellow-500',
       routerLink: './change-gm',
+    },
+    {
+      text: 'Send Notifications',
+      iconClass: 'pi pi-send bg-blue-500',
+      routerLink: './send-notifications',
     },
   ];
 

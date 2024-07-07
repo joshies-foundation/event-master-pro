@@ -34,7 +34,7 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
       >
         <tr
           [ngClass]="{
-            'font-semibold bg-highlight': player.user_id === userId()
+            'font-semibold bg-highlight': player.user_id === userId(),
           }"
         >
           <td class="text-center">

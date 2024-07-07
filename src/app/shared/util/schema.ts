@@ -1085,7 +1085,7 @@ export type Database = {
       end_round: {
         Args: {
           _round_number: number;
-          player_score_changes: Json;
+          team_score_changes: Json;
         };
         Returns: undefined;
       };
@@ -1202,7 +1202,6 @@ export type Database = {
       };
       submit_event_scores: {
         Args: {
-          event_id: number;
           team_scores: Json;
         };
         Returns: undefined;
