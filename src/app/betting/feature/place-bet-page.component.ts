@@ -502,9 +502,10 @@ export default class PlaceBetPageComponent implements OnInit {
   });
 
   readonly playersWithoutUser = computed(() => {
+    const userPlayerid = this.userPlayer()?.user_id ?? -1;
     return this.playerService
       .players()
-      ?.filter((player) => player.user_id !== this.userPlayer()!.user_id)
+      ?.filter((player) => player.user_id !== userPlayerid)
       .map((player) => {
         return {
           userId: player.user_id,
@@ -664,9 +665,9 @@ export default class PlaceBetPageComponent implements OnInit {
   });
 
   readonly openMainEvents = computed(() => {
+    const round = this.gameStateService.roundNumber();
+    const phase = this.gameStateService.roundPhase();
     return this.eventService.events()?.filter((event) => {
-      const round = this.gameStateService.roundNumber();
-      const phase = this.gameStateService.roundPhase();
       if (!round || !phase) {
         return false;
       }
@@ -824,8 +825,9 @@ export default class PlaceBetPageComponent implements OnInit {
   });
 
   checkEvenOdds(): void {
+    const requesterBet = this.requesterBet();
     if (this.evenOdds()) {
-      this.opponentBet.set(this.requesterBet());
+      this.opponentBet.set(requesterBet);
     }
   }
 
