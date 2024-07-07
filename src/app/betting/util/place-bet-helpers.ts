@@ -7,6 +7,8 @@ import {
   DuelModel,
   EventModel,
   EventTeamModel,
+  GameboardSpaceModel,
+  PlayerModel,
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
 
@@ -26,6 +28,8 @@ export function generateBetDetails(
   numberOfTeams: number,
   event: EventModel | null,
   eventBetSubtype: BetSubtype,
+  gameboardPlayer: PlayerWithUserAndRankInfo | null,
+  gameboardSpace: GameboardSpaceModel | null,
 ): BetDetails {
   switch (betType) {
     case BetType.DuelWinner:
@@ -77,6 +81,11 @@ export function generateBetDetails(
         };
       }
       return {};
+    case BetType.GameboardMove:
+      return {
+        playerId: gameboardPlayer?.player_id ?? 0,
+        gameboardSpaceId: gameboardSpace?.id ?? 0,
+      };
     default:
       return {};
   }
@@ -99,6 +108,8 @@ export function generateBetDescription(
   numberOfTeams: number,
   event: EventModel | null,
   eventBetSubtype: BetSubtype,
+  gameboardPlayer: PlayerWithUserAndRankInfo | null,
+  gameboardSpace: GameboardSpaceModel | null,
 ) {
   switch (betType) {
     case BetType.DuelWinner:
@@ -170,6 +181,13 @@ export function generateBetDescription(
         );
       }
       return '';
+    case BetType.GameboardMove:
+      return (
+        gameboardPlayer?.display_name +
+        ' will land on a(n) ' +
+        gameboardSpace?.name +
+        ' space next'
+      );
     default:
       return terms;
   }
@@ -193,6 +211,11 @@ export function generateBetTypeObject(type: BetType) {
       return {
         betType: type,
         betTypeString: 'Main Event',
+      };
+    case BetType.GameboardMove:
+      return {
+        betType: type,
+        betTypeString: 'Gameboard Move',
       };
     case BetType.Custom:
       return {
@@ -257,6 +280,11 @@ type MainEventScoreBetDetails = {
   ouValue: number;
 };
 
+type GameboardMoveBetDetails = {
+  playerId: PlayerModel['id'];
+  gameboardSpaceId: GameboardSpaceModel['id'];
+};
+
 type BetDetails<T extends BetType = BetType> = T extends BetType.DuelWinner
   ? DuelWinnerBetDetails
   : T extends BetType.SpecialSpaceEvent
@@ -265,4 +293,6 @@ type BetDetails<T extends BetType = BetType> = T extends BetType.DuelWinner
       ? ChaosSpaceEventBetDetails<BetSubtype>
       : T extends BetType.MainEvent
         ? MainEventBetDetails<BetSubtype>
-        : Record<string, never>;
+        : T extends BetType.GameboardMove
+          ? GameboardMoveBetDetails
+          : Record<string, never>;

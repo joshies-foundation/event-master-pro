@@ -137,6 +137,7 @@ export enum BetType {
   SpecialSpaceEvent = 'special_space_event',
   ChaosSpaceEvent = 'chaos_space_event',
   MainEvent = 'main_event',
+  GameboardMove = 'gameboard_move',
 }
 
 export enum BetSubtype {

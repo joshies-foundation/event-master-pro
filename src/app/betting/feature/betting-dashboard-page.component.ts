@@ -547,7 +547,7 @@ export default class BettingDashboardPageComponent {
       iconClass: 'ci-space-entry',
       label: 'Gameboard Move',
       routerLink: './place-bet',
-      queryParams: { betType: BetType.Custom }, //TODO
+      queryParams: { betType: BetType.GameboardMove },
     },
     {
       iconClass: PrimeIcons.PENCIL,
