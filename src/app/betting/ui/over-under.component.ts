@@ -13,7 +13,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
         <label class="ml-2">
           <p-radioButton
             name="overUnder"
-            value="Over"
+            value="OVER"
             [(ngModel)]="selectedOuOption"
             styleClass="w-full"
           />
@@ -24,7 +24,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
         <label class="ml-2">
           <p-radioButton
             name="overUnder"
-            value="Under"
+            value="UNDER"
             [(ngModel)]="selectedOuOption"
             styleClass="w-full"
           />
@@ -54,6 +54,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
   imports: [FormsModule, RadioButtonModule, InputNumberModule],
 })
 export class OverUnderComponent {
-  readonly selectedOuOption = model<'Over' | 'Under'>();
+  readonly selectedOuOption = model<'OVER' | 'UNDER'>();
   readonly ouValue = model<number>();
 }

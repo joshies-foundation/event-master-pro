@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   input,
   model,
 } from '@angular/core';
@@ -18,7 +19,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
         <label class="ml-2">
           <p-radioButton
             name="topBottom"
-            value="Top"
+            value="TOP"
             [(ngModel)]="selectedTopBottomOption"
             styleClass="w-full"
           />
@@ -29,7 +30,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
         <label class="ml-2">
           <p-radioButton
             name="topBottom"
-            value="Bottom"
+            value="BOTTOM"
             [(ngModel)]="selectedTopBottomOption"
             styleClass="w-full"
           />
@@ -59,9 +60,12 @@ import { RadioButtonModule } from 'primeng/radiobutton';
   imports: [FormsModule, RadioButtonModule, InputNumberModule],
 })
 export class TopBottomComponent {
-  readonly selectedTopBottomOption = model<'Top' | 'Bottom'>();
+  readonly selectedTopBottomOption = model<'TOP' | 'BOTTOM'>();
   readonly selectedNumberOfTeams = model<number>();
 
-  /**Testing putting doc here */
+  readonly printSelectedTopBottomOption = effect(() =>
+    console.log(this.selectedTopBottomOption()),
+  );
+
   readonly max = input.required<number>();
 }

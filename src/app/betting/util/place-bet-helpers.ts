@@ -7,7 +7,9 @@ import {
   DuelModel,
   EventModel,
   EventTeamModel,
+  EveryoneLosesPercentageOfTheirPointsBasedOnTaskFailureSpecialSpaceEffectData,
   GameboardSpaceModel,
+  PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails,
   PlayerModel,
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
@@ -17,14 +19,14 @@ export function generateBetDetails(
   duel: DuelModel | null,
   winner: PlayerWithUserAndRankInfo | null,
   ssEvent: SpecialSpaceEventModel | null | undefined,
-  ouOption: 'Over' | 'Under',
+  ouOption: 'OVER' | 'UNDER',
   ouValue: number,
   chaosBetSubtype: BetSubtype,
   chaosEvent: ChaosSpaceEventModel | null | undefined,
   chaosPlayer: PlayerWithUserAndRankInfo | null,
-  winsLoses: 'Wins' | 'Loses',
+  winsLoses: 'WINS' | 'LOSES',
   eventTeam: EventTeamWithParticipantInfo | null,
-  topBottomOption: 'Top' | 'Bottom',
+  topBottomOption: 'TOP' | 'BOTTOM',
   numberOfTeams: number,
   event: EventModel | null,
   eventBetSubtype: BetSubtype,
@@ -40,7 +42,7 @@ export function generateBetDetails(
     case BetType.SpecialSpaceEvent:
       return {
         ssEventId: ssEvent?.id ?? 0,
-        directionIsOver: ouOption === 'Over',
+        directionIsOver: ouOption === 'OVER',
         ouValue: ouValue ?? 0.5,
       };
     case BetType.ChaosSpaceEvent:
@@ -49,14 +51,14 @@ export function generateBetDetails(
           chaosEventId: chaosEvent?.id ?? 0,
           subtype: BetSubtype.PlayerLoses,
           playerId: chaosPlayer?.player_id ?? 0,
-          isLoser: winsLoses === 'Loses',
+          isLoser: winsLoses === 'LOSES',
         };
       }
       if (chaosBetSubtype === BetSubtype.NumberOfLosers) {
         return {
           chaosEventId: chaosEvent?.id ?? 0,
           subtype: BetSubtype.NumberOfLosers,
-          directionIsOver: ouOption === 'Over',
+          directionIsOver: ouOption === 'OVER',
           ouValue: ouValue ?? 0.5,
         };
       }
@@ -67,7 +69,7 @@ export function generateBetDetails(
           eventId: event?.id ?? 0,
           teamId: eventTeam?.id ?? 0,
           subtype: BetSubtype.TeamPosition,
-          directionIsTop: topBottomOption === 'Top',
+          directionIsTop: topBottomOption === 'TOP',
           numberOfTeams: numberOfTeams ?? 1,
         };
       }
@@ -76,7 +78,7 @@ export function generateBetDetails(
           eventId: event?.id ?? 0,
           teamId: eventTeam?.id ?? 0,
           subtype: BetSubtype.Score,
-          directionIsOver: ouOption === 'Over',
+          directionIsOver: ouOption === 'OVER',
           ouValue: ouValue,
         };
       }
@@ -96,98 +98,65 @@ export function generateBetDescription(
   duel: DuelModel | null,
   winner: PlayerWithUserAndRankInfo | null,
   ssEvent: SpecialSpaceEventModel | null | undefined,
-  ouOption: 'Over' | 'Under',
+  ouOption: 'OVER' | 'UNDER',
   ouValue: number,
   terms: string = '',
   chaosBetSubtype: BetSubtype,
   chaosEvent: ChaosSpaceEventModel | null | undefined,
   chaosPlayer: PlayerWithUserAndRankInfo | null,
-  winsLoses: 'Wins' | 'Loses',
+  winsLoses: 'WINS' | 'LOSES',
   team: EventTeamWithParticipantInfo | null,
-  topBottomOption: 'Top' | 'Bottom',
+  topBottomOption: 'TOP' | 'BOTTOM',
   numberOfTeams: number,
   event: EventModel | null,
   eventBetSubtype: BetSubtype,
   gameboardPlayer: PlayerWithUserAndRankInfo | null,
   gameboardSpace: GameboardSpaceModel | null,
 ) {
+  const singularOuValue = ouValue === 1;
+
   switch (betType) {
     case BetType.DuelWinner:
       const loserName =
         winner?.player_id === duel?.challenger?.player_id
           ? duel?.opponent?.display_name
           : duel?.challenger?.display_name;
-      return (
-        winner?.display_name + ' beats ' + loserName + ' in ' + duel?.game_name
-      );
+      return `${winner?.display_name} beats ${loserName} in ${duel?.game_name}`;
+
     case BetType.SpecialSpaceEvent:
-      return (
-        ouOption +
-        ' ' +
-        ouValue +
-        ' in ' +
-        ssEvent?.player?.display_name +
-        "'s " +
-        ssEvent?.template?.name +
-        ' Event'
-      );
+      return `${ssEvent?.player?.display_name} gets ${ouOption} ${ouValue} ${(ssEvent?.template?.details as PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails | undefined)?.[singularOuValue ? 'pointsLabelSingular' : 'pointsLabelPlural']} in ${ssEvent?.template?.name}`;
+
     case BetType.ChaosSpaceEvent:
+      const taskName = (
+        chaosEvent?.template?.details as
+          | EveryoneLosesPercentageOfTheirPointsBasedOnTaskFailureSpecialSpaceEffectData
+          | undefined
+      )?.taskName;
       if (chaosBetSubtype === BetSubtype.PlayerLoses) {
-        return (
-          chaosPlayer?.display_name +
-          ' ' +
-          winsLoses +
-          ' in the ' +
-          chaosEvent?.template?.name +
-          ' Event'
-        );
+        return `${chaosPlayer?.display_name} ${winsLoses === 'WINS' ? 'succeeds to' : 'fails to'} ${taskName}`;
       }
       if (chaosBetSubtype === BetSubtype.NumberOfLosers) {
-        return (
-          ouOption +
-          ' ' +
-          ouValue +
-          ' losers in the ' +
-          chaosEvent?.template?.name +
-          ' Event'
-        );
+        return `${ouOption === 'OVER' ? 'More' : 'Fewer'} than ${ouValue} ${singularOuValue ? 'player' : 'players'} ${singularOuValue ? 'fails' : 'fail'} to ${taskName}`;
       }
-      return '';
+      return '[Unnameable Chaos Space Bet]';
+
     case BetType.MainEvent:
+      const teamHas1Participant = (team?.participants?.length ?? 0) === 1;
+
       if (eventBetSubtype === BetSubtype.TeamPosition) {
-        return (
-          'Team' +
-          getFormattedParticipantList(team?.participants) +
-          ' finishes in the ' +
-          topBottomOption +
-          ' ' +
-          numberOfTeams +
-          ' teams in the ' +
-          event?.name +
-          ' Event'
-        );
+        return `${getFormattedParticipantList(team?.participants)} ${teamHas1Participant ? 'finishes' : 'finish'} ${numberOfTeams === 1 ? (topBottomOption === 'TOP' ? 'FIRST' : 'LAST') : 'in the ' + topBottomOption + ' ' + numberOfTeams + (teamHas1Participant ? '' : ' teams')} in ${event?.name}`;
       }
       if (eventBetSubtype === BetSubtype.Score) {
-        return (
-          'Team' +
-          getFormattedParticipantList(team?.participants) +
-          ' scores ' +
-          ouOption +
-          ' ' +
-          ouValue +
-          ' in the ' +
-          event?.name +
-          ' Event'
-        );
+        return `${getFormattedParticipantList(team?.participants)} ${teamHas1Participant ? 'gets' : 'get'} ${ouOption} ${ouValue} ${event?.points_label} in ${event?.name}`;
       }
-      return '';
+      return '[Unnameable Main Event Bet]';
+
     case BetType.GameboardMove:
-      return (
-        gameboardPlayer?.display_name +
-        ' will land on a(n) ' +
-        gameboardSpace?.name +
-        ' space next'
+      const gameboardSpaceStartsWithVowel = ['A', 'E', 'I', 'O', 'U'].includes(
+        (gameboardSpace?.name ?? 'X').charAt(0).toUpperCase(),
       );
+      return `${gameboardPlayer?.display_name} lands on ${gameboardSpaceStartsWithVowel ? 'an' : 'a'} ${gameboardSpace?.name} Space next`;
+
     default:
       return terms;
   }

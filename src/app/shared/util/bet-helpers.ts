@@ -22,7 +22,14 @@ export function betIsResolved(betStatus: BetStatus): boolean {
 }
 
 export function betGainOrLossAmount(
-  bet: BetModel,
+  bet: Pick<
+    BetModel,
+    | 'status'
+    | 'requester_player_id'
+    | 'opponent_player_id'
+    | 'requester_wager'
+    | 'opponent_wager'
+  >,
   playerId: PlayerModel['id'],
 ): number {
   if (![BetStatus.RequesterWon, BetStatus.OpponentWon].includes(bet.status))
