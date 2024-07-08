@@ -215,6 +215,7 @@ export default class EnterEventScoresPageComponent implements OnInit {
         return {
           team_id: team.id,
           score: this.formGroup()?.get([team.id])?.value ?? 0,
+          position: this.positions[team.id],
         };
       }) ?? [];
 

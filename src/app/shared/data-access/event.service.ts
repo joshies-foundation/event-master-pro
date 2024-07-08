@@ -386,4 +386,5 @@ export class EventService {
 export type TeamScores = {
   team_id: EventTeamModel['id'];
   score: number;
+  position: number;
 }[];

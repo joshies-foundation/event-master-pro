@@ -523,7 +523,7 @@ export default class BettingDashboardPageComponent {
       iconClass: PrimeIcons.STAR,
       label: 'Main Event',
       routerLink: './place-bet',
-      queryParams: { betType: BetType.Custom }, //TODO
+      queryParams: { betType: BetType.MainEvent },
     },
     {
       iconClass: PrimeIcons.BOLT,

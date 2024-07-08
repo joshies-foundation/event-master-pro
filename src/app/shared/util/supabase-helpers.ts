@@ -137,11 +137,14 @@ export enum BetType {
   DuelWinner = 'duel',
   SpecialSpaceEvent = 'special_space_event',
   ChaosSpaceEvent = 'chaos_space_event',
+  MainEvent = 'main_event',
 }
 
 export enum BetSubtype {
   PlayerLoses = 'player_loses',
   NumberOfLosers = 'number_of_losers',
+  TeamPosition = 'team_position',
+  Score = 'score',
 }
 
 export type TTable = keyof Database['public']['Tables'];
