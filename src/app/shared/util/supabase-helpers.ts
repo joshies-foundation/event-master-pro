@@ -30,6 +30,7 @@ export enum Table {
   ChaosSpaceEventTemplate = 'chaos_space_event_template',
   Duel = 'duel',
   Bet = 'bet',
+  Bracket = 'bracket',
 }
 
 export enum View {
