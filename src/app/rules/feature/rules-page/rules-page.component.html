@@ -68,13 +68,15 @@
             />
             {{ event.name }}
 
-            <!-- Edit Button -->
-            <i
-              tabindex="0"
-              class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
-              [routerLink]="['/gm-tools/events/edit', event.id]"
-              (click)="$event.stopPropagation()"
-            ></i>
+            @if (vm.userIsGameMaster) {
+              <!-- Edit Button -->
+              <i
+                tabindex="0"
+                class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+                [routerLink]="['/gm-tools/events/edit', event.id]"
+                (click)="$event.stopPropagation()"
+              ></i>
+            }
           </h3>
           <p class="pre-wrap mb-0">{{ event.description }}</p>
           <p class="pre-wrap mb-0">{{ event.rules }}</p>
@@ -108,13 +110,15 @@
           <joshies-gameboard-space [model]="space" />
           {{ space.name }} Space
 
-          <!-- Edit Button -->
-          <i
-            tabindex="0"
-            class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
-            [routerLink]="['/gm-tools/space-types', space.id]"
-            (click)="$event.stopPropagation()"
-          ></i>
+          @if (vm.userIsGameMaster) {
+            <!-- Edit Button -->
+            <i
+              tabindex="0"
+              class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+              [routerLink]="['/gm-tools/space-types', space.id]"
+              (click)="$event.stopPropagation()"
+            ></i>
+          }
         </h3>
         <div class="mb-0" [innerHTML]="space | gameboardSpaceDescription"></div>
       </joshies-card>
@@ -148,16 +152,18 @@
         >
           {{ specialSpaceEvent.name }}
 
-          <!-- Edit Button -->
-          <i
-            tabindex="0"
-            class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
-            [routerLink]="[
-              '/gm-tools/special-space-event-templates',
-              specialSpaceEvent.id,
-            ]"
-            (click)="$event.stopPropagation()"
-          ></i>
+          @if (vm.userIsGameMaster) {
+            <!-- Edit Button -->
+            <i
+              tabindex="0"
+              class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+              [routerLink]="[
+                '/gm-tools/special-space-event-templates',
+                specialSpaceEvent.id,
+              ]"
+              (click)="$event.stopPropagation()"
+            ></i>
+          }
         </h3>
         <p class="pre-wrap my-0">{{ specialSpaceEvent.description }}</p>
       </joshies-card>
@@ -188,16 +194,18 @@
         >
           {{ chaosSpaceEvent.name }}
 
-          <!-- Edit Button -->
-          <i
-            tabindex="0"
-            class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
-            [routerLink]="[
-              '/gm-tools/chaos-space-event-templates',
-              chaosSpaceEvent.id,
-            ]"
-            (click)="$event.stopPropagation()"
-          ></i>
+          @if (vm.userIsGameMaster) {
+            <!-- Edit Button -->
+            <i
+              tabindex="0"
+              class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+              [routerLink]="[
+                '/gm-tools/chaos-space-event-templates',
+                chaosSpaceEvent.id,
+              ]"
+              (click)="$event.stopPropagation()"
+            ></i>
+          }
         </h3>
         <p class="pre-wrap my-0">{{ chaosSpaceEvent.description }}</p>
       </joshies-card>
