@@ -59,7 +59,7 @@ app.post('/', async (c) => {
       '👀 Bet Request',
       betHasEvenOdds
         ? `${requester} bets you ${bet.requester_wager} ${bet.requester_wager === 1 ? 'point' : 'points'} that ${bet.description}`
-        : `${requester} bets you ${bet.description}. ${requester} wagers ${bet.requester_wager} ${bet.requester_wager === 1 ? 'point' : 'points'}, you wager ${bet.opponent_wager} ${bet.opponent_wager === 1 ? 'point' : 'points'}.`,
+        : `${requester} bets you that ${bet.description}. ${requester} wagers ${bet.requester_wager} ${bet.requester_wager === 1 ? 'point' : 'points'}, you wager ${bet.opponent_wager} ${bet.opponent_wager === 1 ? 'point' : 'points'}.`,
       '/betting',
     );
 
