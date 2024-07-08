@@ -49,6 +49,7 @@ export default class GmToolsPageComponent {
   private readonly roundPhaseDependentLinks: Signal<
     Record<RoundPhase | 'undefined', CardLinkModel[] | null>
   > = computed(() => {
+    const eventFormat = this.eventFormat();
     return {
       [RoundPhase.GameboardMoves]: [
         {
@@ -79,7 +80,7 @@ export default class GmToolsPageComponent {
         },
       ],
       [RoundPhase.Event]: [
-        this.eventFormat() === EventFormat.ScoreBasedSingleRound
+        eventFormat === EventFormat.ScoreBasedSingleRound
           ? {
               text: 'Enter Event Scores',
               iconClass: 'pi pi-bolt bg-orange-500',
@@ -109,11 +110,11 @@ export default class GmToolsPageComponent {
   });
 
   readonly roundLinks: Signal<CardLinkModel[] | null> = computed(() => {
+    const roundPhaseDependentLinks = this.roundPhaseDependentLinks();
+    const roundPhase = this.gameStateService.roundPhase();
     if (!this.gameStateService.sessionIsInProgress()) return null;
 
-    return this.roundPhaseDependentLinks()[
-      this.gameStateService.roundPhase() ?? 'undefined'
-    ];
+    return roundPhaseDependentLinks[roundPhase ?? 'undefined'];
   });
 
   readonly bettingLinks: CardLinkModel[] = [

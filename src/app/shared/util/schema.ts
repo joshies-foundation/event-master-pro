@@ -1251,7 +1251,8 @@ export type Database = {
         | 'special_space_event'
         | 'chaos_space_event'
         | 'custom'
-        | 'main_event';
+        | 'main_event'
+        | 'gameboard_move';
       chaos_space_event_type:
         | 'everyone_gains_points_based_on_rank'
         | 'everyone_loses_percentage_of_their_points'
