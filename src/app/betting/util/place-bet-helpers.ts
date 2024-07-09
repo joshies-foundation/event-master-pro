@@ -133,10 +133,10 @@ export function generateBetDescription(
           | undefined
       )?.taskName;
       if (chaosBetSubtype === BetSubtype.PlayerLoses) {
-        return `${chaosPlayer?.display_name} ${winsLoses === 'WINS' ? 'succeeds to' : 'fails to'} ${taskName}`;
+        return `${chaosPlayer?.display_name} ${winsLoses === 'WINS' ? 'will successfully' : 'fails to'} ${taskName}`;
       }
       if (chaosBetSubtype === BetSubtype.NumberOfLosers) {
-        return `${ouOption === 'OVER' ? 'More' : 'Fewer'} than ${ouValue} ${singularOuValue ? 'player' : 'players'} ${singularOuValue ? 'fails' : 'fail'} to ${taskName}`;
+        return `${ouOption} ${ouValue} ${singularOuValue ? 'player' : 'players'} ${singularOuValue ? 'fails' : 'fail'} to ${taskName}`;
       }
       return '[Unnameable Chaos Space Bet]';
 
