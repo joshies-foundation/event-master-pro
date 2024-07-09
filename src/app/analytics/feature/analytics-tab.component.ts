@@ -22,7 +22,6 @@ import { Button } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { RouterLink } from '@angular/router';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { MessageService } from 'primeng/api';
 
 const textColor = getCssVariableValue('--text-color');
 const textColorSecondary = getCssVariableValue('--text-color-secondary');
@@ -47,74 +46,76 @@ const numTransactionsToShow = 3;
     <!-- Header -->
     <joshies-page-header headerText="Analytics" />
 
-    @if (numRounds()) {
-      <!-- Points Over Time Chart -->
-      <joshies-card
-        padded
-        headerText="Points Over Time"
-        headerIconClass="pi pi-chart-line text-primary mr-2"
-      >
-        @if (playerRoundScoresResponse().data; as playerRoundScores) {
-          <p-chart
-            type="line"
-            [data]="pointsOverTimeChartData()"
-            [options]="pointsOverTimeChartOptions"
-            height="20rem"
-          />
-        } @else if (playerRoundScoresResponse().error) {
-          <h4 class="mt-0 text-red">Error Loading Chart:</h4>
-          <p>{{ playerRoundScoresResponse().error }}</p>
-        }
-      </joshies-card>
-    }
-
-    @if (userIsAPlayer()) {
-      <joshies-card
-        headerText="Latest Transactions"
-        headerIconClass="pi pi-list text-primary mr-2"
-      >
-        <!-- Latest Transactions -->
-        @if (firstFewTransactions(); as transactions) {
-          @if (transactions.length > 0) {
-            <joshies-transaction-table [transactions]="transactions" />
-
-            @if (showViewAllTransactionsLink()) {
-              <p-button
-                label="All Transactions"
-                icon="pi pi-angle-right"
-                iconPos="right"
-                class="block border-top-1 surface-border pb-1"
-                styleClass="w-full my-2"
-                routerLink="transactions"
-                severity="secondary"
-                [text]="true"
-              />
-            }
-          } @else {
-            <p class="mt-6 pt-6 text-center text-500 font-italic">
-              No transactions yet
-            </p>
+    @if (sessionIsInProgressOrFinished()) {
+      @if (numRounds()) {
+        <!-- Points Over Time Chart -->
+        <joshies-card
+          padded
+          headerText="Points Over Time"
+          headerIconClass="pi pi-chart-line text-primary mr-2"
+        >
+          @if (playerRoundScoresResponse().data; as playerRoundScores) {
+            <p-chart
+              type="line"
+              [data]="pointsOverTimeChartData()"
+              [options]="pointsOverTimeChartOptions"
+              height="20rem"
+            />
+          } @else if (playerRoundScoresResponse().error) {
+            <h4 class="mt-0 text-red">Error Loading Chart:</h4>
+            <p>{{ playerRoundScoresResponse().error }}</p>
           }
-        } @else if (firstFewTransactions() === undefined) {
-          <!-- Loading Skeleton -->
-          <p-skeleton height="12rem" />
-        }
-      </joshies-card>
+        </joshies-card>
+      }
+
+      @if (userIsAPlayer()) {
+        <joshies-card
+          headerText="Latest Transactions"
+          headerIconClass="pi pi-list text-primary mr-2"
+        >
+          <!-- Latest Transactions -->
+          @if (firstFewTransactions(); as transactions) {
+            @if (transactions.length > 0) {
+              <joshies-transaction-table [transactions]="transactions" />
+
+              @if (showViewAllTransactionsLink()) {
+                <p-button
+                  label="All Transactions"
+                  icon="pi pi-angle-right"
+                  iconPos="right"
+                  class="block border-top-1 surface-border pb-1"
+                  styleClass="w-full my-2"
+                  routerLink="transactions"
+                  severity="secondary"
+                  [text]="true"
+                />
+              }
+            } @else {
+              <p class="mt-6 pt-6 text-center text-500 font-italic">
+                No transactions yet
+              </p>
+            }
+          } @else if (firstFewTransactions() === undefined) {
+            <!-- Loading Skeleton -->
+            <p-skeleton height="12rem" />
+          }
+        </joshies-card>
+      }
+
+      <!-- Gameboard -->
+      <joshies-card
+        headerText="Gameboard"
+        headerIconClass="ci-space-entry text-primary mr-2"
+        [links]="gameboardLinks"
+      />
+
+      <!-- Duels -->
+      <joshies-card
+        headerText="Duels"
+        headerIconClass="pi pi-bolt text-primary mr-2"
+        [links]="duelsLinks"
+      />
     }
-
-    <!-- Gameboard -->
-    <joshies-card
-      headerText="Gameboard"
-      headerIconClass="ci-space-entry text-primary mr-2"
-      [links]="gameboardLinks"
-    />
-
-    <!-- Duels -->
-    <joshies-card
-      headerText="Duels"
-      headerIconClass="pi pi-bolt text-primary mr-2"
-      [links]="duelsLinks"
-    />
 
     <!-- Previous Session -->
     <joshies-card
@@ -132,7 +133,9 @@ export default class AnalyticsTabComponent {
   private readonly playerService = inject(PlayerService);
   private readonly gameStateService = inject(GameStateService);
   private readonly analyticsService = inject(AnalyticsService);
-  private readonly messageService = inject(MessageService);
+
+  readonly sessionIsInProgressOrFinished =
+    this.gameStateService.sessionIsInProgressOrFinished;
 
   readonly gameboardLinks: CardLinkModel[] = [
     {

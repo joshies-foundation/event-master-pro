@@ -49,6 +49,16 @@ export class SessionService {
     });
   }
 
+  async updateSession(
+    sessionId: SessionModel['id'],
+    partialSession: Partial<SessionModel>,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.Session)
+      .update(partialSession)
+      .eq('id', sessionId);
+  }
+
   async startSession(): Promise<PostgrestSingleResponse<null>> {
     return this.supabase
       .from(Table.GameState)
@@ -74,16 +84,6 @@ export class SessionService {
         session_status: SessionStatus.Finished,
       })
       .eq('id', 1);
-  }
-
-  async editSessionProperties(
-    sessionId: number,
-    partialSession: Partial<SessionModel>,
-  ): Promise<PostgrestSingleResponse<null>> {
-    return this.supabase
-      .from(Table.Session)
-      .update(partialSession)
-      .eq('id', sessionId);
   }
 
   async endRound(

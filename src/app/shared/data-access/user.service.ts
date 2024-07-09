@@ -37,10 +37,10 @@ export class UserService {
 
   readonly user: Signal<UserModel | undefined> = toSignal(this.user$);
 
-  readonly allUsers$: Observable<UserModel[] | undefined> =
-    realtimeUpdatesFromTable(this.supabase, Table.User).pipe(
-      shareReplay({ bufferSize: 1, refCount: true }),
-    );
+  readonly allUsers$: Observable<UserModel[]> = realtimeUpdatesFromTable(
+    this.supabase,
+    Table.User,
+  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   readonly allUsersExceptCurrentUser$: Observable<UserModel[] | undefined> =
     this.authService.user$.pipe(
