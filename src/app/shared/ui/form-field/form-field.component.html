@@ -1,7 +1,14 @@
 @if (field(); as field) {
-  <div class="flex flex-column gap-1">
+  <div
+    class="flex gap-1"
+    [ngClass]="
+      field.type === FormFieldType.Checkbox
+        ? 'flex-row-reverse justify-content-end'
+        : 'flex-column'
+    "
+  >
     @if (field.type !== FormFieldType.Submit) {
-      <label [for]="field.name">{{ field.label }}</label>
+      <label [for]="field.name | lowercase">{{ field.label }}</label>
     }
 
     @switch (field.type) {

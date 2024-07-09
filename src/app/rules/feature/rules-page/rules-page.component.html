@@ -87,11 +87,11 @@
             }
           </h3>
           <p class="pre-wrap mb-0">{{ event.description }}</p>
-          <p class="pre-wrap mb-0">{{ event.rules }}</p>
+          <div [innerHTML]="event.rules"></div>
         </joshies-card>
       }
 
-      <!-- Gameboard Spaces -->
+      <!-- Gameboard -->
       <h2 class="mt-5 mb-3">Gameboard</h2>
 
       @if (vm.rules.gameboard) {

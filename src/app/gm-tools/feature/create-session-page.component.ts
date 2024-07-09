@@ -44,7 +44,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 
     @if (form.fields()) {
       <!-- Form -->
-      <joshies-form [form]="form" class="block mt-5" />
+      <joshies-form [form]="form" class="block mt-5 mb-8" />
     } @else {
       <!-- Loading Skeleton -->
       <div class="h-4rem"></div>

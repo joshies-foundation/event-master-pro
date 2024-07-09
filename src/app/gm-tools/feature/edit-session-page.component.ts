@@ -44,7 +44,7 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
 
     @if (form(); as form) {
       <!-- Form -->
-      <joshies-form [form]="form" class="block mt-5" />
+      <joshies-form [form]="form" class="block mt-5 mb-8" />
     } @else {
       <!-- Loading Skeleton -->
       <div class="h-4rem"></div>
