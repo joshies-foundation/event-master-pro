@@ -11,20 +11,14 @@ import {
   distinctUntilChanged,
   map,
   Observable,
-  of,
   shareReplay,
   switchMap,
   withLatestFrom,
 } from 'rxjs';
-import {
-  defined,
-  distinctUntilIdChanged,
-  whenAllValuesNotNull,
-  whenNotNull,
-} from '../util/rxjs-helpers';
+import { defined, distinctUntilIdChanged } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { PlayerModel, UserModel } from '../util/supabase-types';
+import { PlayerModel, SessionModel, UserModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
 import { GameStateService } from './game-state.service';
 import { addRankingInfoToPlayers } from '../util/ranking-helpers';
@@ -57,10 +51,10 @@ export class PlayerService {
   private readonly sessionService = inject(SessionService);
   private readonly gameStateService = inject(GameStateService);
 
-  readonly playersWithoutDisplayNames$: Observable<PlayerModel[] | null> =
+  readonly playersWithoutDisplayNames$: Observable<PlayerModel[]> =
     this.sessionService.session$.pipe(
       distinctUntilIdChanged(),
-      whenNotNull((session) =>
+      switchMap((session) =>
         realtimeUpdatesFromTable(
           this.supabase,
           Table.Player,
@@ -70,14 +64,14 @@ export class PlayerService {
       shareReplay(1),
     );
 
-  private readonly playerUsers$: Observable<UserModel[] | null> =
+  private readonly playerUsers$: Observable<UserModel[]> =
     this.playersWithoutDisplayNames$.pipe(
       distinctUntilChanged(
         (a, b) =>
           (a === null && b === null) ||
           (a !== null && a.every((val, idx) => val === b?.[idx])),
       ),
-      whenNotNull((players) =>
+      switchMap((players) =>
         realtimeUpdatesFromTable(
           this.supabase,
           Table.User,
@@ -87,57 +81,53 @@ export class PlayerService {
       shareReplay(1),
     );
 
-  readonly playersIncludingDisabled$: Observable<PlayerWithUserInfo[] | null> =
+  readonly playersIncludingDisabled$: Observable<PlayerWithUserInfo[]> =
     this.playerUsers$.pipe(
       withLatestFrom(this.playersWithoutDisplayNames$),
-      map(([users, players]) => ({ players, users })),
-      whenAllValuesNotNull(({ players, users }) =>
-        of(
-          players
-            .map((player) => {
-              const user = users.find((user) => user.id === player.user_id)!;
-              return {
-                player_id: player.id,
-                user_id: user.id,
-                score: player.score,
-                enabled: player.enabled,
-                display_name: user.display_name,
-                real_name: user.real_name,
-                avatar_url: user.avatar_url,
-                can_edit_profile: user.can_edit_profile,
-                can_place_bets: user.can_place_bets,
-                squidward_mode: user.squidward_mode,
-                can_toggle_squidward_mode: user.can_toggle_squidward_mode,
-              };
-            })
-            .sort((a, b) => b.score - a.score),
-        ),
+      map(([users, players]) =>
+        players
+          .map((player) => {
+            const user = users.find((user) => user.id === player.user_id)!;
+            return {
+              player_id: player.id,
+              user_id: user.id,
+              score: player.score,
+              enabled: player.enabled,
+              display_name: user.display_name,
+              real_name: user.real_name,
+              avatar_url: user.avatar_url,
+              can_edit_profile: user.can_edit_profile,
+              can_place_bets: user.can_place_bets,
+              squidward_mode: user.squidward_mode,
+              can_toggle_squidward_mode: user.can_toggle_squidward_mode,
+            };
+          })
+          .sort((a, b) => b.score - a.score),
       ),
       shareReplay(1),
     );
 
-  readonly playersIncludingDisabled: Signal<
-    PlayerWithUserInfo[] | null | undefined
-  > = toSignal(this.playersIncludingDisabled$);
+  readonly playersIncludingDisabled: Signal<PlayerWithUserInfo[] | undefined> =
+    toSignal(this.playersIncludingDisabled$);
 
-  readonly players$: Observable<PlayerWithUserAndRankInfo[] | null> =
+  readonly players$: Observable<PlayerWithUserAndRankInfo[]> =
     this.playersIncludingDisabled$.pipe(
-      whenNotNull((players) => of(addRankingInfoToPlayers(players, true))),
+      map((players) => addRankingInfoToPlayers(players, true)),
       shareReplay(1),
     );
 
-  readonly players: Signal<PlayerWithUserAndRankInfo[] | null | undefined> =
-    toSignal(this.players$);
+  readonly players: Signal<PlayerWithUserAndRankInfo[] | undefined> = toSignal(
+    this.players$,
+  );
 
   readonly userPlayer$: Observable<PlayerWithUserInfo | null> =
     this.authService.user$.pipe(
       defined(),
       switchMap((authUser) =>
         this.playersIncludingDisabled$.pipe(
-          whenNotNull((players) =>
-            of(
+          map(
+            (players) =>
               players.find((player) => player.user_id === authUser.id) ?? null,
-            ),
           ),
         ),
       ),
@@ -168,6 +158,20 @@ export class PlayerService {
   readonly userIsGameMaster: Signal<boolean | undefined> = toSignal(
     this.userIsGameMaster$,
   );
+
+  async addPlayers(
+    sessionId: SessionModel['id'],
+    newPlayerUserIds: UserModel['id'][],
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.Player)
+      .insert<Pick<PlayerModel, 'session_id' | 'user_id'>>(
+        newPlayerUserIds.map((userId) => ({
+          session_id: sessionId,
+          user_id: userId,
+        })),
+      );
+  }
 
   async overridePointsAdd(
     playerId: number,

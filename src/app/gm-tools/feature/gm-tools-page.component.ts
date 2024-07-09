@@ -31,6 +31,10 @@ import { EventService } from '../../shared/data-access/event.service';
 
     <joshies-card headerText="Players" [links]="playersLinks" />
 
+    <joshies-card headerText="Events" [links]="eventsLinks" />
+
+    <joshies-card headerText="Gameboard" [links]="gameboardLinks" />
+
     <joshies-card headerText="Session" [links]="sessionLinks()" />
   `,
   host: {
@@ -158,6 +162,37 @@ export default class GmToolsPageComponent {
     },
   ];
 
+  readonly eventsLinks: CardLinkModel[] = [
+    {
+      text: 'Manage Events',
+      iconClass: 'pi pi-flag bg-purple-500',
+      routerLink: './events',
+    },
+    {
+      text: 'Create Brackets',
+      iconClass: 'pi pi-sitemap bg-yellow-500',
+      routerLink: './bracket',
+    },
+  ];
+
+  readonly gameboardLinks: CardLinkModel[] = [
+    {
+      text: 'Manage Gameboard Spaces',
+      iconClass: 'ci-space-entry bg-gray-500',
+      routerLink: './space-types',
+    },
+    {
+      text: 'Manage Special Space Events',
+      iconClass: 'pi pi-question-circle bg-green-500',
+      routerLink: './special-space-event-templates',
+    },
+    {
+      text: 'Manage Chaos Space Events',
+      iconClass: 'pi pi-exclamation-circle bg-black',
+      routerLink: './chaos-space-event-templates',
+    },
+  ];
+
   private readonly sessionStatusDependentLinks: Record<
     SessionStatus | 'undefined',
     CardLinkModel[]
@@ -170,11 +205,6 @@ export default class GmToolsPageComponent {
       },
     ],
     [SessionStatus.InProgress]: [
-      {
-        text: 'Override Bank Balance',
-        iconClass: 'pi pi-building-columns bg-yellow-500',
-        routerLink: './override-bank-balance',
-      },
       {
         text: 'End Session',
         iconClass: 'pi pi-stop-circle bg-red-600',
@@ -194,29 +224,14 @@ export default class GmToolsPageComponent {
   readonly sessionLinks: Signal<CardLinkModel[]> = computed(
     (): CardLinkModel[] => [
       {
-        text: 'Manage Gameboard Spaces',
-        iconClass: 'ci-space-entry bg-gray-500',
-        routerLink: './space-types',
+        text: 'Edit Session',
+        iconClass: 'pi pi-file-edit bg-orange-500',
+        routerLink: './edit-session',
       },
       {
-        text: 'Manage Special Space Events',
-        iconClass: 'pi pi-question-circle bg-green-500',
-        routerLink: './special-space-event-templates',
-      },
-      {
-        text: 'Manage Chaos Space Events',
-        iconClass: 'pi pi-exclamation-circle bg-black',
-        routerLink: './chaos-space-event-templates',
-      },
-      {
-        text: 'Manage Events',
-        iconClass: 'pi pi-flag bg-purple-500',
-        routerLink: './events',
-      },
-      {
-        text: 'Create Brackets',
-        iconClass: 'pi pi-sitemap bg-yellow-500',
-        routerLink: './bracket',
+        text: 'Override Bank Balance',
+        iconClass: 'pi pi-building-columns bg-yellow-500',
+        routerLink: './override-bank-balance',
       },
       ...this.sessionStatusDependentLinks[
         this.gameStateService.sessionStatus() ?? 'undefined'
