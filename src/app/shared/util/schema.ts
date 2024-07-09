@@ -699,24 +699,36 @@ export type Database = {
       };
       rules: {
         Row: {
+          chaos_space_events: string | null;
           created_at: string;
+          events: string | null;
+          gameboard: string | null;
           id: number;
-          rules: string | null;
+          intro: string | null;
           session_id: number;
+          special_space_events: string | null;
           updated_at: string;
         };
         Insert: {
+          chaos_space_events?: string | null;
           created_at?: string;
+          events?: string | null;
+          gameboard?: string | null;
           id?: number;
-          rules?: string | null;
+          intro?: string | null;
           session_id: number;
+          special_space_events?: string | null;
           updated_at?: string;
         };
         Update: {
+          chaos_space_events?: string | null;
           created_at?: string;
+          events?: string | null;
+          gameboard?: string | null;
           id?: number;
-          rules?: string | null;
+          intro?: string | null;
           session_id?: number;
+          special_space_events?: string | null;
           updated_at?: string;
         };
         Relationships: [
