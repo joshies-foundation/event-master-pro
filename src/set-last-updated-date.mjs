@@ -7,10 +7,10 @@ const fileContents = readFileSync(filePath, 'utf-8');
 
 // insert or reset timestamp
 const result = fileContents.replace(
-  /Last updated: {{ \d+ \|/g,
+  /App last updated: {{ \d+ \|/g,
   process.argv[2] === 'pre'
-    ? `Last updated: {{ ${Date.now()} |`
-    : `Last updated: {{ 0 |`,
+    ? `App last updated: {{ ${Date.now()} |`
+    : `App last updated: {{ 0 |`,
 );
 
 // write file
