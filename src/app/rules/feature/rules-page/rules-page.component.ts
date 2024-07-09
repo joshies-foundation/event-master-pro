@@ -150,7 +150,8 @@ export default class RulesPageComponent {
   );
 
   private readonly scrollToAnchorAfterRulesLoad = effect(() => {
-    this.rules();
+    this.viewModel();
+
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       skipLocationChange: true,

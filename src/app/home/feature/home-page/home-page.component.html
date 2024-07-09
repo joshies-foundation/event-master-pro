@@ -38,7 +38,7 @@
       >
         @switch (vm.roundPhase) {
           @case (RoundPhase.GameboardMoves) {
-            <div class="flex gap-3">
+            <div class="flex gap-3" routerLink="/rules" fragment="gameboard">
               <img
                 ngSrc="/assets/dice-roll.gif"
                 alt=""
@@ -55,6 +55,7 @@
                 </p>
                 <p class="m-0">Let's get rolling!</p>
               </div>
+              <i class="pi pi-angle-right text-300 align-self-center"></i>
             </div>
             @if (vm.userIsGameMaster) {
               <p-button

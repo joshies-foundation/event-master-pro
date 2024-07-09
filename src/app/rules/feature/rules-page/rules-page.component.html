@@ -92,7 +92,24 @@
       }
 
       <!-- Gameboard -->
-      <h2 class="mt-5 mb-3">Gameboard</h2>
+      <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link  -->
+      <div class="relative">
+        <span id="gameboard" class="absolute" style="top: -6.5rem"></span>
+        <h2
+          [routerLink]="[]"
+          fragment="gameboard"
+          routerLinkActive="bg-highlight-fadeout"
+          [routerLinkActiveOptions]="{
+            paths: 'exact',
+            fragment: 'exact',
+            matrixParams: 'ignored',
+            queryParams: 'ignored',
+          }"
+          class="mt-5 mb-3 border-round"
+        >
+          Gameboard
+        </h2>
+      </div>
 
       @if (vm.rules.gameboard) {
         <div
