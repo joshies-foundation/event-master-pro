@@ -96,8 +96,8 @@ import { AvatarModule } from 'primeng/avatar';
           <label class="flex flex-column gap-2">
             Opponent
             <p-dropdown
-              [options]="playersWithoutUser()"
-              [(ngModel)]="selectedOpponent"
+              [options]="staticPlayersWithoutUser"
+              [(ngModel)]="staticSelectedOpponent"
               optionLabel="nameAndScore"
               styleClass="flex"
               placeholder="Select an opponent"
@@ -557,6 +557,8 @@ export default class PlaceBetPageComponent implements OnInit {
     null,
   );
   readonly selectedGameboardSpace = signal<GameboardSpaceModel | null>(null);
+  staticPlayersWithoutUser: PlayerWithUserAndRankInfo[] = [];
+  staticSelectedOpponent = signal<PlayerWithUserAndRankInfo | null>(null);
 
   readonly loadMessage = computed(() => {
     const userPlayer = this.playerService.userPlayer();
@@ -973,13 +975,27 @@ export default class PlaceBetPageComponent implements OnInit {
     });
   }
 
-  // When parent changes (e.g. someone's score changes externally)
-  // clear child dropdown selection
   constructor() {
     effect(
       () => {
-        this.playersWithoutUser();
-        this.selectedOpponent.set(null);
+        const playersWithoutUser = this.playersWithoutUser();
+        if (playersWithoutUser && this.staticPlayersWithoutUser.length < 1) {
+          this.staticPlayersWithoutUser = playersWithoutUser;
+        }
+      },
+      { allowSignalWrites: true },
+    );
+
+    effect(
+      () => {
+        const playersWithoutUser = this.playersWithoutUser();
+        console.log(this.staticSelectedOpponent()?.player_id);
+        this.selectedOpponent.set(
+          playersWithoutUser?.find(
+            (player) =>
+              player.player_id === this.staticSelectedOpponent()?.player_id,
+          ) ?? null,
+        );
       },
       { allowSignalWrites: true },
     );
