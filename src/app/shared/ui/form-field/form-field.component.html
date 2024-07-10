@@ -1,7 +1,14 @@
 @if (field(); as field) {
-  <div class="flex flex-column gap-1">
+  <div
+    class="flex gap-1"
+    [ngClass]="
+      field.type === FormFieldType.Checkbox
+        ? 'flex-row-reverse justify-content-end'
+        : 'flex-column'
+    "
+  >
     @if (field.type !== FormFieldType.Submit) {
-      <label [for]="field.name">{{ field.label }}</label>
+      <label [for]="field.name | lowercase">{{ field.label }}</label>
     }
 
     @switch (field.type) {
@@ -76,8 +83,8 @@
           [style]="{ height: 'calc(100vh - 23rem)' }"
           [modules]="{
             clipboard: {
-              matchVisual: false
-            }
+              matchVisual: false,
+            },
           }"
         >
           <ng-template pTemplate="header">
@@ -150,13 +157,15 @@
         <p-button
           type="submit"
           [styleClass]="
-            'mt-2 block ' +
+            'mt-2 ' +
             (['left', 'center'].includes(field.position) ? 'mr-auto ' : '') +
             (['right', 'center'].includes(field.position)
               ? 'ml-auto '
               : 'w-full ') +
             (field.styleClass ?? '')
           "
+          [icon]="field.icon"
+          [iconPos]="field.iconPos ?? 'right'"
           [disabled]="formDisabled() || formGroup().invalid"
           [label]="field.label"
           [loading]="field.loading ?? false"
@@ -208,7 +217,7 @@
               class="border-round mx-auto max-w-full surface-100 pi pi-question text-6xl text-center text-300 flex flex-column justify-content-center"
               [style]="{
                 width: field.previewWidth + 'px',
-                height: field.previewHeight + 'px'
+                height: field.previewHeight + 'px',
               }"
             ></div>
           }

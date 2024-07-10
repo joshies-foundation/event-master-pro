@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
-import { map, Observable, shareReplay, startWith } from 'rxjs';
+import { map, shareReplay, startWith } from 'rxjs';
 import { environment } from 'environment';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/message-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { FunctionsResponse } from '@supabase/functions-js';
 import { showMessageOnError, Table } from '../util/supabase-helpers';
-import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Database, Json } from '../util/schema';
 
@@ -17,7 +17,6 @@ export class NotificationsService {
   private readonly messageService = inject(MessageService);
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly swPush = inject(SwPush);
-  private readonly http = inject(HttpClient);
 
   readonly pushNotificationsAreEnabled$ = this.swPush.subscription.pipe(
     map((subscription) => !!subscription),
@@ -27,6 +26,7 @@ export class NotificationsService {
 
   readonly pushNotificationsAreEnabled = toSignal(
     this.pushNotificationsAreEnabled$,
+    { requireSync: true },
   );
 
   constructor() {
@@ -67,11 +67,12 @@ export class NotificationsService {
     );
   }
 
-  sendNotification(notification: {
-    recipient: string;
+  async sendPushNotificationToUsers(payload: {
+    recipientUserIds: string[];
     title: string;
     body: string;
-  }): Observable<void> {
-    return this.http.post<undefined>('/api/notification', { notification });
+    openUrl?: string;
+  }): Promise<FunctionsResponse<null>> {
+    return this.supabase.functions.invoke('push/gm-message', { body: payload });
   }
 }

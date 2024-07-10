@@ -1,4 +1,4 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { Observable, switchMap } from 'rxjs';
 import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -30,6 +30,7 @@ export enum Table {
   ChaosSpaceEventTemplate = 'chaos_space_event_template',
   Duel = 'duel',
   Bet = 'bet',
+  Bracket = 'bracket',
 }
 
 export enum View {
@@ -63,6 +64,7 @@ export enum Function {
   SubmitBetOpponentWon = 'submit_bet_opponent_won',
   SubmitBetCanceledByGm = 'submit_bet_canceled_by_gm',
   UpdateEventTeams = 'update_event_teams',
+  SubmitEventScores = 'submit_event_scores',
 }
 
 export enum StorageBucket {
@@ -135,11 +137,15 @@ export enum BetType {
   DuelWinner = 'duel',
   SpecialSpaceEvent = 'special_space_event',
   ChaosSpaceEvent = 'chaos_space_event',
+  MainEvent = 'main_event',
+  GameboardMove = 'gameboard_move',
 }
 
 export enum BetSubtype {
   PlayerLoses = 'player_loses',
   NumberOfLosers = 'number_of_losers',
+  TeamPosition = 'team_position',
+  Score = 'score',
 }
 
 export type TTable = keyof Database['public']['Tables'];
@@ -220,10 +226,20 @@ export async function showMessageOnError<T>(
   const error = (response as { error?: { message?: string } }).error;
 
   if (error) {
-    showErrorMessage(
-      message ?? error.message ?? 'Please try again later',
-      messageService,
-    );
+    let errorMessage = message ?? error.message ?? 'Please try again later';
+
+    if (error instanceof FunctionsHttpError) {
+      try {
+        errorMessage = new TextDecoder().decode(
+          (await (error.context.body as ReadableStream).getReader().read())
+            .value,
+        ) as string;
+      } catch (e) {
+        // empty
+      }
+    }
+
+    showErrorMessage(errorMessage, messageService);
   }
 
   return response;

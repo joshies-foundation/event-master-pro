@@ -3,6 +3,7 @@ import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-sp
 import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
 import { editChaosSpaceEventTemplateResolver } from '../data-access/edit-chaos-space-event-template.resolver';
 import { editEventResolver } from '../data-access/edit-event.resolver';
+import { editSessionResolver } from '../data-access/edit-session.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -107,6 +108,16 @@ const gmToolsRoutes: Routes = [
       originalChaosSpaceEventTemplate: editChaosSpaceEventTemplateResolver,
     },
   },
+  {
+    path: 'enter-event-scores',
+    loadComponent: () => import('./enter-event-scores-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'enter-tournament-results',
+    loadComponent: () => import('./enter-tournament-results-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 
   // betting
   {
@@ -147,12 +158,23 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./change-gm-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+  {
+    path: 'send-notifications',
+    loadComponent: () => import('./send-notifications-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 
   // session
   {
     path: 'create-session',
     loadComponent: () => import('./create-session-page.component'),
     data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'edit-session',
+    loadComponent: () => import('./edit-session-page.component'),
+    data: { pageAnimationLayer: 1 },
+    resolve: { resolveData: editSessionResolver },
   },
   {
     path: 'start-session-early',

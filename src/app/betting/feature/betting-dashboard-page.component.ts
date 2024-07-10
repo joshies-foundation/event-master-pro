@@ -31,6 +31,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { RouterLink } from '@angular/router';
 import { BetType } from '../../shared/util/supabase-helpers';
 import { BetToResolveComponent } from '../ui/bet-awaiting-acceptance.component';
+import { GameStateService } from '../../shared/data-access/game-state.service';
 
 // const textColor = getCssVariableValue('--text-color');
 const textColorSecondary = getCssVariableValue('--text-color-secondary');
@@ -183,26 +184,28 @@ const surfaceBorder = getCssVariableValue('--surface-border');
           }
         }
 
-        <!-- Pace Bet -->
-        <h3 class="my-2">
-          <i class="pi pi-plus text-primary mr-2"></i> Place Bet For
-        </h3>
-        <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-3 px-3">
-          @for (
-            betTypeButtonModel of betTypeButtonModels;
-            track betTypeButtonModel.label
-          ) {
-            <a
-              [routerLink]="betTypeButtonModel.routerLink"
-              [queryParams]="betTypeButtonModel.queryParams"
-              class="flex flex-column flex-shrink-0 gap-1 text-xs h-4rem w-6rem p-2 justify-content-center text-center align-items-center no-underline p-button p-button-outlined"
-              pRipple
-            >
-              <i [class]="betTypeButtonModel.iconClass"></i>
-              {{ betTypeButtonModel.label }}
-            </a>
-          }
-        </div>
+        @if (sessionIsInProgress()) {
+          <!-- Pace Bet -->
+          <h3 class="my-2">
+            <i class="pi pi-plus text-primary mr-2"></i> Place Bet For
+          </h3>
+          <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-3 px-3">
+            @for (
+              betTypeButtonModel of betTypeButtonModels;
+              track betTypeButtonModel.label
+            ) {
+              <a
+                [routerLink]="betTypeButtonModel.routerLink"
+                [queryParams]="betTypeButtonModel.queryParams"
+                class="flex flex-column flex-shrink-0 gap-1 text-xs h-4rem w-6rem p-2 justify-content-center text-center align-items-center no-underline p-button p-button-outlined"
+                pRipple
+              >
+                <i [class]="betTypeButtonModel.iconClass"></i>
+                {{ betTypeButtonModel.label }}
+              </a>
+            }
+          </div>
+        }
 
         @if (betsAwaitingAcceptance(); as betsAwaitingAcceptance) {
           @if (betsAwaitingAcceptance.length) {
@@ -387,12 +390,15 @@ const surfaceBorder = getCssVariableValue('--surface-border');
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class BettingDashboardPageComponent {
+  private readonly gameStateService = inject(GameStateService);
   private readonly betService = inject(BetService);
   private readonly playerService = inject(PlayerService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
   readonly chartData = this.betService.betSummaryChartData;
+
+  readonly sessionIsInProgress = this.gameStateService.sessionIsInProgress;
 
   readonly overallWinPercentage = toSignal(
     this.betService.overallWinPercentage$,
@@ -523,7 +529,7 @@ export default class BettingDashboardPageComponent {
       iconClass: PrimeIcons.STAR,
       label: 'Main Event',
       routerLink: './place-bet',
-      queryParams: { betType: BetType.Custom }, //TODO
+      queryParams: { betType: BetType.MainEvent },
     },
     {
       iconClass: PrimeIcons.BOLT,
@@ -547,7 +553,7 @@ export default class BettingDashboardPageComponent {
       iconClass: 'ci-space-entry',
       label: 'Gameboard Move',
       routerLink: './place-bet',
-      queryParams: { betType: BetType.Custom }, //TODO
+      queryParams: { betType: BetType.GameboardMove },
     },
     {
       iconClass: PrimeIcons.PENCIL,

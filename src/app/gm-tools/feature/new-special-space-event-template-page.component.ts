@@ -46,7 +46,7 @@ import {
     </joshies-page-header>
 
     <!-- Form -->
-    <joshies-form [form]="form" class="block mt-5" />
+    <joshies-form [form]="form" class="block mt-5 mb-8" />
 
     <!-- Confirm Dialog -->
     <p-confirmDialog styleClass="mx-3" [key]="confirmDialogKey">

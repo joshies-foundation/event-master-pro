@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
       class="text-primary no-underline -ml-2 py-2"
       [ngClass]="{
         '-ml-2 pr-2': chevronDirection() === 'left',
-        '-mr-2 pl-2': chevronDirection() === 'right'
+        '-mr-2 pl-2': chevronDirection() === 'right',
       }"
     >
       @if (chevronDirection() === 'left') {

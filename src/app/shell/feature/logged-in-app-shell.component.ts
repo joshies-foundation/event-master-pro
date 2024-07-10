@@ -9,15 +9,14 @@ import {
 import { Router, RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../ui/footer.component';
 import { FooterLinkModel } from '../ui/footer-link.component';
-import { SessionService } from '../../shared/data-access/session.service';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { FooterService } from '../../shared/data-access/footer.service';
-import { pagePaddingXCssClass } from '../../shared/util/css-helpers';
 import { layerPages } from '../../route-animations';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-helpers';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BetService } from '../../shared/data-access/bet.service';
+import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
@@ -29,11 +28,13 @@ import { BetService } from '../../shared/data-access/bet.service';
       <router-outlet />
     </div>
 
-    <!-- Footer -->
-    <joshies-footer
-      [footerLinks]="footerLinks()"
-      [disabled]="footerDisabled()"
-    />
+    @if (showFooter()) {
+      <!-- Footer -->
+      <joshies-footer
+        [footerLinks]="footerLinks()"
+        [disabled]="footerDisabled()"
+      />
+    }
 
     <p-confirmDialog styleClass="mx-3" />
   `,
@@ -44,15 +45,13 @@ import { BetService } from '../../shared/data-access/bet.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoggedInAppShellComponent {
-  private readonly sessionService = inject(SessionService);
+  private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly betService = inject(BetService);
   private readonly footerService = inject(FooterService);
   private readonly router = inject(Router);
 
   readonly routerOutlet = viewChild.required(RouterOutlet);
-
-  readonly pagePaddingXCssClass = pagePaddingXCssClass;
 
   readonly footerDisabled = this.footerService.footerDisabled;
 
@@ -62,6 +61,12 @@ export default class LoggedInAppShellComponent {
       this.routerOutlet,
       'pageAnimationLayer',
     ),
+  );
+
+  readonly showFooter = computed(
+    () =>
+      this.gameStateService.sessionIsInProgressOrFinished() ||
+      this.playerService.userIsGameMaster(),
   );
 
   readonly footerLinks = computed((): FooterLinkModel[] => [
@@ -104,11 +109,6 @@ export default class LoggedInAppShellComponent {
       iconClass: 'pi pi-chart-bar',
       iconClassFill: 'ci-chart-bar-fill',
     },
-    // {
-    //   text: 'Notifications',
-    //   href: '/notifications',
-    //   iconClass: 'pi pi-bell',
-    // },
     {
       text: 'Profile',
       href: '/profile',

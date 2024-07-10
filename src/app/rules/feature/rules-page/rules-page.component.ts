@@ -9,12 +9,7 @@ import {
 } from '@angular/core';
 import { RulesService } from '../../data-access/rules.service';
 import { SkeletonModule } from 'primeng/skeleton';
-import {
-  FormBuilder,
-  FormsModule,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormsModule } from '@angular/forms';
 import { Form, FormComponent } from '../../../shared/ui/form.component';
 import {
   FormField,
@@ -23,10 +18,9 @@ import {
 import { SessionService } from '../../../shared/data-access/session.service';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { FooterService } from '../../../shared/data-access/footer.service';
 import { NgClass, NgOptimizedImage } from '@angular/common';
-import { pagePaddingXCssClass } from '../../../shared/util/css-helpers';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 import { EventService } from '../../../shared/data-access/event.service';
@@ -41,13 +35,7 @@ import { GameboardService } from '../../../shared/data-access/gameboard.service'
 import { GameboardSpaceComponent } from '../../../gm-tools/ui/gameboard-space.component';
 import { GameboardSpaceDescriptionPipe } from '../../../gm-tools/ui/gameboard-space-description.pipe';
 import { toSignal } from '@angular/core/rxjs-interop';
-
-function valueIsNot(invalidValue: string): ValidatorFn {
-  return (control) =>
-    control.value === invalidValue
-      ? { invalidValue: `Value is invalid` }
-      : null;
-}
+import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
 
 @Component({
   selector: 'joshies-rules-page',
@@ -84,6 +72,7 @@ export default class RulesPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly messageService = inject(MessageService);
 
   private readonly rules = this.rulesService.rules;
 
@@ -92,25 +81,54 @@ export default class RulesPageComponent {
 
   private readonly formGroup = computed(() =>
     this.formBuilder.nonNullable.group({
-      rules: [
-        this.rules() ?? '',
-        [Validators.required, valueIsNot(this.rules() ?? '')],
-      ],
+      intro: [this.rules()?.intro ?? ''],
+      events: [this.rules()?.events ?? ''],
+      gameboard: [this.rules()?.gameboard ?? ''],
+      special_space_events: [this.rules()?.special_space_events ?? ''],
+      chaos_space_events: [this.rules()?.chaos_space_events ?? ''],
     }),
   );
 
   private readonly form = computed(
     (): Form => ({
       formGroup: this.formGroup(),
-      onSubmit: () => this.saveRules(),
+      onSubmit: () => this.confirmSaveRules(),
       disabled: this.savingRules,
       fields: computed((): FormField[] => [
         {
-          name: 'rules',
-          label: '',
-          placeholder: 'Enter Rules Here',
+          name: 'intro',
+          label: 'Intro',
+          placeholder: 'Intro',
           type: FormFieldType.Editor,
-          control: this.formGroup().controls.rules,
+          control: this.formGroup().controls.intro,
+        },
+        {
+          name: 'events',
+          label: 'Events',
+          placeholder: 'Events',
+          type: FormFieldType.Editor,
+          control: this.formGroup().controls.events,
+        },
+        {
+          name: 'gameboard',
+          label: 'Gameboard',
+          placeholder: 'Gameboard',
+          type: FormFieldType.Editor,
+          control: this.formGroup().controls.gameboard,
+        },
+        {
+          name: 'special-space-events',
+          label: 'Special Space Events',
+          placeholder: 'Special Space Events',
+          type: FormFieldType.Editor,
+          control: this.formGroup().controls.special_space_events,
+        },
+        {
+          name: 'chaos-space-events',
+          label: 'Chaos Space Events',
+          placeholder: 'Chaos Space Events',
+          type: FormFieldType.Editor,
+          control: this.formGroup().controls.chaos_space_events,
         },
         {
           name: 'submit',
@@ -132,7 +150,8 @@ export default class RulesPageComponent {
   );
 
   private readonly scrollToAnchorAfterRulesLoad = effect(() => {
-    this.rules();
+    this.viewModel();
+
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       skipLocationChange: true,
@@ -147,8 +166,6 @@ export default class RulesPageComponent {
     this.gameboardService.chaosSpaceEventTemplates$,
   );
 
-  readonly pagePaddingXCssClass = pagePaddingXCssClass;
-
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       editMode: this.editMode(),
@@ -162,23 +179,30 @@ export default class RulesPageComponent {
     }),
   );
 
-  private async saveRules(): Promise<void> {
-    this.savingRules.set(true);
+  private async confirmSaveRules(): Promise<void> {
+    confirmBackendAction({
+      action: async () => {
+        this.exitEditMode();
 
-    const activeSessionId = this.sessionService.session()!.id;
-    const rulesHtml = this.formGroup().getRawValue().rules;
-
-    await this.rulesService.saveRules(activeSessionId, rulesHtml ?? '');
-
-    this.savingRules.set(false);
-    this.cancelChanges();
+        return this.rulesService.updateRules(
+          this.sessionService.session()!.id,
+          this.formGroup().getRawValue(),
+        );
+      },
+      confirmationMessageText: 'Are you sure you want to save these rules?',
+      successMessageText: 'Rules saved',
+      submittingSignal: this.savingRules,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: null,
+    });
   }
 
   enterEditMode(): void {
     this.editMode.set(true);
   }
 
-  cancelChanges(): void {
+  exitEditMode(): void {
     this.editMode.set(false);
     this.formGroup().reset();
   }
@@ -192,7 +216,7 @@ export default class RulesPageComponent {
       acceptIcon: 'none',
       rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
-      accept: () => this.cancelChanges(),
+      accept: () => this.exitEditMode(),
     });
   }
 }

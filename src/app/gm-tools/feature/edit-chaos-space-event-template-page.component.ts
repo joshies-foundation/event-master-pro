@@ -60,7 +60,7 @@ import {
 
     @if (originalChaosSpaceEventTemplate(); as originalGameboardSpace) {
       <!-- Form -->
-      <joshies-form [form]="form!" class="block mt-5" />
+      <joshies-form [form]="form!" class="block mt-5 mb-8" />
 
       <!-- Delete Button -->
       <p-button

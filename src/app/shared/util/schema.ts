@@ -79,21 +79,21 @@ export type Database = {
       bracket: {
         Row: {
           created_at: string;
-          data: Json | null;
+          data: string | null;
           event_id: number;
           id: number;
           updated_at: string;
         };
         Insert: {
           created_at?: string;
-          data?: Json | null;
+          data?: string | null;
           event_id: number;
           id?: number;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
-          data?: Json | null;
+          data?: string | null;
           event_id?: number;
           id?: number;
           updated_at?: string;
@@ -699,24 +699,36 @@ export type Database = {
       };
       rules: {
         Row: {
+          chaos_space_events: string | null;
           created_at: string;
+          events: string | null;
+          gameboard: string | null;
           id: number;
-          rules: string | null;
+          intro: string | null;
           session_id: number;
+          special_space_events: string | null;
           updated_at: string;
         };
         Insert: {
+          chaos_space_events?: string | null;
           created_at?: string;
+          events?: string | null;
+          gameboard?: string | null;
           id?: number;
-          rules?: string | null;
+          intro?: string | null;
           session_id: number;
+          special_space_events?: string | null;
           updated_at?: string;
         };
         Update: {
+          chaos_space_events?: string | null;
           created_at?: string;
+          events?: string | null;
+          gameboard?: string | null;
           id?: number;
-          rules?: string | null;
+          intro?: string | null;
           session_id?: number;
+          special_space_events?: string | null;
           updated_at?: string;
         };
         Relationships: [
@@ -1085,7 +1097,7 @@ export type Database = {
       end_round: {
         Args: {
           _round_number: number;
-          player_score_changes: Json;
+          team_score_changes: Json;
         };
         Returns: undefined;
       };
@@ -1200,6 +1212,12 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_event_scores: {
+        Args: {
+          team_scores: Json;
+        };
+        Returns: undefined;
+      };
       submit_space_event_player_score_changes: {
         Args: {
           space_event_id: number;
@@ -1235,8 +1253,18 @@ export type Database = {
         | 'requester_won'
         | 'opponent_won'
         | 'push';
-      bet_subtype: 'player_loses' | 'number_of_losers';
-      bet_type: 'duel' | 'special_space_event' | 'chaos_space_event' | 'custom';
+      bet_subtype:
+        | 'player_loses'
+        | 'number_of_losers'
+        | 'team_position'
+        | 'score';
+      bet_type:
+        | 'duel'
+        | 'special_space_event'
+        | 'chaos_space_event'
+        | 'custom'
+        | 'main_event'
+        | 'gameboard_move';
       chaos_space_event_type:
         | 'everyone_gains_points_based_on_rank'
         | 'everyone_loses_percentage_of_their_points'

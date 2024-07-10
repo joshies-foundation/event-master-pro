@@ -5,6 +5,7 @@ import { TableModule } from 'primeng/table';
 import { PlayerWithUserAndRankInfo } from '../data-access/player.service';
 import { trackByUserId } from '../util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.directive';
+import { ImageModule } from 'primeng/image';
 
 @Component({
   selector: 'joshies-rankings-table',
@@ -16,6 +17,7 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
     FormsModule,
     NgOptimizedImage,
     StronglyTypedTableRowDirective,
+    ImageModule,
   ],
   template: `
     <!-- Rankings Table -->
@@ -34,7 +36,7 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
       >
         <tr
           [ngClass]="{
-            'font-semibold bg-highlight': player.user_id === userId()
+            'font-semibold bg-highlight': player.user_id === userId(),
           }"
         >
           <td class="text-center">
@@ -46,12 +48,13 @@ import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.direc
           </td>
           <td>
             <div class="flex align-items-center gap-2 -py-2">
-              <img
-                [ngSrc]="player.avatar_url"
+              <p-image
+                [src]="player.avatar_url"
                 alt=""
                 width="32"
                 height="32"
-                class="border-circle surface-100"
+                imageClass="border-circle surface-100"
+                [preview]="true"
               />
               {{ player.display_name }}
             </div>

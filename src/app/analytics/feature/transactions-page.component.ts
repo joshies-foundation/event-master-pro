@@ -37,7 +37,7 @@ import { TransactionTableComponent } from '../ui/transaction-table.component';
       @if (transactions.length > 0) {
         <joshies-transaction-table
           [transactions]="transactions"
-          class="block mt-5"
+          class="block mt-5 mb-8"
         />
       } @else {
         <p class="mt-6 pt-6 text-center text-500 font-italic">

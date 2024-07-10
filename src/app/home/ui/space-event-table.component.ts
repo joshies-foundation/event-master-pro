@@ -15,11 +15,12 @@ import {
   ChaosSpaceEventModel,
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'joshies-space-event-table',
   standalone: true,
-  imports: [AvatarModule, ButtonModule, StatusTagComponent],
+  imports: [AvatarModule, ButtonModule, StatusTagComponent, RouterLink],
   template: `
     <table class="w-full">
       <tbody>
@@ -35,7 +36,13 @@ import {
               </div>
             </td>
 
-            <td class="pt-1 text-sm">
+            <td
+              class="pt-1 text-sm"
+              routerLink="/rules"
+              [fragment]="
+                spaceType() + '-space-event-' + spaceEvent.template?.id
+              "
+            >
               {{ spaceEvent.template?.name }}
             </td>
 

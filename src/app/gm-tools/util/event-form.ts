@@ -88,7 +88,7 @@ export function eventFormFactory(
         control: eventFormGroup.controls.description,
       },
       {
-        type: FormFieldType.TextArea,
+        type: FormFieldType.Editor,
         name: 'rules',
         label: 'Rules',
         placeholder: 'Event Rules',

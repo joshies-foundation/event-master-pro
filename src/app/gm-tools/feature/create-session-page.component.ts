@@ -19,7 +19,9 @@ import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 
 @Component({
   selector: 'joshies-create-session-page',
@@ -42,7 +44,7 @@ import { Router } from '@angular/router';
 
     @if (form.fields()) {
       <!-- Form -->
-      <joshies-form [form]="form" class="block mt-5" />
+      <joshies-form [form]="form" class="block mt-5 mb-8" />
     } @else {
       <!-- Loading Skeleton -->
       <div class="h-4rem"></div>
@@ -57,6 +59,9 @@ export default class CreateSessionPageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   readonly allUsers = toSignal(this.userService.allUsers$);
   readonly creatingSession = signal(false);
@@ -130,7 +135,7 @@ export default class CreateSessionPageComponent {
             placeholder: 'Players',
             type: FormFieldType.MultiSelect,
             options: allUsers,
-            optionLabel: 'display_name',
+            optionLabel: 'real_name',
             optionValue: 'id',
             useChips: true,
             control: this.formGroup.controls.playerUserIds,
@@ -148,8 +153,6 @@ export default class CreateSessionPageComponent {
   };
 
   private async createSession(): Promise<void> {
-    this.creatingSession.set(true);
-
     const formValue = this.formGroup.getRawValue();
 
     const { sessionName, numRounds, playerUserIds, startTime } = formValue;
@@ -166,19 +169,23 @@ export default class CreateSessionPageComponent {
     );
     endDate.setMinutes(endDate.getMinutes() - endDate.getTimezoneOffset());
 
-    const { error } = await this.sessionService.createSession(
-      sessionName,
-      startDate,
-      endDate,
-      numRounds,
-      playerUserIds,
-    );
-
-    if (error) {
-      this.creatingSession.set(false);
-      return;
-    }
-
-    this.router.navigate(['/']);
+    confirmBackendAction({
+      action: async () =>
+        this.sessionService.createSession(
+          sessionName,
+          startDate,
+          endDate,
+          numRounds,
+          playerUserIds,
+        ),
+      confirmationMessageText: `Are you sure you want to create this session?`,
+      successMessageText: 'Session created',
+      submittingSignal: this.creatingSession,
+      confirmationService: this.confirmationService,
+      messageService: this.messageService,
+      successNavigation: '/',
+      activatedRoute: this.activatedRoute,
+      router: this.router,
+    });
   }
 }

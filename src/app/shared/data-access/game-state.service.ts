@@ -81,6 +81,10 @@ export class GameStateService {
     () => this.sessionStatus() === SessionStatus.Finished,
   );
 
+  readonly sessionIsInProgressOrFinished = computed(
+    () => this.sessionStatus() !== SessionStatus.NotStarted,
+  );
+
   changeGameMaster(
     newGmUserId: string,
   ): Promise<PostgrestSingleResponse<null>> {

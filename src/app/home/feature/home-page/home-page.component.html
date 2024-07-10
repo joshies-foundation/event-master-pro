@@ -20,7 +20,7 @@
       >
         @switch (vm.roundPhase) {
           @case (RoundPhase.GameboardMoves) {
-            <div class="flex gap-3">
+            <div class="flex gap-3" routerLink="/rules" fragment="gameboard">
               <img
                 ngSrc="/assets/dice-roll.gif"
                 alt=""
@@ -37,6 +37,7 @@
                 </p>
                 <p class="m-0">Let's get rolling!</p>
               </div>
+              <i class="pi pi-angle-right text-300 align-self-center"></i>
             </div>
             @if (vm.userIsGameMaster) {
               <p-button
@@ -142,6 +143,13 @@
           @case (RoundPhase.Event) {
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
+              @if (vm.userIsGameMaster) {
+                <p-button
+                  label="Enter Event Scores"
+                  styleClass="w-full mt-2"
+                  routerLink="/gm-tools/enter-event-scores"
+                />
+              }
             } @else {
               <span class="text-red font-semibold">
                 There's no event scheduled for this turn 😳 Tell the GM to get
@@ -155,6 +163,13 @@
               turn.
             } @else {
               🏆 Awards Ceremony
+            }
+            @if (vm.userIsGameMaster) {
+              <p-button
+                label="Submit Scores & End Round"
+                styleClass="w-full mt-2"
+                routerLink="/gm-tools/end-round"
+              />
             }
           }
         }

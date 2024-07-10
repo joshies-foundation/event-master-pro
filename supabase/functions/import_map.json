@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+    "hono": "https://deno.land/x/hono@v4.3.11/mod.ts",
+    "hono/dist/types/http-exception": "https://deno.land/x/hono@v4.3.11/mod.ts",
+    "hono/dist/types/utils/http-status": "https://deno.land/x/hono@v4.3.11/mod.ts"
+  }
+}

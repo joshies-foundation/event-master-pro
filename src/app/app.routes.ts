@@ -46,10 +46,6 @@ export const routes: Routes = [
         loadChildren: () => import('./analytics/feature/analytics.routes'),
       },
       {
-        path: 'notifications',
-        loadChildren: () => import('./notifications/feature/lib.routes'),
-      },
-      {
         path: 'profile',
         loadChildren: () => import('./profile/feature/lib.routes'),
       },

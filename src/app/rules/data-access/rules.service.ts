@@ -3,14 +3,12 @@ import {
   Table,
   realtimeUpdatesFromTable,
 } from '../../shared/util/supabase-helpers';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { Observable, map, shareReplay, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { showErrorMessage } from '../../shared/util/message-helpers';
-import { MessageService } from 'primeng/api';
-import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { Database } from '../../shared/util/schema';
 import { GameStateService } from '../../shared/data-access/game-state.service';
+import { RulesModel } from '../../shared/util/supabase-types';
 
 @Injectable({
   providedIn: 'root',
@@ -18,9 +16,8 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 export class RulesService {
   private readonly supabase: SupabaseClient<Database> = inject(SupabaseClient);
   private readonly gameStateService = inject(GameStateService);
-  private readonly messageService = inject(MessageService);
 
-  readonly rules$: Observable<string | null> =
+  readonly rules$: Observable<RulesModel> =
     this.gameStateService.sessionId$.pipe(
       switchMap((sessionId) =>
         realtimeUpdatesFromTable(
@@ -29,26 +26,19 @@ export class RulesService {
           `session_id=eq.${sessionId}`,
         ),
       ),
-      map((rulesRecords) => rulesRecords[0].rules),
+      map((rulesRecords) => rulesRecords[0]),
       shareReplay(1),
     );
 
-  readonly rules: Signal<string | null | undefined> = toSignal(this.rules$);
+  readonly rules: Signal<RulesModel | undefined> = toSignal(this.rules$);
 
-  async saveRules(sessionId: number, rulesHtml: string): Promise<void> {
-    const { error: saveRulesError } = await this.supabase
+  async updateRules(
+    sessionId: number,
+    partialRules: Partial<RulesModel>,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
       .from(Table.Rules)
-      .update({ rules: rulesHtml })
+      .update(partialRules)
       .eq('session_id', sessionId);
-
-    if (saveRulesError) {
-      showErrorMessage(
-        'Unable to save rules. Rules database select error.',
-        this.messageService,
-      );
-      return;
-    }
-
-    showSuccessMessage('Rules saved successfully!', this.messageService);
   }
 }
