@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   input,
   model,
 } from '@angular/core';
@@ -62,10 +61,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 export class TopBottomComponent {
   readonly selectedTopBottomOption = model<'TOP' | 'BOTTOM'>();
   readonly selectedNumberOfTeams = model<number>();
-
-  readonly printSelectedTopBottomOption = effect(() =>
-    console.log(this.selectedTopBottomOption()),
-  );
 
   readonly max = input.required<number>();
 }

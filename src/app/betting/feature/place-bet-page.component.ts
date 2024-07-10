@@ -456,6 +456,11 @@ import { AvatarModule } from 'primeng/avatar';
         </joshies-card>
 
         <!-- Submit Button -->
+        @if (cannotSubmitMessage(); as cannotSubmitMessage) {
+          <div class="text-sm text-red font-semibold">
+            {{ cannotSubmitMessage }}
+          </div>
+        }
         <p-button
           label="Submit Bet"
           styleClass="w-full mt-2"
@@ -577,9 +582,28 @@ export default class PlaceBetPageComponent implements OnInit {
       ?.filter((player) => player.user_id !== this.userPlayer()?.user_id),
   );
 
+  readonly cannotSubmitMessage = computed(() => {
+    const userPlayer = this.userPlayer();
+    const requesterBet = this.requesterBet();
+    const selectedOpponent = this.selectedOpponent();
+    const opponentBet = this.opponentBet();
+
+    if (userPlayer && userPlayer.score < requesterBet) {
+      return 'Your wager cannot be higher than your current score';
+    }
+
+    if (selectedOpponent && selectedOpponent.score < opponentBet) {
+      return (
+        "Opponent's wager cannot be higher than their current score " +
+        selectedOpponent.score +
+        '.'
+      );
+    }
+
+    return null;
+  });
+
   readonly submitButtonDisabled = computed(() => {
-    const userScore = this.userPlayer()?.score ?? 0;
-    const opponentScore = this.selectedOpponent()?.score ?? 0;
     const selectedBetType = this.selectedBetType();
     const selectedMainEvent = this.selectedMainEvent();
     const selectedEventBetSubtype = this.selectedEventBetSubtype();
@@ -596,8 +620,7 @@ export default class PlaceBetPageComponent implements OnInit {
     const selectedOpponent = this.selectedOpponent();
     const terms = this.terms();
     const userPlayer = this.userPlayer();
-    const requesterBet = this.requesterBet();
-    const opponentBet = this.opponentBet();
+    const cannotSubmitMessage = this.cannotSubmitMessage();
 
     // Event Bet Requirements
     if (selectedBetType === BetType.MainEvent) {
@@ -662,11 +685,7 @@ export default class PlaceBetPageComponent implements OnInit {
 
     // Universal bet requirements
     return (
-      submitting ||
-      !selectedOpponent ||
-      !userPlayer ||
-      requesterBet > userScore ||
-      opponentBet > opponentScore
+      submitting || !selectedOpponent || !userPlayer || cannotSubmitMessage
     );
   });
 
@@ -989,7 +1008,6 @@ export default class PlaceBetPageComponent implements OnInit {
     effect(
       () => {
         const playersWithoutUser = this.playersWithoutUser();
-        console.log(this.staticSelectedOpponent()?.player_id);
         this.selectedOpponent.set(
           playersWithoutUser?.find(
             (player) =>
