@@ -91,7 +91,7 @@ const numTransactionsToShow = 3;
                 />
               }
             } @else {
-              <p class="mt-6 pt-6 text-center text-500 font-italic">
+              <p class="pt-3 pb-3 text-center text-500 font-italic">
                 No transactions yet
               </p>
             }
