@@ -124,6 +124,7 @@ export class EventService {
           ),
         ),
       ),
+      shareReplay(1),
     );
 
   readonly eventForThisRound = toSignal(this.eventForThisRound$);
@@ -139,6 +140,7 @@ export class EventService {
           ),
         ),
       ),
+      shareReplay(1),
     );
 
   readonly eventForNextRound = toSignal(this.eventForNextRound$);
