@@ -29,20 +29,6 @@ export class NotificationsService {
     { requireSync: true },
   );
 
-  constructor() {
-    this.swPush.messages
-      .pipe(
-        map((notification) => notification as { notification: Notification }),
-      )
-      .subscribe((message) =>
-        this.messageService.add({
-          severity: 'info',
-          summary: message.notification.title,
-          detail: message.notification.body,
-        }),
-      );
-  }
-
   async enablePushNotifications(userId: string): Promise<void> {
     try {
       const subscription = await this.swPush.requestSubscription({
