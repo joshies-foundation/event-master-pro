@@ -6,7 +6,7 @@ import { BadgeModule } from 'primeng/badge';
 export interface FooterLinkModel {
   href: string;
   text: string;
-  hasBadge?: boolean;
+  badgeValue?: number;
   iconClass: string;
   iconClassFill: string;
 }
@@ -24,9 +24,10 @@ export interface FooterLinkModel {
       routerLinkActive="text-primary-500"
       #rla="routerLinkActive"
     >
-      @if (model().hasBadge) {
+      @if (model().badgeValue; as badgeValue) {
         <i
           pBadge
+          [value]="badgeValue"
           severity="danger"
           [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
         ></i>

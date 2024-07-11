@@ -123,12 +123,12 @@ export class BetService {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  readonly userHasBetRequests$ = this.betRequests$.pipe(
-    map((betRequests) => (betRequests?.length ?? 0) > 0),
+  readonly numBetRequests$ = this.betRequests$.pipe(
+    map((betRequests) => betRequests?.length ?? 0),
   );
 
-  readonly userHasBetRequests = toSignal(this.userHasBetRequests$, {
-    initialValue: false,
+  readonly numBetRequests = toSignal(this.numBetRequests$, {
+    initialValue: 0,
   });
 
   readonly resolvedBets$ = this.bets$.pipe(

@@ -87,7 +87,7 @@ export default class LoggedInAppShellComponent {
           {
             text: 'Betting',
             href: '/betting',
-            hasBadge: this.betService.userHasBetRequests(),
+            badgeValue: this.betService.numBetRequests(),
             iconClass: 'pi pi-money-bill',
             iconClassFill: 'ci-money-bill-fill',
           },
