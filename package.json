@@ -10,6 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "format": "prettier --write .",
+    "postinstall": "patch-package",
     "lint": "ng lint",
     "lint-staged": "lint-staged",
     "generate-db-types": "supabase gen types typescript --project-id 'hqomdxggwvkmaovkytld' --schema public > src/app/shared/util/schema.ts && prettier --write src/app/shared/util/schema.ts"
@@ -39,6 +40,7 @@
     "@supabase/supabase-js": "^2.44.3",
     "chart.js": "^4.4.3",
     "chartjs-plugin-datalabels": "^2.2.0",
+    "patch-package": "^8.0.0",
     "primeflex": "3.3.1",
     "primeicons": "7.0.0",
     "primeng": "17.18.3",

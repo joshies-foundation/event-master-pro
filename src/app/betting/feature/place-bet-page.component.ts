@@ -425,12 +425,14 @@ import { AvatarModule } from 'primeng/avatar';
               buttonLayout="horizontal"
               [step]="1"
               min="1"
-              [allowEmpty]="false"
               incrementButtonIcon="pi pi-plus"
               decrementButtonIcon="pi pi-minus"
-              inputStyleClass="w-full font-semibold text-right"
+              inputStyleClass="w-full font-semibold text-center"
               styleClass="w-full"
               (ngModelChange)="checkEvenOdds()"
+              (onFocus)="
+                inputRequesterBet.input.nativeElement.selectionStart = 100
+              "
             />
           </label>
 
@@ -445,11 +447,13 @@ import { AvatarModule } from 'primeng/avatar';
                 buttonLayout="horizontal"
                 [step]="1"
                 min="1"
-                [allowEmpty]="false"
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
-                inputStyleClass="w-full font-semibold text-right"
+                inputStyleClass="w-full font-semibold text-center"
                 styleClass="w-full"
+                (onFocus)="
+                  inputRequesterBet.input.nativeElement.selectionStart = 100
+                "
               />
             </label>
           }
@@ -587,6 +591,7 @@ export default class PlaceBetPageComponent implements OnInit {
     const betInvolvesLoser = this.betInvolvesLoser();
     const selectedSsEvent = this.selectedSsEvent();
     const ouValue = this.ouValue();
+    const selectedNumberOfTeams = this.selectedNumberOfTeams();
     const selectedChaosEvent = this.selectedChaosEvent();
     const selectedChaosBetSubtype = this.selectedChaosBetSubtype();
     const selectedChaosPlayer = this.selectedChaosPlayer();
@@ -663,6 +668,10 @@ export default class PlaceBetPageComponent implements OnInit {
       submitting ||
       !selectedOpponent ||
       !userPlayer ||
+      !requesterBet ||
+      !opponentBet ||
+      !ouValue ||
+      !selectedNumberOfTeams ||
       requesterBet > userScore ||
       opponentBet > opponentScore
     );
@@ -1005,4 +1014,6 @@ export default class PlaceBetPageComponent implements OnInit {
   ngOnInit() {
     this.selectedBetType.set(this.betType() ?? BetType.Custom);
   }
+
+  protected readonly Infinity = Infinity;
 }
