@@ -6,16 +6,14 @@ import {
 } from '@angular/core';
 import { SessionService } from '../../shared/data-access/session.service';
 import { CountdownTimerComponent } from '../../shared/ui/countdown-timer.component';
-import {
-  PlayerService,
-  PlayerWithUserAndRankInfo,
-} from '../../shared/data-access/player.service';
+import { PlayerService } from '../../shared/data-access/player.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
   SessionStatus,
   RoundPhase,
   GameboardSpaceEffect,
+  BetStatus,
 } from '../../shared/util/supabase-helpers';
 import { RankingsTableComponent } from '../../shared/ui/rankings-table.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
@@ -396,55 +394,16 @@ export default class DashboardPageComponent {
     ),
   );
 
-  private readonly activeBets = toSignal(this.betService.activeBets$);
+  private readonly allBets = toSignal(this.betService.allBetsForThisSession$);
+  private readonly activeBets = computed(() =>
+    this.allBets()?.filter((bet) => bet.status === BetStatus.Active),
+  );
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       session: this.sessionService.session(),
       countdown: this.sessionService.countdown(),
-      players: [
-        ...(this.playerService.players() ?? []),
-        {
-          score: 10,
-          enabled: true,
-          display_name: 'Verbsky',
-          avatar_url:
-            'https://hqomdxggwvkmaovkytld.supabase.co/storage/v1/object/public/avatars/default.webp',
-          can_edit_profile: true,
-          rank: 7,
-          rankEmoji: undefined,
-        } as PlayerWithUserAndRankInfo,
-        {
-          score: 9,
-          enabled: true,
-          display_name: 'Mark',
-          avatar_url:
-            'https://hqomdxggwvkmaovkytld.supabase.co/storage/v1/object/public/avatars/default.webp',
-          can_edit_profile: true,
-          rank: 8,
-          rankEmoji: undefined,
-        } as PlayerWithUserAndRankInfo,
-        {
-          score: 8,
-          enabled: true,
-          display_name: 'Leo',
-          avatar_url:
-            'https://hqomdxggwvkmaovkytld.supabase.co/storage/v1/object/public/avatars/default.webp',
-          can_edit_profile: true,
-          rank: 9,
-          rankEmoji: undefined,
-        } as PlayerWithUserAndRankInfo,
-        {
-          score: 7,
-          enabled: true,
-          display_name: 'Carter',
-          avatar_url:
-            'https://hqomdxggwvkmaovkytld.supabase.co/storage/v1/object/public/avatars/default.webp',
-          can_edit_profile: true,
-          rank: 10,
-          rankEmoji: undefined,
-        } as PlayerWithUserAndRankInfo,
-      ],
+      players: [...(this.playerService.players() ?? [])],
       sessionIsInProgress: this.gameStateService.sessionIsInProgress(),
       showRankingsTable: this.showRankingsTable(),
       rankingsTableHeader: this.rankingsTableHeader(),
