@@ -63,7 +63,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
         label="Save"
         styleClass="w-full mt-2"
         class="flex-1"
-        [hidden]="!hasSubmit()"
+        [hidden]="!editable()"
         (onClick)="save()"
       />
       <p-button
@@ -71,7 +71,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
         styleClass="w-full mt-2"
         class="flex-1"
         severity="success"
-        [hidden]="!hasSubmit()"
+        [hidden]="!editable()"
         [disabled]="submitDisabled()"
         (onClick)="confirmSubmit()"
       />
@@ -100,7 +100,7 @@ export class TournamentBracketComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly hasSubmit = input<boolean>();
+  readonly editable = input<boolean>();
 
   private readonly eventTeams = computed(() =>
     this.eventService
@@ -253,6 +253,9 @@ export class TournamentBracketComponent {
     bracket: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
     selectedNodes: TreeNode<Partial<EventTeamModelWithWinnerFlag>>[],
   ) {
+    if (!this.editable()) {
+      return;
+    }
     this.setMatchWinner(ev.node, bracket, selectedNodes);
     this.submitToggle.set(!this.submitToggle()); // Force Submit button to re-evaluate
   }

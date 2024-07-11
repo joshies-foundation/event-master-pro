@@ -168,11 +168,6 @@ export default class GmToolsPageComponent {
       iconClass: 'pi pi-flag bg-purple-500',
       routerLink: './events',
     },
-    {
-      text: 'Create Brackets',
-      iconClass: 'pi pi-sitemap bg-yellow-500',
-      routerLink: './bracket',
-    },
   ];
 
   readonly gameboardLinks: CardLinkModel[] = [

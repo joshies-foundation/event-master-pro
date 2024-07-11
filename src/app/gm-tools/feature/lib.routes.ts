@@ -226,11 +226,6 @@ const gmToolsRoutes: Routes = [
     resolve: { originalEvent: editEventResolver },
   },
   {
-    path: 'bracket',
-    loadComponent: () => import('./create-bracket-page.component'),
-    data: { pageAnimationLayer: 1 },
-  },
-  {
     path: 'override-bank-balance',
     loadComponent: () => import('./override-bank-balance-page.component'),
     data: { pageAnimationLayer: 1 },
