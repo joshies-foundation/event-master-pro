@@ -4,9 +4,12 @@ import { StatusCode } from 'hono/dist/types/utils/http-status';
 import { corsHeaders } from '../_shared/cors.ts';
 import {
   getPlayerDisplayName,
+  getUserDisplayName,
+  sendPushNotificationToAllUsers,
   sendPushNotificationToPlayers,
   sendPushNotificationToUsers,
 } from '../_shared/push-notification-helpers.ts';
+import { supabaseAdmin } from '../_shared/supabase-admin.ts';
 
 const edgeFunctionName = 'push';
 const app = new Hono().basePath(`/${edgeFunctionName}`);
@@ -178,6 +181,44 @@ app.post('/gm-message', async (c) => {
 
   // send notifications
   await sendPushNotificationToUsers(recipientUserIds, title, body, openUrl);
+
+  return c.body(null, 201, corsHeaders);
+});
+
+interface OverridePayload {
+  playerId: number;
+  numPoints: number;
+  comment: string;
+  replace: boolean;
+}
+
+app.post('/override', async (c) => {
+  // extract request payload
+  const payload = (await c.req.json()) as OverridePayload;
+  console.log('Received GM Override payload:', payload);
+  const { playerId, numPoints, comment, replace } = payload;
+
+  // get gm user id
+  const { data } = await supabaseAdmin
+    .from('game_state')
+    .select('game_master_user_id')
+    .eq('id', 1);
+
+  const gmUserId = data?.[0]?.game_master_user_id;
+
+  const gmDisplayName = gmUserId
+    ? await getUserDisplayName(gmUserId)
+    : 'The GM';
+
+  const playerDisplayName = await getPlayerDisplayName(playerId);
+
+  // send notifications
+  await sendPushNotificationToAllUsers(
+    '🚨 GM ACCOUNTABILITY ALERT',
+    replace
+      ? `${gmDisplayName} just set ${playerDisplayName}'s score to ${numPoints}${comment ? ': "' + comment + '"' : ' for no reason at all'}`
+      : `${gmDisplayName} just ${numPoints > 0 ? 'gave ' + playerDisplayName + ' ' + numPoints + ' point' + (numPoints === 1 ? '' : 's') : 'took ' + Math.abs(numPoints) + ' point' + (numPoints === -1 ? '' : 's') + ' from ' + playerDisplayName}${comment ? ': "' + comment + '"' : ' for no reason at all'}`,
+  );
 
   return c.body(null, 201, corsHeaders);
 });

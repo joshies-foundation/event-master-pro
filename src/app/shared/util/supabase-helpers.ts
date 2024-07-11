@@ -67,6 +67,10 @@ export enum Function {
   SubmitEventScores = 'submit_event_scores',
 }
 
+export enum EdgeFunction {
+  Push = 'push',
+}
+
 export enum StorageBucket {
   Avatars = 'avatars',
   EventImages = 'event-images',

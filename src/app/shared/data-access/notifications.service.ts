@@ -6,7 +6,11 @@ import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/message-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { FunctionsResponse } from '@supabase/functions-js';
-import { showMessageOnError, Table } from '../util/supabase-helpers';
+import {
+  EdgeFunction,
+  showMessageOnError,
+  Table,
+} from '../util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Database, Json } from '../util/schema';
 
@@ -59,6 +63,8 @@ export class NotificationsService {
     body: string;
     openUrl?: string;
   }): Promise<FunctionsResponse<null>> {
-    return this.supabase.functions.invoke('push/gm-message', { body: payload });
+    return this.supabase.functions.invoke(`${EdgeFunction.Push}/gm-message`, {
+      body: payload,
+    });
   }
 }
