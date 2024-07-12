@@ -15,7 +15,11 @@ import { getUserBetData } from '../../shared/util/bet-helpers';
   standalone: true,
   imports: [BetComponent, Button],
   template: `
-    <joshies-bet [bet]="bet()" [userPlayerId]="userPlayerId()" />
+    <joshies-bet
+      [bet]="bet()"
+      [userPlayerId]="userPlayerId()"
+      [showRequestWarning]="true"
+    />
     @if (betCannotBeAccepted()) {
       <p class="text-sm text-red font-semibold">
         {{ betCannotBeAcceptedMessage() }}
