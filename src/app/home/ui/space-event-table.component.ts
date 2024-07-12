@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  booleanAttribute,
+  input,
+} from '@angular/core';
 import {
   GameboardSpaceEffect,
   SpaceEventStatus,
@@ -42,7 +47,10 @@ import { RouterLink } from '@angular/router';
             </td>
 
             <td class="pt-1 text-right">
-              @if (spaceEvent.status === SpaceEventStatus.WaitingToBegin) {
+              @if (
+                spaceEvent.status === SpaceEventStatus.WaitingToBegin &&
+                !readOnly()
+              ) {
                 <!-- TODO: Link to pre-populated place bet page -->
                 <p-button size="small" label="Place Bet" />
               } @else {
@@ -68,6 +76,7 @@ export class SpaceEventTableComponent {
   >();
 
   spaceType = input.required<GameboardSpaceEffect>();
+  readOnly = input(false, { transform: booleanAttribute });
 
   protected readonly SpaceEventStatus = SpaceEventStatus;
 }

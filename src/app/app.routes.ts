@@ -13,6 +13,11 @@ export const routes: Routes = [
     canActivate: [redirectLoggedInToHomePage],
   },
   {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/feature/dashboard-page.component'),
+    canActivate: [redirectUnauthorizedToLoginPage],
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./shell/feature/logged-in-app-shell.component'),
