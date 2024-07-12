@@ -167,7 +167,8 @@ export function specialSpaceEventTemplateFormFactory(
         type: FormFieldType.Number,
         name: 'last-place-points',
         label: `Number of Session Points Earned Per ${specialSpaceEventTemplatePointsLabelSingular().replace(/\b\w/g, (char) => char.toUpperCase())}`,
-        min: 1,
+        min: 0,
+        allowDecimals: true,
         required:
           specialSpaceEventType() ===
           SpecialSpaceEventType.PlayerGainsPointsBasedOnGameScore,

@@ -450,14 +450,15 @@ export default class SpecialSpaceEventPageComponent {
 
   readonly score = signal(0);
 
-  readonly sessionPoints = computed(
-    () =>
+  readonly sessionPoints = computed(() =>
+    Math.floor(
       this.score() *
-      ((
-        this.specialSpaceEvent()?.template?.details as
-          | PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails
-          | undefined
-      )?.sessionPointsPerGamePoint ?? 0),
+        ((
+          this.specialSpaceEvent()?.template?.details as
+            | PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails
+            | undefined
+        )?.sessionPointsPerGamePoint ?? 0),
+    ),
   );
 
   readonly selectingEvent = signal(false);
