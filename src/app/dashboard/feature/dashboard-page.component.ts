@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   inject,
-  signal,
 } from '@angular/core';
 import { SessionService } from '../../shared/data-access/session.service';
 import { CountdownTimerComponent } from '../../shared/ui/countdown-timer.component';
@@ -15,6 +14,7 @@ import {
   RoundPhase,
   GameboardSpaceEffect,
   BetStatus,
+  DuelStatus,
 } from '../../shared/util/supabase-helpers';
 import { RankingsTableComponent } from '../../shared/ui/rankings-table.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
@@ -31,7 +31,7 @@ import { StatusTagComponent } from '../../gm-tools/ui/status-tag.component';
 import { EventInfoComponent } from '../../shared/ui/event-info.component';
 import { EventService } from '../../shared/data-access/event.service';
 import { ButtonModule } from 'primeng/button';
-import { CarouselModule, CarouselPageEvent } from 'primeng/carousel';
+import { CarouselModule } from 'primeng/carousel';
 import { BetService } from '../../shared/data-access/bet.service';
 import { BetComponent } from '../../shared/ui/bet.component';
 
@@ -296,10 +296,108 @@ import { BetComponent } from '../../shared/ui/bet.component';
                     </span>
                     point{{ vm.bankBalance > 1 ? 's' : '' }}
                   </joshies-card>
-
-                  <div class="mt-5">Page: {{ page() }}</div>
-
-                  <!-- <p-button (click)="test()"> Test </p-button> -->
+                </div>
+                <div class="col-4 ml-7">
+                  <!-- Recent Duels -->
+                  <joshies-card
+                    headerText="Latest Duels"
+                    headerIconClass="pi pi-bolt text-primary mr-2"
+                    readOnly
+                    padded
+                  >
+                    @if (vm.latestDuels.length; as numDuels) {
+                      @if (numDuels > visibleDuels) {
+                        <!-- numVisible logic keeps carousel from auto-scrolling when numVisible === container size -->
+                        <p-carousel
+                          [value]="vm.latestDuels"
+                          [numVisible]="
+                            vm.latestDuels.length === visibleDuels
+                              ? visibleDuels + 1
+                              : visibleDuels
+                          "
+                          [numScroll]="1"
+                          [circular]="true"
+                          [showIndicators]="false"
+                          [showNavigators]="false"
+                          autoplayInterval="5000"
+                          orientation="vertical"
+                          verticalViewPortHeight="28rem"
+                        >
+                          <ng-template let-duel pTemplate="item">
+                            <table>
+                              <tr>
+                                <td>
+                                  <joshies-duel-table-avatars
+                                    [duel]="duel"
+                                  ></joshies-duel-table-avatars>
+                                </td>
+                                <td class="pl-3">
+                                  <h4 class="text-lg mb-0">
+                                    {{ duel.winner?.display_name }} beat
+                                    {{ duel.loser?.display_name }} at
+                                    {{ duel.game_name }}
+                                  </h4>
+                                  <p class="mt-2">
+                                    {{ duel.winner?.display_name }}
+                                    took
+                                    <strong>{{
+                                      duel.points_gained_by_winner
+                                    }}</strong>
+                                    (<strong
+                                      >{{ duel.wager_percentage }}%</strong
+                                    >) of {{ duel.loser?.display_name }}'s
+                                    points.
+                                  </p>
+                                </td>
+                              </tr>
+                            </table>
+                          </ng-template>
+                        </p-carousel>
+                      } @else {
+                        <!-- Fixes the issue of carousel going blank when container size decreases to equal numVisible -->
+                        <div class="w-full flex flex-column h-28rem">
+                          @for (duel of vm.latestDuels; track duel.id) {
+                            <div
+                              class="
+                              flex-1"
+                            >
+                              <table>
+                                <tr>
+                                  <td>
+                                    <joshies-duel-table-avatars
+                                      [duel]="duel"
+                                    ></joshies-duel-table-avatars>
+                                  </td>
+                                  <td class="pl-3">
+                                    <h4 class="text-lg mb-0">
+                                      {{ duel.winner?.display_name }} beat
+                                      {{ duel.loser?.display_name }} at
+                                      {{ duel.game_name }}
+                                    </h4>
+                                    <p class="mt-2">
+                                      {{ duel.winner?.display_name }}
+                                      took
+                                      <strong>{{
+                                        duel.points_gained_by_winner
+                                      }}</strong>
+                                      (<strong
+                                        >{{ duel.wager_percentage }}%</strong
+                                      >) of {{ duel.loser?.display_name }}'s
+                                      points.
+                                    </p>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          }
+                        </div>
+                      }
+                    } @else {
+                      <div class="font-italic h-28rem">
+                        Well this is boring, there are no recent duels.
+                      </div>
+                    }
+                  </joshies-card>
                 </div>
               }
             </div>
@@ -318,13 +416,16 @@ import { BetComponent } from '../../shared/ui/bet.component';
                   <!-- numVisible logic keeps carousel from auto-scrolling when numVisible === container size -->
                   <p-carousel
                     [value]="vm.activeBets"
-                    [numVisible]="vm.activeBets.length === 5 ? 6 : 5"
+                    [numVisible]="
+                      vm.activeBets.length === visibleBets
+                        ? visibleBets + 1
+                        : visibleBets
+                    "
                     [numScroll]="1"
                     [circular]="true"
                     [showIndicators]="false"
                     [showNavigators]="false"
                     autoplayInterval="5000"
-                    (onPage)="test($event)"
                   >
                     <ng-template let-bet pTemplate="item">
                       <joshies-bet [bet]="bet"></joshies-bet>
@@ -383,7 +484,7 @@ export default class DashboardPageComponent {
   );
 
   // TODO - put this in the gameStateService because it's also used on the home page
-  readonly specialSpaceEvents = toSignal(
+  private readonly specialSpaceEvents = toSignal(
     this.gameStateService.roundPhase$.pipe(
       switchMap((roundPhase) =>
         roundPhase === RoundPhase.SpecialSpaceEvents
@@ -394,7 +495,7 @@ export default class DashboardPageComponent {
   );
 
   // TODO - put this in the gameStateService because it's also used on the home page
-  readonly duels = toSignal(
+  private readonly duels = toSignal(
     this.gameStateService.roundPhase$.pipe(
       switchMap((roundPhase) =>
         roundPhase === RoundPhase.Duels
@@ -403,6 +504,39 @@ export default class DashboardPageComponent {
       ),
     ),
   );
+
+  private readonly allDuels = toSignal(this.duelService.duels$);
+
+  readonly visibleDuels: number = 4;
+
+  private readonly latestDuels = computed(() => {
+    const completedDuels = this.allDuels()
+      ?.filter(
+        (duel) =>
+          duel.status === DuelStatus.ChallengerWon ||
+          duel.status === DuelStatus.OpponentWon,
+      )
+      .map((duel) => ({
+        ...duel,
+        winner:
+          duel.status === DuelStatus.ChallengerWon
+            ? duel.challenger
+            : duel.opponent,
+        loser:
+          duel.status === DuelStatus.ChallengerWon
+            ? duel.opponent
+            : duel.challenger,
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+      );
+
+    // TODO: get rid of magic number and add slider or other input for duel history size
+    return (completedDuels?.length ?? 0) > 20
+      ? completedDuels?.slice(0, 20)
+      : completedDuels;
+  });
 
   // TODO - put this in the gameStateService because it's also used on the home page
   readonly chaosSpaceEvents = toSignal(
@@ -416,6 +550,7 @@ export default class DashboardPageComponent {
   );
 
   private readonly allBets = toSignal(this.betService.allBetsForThisSession$);
+
   private readonly activeBets = computed(() =>
     this.allBets()?.filter((bet) => bet.status === BetStatus.Active),
   );
@@ -441,14 +576,9 @@ export default class DashboardPageComponent {
       eventForThisRound: this.eventService.eventForThisRound(),
       eventForNextRound: this.eventService.eventForNextRound(),
       activeBets: this.activeBets(),
+      latestDuels: this.latestDuels(),
     }),
   );
-
-  readonly page = signal(0);
-
-  test(ev: CarouselPageEvent) {
-    this.page.set(ev.page ?? 0);
-  }
 
   protected readonly RoundPhase = RoundPhase;
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
