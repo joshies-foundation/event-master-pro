@@ -36,7 +36,7 @@ import {
   SpecialSpaceEventModel,
   UserModel,
 } from '../../shared/util/supabase-types';
-import { DuelStatus } from '../../shared/util/supabase-helpers';
+import { BetStatus, DuelStatus } from '../../shared/util/supabase-helpers';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -47,6 +47,7 @@ import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and
 import { DuelService } from '../../shared/data-access/duel.service';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { BetService } from '../../shared/data-access/bet.service';
 
 interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
   scoreChange: number;
@@ -349,6 +350,7 @@ export default class DuelPageComponent {
   private readonly messageService = inject(MessageService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly betService = inject(BetService);
 
   readonly duelId = input<string>();
   readonly duelId$ = toObservable(this.duelId);
@@ -415,6 +417,8 @@ export default class DuelPageComponent {
 
   readonly selectedChallengerWon = signal(true);
 
+  readonly allBets = toSignal(this.betService.allBetsForThisSession$);
+
   readonly playersWithScoreChanges: Signal<
     PlayerWithScoreChanges[] | undefined
   > = computed((): PlayerWithScoreChanges[] | undefined => {
@@ -429,21 +433,51 @@ export default class DuelPageComponent {
 
     const wagerPercentage = (duel.wager_percentage ?? 0) / 100;
 
+    const activeBets =
+      this.allBets()?.filter((bet) => bet.status === BetStatus.Active) ?? [];
+    const challengerActiveRequesterBets = activeBets.filter(
+      (bet) => bet.requester_player_id === challenger.player_id,
+    );
+    const challengerActiveOpponentBets = activeBets.filter(
+      (bet) => bet.opponent_player_id === challenger.player_id,
+    );
+    let challengerTotalPoints = challenger.score;
+    challengerActiveRequesterBets.forEach((bet) => {
+      challengerTotalPoints += bet.requester_wager;
+    });
+    challengerActiveOpponentBets.forEach((bet) => {
+      challengerTotalPoints += bet.opponent_wager;
+    });
+
+    const opponentActiveRequesterBets = activeBets.filter(
+      (bet) => bet.requester_player_id === opponent.player_id,
+    );
+    const opponentActiveOpponentBets = activeBets.filter(
+      (bet) => bet.opponent_player_id === opponent.player_id,
+    );
+    let opponentTotalPoints = opponent.score;
+    opponentActiveRequesterBets.forEach((bet) => {
+      opponentTotalPoints += bet.requester_wager;
+    });
+    opponentActiveOpponentBets.forEach((bet) => {
+      opponentTotalPoints += bet.opponent_wager;
+    });
+
     return [
       {
         ...challenger,
         scoreChange: Math.round(
           this.selectedChallengerWon()
-            ? opponent.score * wagerPercentage
-            : challenger.score * -wagerPercentage,
+            ? opponentTotalPoints * wagerPercentage
+            : challengerTotalPoints * -wagerPercentage,
         ),
       },
       {
         ...opponent,
         scoreChange: Math.round(
           this.selectedChallengerWon()
-            ? opponent.score * -wagerPercentage
-            : challenger.score * wagerPercentage,
+            ? opponentTotalPoints * -wagerPercentage
+            : challengerTotalPoints * wagerPercentage,
         ),
       },
     ];

@@ -53,6 +53,7 @@ import {
   EveryoneLosesPercentageOfTheirPointsChaosSpaceDetails,
 } from '../../shared/util/supabase-types';
 import {
+  BetStatus,
   SpaceEventStatus,
   trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
@@ -66,6 +67,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { playersWithScoreChangesToPlayerScoreChanges } from '../util/score-change-helpers';
 import { CheckboxModule } from 'primeng/checkbox';
+import { BetService } from '../../shared/data-access/bet.service';
 
 interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
   scoreChange: number;
@@ -529,6 +531,7 @@ export default class ChaosSpaceEventPageComponent {
   private readonly messageService = inject(MessageService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly betService = inject(BetService);
 
   readonly chaosSpaceEventId = input<string>();
   readonly chaosSpaceEventId$ = toObservable(this.chaosSpaceEventId);
@@ -729,18 +732,37 @@ export default class ChaosSpaceEventPageComponent {
       players: this.playerService.players$,
       percentageLoss: this.percentageLoss$,
       playerIdsWhoFailedTask: this.playerIdsWhoFailedTask$,
+      allBets: this.betService.allBetsForThisSession$,
     }).pipe(
-      map(({ players, percentageLoss, playerIdsWhoFailedTask }) =>
-        players!.map((player) => ({
-          ...player,
-          scoreChange: playerIdsWhoFailedTask.includes(player.player_id)
-            ? Math.min(
-                player.score ? -1 : 0,
-                Math.round((percentageLoss / -100) * player.score),
-              )
-            : 0,
-        })),
-      ),
+      map(({ players, percentageLoss, playerIdsWhoFailedTask, allBets }) => {
+        const activeBets =
+          allBets?.filter((bet) => bet.status === BetStatus.Active) ?? [];
+        return players!.map((player) => {
+          const playerActiveRequesterBets = activeBets.filter(
+            (bet) => bet.requester_player_id === player.player_id,
+          );
+          const playerActiveOpponentBets = activeBets.filter(
+            (bet) => bet.opponent_player_id === player.player_id,
+          );
+          let totalPoints = player.score;
+          playerActiveRequesterBets.forEach((bet) => {
+            totalPoints += bet.requester_wager;
+          });
+          playerActiveOpponentBets.forEach((bet) => {
+            totalPoints += bet.opponent_wager;
+          });
+
+          return {
+            ...player,
+            scoreChange: playerIdsWhoFailedTask.includes(player.player_id)
+              ? Math.min(
+                  totalPoints ? -1 : 0,
+                  Math.round((percentageLoss / -100) * totalPoints),
+                )
+              : 0,
+          };
+        });
+      }),
     ),
   );
 
