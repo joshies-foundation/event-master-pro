@@ -123,16 +123,27 @@ export class BetService {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  readonly userHasBetRequests$ = this.betRequests$.pipe(
-    map((betRequests) => (betRequests?.length ?? 0) > 0),
+  readonly numBetRequests$ = this.betRequests$.pipe(
+    map((betRequests) => betRequests?.length ?? 0),
   );
 
-  readonly userHasBetRequests = toSignal(this.userHasBetRequests$, {
-    initialValue: false,
+  readonly numBetRequests = toSignal(this.numBetRequests$, {
+    initialValue: 0,
   });
 
   readonly resolvedBets$ = this.bets$.pipe(
     whenNotNull((bets) => of(bets.filter((bet) => betIsResolved(bet.status)))),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  readonly nonPushResolvedBets$ = this.bets$.pipe(
+    whenNotNull((bets) =>
+      of(
+        bets.filter(
+          (bet) => betIsResolved(bet.status) && bet.status !== BetStatus.Push,
+        ),
+      ),
+    ),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
@@ -154,7 +165,7 @@ export class BetService {
   );
 
   readonly overallWinPercentage$ = combineLatest({
-    resolvedBets: this.resolvedBets$,
+    resolvedBets: this.nonPushResolvedBets$,
     userPlayerId: this.playerService.userPlayerId$,
   }).pipe(
     whenAllValuesNotNull(({ resolvedBets, userPlayerId }) =>

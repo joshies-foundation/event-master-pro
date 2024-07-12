@@ -37,16 +37,18 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     <label class="flex flex-column gap-2 mt-3">
       Over/Under Value
       <p-inputNumber
+        #ouInput
         [(ngModel)]="ouValue"
         [showButtons]="true"
         buttonLayout="horizontal"
         [step]="0.5"
         min="0.5"
-        [allowEmpty]="false"
+        required
         incrementButtonIcon="pi pi-plus"
         decrementButtonIcon="pi pi-minus"
-        inputStyleClass="w-full font-semibold text-right"
+        inputStyleClass="w-full font-semibold text-center"
         styleClass="w-full"
+        (onFocus)="ouInput.input.nativeElement.selectionStart = 100"
       />
     </label>
   `,

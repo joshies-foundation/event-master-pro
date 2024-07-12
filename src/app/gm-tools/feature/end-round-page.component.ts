@@ -70,7 +70,7 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
           <ng-template pTemplate="header">
             <tr>
               <th>Team</th>
-              <th>Pos</th>
+              <th style="padding: 0.75rem 0.25rem">Pos</th>
               <th class="text-right">Score Change</th>
             </tr>
           </ng-template>
@@ -82,7 +82,7 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
             <tr>
               <td>
                 <div class="flex flex-column align-items-center gap-2">
-                  <p-avatarGroup styleClass="mr-2">
+                  <p-avatarGroup>
                     @for (
                       participant of team.participants;
                       track participant.participant_id
@@ -94,15 +94,15 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
                       />
                     }
                   </p-avatarGroup>
-                  <div class="text-xs">
+                  <div class="text-xs text-center">
                     {{ team.participants | participantList }}
                   </div>
                 </div>
               </td>
-              <td>
+              <td class="text-center" style="padding: 0.75rem 0.25rem">
                 {{ team.position }}
               </td>
-              <td class="text-right">
+              <td style="min-width: 10rem">
                 <p-inputNumber
                   #input
                   [formControlName]="team.id"
@@ -112,7 +112,7 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
                   incrementButtonIcon="pi pi-plus"
                   decrementButtonIcon="pi pi-minus"
                   [inputStyleClass]="
-                    'w-full text-right ' +
+                    'w-full text-center ' +
                     (input.value ?? 0 | numberSignColorClass)
                   "
                   [prefix]="input.value ?? 0 | numberSign"

@@ -3,6 +3,7 @@ import {
   realtimeUpdatesFromTable,
   Table,
   Function,
+  EdgeFunction,
 } from '../util/supabase-helpers';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { SessionService } from './session.service';
@@ -179,10 +180,14 @@ export class PlayerService {
     comment: string,
     addLostPointsToBankBalance: boolean,
   ): Promise<PostgrestSingleResponse<undefined>> {
-    return this.supabase.rpc(Function.OverridePoints, {
+    const response = this.supabase.rpc(Function.OverridePoints, {
       data: { playerId, change: numPointsToAdd, comment, replace: false },
       add_lost_points_to_bank_balance: addLostPointsToBankBalance,
     });
+    this.supabase.functions.invoke(`${EdgeFunction.Push}/override`, {
+      body: { playerId, numPoints: numPointsToAdd, comment, replace: false },
+    });
+    return response;
   }
 
   async overridePointsReplace(
@@ -191,10 +196,14 @@ export class PlayerService {
     comment: string,
     addLostPointsToBankBalance: boolean,
   ): Promise<PostgrestSingleResponse<undefined>> {
-    return this.supabase.rpc(Function.OverridePoints, {
+    const response = this.supabase.rpc(Function.OverridePoints, {
       data: { playerId, change: newScore, comment, replace: true },
       add_lost_points_to_bank_balance: addLostPointsToBankBalance,
     });
+    this.supabase.functions.invoke(`${EdgeFunction.Push}/override`, {
+      body: { playerId, numPoints: newScore, comment, replace: true },
+    });
+    return response;
   }
 
   async setEnabled(

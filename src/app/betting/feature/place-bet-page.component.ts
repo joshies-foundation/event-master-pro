@@ -425,12 +425,14 @@ import { AvatarModule } from 'primeng/avatar';
               buttonLayout="horizontal"
               [step]="1"
               min="1"
-              [allowEmpty]="false"
               incrementButtonIcon="pi pi-plus"
               decrementButtonIcon="pi pi-minus"
-              inputStyleClass="w-full font-semibold text-right"
+              inputStyleClass="w-full font-semibold text-center"
               styleClass="w-full"
               (ngModelChange)="checkEvenOdds()"
+              (onFocus)="
+                inputRequesterBet.input.nativeElement.selectionStart = 100
+              "
             />
           </label>
 
@@ -445,11 +447,13 @@ import { AvatarModule } from 'primeng/avatar';
                 buttonLayout="horizontal"
                 [step]="1"
                 min="1"
-                [allowEmpty]="false"
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
-                inputStyleClass="w-full font-semibold text-right"
+                inputStyleClass="w-full font-semibold text-center"
                 styleClass="w-full"
+                (onFocus)="
+                  inputRequesterBet.input.nativeElement.selectionStart = 100
+                "
               />
             </label>
           }
@@ -613,6 +617,7 @@ export default class PlaceBetPageComponent implements OnInit {
     const betInvolvesLoser = this.betInvolvesLoser();
     const selectedSsEvent = this.selectedSsEvent();
     const ouValue = this.ouValue();
+    const selectedNumberOfTeams = this.selectedNumberOfTeams();
     const selectedChaosEvent = this.selectedChaosEvent();
     const selectedChaosBetSubtype = this.selectedChaosBetSubtype();
     const selectedChaosPlayer = this.selectedChaosPlayer();
@@ -631,14 +636,15 @@ export default class PlaceBetPageComponent implements OnInit {
       // team_position bet requirements
       if (
         selectedEventBetSubtype === BetSubtype.TeamPosition &&
-        (!selectedEventTeam || betInvolvesLoser)
+        (!selectedEventTeam || !selectedNumberOfTeams || betInvolvesLoser)
       ) {
         return true;
       }
 
+      // score bet requirements
       if (
         selectedEventBetSubtype === BetSubtype.Score &&
-        (!selectedEventTeam || betInvolvesLoser)
+        (!selectedEventTeam || !ouValue || betInvolvesLoser)
       ) {
         return true;
       }
@@ -667,7 +673,10 @@ export default class PlaceBetPageComponent implements OnInit {
         return true;
       }
 
-      // number_of_losers bets have no further requirements
+      // number_of_losers bet requirements
+      if (selectedChaosBetSubtype === BetSubtype.NumberOfLosers && !ouValue) {
+        return true;
+      }
 
       // player_loses bet requirements
       if (
