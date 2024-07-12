@@ -1048,4 +1048,5 @@ export default class PlaceBetPageComponent implements OnInit {
   ngOnInit() {
     this.selectedBetType.set(this.betType() ?? BetType.Custom);
   }
+  //whitespace commit
 }
