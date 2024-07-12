@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   input,
   model,
 } from '@angular/core';
@@ -42,17 +41,18 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     <!-- Over/Under Value -->
     <label class="flex flex-column gap-2 mt-3">
       <p-inputNumber
+        #numTeamsInput
         [(ngModel)]="selectedNumberOfTeams"
         [showButtons]="true"
         buttonLayout="horizontal"
         [step]="1"
         min="1"
         [max]="max()"
-        [allowEmpty]="false"
         incrementButtonIcon="pi pi-plus"
         decrementButtonIcon="pi pi-minus"
-        inputStyleClass="w-full font-semibold text-right"
+        inputStyleClass="w-full font-semibold text-center"
         styleClass="w-full"
+        (onFocus)="numTeamsInput.input.nativeElement.selectionStart = 100"
       />
     </label>
   `,
@@ -62,10 +62,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 export class TopBottomComponent {
   readonly selectedTopBottomOption = model<'TOP' | 'BOTTOM'>();
   readonly selectedNumberOfTeams = model<number>();
-
-  readonly printSelectedTopBottomOption = effect(() =>
-    console.log(this.selectedTopBottomOption()),
-  );
 
   readonly max = input.required<number>();
 }

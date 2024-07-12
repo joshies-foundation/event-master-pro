@@ -7,13 +7,16 @@ import {
 import { EventModel } from '../util/supabase-types';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TournamentBracketComponent } from './tournament-bracket.component';
+import { EventFormat } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-event-info',
   standalone: true,
-  imports: [NgOptimizedImage, RouterLink],
   template: `
-    <div
+
+    <div class="flex flex-column gap-3">
+      <div
       [routerLink]="readOnly() ? null : '/rules'"
       [fragment]="'event-rules-' + event().id"
       class="flex gap-3"
@@ -26,19 +29,26 @@ import { RouterLink } from '@angular/router';
         class="border-round"
       />
 
-      <div class="flex-grow-1">
-        <h4 class="mt-0 mb-1">{{ event().name }}</h4>
-        <p class="m-0 text-500 text-sm">{{ event().description }}</p>
+        <div class="flex-grow-1">
+          <h4 class="mt-0 mb-1">{{ event().name }}</h4>
+          <p class="m-0 text-500 text-sm">{{ event().description }}</p>
+        </div>
+        @if (!readOnly()) {
+          <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
+        }
       </div>
-
-      @if (!readOnly()) {
-        <i class="pi pi-angle-right ml-2 text-300 align-self-center"></i>
+      
+      @if (event().format === EventFormat.SingleEliminationTournament) {
+        <joshies-tournament-bracket [eventId]="event().id" />
       }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgOptimizedImage, RouterLink, TournamentBracketComponent],
 })
 export class EventInfoComponent {
+  EventFormat = EventFormat;
+
   event = input.required<EventModel>();
   readOnly = input(false, { transform: booleanAttribute });
 }

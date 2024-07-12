@@ -669,7 +669,10 @@ export default class ChaosSpaceEventPageComponent {
       map(([percentageLoss, players]) =>
         players!.map((player) => ({
           ...player,
-          scoreChange: Math.round((percentageLoss / -100) * player.score),
+          scoreChange: Math.min(
+            player.score ? -1 : 0,
+            Math.round((percentageLoss / -100) * player.score),
+          ),
         })),
       ),
     ),
@@ -731,7 +734,10 @@ export default class ChaosSpaceEventPageComponent {
         players!.map((player) => ({
           ...player,
           scoreChange: playerIdsWhoFailedTask.includes(player.player_id)
-            ? Math.round((percentageLoss / -100) * player.score)
+            ? Math.min(
+                player.score ? -1 : 0,
+                Math.round((percentageLoss / -100) * player.score),
+              )
             : 0,
         })),
       ),

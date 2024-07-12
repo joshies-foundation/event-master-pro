@@ -37,6 +37,13 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
       }
     </nav>
   `,
+  styles: `
+    ::ng-deep .p-badge {
+      min-width: 1rem;
+      height: 1rem;
+      line-height: 1.05rem;
+    }
+  `,
 })
 export class FooterComponent {
   footerLinks = input.required<FooterLinkModel[]>();

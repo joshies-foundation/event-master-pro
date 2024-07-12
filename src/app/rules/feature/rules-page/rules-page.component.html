@@ -67,12 +67,13 @@
             }"
             class="flex align-items-center gap-3 mt-0 border-round"
           >
-            <img
-              [ngSrc]="event.image_url || '/assets/icons/icon-96x96.png'"
+            <p-image
+              [src]="event.image_url || '/assets/icons/icon-96x96.png'"
               alt=""
-              height="48"
               width="48"
-              class="border-round"
+              height="48"
+              styleClass="border-round overflow-hidden"
+              [preview]="true"
             />
             {{ event.name }}
 
