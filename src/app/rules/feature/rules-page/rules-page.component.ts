@@ -36,6 +36,7 @@ import { GameboardSpaceComponent } from '../../../gm-tools/ui/gameboard-space.co
 import { GameboardSpaceDescriptionPipe } from '../../../gm-tools/ui/gameboard-space-description.pipe';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
+import { ImageModule } from 'primeng/image';
 
 @Component({
   selector: 'joshies-rules-page',
@@ -59,6 +60,7 @@ import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
     CardComponent,
     GameboardSpaceComponent,
     GameboardSpaceDescriptionPipe,
+    ImageModule,
   ],
 })
 export default class RulesPageComponent {

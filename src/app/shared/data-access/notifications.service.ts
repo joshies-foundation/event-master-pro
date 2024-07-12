@@ -6,7 +6,11 @@ import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/message-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { FunctionsResponse } from '@supabase/functions-js';
-import { showMessageOnError, Table } from '../util/supabase-helpers';
+import {
+  EdgeFunction,
+  showMessageOnError,
+  Table,
+} from '../util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Database, Json } from '../util/schema';
 
@@ -28,20 +32,6 @@ export class NotificationsService {
     this.pushNotificationsAreEnabled$,
     { requireSync: true },
   );
-
-  constructor() {
-    this.swPush.messages
-      .pipe(
-        map((notification) => notification as { notification: Notification }),
-      )
-      .subscribe((message) =>
-        this.messageService.add({
-          severity: 'info',
-          summary: message.notification.title,
-          detail: message.notification.body,
-        }),
-      );
-  }
 
   async enablePushNotifications(userId: string): Promise<void> {
     try {
@@ -73,6 +63,8 @@ export class NotificationsService {
     body: string;
     openUrl?: string;
   }): Promise<FunctionsResponse<null>> {
-    return this.supabase.functions.invoke('push/gm-message', { body: payload });
+    return this.supabase.functions.invoke(`${EdgeFunction.Push}/gm-message`, {
+      body: payload,
+    });
   }
 }

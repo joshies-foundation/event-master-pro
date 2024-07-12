@@ -53,7 +53,7 @@ import { ImageModule } from 'primeng/image';
                 alt=""
                 width="32"
                 height="32"
-                imageClass="border-circle surface-100"
+                styleClass="surface-100 border-circle overflow-hidden"
                 [preview]="true"
               />
               {{ player.display_name }}

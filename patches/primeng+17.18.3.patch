@@ -1,0 +1,39 @@
+diff --git a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
+index ed0528b..7a4fe30 100644
+--- a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
++++ b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
+@@ -14,7 +14,6 @@ import { AngleUpIcon } from 'primeng/icons/angleup';
+ import { TimesIcon } from 'primeng/icons/times';
+ import * as i2 from 'primeng/inputtext';
+ import { InputTextModule } from 'primeng/inputtext';
+-
+ const INPUTNUMBER_VALUE_ACCESSOR = {
+     provide: NG_VALUE_ACCESSOR,
+     useExisting: forwardRef(() => InputNumber),
+@@ -483,7 +482,7 @@ class InputNumber {
+         if (this.maxlength && this.maxlength < this.formatValue(newValue).length) {
+             return;
+         }
+-        this.updateInput(newValue, null, 'spin', null);
++        !DomHandler.isTouchDevice() && this.updateInput(newValue, null, 'spin', null);
+         this.updateModel(event, newValue);
+         this.handleOnInput(event, currentValue, newValue);
+     }
+@@ -498,7 +497,7 @@ class InputNumber {
+             return;
+         }
+         if (!this.disabled) {
+-            this.input?.nativeElement.focus();
++            this.autofocus && this.input?.nativeElement.focus();
+             this.repeat(event, null, 1);
+             event.preventDefault();
+         }
+@@ -529,7 +528,7 @@ class InputNumber {
+             return;
+         }
+         if (!this.disabled) {
+-            this.input?.nativeElement.focus();
++            this.autofocus && this.input?.nativeElement.focus();
+             this.repeat(event, null, -1);
+             event.preventDefault();
+         }
