@@ -96,8 +96,8 @@ import { AvatarModule } from 'primeng/avatar';
           <label class="flex flex-column gap-2">
             Opponent
             <p-dropdown
-              [options]="playersWithoutUser()"
-              [(ngModel)]="selectedOpponent"
+              [options]="staticPlayersWithoutUser"
+              [(ngModel)]="staticSelectedOpponent"
               optionLabel="nameAndScore"
               styleClass="flex"
               placeholder="Select an opponent"
@@ -460,6 +460,11 @@ import { AvatarModule } from 'primeng/avatar';
         </joshies-card>
 
         <!-- Submit Button -->
+        @if (cannotSubmitMessage(); as cannotSubmitMessage) {
+          <div class="text-sm text-red font-semibold">
+            {{ cannotSubmitMessage }}
+          </div>
+        }
         <p-button
           label="Submit Bet"
           styleClass="w-full mt-2"
@@ -561,6 +566,8 @@ export default class PlaceBetPageComponent implements OnInit {
     null,
   );
   readonly selectedGameboardSpace = signal<GameboardSpaceModel | null>(null);
+  staticPlayersWithoutUser: PlayerWithUserAndRankInfo[] = [];
+  staticSelectedOpponent = signal<PlayerWithUserAndRankInfo | null>(null);
 
   readonly loadMessage = computed(() => {
     const userPlayer = this.playerService.userPlayer();
@@ -579,9 +586,28 @@ export default class PlaceBetPageComponent implements OnInit {
       ?.filter((player) => player.user_id !== this.userPlayer()?.user_id),
   );
 
+  readonly cannotSubmitMessage = computed(() => {
+    const userPlayer = this.userPlayer();
+    const requesterBet = this.requesterBet();
+    const selectedOpponent = this.selectedOpponent();
+    const opponentBet = this.opponentBet();
+
+    if (userPlayer && userPlayer.score < requesterBet) {
+      return 'Your wager cannot be higher than your current score';
+    }
+
+    if (selectedOpponent && selectedOpponent.score < opponentBet) {
+      return (
+        "Opponent's wager cannot be higher than their current score " +
+        selectedOpponent.score +
+        '.'
+      );
+    }
+
+    return null;
+  });
+
   readonly submitButtonDisabled = computed(() => {
-    const userScore = this.userPlayer()?.score ?? 0;
-    const opponentScore = this.selectedOpponent()?.score ?? 0;
     const selectedBetType = this.selectedBetType();
     const selectedMainEvent = this.selectedMainEvent();
     const selectedEventBetSubtype = this.selectedEventBetSubtype();
@@ -599,8 +625,7 @@ export default class PlaceBetPageComponent implements OnInit {
     const selectedOpponent = this.selectedOpponent();
     const terms = this.terms();
     const userPlayer = this.userPlayer();
-    const requesterBet = this.requesterBet();
-    const opponentBet = this.opponentBet();
+    const cannotSubmitMessage = this.cannotSubmitMessage();
 
     // Event Bet Requirements
     if (selectedBetType === BetType.MainEvent) {
@@ -611,14 +636,15 @@ export default class PlaceBetPageComponent implements OnInit {
       // team_position bet requirements
       if (
         selectedEventBetSubtype === BetSubtype.TeamPosition &&
-        (!selectedEventTeam || betInvolvesLoser)
+        (!selectedEventTeam || !selectedNumberOfTeams || betInvolvesLoser)
       ) {
         return true;
       }
 
+      // score bet requirements
       if (
         selectedEventBetSubtype === BetSubtype.Score &&
-        (!selectedEventTeam || betInvolvesLoser)
+        (!selectedEventTeam || !ouValue || betInvolvesLoser)
       ) {
         return true;
       }
@@ -647,7 +673,10 @@ export default class PlaceBetPageComponent implements OnInit {
         return true;
       }
 
-      // number_of_losers bets have no further requirements
+      // number_of_losers bet requirements
+      if (selectedChaosBetSubtype === BetSubtype.NumberOfLosers && !ouValue) {
+        return true;
+      }
 
       // player_loses bet requirements
       if (
@@ -665,15 +694,7 @@ export default class PlaceBetPageComponent implements OnInit {
 
     // Universal bet requirements
     return (
-      submitting ||
-      !selectedOpponent ||
-      !userPlayer ||
-      !requesterBet ||
-      !opponentBet ||
-      !ouValue ||
-      !selectedNumberOfTeams ||
-      requesterBet > userScore ||
-      opponentBet > opponentScore
+      submitting || !selectedOpponent || !userPlayer || cannotSubmitMessage
     );
   });
 
@@ -982,13 +1003,26 @@ export default class PlaceBetPageComponent implements OnInit {
     });
   }
 
-  // When parent changes (e.g. someone's score changes externally)
-  // clear child dropdown selection
   constructor() {
     effect(
       () => {
-        this.playersWithoutUser();
-        this.selectedOpponent.set(null);
+        const playersWithoutUser = this.playersWithoutUser();
+        if (playersWithoutUser && this.staticPlayersWithoutUser.length < 1) {
+          this.staticPlayersWithoutUser = playersWithoutUser;
+        }
+      },
+      { allowSignalWrites: true },
+    );
+
+    effect(
+      () => {
+        const playersWithoutUser = this.playersWithoutUser();
+        this.selectedOpponent.set(
+          playersWithoutUser?.find(
+            (player) =>
+              player.player_id === this.staticSelectedOpponent()?.player_id,
+          ) ?? null,
+        );
       },
       { allowSignalWrites: true },
     );
@@ -1014,6 +1048,4 @@ export default class PlaceBetPageComponent implements OnInit {
   ngOnInit() {
     this.selectedBetType.set(this.betType() ?? BetType.Custom);
   }
-
-  protected readonly Infinity = Infinity;
 }

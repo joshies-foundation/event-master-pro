@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   input,
   model,
 } from '@angular/core';
@@ -53,10 +52,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
         decrementButtonIcon="pi pi-minus"
         inputStyleClass="w-full font-semibold text-center"
         styleClass="w-full"
-        (onFocus)="
-          onFocus($event);
-          numTeamsInput.input.nativeElement.selectionStart = 100
-        "
+        (onFocus)="numTeamsInput.input.nativeElement.selectionStart = 100"
       />
     </label>
   `,
@@ -66,14 +62,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 export class TopBottomComponent {
   readonly selectedTopBottomOption = model<'TOP' | 'BOTTOM'>();
   readonly selectedNumberOfTeams = model<number>();
-
-  readonly printSelectedTopBottomOption = effect(() =>
-    console.log(this.selectedTopBottomOption()),
-  );
-
-  onFocus(e: unknown): void {
-    console.log(e);
-  }
 
   readonly max = input.required<number>();
 }
