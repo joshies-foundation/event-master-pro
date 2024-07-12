@@ -126,8 +126,8 @@ export type GameboardSpaceEntryFormModel = Record<
                 [step]="1"
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
-                inputStyleClass="w-full font-semibold text-right"
-                placeholder="Distance"
+                inputStyleClass="w-full font-semibold text-center"
+                placeholder="Dice Roll"
               />
 
               <!-- Space -->

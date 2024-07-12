@@ -105,6 +105,16 @@ export class GameStateService {
       .update({ round_phase: roundPhase })
       .eq('id', 1);
   }
+
+  async setRoundNumberAndPhase(
+    roundNumber: number,
+    roundPhase: RoundPhase,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.GameState)
+      .update({ round_phase: roundPhase, round_number: roundNumber })
+      .eq('id', 1);
+  }
 }
 
 function createSelector<

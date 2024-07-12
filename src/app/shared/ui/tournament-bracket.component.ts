@@ -2,9 +2,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   inject,
   input,
   signal,
+  viewChild,
 } from '@angular/core';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { TreeModule, TreeNodeSelectEvent } from 'primeng/tree';
@@ -16,6 +18,7 @@ import { ParticipantListPipe } from './participant-list.pipe';
 import { ButtonModule } from 'primeng/button';
 import { confirmBackendAction } from '../util/dialog-helpers';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JsonPipe } from '@angular/common';
 
 interface EventTeamModelWithWinnerFlag extends EventTeamModel {
   isWinner: boolean;
@@ -29,30 +32,32 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       [value]="bracket()"
       layout="horizontal"
       [styleClass]="bracket().length ? 'rotate-180' : ''"
-      selectionMode="checkbox"
+      [selectionMode]="'checkbox'"
       (onNodeSelect)="setMatchWinnerEvent($event, bracket(), selectedNodes)"
       [(selection)]="selectedNodes"
       propagateSelectionUp="false"
       propagateSelectionDown="false"
+      class="block mt-3"
     >
       <ng-template let-node pTemplate="node">
-        <div class="flex align-items-center rotate-180 w-15rem h-3rem">
-          <span class="text-sm text-400 mr-1">{{ node.data?.seed }}</span>
-          <p-avatarGroup styleClass="mr-2">
+        <div class="flex align-items-center rotate-180 w-10rem h-2rem">
+          <span class="text-xs text-400 mr-1">{{ node.data?.seed }}</span>
+          <p-avatarGroup styleClass="mr-1">
             @for (
               participant of node.data.participants;
               track participant.participant_id
             ) {
-              <p-avatar
-                [image]="participant.avatar_url"
-                size="large"
-                shape="circle"
-              />
+              <p-avatar [image]="participant.avatar_url" shape="circle" />
             }
           </p-avatarGroup>
-          <span class="text-800">
+          <span class="text-800 text-sm">
             {{ node.data.participants | participantList }}
           </span>
+          @if (node.checked) {
+            <i
+              class="pi pi-check text-white bg-green-500 p-1 text-xs font-bold border-circle block ml-auto mr-1"
+            ></i>
+          }
         </div>
       </ng-template>
     </p-tree>
@@ -61,26 +66,42 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       <!-- Submit Button -->
       <p-button
         label="Save"
-        styleClass="w-full mt-2"
+        styleClass="w-full mt-4"
         class="flex-1"
         [hidden]="!editable()"
         (onClick)="save()"
       />
-      <p-button
-        label="Submit & End Event"
-        styleClass="w-full mt-2"
-        class="flex-1"
-        severity="success"
-        [hidden]="!editable()"
-        [disabled]="submitDisabled()"
-        (onClick)="confirmSubmit()"
-      />
+      <!-- commenting out because we forget what it does -->
+      <!--      <p-button-->
+      <!--        label="Submit & End Event"-->
+      <!--        styleClass="w-full mt-2"-->
+      <!--        class="flex-1"-->
+      <!--        severity="success"-->
+      <!--        [hidden]="!editable()"-->
+      <!--        [disabled]="submitDisabled()"-->
+      <!--        (onClick)="confirmSubmit()"-->
+      <!--      />-->
     </div>
   `,
   styles: `
     :host ::ng-deep {
       .p-tree-toggler {
         display: none;
+      }
+
+      .p-treenode {
+        padding: 0 0.5rem;
+
+        .p-treenode-content {
+          width: max-content;
+          border: none;
+          margin-top: 1.5rem;
+          margin-bottom: -1.25rem;
+
+          &.p-highlight {
+            background-color: var(--yellow-highlight);
+          }
+        }
       }
     }
   `,
@@ -91,6 +112,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
     AvatarGroupModule,
     ParticipantListPipe,
     ButtonModule,
+    JsonPipe,
   ],
 })
 export class TournamentBracketComponent {
@@ -99,6 +121,13 @@ export class TournamentBracketComponent {
   private readonly messageService = inject(MessageService);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  log(x: unknown) {
+    console.log(x);
+  }
+
+  private readonly treeContainer =
+    viewChild.required<ElementRef<HTMLDivElement>>('treeContainer');
 
   readonly editable = input<boolean>();
 
@@ -142,12 +171,14 @@ export class TournamentBracketComponent {
     node.children?.forEach((child) => {
       this.setWinnersRecursively(child, bracket, depth + 1, teamsByRound);
     });
+    node.partialSelected;
     if (
       node.data &&
       node.data.seed &&
       teamsByRound[depth] &&
       teamsByRound[depth].includes(node.data.seed)
     ) {
+      node.checked = true;
       this.selectedNodes.push(node);
       this.setMatchWinner(node, bracket, this.selectedNodes);
     }

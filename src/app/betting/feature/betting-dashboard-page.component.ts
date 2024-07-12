@@ -526,7 +526,13 @@ export default class BettingDashboardPageComponent {
     queryParams: { betType: BetType };
   }[] = [
     {
-      iconClass: PrimeIcons.STAR,
+      iconClass: PrimeIcons.PENCIL,
+      label: 'Custom',
+      routerLink: './place-bet',
+      queryParams: { betType: BetType.Custom },
+    },
+    {
+      iconClass: PrimeIcons.FLAG,
       label: 'Main Event',
       routerLink: './place-bet',
       queryParams: { betType: BetType.MainEvent },
@@ -554,12 +560,6 @@ export default class BettingDashboardPageComponent {
       label: 'Gameboard Move',
       routerLink: './place-bet',
       queryParams: { betType: BetType.GameboardMove },
-    },
-    {
-      iconClass: PrimeIcons.PENCIL,
-      label: 'Custom',
-      routerLink: './place-bet',
-      queryParams: { betType: BetType.Custom },
     },
   ];
 

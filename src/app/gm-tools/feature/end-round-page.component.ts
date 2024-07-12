@@ -40,7 +40,7 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
   selector: 'joshies-end-round-page',
   standalone: true,
   template: `
-    <joshies-page-header headerText="End Round" alwaysSmall>
+    <joshies-page-header headerText="Assign Session Points" alwaysSmall>
       <joshies-header-link
         text="GM Tools"
         routerLink=".."
@@ -50,7 +50,7 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
 
     @if (viewModel(); as vm) {
       <h4 class="mt-6">
-        Tally score changes for round {{ vm.roundNumber }} of {{ vm.numRounds }}
+        Assign session points based on {{ vm.event?.name }} results
       </h4>
 
       <joshies-card padded styleClass="flex flex-column gap-3">
@@ -71,7 +71,7 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
             <tr>
               <th>Team</th>
               <th style="padding: 0.75rem 0.25rem">Pos</th>
-              <th class="text-right">Score Change</th>
+              <th class="text-right">Session Points</th>
             </tr>
           </ng-template>
           <ng-template
@@ -89,13 +89,17 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
                     ) {
                       <p-avatar
                         [image]="participant.avatar_url"
-                        size="large"
                         shape="circle"
                       />
                     }
                   </p-avatarGroup>
                   <div class="text-xs text-center">
-                    {{ team.participants | participantList }}
+                    <p class="mt-0 mb-1">
+                      {{ team.participants | participantList }}
+                    </p>
+                    <p class="m-0 text-500">
+                      Event Score: <strong>{{ team.score }}</strong>
+                    </p>
                   </div>
                 </div>
               </td>
@@ -126,6 +130,7 @@ import { EventFormat } from '../../shared/util/supabase-helpers';
           label="Review Score Changes"
           styleClass="mt-4 w-full"
           (onClick)="reviewScoreChanges()"
+          [disabled]="formGroup().invalid"
           icon="pi pi-chevron-right"
           iconPos="right"
         />
@@ -264,7 +269,7 @@ export default class EndRoundPageComponent {
           this.eventService.eventForThisRound()?.scoring_map ?? [];
         return {
           ...prev,
-          [team.id]: scoringMap[team.position - 1] ?? 0,
+          [team.id]: [scoringMap[team.position - 1] ?? 0, Validators.required],
         };
       }, {}) ?? {},
     );
@@ -292,6 +297,7 @@ export default class EndRoundPageComponent {
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
+      event: this.eventService.eventForThisRound(),
       roundNumber: this.roundNumber(),
       numRounds: this.sessionService.session()?.num_rounds,
       formGroup: this.formGroup(),

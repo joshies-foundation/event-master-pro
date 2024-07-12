@@ -39,6 +39,14 @@
               </div>
               <i class="pi pi-angle-right text-300 align-self-center"></i>
             </div>
+            <p-button
+              label="Place Bet for space someone lands on"
+              styleClass="w-full mt-3"
+              routerLink="/betting/place-bet"
+              [queryParams]="{
+                betType: BetType.GameboardMove,
+              }"
+            />
             @if (vm.userIsGameMaster) {
               <p-button
                 label="Enter Gameboard Moves"
@@ -86,7 +94,15 @@
 
                     <td class="pt-1 text-right">
                       @if (duel.status === DuelStatus.WaitingToBegin) {
-                        <p-button size="small" label="Place Bet" />
+                        <p-button
+                          size="small"
+                          label="Place Bet"
+                          routerLink="/betting/place-bet"
+                          [queryParams]="{
+                            betType: BetType.DuelWinner,
+                            duelId: duel.id,
+                          }"
+                        />
                       } @else {
                         <joshies-status-tag [status]="duel.status" />
                       }
@@ -142,12 +158,39 @@
           }
           @case (RoundPhase.Event) {
             @if (vm.eventForThisRound; as event) {
-              <joshies-event-info [event]="event" />
+              <joshies-event-info [event]="event" showBracket />
               @if (vm.userIsGameMaster) {
                 <p-button
-                  label="Enter Event Scores"
+                  label="Edit Teams"
+                  styleClass="w-full mt-2"
+                  [routerLink]="'/gm-tools/events/teams/' + event.id"
+                  icon="pi pi-users"
+                />
+                @if (event.format !== EventFormat.ScoreBasedSingleRound) {
+                  <p-button
+                    label="Edit Event"
+                    styleClass="w-full mt-2"
+                    [routerLink]="'/gm-tools/events/edit/' + event.id"
+                    icon="pi pi-flag"
+                  />
+                  <p-button
+                    label="Edit Bracket"
+                    styleClass="w-full mt-2"
+                    routerLink="/gm-tools/enter-tournament-results"
+                    icon="pi pi-sitemap"
+                  />
+                }
+                <p-button
+                  label="Enter Final Scores"
                   styleClass="w-full mt-2"
                   routerLink="/gm-tools/enter-event-scores"
+                  icon="pi pi-list"
+                />
+                <p-button
+                  label="Assign Session Points Based on Result"
+                  styleClass="w-full mt-2"
+                  routerLink="/gm-tools/end-round"
+                  icon="pi pi-check-circle"
                 />
               }
             } @else {
@@ -161,15 +204,25 @@
             @if (vm.roundNumber < vm.numRounds) {
               Stretch those dice-rolling fingers in preparation for the next
               turn.
+
+              <p-button
+                label="Place Bet for space someone lands on"
+                styleClass="w-full mt-3"
+                routerLink="/betting/place-bet"
+                [queryParams]="{
+                  betType: BetType.GameboardMove,
+                }"
+              />
+
+              @if (vm.userIsGameMaster) {
+                <p-button
+                  [label]="'Start Turn ' + (vm.roundNumber + 1)"
+                  styleClass="w-full mt-3"
+                  (onClick)="proceedToGameboardMovePhase(vm.roundNumber + 1)"
+                />
+              }
             } @else {
               🏆 Awards Ceremony
-            }
-            @if (vm.userIsGameMaster) {
-              <p-button
-                label="Submit Scores & End Round"
-                styleClass="w-full mt-2"
-                routerLink="/gm-tools/end-round"
-              />
             }
           }
         }
@@ -186,7 +239,7 @@
             <p class="mt-0 mb-1">
               Special Space events, duels, and Chaos Space events.
             </p>
-            <p class="mt-0">Then, our next event:</p>
+            <p class="mt-0">Then, our next main event:</p>
 
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
@@ -199,7 +252,7 @@
           }
           @case (RoundPhase.SpecialSpaceEvents) {
             <p class="mt-0 mb-1">Duels and Chaos Space events.</p>
-            <p class="mt-0">Then, our next event:</p>
+            <p class="mt-0">Then, our next main event:</p>
 
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
@@ -211,7 +264,9 @@
             }
           }
           @case (RoundPhase.Duels) {
-            <p class="mt-0">Chaos Space events, and then our next event:</p>
+            <p class="mt-0">
+              Chaos Space events, and then our next main event:
+            </p>
 
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
@@ -241,7 +296,7 @@
                 >.
               </p>
 
-              <p class="mt-0">Then, our next event:</p>
+              <p class="mt-0">Then, our next main event:</p>
 
               @if (vm.eventForNextRound; as event) {
                 <joshies-event-info [event]="event" />
@@ -264,7 +319,7 @@
                 >.
               </p>
 
-              <p class="mt-0">Then, our next event:</p>
+              <p class="mt-0">Then, our next main event:</p>
 
               @if (vm.eventForNextRound; as event) {
                 <joshies-event-info [event]="event" />
@@ -282,13 +337,19 @@
       </joshies-card>
     }
 
-    @if (vm.sessionHasNotStarted && vm.userIsGameMaster) {
-      <p-button
-        severity="success"
-        [label]="'Start ' + vm.session.name + '!'"
-        styleClass="w-full"
-        (onClick)="startSession()"
-      />
+    @if (vm.sessionHasNotStarted) {
+      @if (vm.userIsGameMaster) {
+        <p-button
+          severity="success"
+          [label]="'Start ' + vm.session.name + '!'"
+          styleClass="w-full"
+          (onClick)="startSession()"
+        />
+      } @else {
+        <p class="mt-8 text-center text-500 font-italic">
+          is about to begin...
+        </p>
+      }
     }
 
     @if (vm.showRankingsTable) {

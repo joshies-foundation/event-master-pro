@@ -146,8 +146,9 @@ import { AvatarModule } from 'primeng/avatar';
                 Duel
                 <p-dropdown
                   [options]="openDuels()"
-                  [(ngModel)]="selectedDuel"
+                  [(ngModel)]="selectedDuelId"
                   optionLabel="duelName"
+                  optionValue="id"
                   styleClass="w-full"
                   emptyMessage="No open duels"
                   placeholder="Select a duel"
@@ -172,8 +173,9 @@ import { AvatarModule } from 'primeng/avatar';
                 Special Space Event
                 <p-dropdown
                   [options]="openSsEvents()"
-                  [(ngModel)]="selectedSsEvent"
+                  [(ngModel)]="selectedSsEventId"
                   optionLabel="ssEventName"
+                  optionValue="ssEvent.id"
                   styleClass="w-full"
                   emptyMessage="No open special space events"
                   placeholder="Select a special space event"
@@ -191,8 +193,9 @@ import { AvatarModule } from 'primeng/avatar';
                 Chaos Space Event
                 <p-dropdown
                   [options]="openChaosEvents()"
-                  [(ngModel)]="selectedChaosEvent"
+                  [(ngModel)]="selectedChaosEventId"
                   optionLabel="template.name"
+                  optionValue="id"
                   styleClass="w-full"
                   emptyMessage="No open chaos space events"
                   placeholder="Select a chaos space event"
@@ -279,8 +282,9 @@ import { AvatarModule } from 'primeng/avatar';
                 Event
                 <p-dropdown
                   [options]="openMainEvents()"
-                  [(ngModel)]="selectedMainEvent"
+                  [(ngModel)]="selectedMainEventId"
                   optionLabel="name"
+                  optionValue="id"
                   styleClass="w-full"
                   emptyMessage="No open events"
                   placeholder="Select an event"
@@ -516,7 +520,13 @@ export default class PlaceBetPageComponent implements OnInit {
   readonly BetSubtype = BetSubtype;
   readonly EventFormat = EventFormat;
 
+  // query params
   readonly betType = input<BetType>();
+  readonly duelId = input<string>();
+  readonly eventId = input<string>();
+  readonly ssEventId = input<string>();
+  readonly chaosEventId = input<string>();
+
   private readonly ssEvents = toSignal(
     this.gameboardService.specialSpaceEventsForThisTurn$,
   );
@@ -530,7 +540,14 @@ export default class PlaceBetPageComponent implements OnInit {
   readonly submitting = signal(false);
   readonly userPlayer = this.playerService.userPlayer;
   readonly selectedOpponent = signal<PlayerWithUserAndRankInfo | null>(null);
-  readonly selectedDuel = signal<DuelModel | null>(null);
+  readonly selectedDuelId = signal<DuelModel['id'] | null>(null);
+  readonly selectedDuel = computed(
+    () =>
+      this.duelService
+        .duelsForThisTurn()
+        ?.find((duel) => duel.id === this.selectedDuelId()) ?? null,
+  );
+
   readonly betTypes = [
     generateBetTypeObject(BetType.MainEvent),
     generateBetTypeObject(BetType.DuelWinner),
@@ -541,19 +558,46 @@ export default class PlaceBetPageComponent implements OnInit {
   ];
   readonly selectedBetType = signal<BetType>(BetType.Custom);
   readonly selectedWinner = signal<PlayerWithUserAndRankInfo | null>(null);
-  readonly selectedSsEvent = signal<{
-    ssEventName: string;
-    ssEvent: SpecialSpaceEventModel;
-  } | null>(null);
+
+  readonly selectedSsEventId = signal<SpecialSpaceEventModel['id'] | null>(
+    null,
+  );
+
+  readonly selectedSsEvent = computed(
+    () =>
+      this.openSsEvents()?.find(
+        (ssEvent) => ssEvent.ssEvent.id === this.selectedSsEventId(),
+      ) ?? null,
+  );
+
   readonly selectedOuOption = signal<'OVER' | 'UNDER'>('OVER');
   readonly ouValue = signal<number>(0.5);
-  readonly selectedChaosEvent = signal<ChaosSpaceEventModel | null>(null);
+
+  readonly selectedChaosEventId = signal<ChaosSpaceEventModel['id'] | null>(
+    null,
+  );
+
+  readonly selectedChaosEvent = computed(
+    () =>
+      this.openChaosEvents()?.find(
+        (chaosEvent) => chaosEvent.id === this.selectedSsEventId(),
+      ) ?? null,
+  );
+
   readonly selectedChaosBetSubtype = signal<BetSubtype>(
     BetSubtype.NumberOfLosers,
   );
   readonly selectedChaosPlayer = signal<PlayerWithUserAndRankInfo | null>(null);
   readonly selectedWinsLoses = signal<'WINS' | 'LOSES'>('LOSES');
-  readonly selectedMainEvent = signal<EventModel | null>(null);
+  readonly selectedMainEventId = signal<EventModel['id'] | null>(null);
+
+  readonly selectedMainEvent = computed(
+    () =>
+      this.eventService
+        .events()
+        ?.find((event) => event.id === this.selectedMainEventId()) ?? null,
+  );
+
   readonly selectedEventBetSubtype = signal<BetSubtype>(
     BetSubtype.TeamPosition,
   );
@@ -1047,5 +1091,9 @@ export default class PlaceBetPageComponent implements OnInit {
 
   ngOnInit() {
     this.selectedBetType.set(this.betType() ?? BetType.Custom);
+    this.selectedDuelId.set(Number(this.duelId()) ?? null);
+    this.selectedMainEventId.set(Number(this.eventId()) ?? null);
+    this.selectedSsEventId.set(Number(this.ssEventId()) ?? null);
+    this.selectedChaosEventId.set(Number(this.chaosEventId()) ?? null);
   }
 }

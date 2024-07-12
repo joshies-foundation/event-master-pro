@@ -92,11 +92,17 @@ import { EventModel } from '../../shared/util/supabase-types';
               !userIsGameMaster() || index + 1 < currentRoundNumber()
             "
           >
-            @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
-              <div class="flex" cdkDragHandle>
-                <i class="pi pi-bars text-300 align-self-center pl-2 pr-3"></i>
-              </div>
-            }
+            <div
+              class="flex flex-column align-items-center justify-content-center text-sm text-center"
+            >
+              {{ index + 1 }}
+              @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
+                <i
+                  class="pi pi-bars text-300 align-self-center pl-2 pr-3"
+                  cdkDragHandle
+                ></i>
+              }
+            </div>
 
             <!-- Event Image -->
             <img

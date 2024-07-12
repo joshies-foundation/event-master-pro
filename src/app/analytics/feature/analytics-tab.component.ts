@@ -118,11 +118,12 @@ const numTransactionsToShow = 3;
     }
 
     <!-- Previous Session -->
-    <joshies-card
-      headerText="Previous Sessions"
-      headerIconClass="pi pi-history text-primary mr-2"
-      [links]="previousSessionsLinks"
-    />
+    <!-- Previous session data is not available yet -->
+    <!--    <joshies-card-->
+    <!--      headerText="Previous Sessions"-->
+    <!--      headerIconClass="pi pi-history text-primary mr-2"-->
+    <!--      [links]="previousSessionsLinks"-->
+    <!--    />-->
   `,
   host: {
     class: 'block pb-6',
@@ -195,7 +196,9 @@ export default class AnalyticsTabComponent {
         position: 'bottom',
         labels: {
           color: textColor,
-          pointStyle: 'rect',
+          pointStyle: 'circle',
+          boxWidth: 8,
+          boxHeight: 8,
           usePointStyle: true,
         },
       },

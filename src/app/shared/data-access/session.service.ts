@@ -131,7 +131,7 @@ export class SessionService {
       .eq('id', 1);
   }
 
-  async endRound(
+  async submitSessionPointsForEvent(
     roundNumber: number,
     teamScoreChanges: Record<string, number>,
   ): Promise<PostgrestSingleResponse<undefined>> {

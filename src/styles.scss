@@ -7,6 +7,7 @@
   --font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   --font-feature-settings: normal;
+  --yellow-highlight: var(--yellow-100);
 }
 
 html,
@@ -222,7 +223,7 @@ $sizeVariants: (
 }
 
 .bg-highlight {
-  background-color: var(--yellow-100) !important;
+  background-color: var(--yellow-highlight) !important;
 }
 
 .text-green {
@@ -262,20 +263,18 @@ $sizeVariants: (
 @media (prefers-color-scheme: light) {
   :root {
     --surface-ground: #f3f2f8; // iOS app surface color
+    --yellow-highlight: var(--yellow-100);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --surface-ground: black; // iOS app surface color
+    --yellow-highlight: var(--yellow-900);
   }
 
   .bg-header-footer-alpha {
     background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
-  }
-
-  .bg-highlight {
-    background-color: var(--yellow-900) !important;
   }
 
   .text-green {

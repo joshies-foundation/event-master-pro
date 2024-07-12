@@ -55,8 +55,8 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
         <ng-template pTemplate="header">
           <tr>
             <th>Team</th>
+            <th>Event Score</th>
             <th>Pos</th>
-            <th>Score</th>
           </tr>
         </ng-template>
         <ng-template
@@ -75,7 +75,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                     ) {
                       <p-avatar
                         [image]="participant.avatar_url"
-                        size="large"
                         shape="circle"
                       />
                     }
@@ -87,9 +86,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
               </div>
             </td>
             <td>
-              {{ positions[team.id] }}
-            </td>
-            <td>
               <p-inputNumber
                 [formControlName]="team.id"
                 [showButtons]="true"
@@ -98,12 +94,15 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                 [allowEmpty]="false"
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
-                inputStyleClass="w-full font-semibold text-right"
+                inputStyleClass="w-full font-semibold text-center"
                 class="w-full"
                 styleClass="w-full"
                 chan
                 (ngModelChange)="calculatePositions()"
               />
+            </td>
+            <td>
+              {{ positions[team.id] }}
             </td>
           </tr>
         </ng-template>
@@ -226,7 +225,7 @@ export default class EnterEventScoresPageComponent implements OnInit {
       submittingSignal: this.submitting,
       confirmationService: this.confirmationService,
       messageService: this.messageService,
-      successNavigation: '..',
+      successNavigation: '/gm-tools/end-round',
       activatedRoute: this.activatedRoute,
       router: this.router,
     });

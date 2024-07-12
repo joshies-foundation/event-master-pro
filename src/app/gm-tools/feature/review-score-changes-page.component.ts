@@ -56,7 +56,7 @@ import { EventService } from '../../shared/data-access/event.service';
 
     @if (viewModel(); as vm) {
       <h4 class="mt-6">
-        Score changes for round {{ vm.roundNumber }} of {{ vm.numRounds }}
+        Session points for round {{ vm.roundNumber }} of {{ vm.numRounds }}
         <span class="text-500 font-italic">(Draft)</span>
       </h4>
 
@@ -113,9 +113,9 @@ import { EventService } from '../../shared/data-access/event.service';
       </p-table>
 
       <p-button
-        [label]="'Submit Scores for Round ' + vm.roundNumber"
+        label="Submit Session Points"
         (onClick)="
-          submitPlayerScoreChanges(vm.roundNumber!, vm.teamScoreChanges)
+          submitSessionPointsForEvent(vm.roundNumber!, vm.teamScoreChanges)
         "
         severity="success"
         styleClass="mt-4 w-full"
@@ -174,14 +174,17 @@ export default class ReviewScoreChangesPageComponent {
 
   readonly submittingInProgress = signal(false);
 
-  async submitPlayerScoreChanges(
+  async submitSessionPointsForEvent(
     roundNumber: number,
     teamScoreChanges: Record<string, number>,
   ): Promise<void> {
     this.submittingInProgress.set(true);
 
     const { error } = await showMessageOnError(
-      this.sessionService.endRound(roundNumber, teamScoreChanges),
+      this.sessionService.submitSessionPointsForEvent(
+        roundNumber,
+        teamScoreChanges,
+      ),
       this.messageService,
     );
 

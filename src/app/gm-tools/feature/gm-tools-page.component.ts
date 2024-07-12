@@ -84,31 +84,36 @@ export default class GmToolsPageComponent {
         },
       ],
       [RoundPhase.Event]: [
-        eventFormat === EventFormat.ScoreBasedSingleRound
-          ? {
-              text: 'Enter Event Scores',
-              iconClass: 'pi pi-bolt bg-orange-500',
-              routerLink: './enter-event-scores',
-            }
-          : this.eventFormat() === EventFormat.SingleEliminationTournament
-            ? {
-                text: 'Enter Tournament Results',
+        ...(eventFormat === EventFormat.ScoreBasedSingleRound
+          ? [
+              {
+                text: 'Enter Event Scores',
                 iconClass: 'pi pi-bolt bg-orange-500',
-                routerLink: './enter-tournament-results',
-              }
-            : {
-                text: 'No Event Found',
-                iconClass: 'pi pi-question bg-red-500',
-                routerLink: '.',
+                routerLink: './enter-event-scores',
               },
+              {
+                text: 'Assign Session Points Based on Event Results',
+                iconClass: 'pi pi-check-circle bg-green-500',
+                routerLink: './end-round',
+              },
+            ]
+          : this.eventFormat() === EventFormat.SingleEliminationTournament
+            ? [
+                {
+                  text: 'Enter Tournament Results',
+                  iconClass: 'pi pi-bolt bg-orange-500',
+                  routerLink: './enter-tournament-results',
+                },
+              ]
+            : [
+                {
+                  text: 'No Event Found',
+                  iconClass: 'pi pi-question bg-red-500',
+                  routerLink: '.',
+                },
+              ]),
       ],
-      [RoundPhase.WaitingForNextRound]: [
-        {
-          text: 'End Round & Tally Points',
-          iconClass: 'pi pi-check-circle bg-green-500',
-          routerLink: './end-round',
-        },
-      ],
+      [RoundPhase.WaitingForNextRound]: [],
       undefined: null,
     };
   });

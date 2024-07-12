@@ -37,7 +37,9 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { whenNotNull } from '../../../shared/util/rxjs-helpers';
 import {
+  BetType,
   DuelStatus,
+  EventFormat,
   GameboardSpaceEffect,
   RoundPhase,
   SessionStatus,
@@ -293,8 +295,26 @@ export default class HomePageComponent {
     });
   }
 
+  proceedToGameboardMovePhase(nextRoundNumber: number): void {
+    confirmBackendAction({
+      confirmationMessageText: 'Proceed to the Gameboard Moves phase?',
+      successMessageText: "We're now in the Gameboard Moves phase",
+      action: async () =>
+        this.gameStateService.setRoundNumberAndPhase(
+          nextRoundNumber,
+          RoundPhase.GameboardMoves,
+        ),
+      messageService: this.messageService,
+      confirmationService: this.confirmationService,
+      submittingSignal: this.proceedingToNextPhase,
+      successNavigation: null,
+    });
+  }
+
   protected readonly RoundPhase = RoundPhase;
   protected readonly SpaceEventStatus = SpaceEventStatus;
   protected readonly DuelStatus = DuelStatus;
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
+  protected readonly EventFormat = EventFormat;
+  protected readonly BetType = BetType;
 }

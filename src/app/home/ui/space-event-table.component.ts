@@ -5,6 +5,7 @@ import {
   input,
 } from '@angular/core';
 import {
+  BetType,
   GameboardSpaceEffect,
   SpaceEventStatus,
 } from '../../shared/util/supabase-helpers';
@@ -27,7 +28,7 @@ import { RouterLink } from '@angular/router';
         @for (spaceEvent of spaceEvents(); track spaceEvent.id) {
           <tr>
             <td class="pt-1 pr-2">
-              <div class="flex align-items-center gap-2">
+              <div class="flex align-items-center gap-2 text-sm">
                 <p-avatar
                   [image]="spaceEvent.player?.avatar_url"
                   shape="circle"
@@ -52,7 +53,16 @@ import { RouterLink } from '@angular/router';
                 !readOnly()
               ) {
                 <!-- TODO: Link to pre-populated place bet page -->
-                <p-button size="small" label="Place Bet" />
+                <p-button
+                  size="small"
+                  label="Place Bet"
+                  routerLink="/betting/place-bet"
+                  [queryParams]="{
+                    betType: spaceType() + '_space_event',
+                    ssEventId: spaceEvent.id,
+                    chaosEventId: spaceEvent.id,
+                  }"
+                />
               } @else {
                 <joshies-status-tag [status]="spaceEvent.status" />
               }
@@ -79,4 +89,5 @@ export class SpaceEventTableComponent {
   readOnly = input(false, { transform: booleanAttribute });
 
   protected readonly SpaceEventStatus = SpaceEventStatus;
+  protected readonly BetType = BetType;
 }
