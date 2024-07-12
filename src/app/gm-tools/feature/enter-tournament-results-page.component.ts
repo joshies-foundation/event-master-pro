@@ -32,7 +32,7 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
     </joshies-page-header>
 
     @if (eventForThisRound(); as event) {
-      <joshies-tournament-bracket [eventId]="event.id" [hasSubmit]="true" />
+      <joshies-tournament-bracket [eventId]="event.id" [editable]="true" />
     } @else {
       <p-skeleton height="30rem" />
     }
