@@ -4,6 +4,7 @@ import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-speci
 import { editChaosSpaceEventTemplateResolver } from '../data-access/edit-chaos-space-event-template.resolver';
 import { editEventResolver } from '../data-access/edit-event.resolver';
 import { editSessionResolver } from '../data-access/edit-session.resolver';
+import { editGameStateResolver } from '../data-access/edit-game-state.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -175,6 +176,12 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./edit-session-page.component'),
     data: { pageAnimationLayer: 1 },
     resolve: { resolveData: editSessionResolver },
+  },
+  {
+    path: 'edit-game-state',
+    loadComponent: () => import('./edit-game-state-page.component'),
+    data: { pageAnimationLayer: 1 },
+    resolve: { resolveData: editGameStateResolver },
   },
   {
     path: 'start-session-early',

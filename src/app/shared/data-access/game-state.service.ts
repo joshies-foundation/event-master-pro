@@ -115,6 +115,15 @@ export class GameStateService {
       .update({ round_phase: roundPhase, round_number: roundNumber })
       .eq('id', 1);
   }
+
+  async updateGameState(
+    partialGameState: Partial<GameStateModel>,
+  ): Promise<PostgrestSingleResponse<null>> {
+    return this.supabase
+      .from(Table.GameState)
+      .update(partialGameState)
+      .eq('id', 1);
+  }
 }
 
 function createSelector<

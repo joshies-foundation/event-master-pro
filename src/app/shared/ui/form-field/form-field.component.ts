@@ -93,6 +93,7 @@ export type FormField = {
           currency?: string;
           suffix?: string;
           inputStyleClass?: string;
+          allowDecimals?: boolean;
         }
       | {
           type: FormFieldType.Dropdown;

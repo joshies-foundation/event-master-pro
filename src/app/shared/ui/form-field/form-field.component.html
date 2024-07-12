@@ -39,9 +39,11 @@
           [max]="field.max"
           [suffix]="field.suffix"
           [mode]="field.mode ?? 'decimal'"
+          [minFractionDigits]="0"
+          [maxFractionDigits]="field.allowDecimals ? 3 : 0"
           [formControl]="field.control"
           [styleClass]="'w-full ' + (field.styleClass ?? '')"
-          [inputStyleClass]="field.inputStyleClass"
+          [inputStyleClass]="'text-center ' + field.inputStyleClass"
         />
       }
       @case (FormFieldType.Dropdown) {

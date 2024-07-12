@@ -5,7 +5,11 @@ import {
   Function,
   SessionStatus,
 } from '../util/supabase-helpers';
-import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
+import {
+  PostgrestResponse,
+  PostgrestSingleResponse,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 import {
   Observable,
   concat,
@@ -157,5 +161,9 @@ export class SessionService {
     return this.supabase.rpc(Function.OverrideBankBalance, {
       data: { sessionId, change: newBankBalance, replace: true },
     });
+  }
+
+  async getAllSessions(): Promise<PostgrestResponse<SessionModel>> {
+    return this.supabase.from(Table.Session).select('*');
   }
 }

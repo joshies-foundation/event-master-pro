@@ -229,6 +229,11 @@ export default class GmToolsPageComponent {
         routerLink: './edit-session',
       },
       {
+        text: 'Override Game State',
+        iconClass: 'pi pi-database bg-green-500',
+        routerLink: './edit-game-state',
+      },
+      {
         text: 'Override Bank Balance',
         iconClass: 'pi pi-building-columns bg-yellow-500',
         routerLink: './override-bank-balance',
