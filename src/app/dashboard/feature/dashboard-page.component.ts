@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { SessionService } from '../../shared/data-access/session.service';
 import { CountdownTimerComponent } from '../../shared/ui/countdown-timer.component';
@@ -30,7 +31,7 @@ import { StatusTagComponent } from '../../gm-tools/ui/status-tag.component';
 import { EventInfoComponent } from '../../shared/ui/event-info.component';
 import { EventService } from '../../shared/data-access/event.service';
 import { ButtonModule } from 'primeng/button';
-import { CarouselModule } from 'primeng/carousel';
+import { CarouselModule, CarouselPageEvent } from 'primeng/carousel';
 import { BetService } from '../../shared/data-access/bet.service';
 import { BetComponent } from '../../shared/ui/bet.component';
 
@@ -295,6 +296,10 @@ import { BetComponent } from '../../shared/ui/bet.component';
                     </span>
                     point{{ vm.bankBalance > 1 ? 's' : '' }}
                   </joshies-card>
+
+                  <div class="mt-5">Page: {{ page() }}</div>
+
+                  <!-- <p-button (click)="test()"> Test </p-button> -->
                 </div>
               }
             </div>
@@ -302,27 +307,41 @@ import { BetComponent } from '../../shared/ui/bet.component';
           <!-- Open Bets -->
           <div class="sticky" style="bottom: 5%;">
             <joshies-card
+              class="ticker"
               headerText="Open Bets"
               headerIconClass="pi pi-money-bill text-primary mr-2"
               readOnly
               padded
             >
-              @if (vm.activeBets; as bets) {
-                <p-carousel
-                  [value]="bets"
-                  [numVisible]="5"
-                  [numScroll]="1"
-                  [circular]="true"
-                  [showIndicators]="false"
-                  [showNavigators]="false"
-                  autoplayInterval="5000"
-                >
-                  <ng-template let-bet pTemplate="item">
-                    <joshies-bet [bet]="bet"></joshies-bet>
-                  </ng-template>
-                </p-carousel>
+              @if (vm.activeBets.length; as numBets) {
+                @if (numBets > visibleBets) {
+                  <!-- numVisible logic keeps carousel from auto-scrolling when numVisible === container size -->
+                  <p-carousel
+                    [value]="vm.activeBets"
+                    [numVisible]="vm.activeBets.length === 5 ? 6 : 5"
+                    [numScroll]="1"
+                    [circular]="true"
+                    [showIndicators]="false"
+                    [showNavigators]="false"
+                    autoplayInterval="5000"
+                    (onPage)="test($event)"
+                  >
+                    <ng-template let-bet pTemplate="item">
+                      <joshies-bet [bet]="bet"></joshies-bet>
+                    </ng-template>
+                  </p-carousel>
+                } @else {
+                  <!-- Fixes the issue of carousel going blank when container size decreases to equal numVisible -->
+                  <div class="w-full flex flex-row ">
+                    @for (bet of vm.activeBets; track bet.id) {
+                      <joshies-bet class="flex-1" [bet]="bet"></joshies-bet>
+                    }
+                  </div>
+                }
               } @else {
-                <span>No open bets to show</span>
+                <span class="font-italic"
+                  >Seriously? No open bets? It's not even real money.</span
+                >
               }
             </joshies-card>
           </div>
@@ -333,9 +352,11 @@ import { BetComponent } from '../../shared/ui/bet.component';
     }
   `,
   styles: `
-    .fixed-height-card ::ng-deep {
-      div {
-        height: 9rem;
+    .ticker ::ng-deep {
+      > div {
+        max-height: 10rem;
+        min-height: 8rem;
+        overflow: hidden;
       }
     }
   `,
@@ -399,6 +420,8 @@ export default class DashboardPageComponent {
     this.allBets()?.filter((bet) => bet.status === BetStatus.Active),
   );
 
+  readonly visibleBets: number = 5;
+
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       session: this.sessionService.session(),
@@ -420,6 +443,12 @@ export default class DashboardPageComponent {
       activeBets: this.activeBets(),
     }),
   );
+
+  readonly page = signal(0);
+
+  test(ev: CarouselPageEvent) {
+    this.page.set(ev.page ?? 0);
+  }
 
   protected readonly RoundPhase = RoundPhase;
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
