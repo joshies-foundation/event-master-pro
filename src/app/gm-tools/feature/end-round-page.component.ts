@@ -34,7 +34,6 @@ import { AvatarModule } from 'primeng/avatar';
 import { switchMap } from 'rxjs';
 import { CardComponent } from '../../shared/ui/card.component';
 import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
-import { EventFormat } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-end-round-page',
@@ -171,12 +170,6 @@ export default class EndRoundPageComponent {
     getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
 
   private readonly scoresForThisEvent = computed(() => {
-    if (
-      this.eventService.eventForThisRound()?.format !==
-      EventFormat.ScoreBasedSingleRound
-    ) {
-      return [];
-    }
     const eventTeamsForThisRound = this.eventService
       .eventTeams()
       ?.filter(
@@ -211,36 +204,40 @@ export default class EndRoundPageComponent {
       return;
     }
 
+    // Commented out until double elim brackets are in
+    /**
     if (eventForThisRound?.format === EventFormat.ScoreBasedSingleRound) {
-      const eventTeamsRoundScores = this.eventService.eventTeamRoundScores();
-      if (!eventTeamsRoundScores) {
-        return eventTeams;
+    **/
+    const eventTeamsRoundScores = this.eventService.eventTeamRoundScores();
+    if (!eventTeamsRoundScores) {
+      return eventTeams;
+    }
+    const scores = this.scoresForThisEvent();
+
+    const sortAsc = function (a: number, b: number) {
+      return a - b;
+    };
+    const sortDesc = function (a: number, b: number) {
+      return b - a;
+    };
+    const sortFunc = eventForThisRound?.lower_scores_are_better
+      ? sortAsc
+      : sortDesc;
+    scores.sort(sortFunc);
+
+    eventTeams.forEach((team) => {
+      team.score =
+        eventTeamsRoundScores.find((teamScore) => teamScore.team_id === team.id)
+          ?.score ?? -1;
+      const position =
+        1 + (scores.findIndex((score) => team.score === score) ?? -1);
+      if (position > 0) {
+        team.position = position;
       }
-      const scores = this.scoresForThisEvent();
-
-      const sortAsc = function (a: number, b: number) {
-        return a - b;
-      };
-      const sortDesc = function (a: number, b: number) {
-        return b - a;
-      };
-      const sortFunc = eventForThisRound?.lower_scores_are_better
-        ? sortAsc
-        : sortDesc;
-      scores.sort(sortFunc);
-
-      eventTeams.forEach((team) => {
-        team.score =
-          eventTeamsRoundScores.find(
-            (teamScore) => teamScore.team_id === team.id,
-          )?.score ?? -1;
-        const position =
-          1 + (scores.findIndex((score) => team.score === score) ?? -1);
-        if (position > 0) {
-          team.position = position;
-        }
-      });
-    } else if (
+    });
+    // Commented out until double elim brackets are in
+    /**} 
+    else if (
       eventForThisRound?.format === EventFormat.SingleEliminationTournament
     ) {
       const brackets = this.eventService.brackets();
@@ -257,7 +254,7 @@ export default class EndRoundPageComponent {
             ) + 1;
         });
       }
-    }
+    }**/
 
     return eventTeams;
   });
@@ -269,7 +266,7 @@ export default class EndRoundPageComponent {
           this.eventService.eventForThisRound()?.scoring_map ?? [];
         return {
           ...prev,
-          [team.id]: [scoringMap[team.position - 1] ?? 0, Validators.required],
+          [team.id]: scoringMap[team.position - 1] ?? 0,
         };
       }, {}) ?? {},
     );
