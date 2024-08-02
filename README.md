@@ -79,4 +79,4 @@ Github: [@SimBuckeye](https://github.com/SimBuckeye)
 
 ## License
 
-Copyright © 2023 [Colin A. Williams](https://github.com/c-o-l-i-n) and [Josh T. Mack](https://github.com/theuphonist).
+Copyright © 2023 [Colin A. Williams](https://github.com/c-o-l-i-n), [Josh T. Mack](https://github.com/theuphonist), and [Leo Steinkerchner](https://github.com/SimBuckeye).
