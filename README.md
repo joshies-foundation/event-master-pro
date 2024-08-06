@@ -68,6 +68,15 @@ Github: [@c-o-l-i-n](https://github.com/c-o-l-i-n)
 
 Github: [@theuphonist](https://github.com/theuphonist)
 
+<br/>
+<a href="https://github.com/SimBuckeye">
+  <img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/9426441?v=4&w=140&fit=cover&mask=circle&maxage=7d" style="width: 70px" align="left" alt=""/>
+</a>
+
+**Leo Steinkerchner**
+
+Github: [@SimBuckeye](https://github.com/SimBuckeye)
+
 ## License
 
-Copyright © 2023 [Colin A. Williams](https://github.com/c-o-l-i-n) and [Josh T. Mack](https://github.com/theuphonist).
+Copyright © 2023 [Colin A. Williams](https://github.com/c-o-l-i-n), [Josh T. Mack](https://github.com/theuphonist), and [Leo Steinkerchner](https://github.com/SimBuckeye).
