@@ -13,6 +13,11 @@ export const routes: Routes = [
     canActivate: [redirectLoggedInToHomePage],
   },
   {
+    path: 'auth/confirm',
+    loadComponent: () =>
+      import('./auth/feature/confirm-page/confirm-page.component'),
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./dashboard/feature/dashboard-page.component'),
     canActivate: [redirectUnauthorizedToLoginPage],
@@ -48,6 +53,14 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadChildren: () => import('./profile/feature/lib.routes'),
+      },
+      {
+        path: 'auth/reset-password',
+        loadComponent: () =>
+          import(
+            './auth/feature/reset-password-page/reset-password-page.component'
+          ),
+        canActivate: [redirectUnauthorizedToLoginPage],
       },
       {
         path: '**',
