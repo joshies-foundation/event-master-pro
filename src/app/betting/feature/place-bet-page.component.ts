@@ -41,7 +41,6 @@ import {
   BetType,
   DuelStatus,
   EventFormat,
-  RoundPhase,
   Table,
 } from '../../shared/util/supabase-helpers';
 import { DuelService } from '../../shared/data-access/duel.service';
@@ -52,7 +51,6 @@ import {
   generateBetDetails,
   generateBetTypeObject,
 } from '../util/place-bet-helpers';
-import { OverUnderComponent } from '../ui/over-under.component';
 import { Tables } from '../../shared/util/schema';
 import { CardComponent } from '../../shared/ui/card.component';
 import { InputSwitchModule } from 'primeng/inputswitch';
@@ -61,8 +59,6 @@ import {
   EventTeamWithParticipantInfo,
 } from '../../shared/data-access/event.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { getFormattedParticipantList } from '../../shared/util/event-helpers';
-import { TopBottomComponent } from '../ui/top-bottom.component';
 import {
   ConfirmPlaceBetDialogComponent,
   confirmPlaceBetDialogKey,
@@ -72,6 +68,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { DuelWinnerBetComponent } from '../ui/bet-types/duel-winner-bet.component';
 import { SSEventBetComponent } from '../ui/bet-types/ss-event-bet.component';
 import { ChaosSpaceBetComponent } from '../ui/bet-types/chaos-space-bet.component';
+import { EventBetComponent } from '../ui/bet-types/event-bet.component';
 
 @Component({
   selector: 'joshies-place-bet-page',
@@ -166,91 +163,16 @@ import { ChaosSpaceBetComponent } from '../ui/bet-types/chaos-space-bet.componen
               />
             }
             @case (BetType.MainEvent) {
-              <!-- Event Dropdown -->
-              <label class="flex flex-column gap-2">
-                Event
-                <p-dropdown
-                  [options]="openMainEvents()"
-                  [(ngModel)]="selectedMainEventId"
-                  optionLabel="name"
-                  optionValue="id"
-                  styleClass="w-full"
-                  emptyMessage="No open events"
-                  placeholder="Select an event"
-                />
-              </label>
-
-              <!-- Subtype Radio Buttons -->
-              <div class="flex flex-wrap gap-3">
-                <div class="flex align-items-center">
-                  <label class="ml-2">
-                    <p-radioButton
-                      name="eventBetSubtype"
-                      [value]="BetSubtype.TeamPosition"
-                      [(ngModel)]="selectedEventBetSubtype"
-                      styleClass="w-full"
-                    />
-                    Team Position
-                  </label>
-                </div>
-                @if (
-                  selectedMainEvent()?.format ===
-                  EventFormat.ScoreBasedSingleRound
-                ) {
-                  <div class="flex align-items-center">
-                    <label class="ml-2">
-                      <p-radioButton
-                        name="eventBetSubtype"
-                        [value]="BetSubtype.Score"
-                        [(ngModel)]="selectedEventBetSubtype"
-                        styleClass="w-full"
-                      />
-                      Score
-                    </label>
-                  </div>
-                }
-              </div>
-
-              @switch (selectedEventBetSubtype()) {
-                @case (BetSubtype.TeamPosition) {
-                  <!-- Bet Team Dropdown -->
-                  <label class="flex flex-column gap-2">
-                    Team
-                    <p-dropdown
-                      [options]="eventTeams()"
-                      [(ngModel)]="selectedEventTeam"
-                      optionLabel="participantList"
-                      styleClass="flex"
-                      placeholder="Select a team"
-                    />
-                  </label>
-                  ...will finish in the...
-                  <joshies-top-bottom
-                    [max]="eventTeams().length - 1"
-                    [(selectedTopBottomOption)]="selectedTopBottomOption"
-                    [(selectedNumberOfTeams)]="selectedNumberOfTeams"
-                  />
-                  ...team(s).
-                }
-                @case (BetSubtype.Score) {
-                  <!-- Bet Team Dropdown -->
-                  <label class="flex flex-column gap-2">
-                    Team
-                    <p-dropdown
-                      [options]="eventTeams()"
-                      [(ngModel)]="selectedEventTeam"
-                      optionLabel="participantList"
-                      styleClass="flex"
-                      placeholder="Select a team"
-                    />
-                  </label>
-
-                  <joshies-over-under
-                    [(selectedOuOption)]="selectedOuOption"
-                    [(ouValue)]="ouValue"
-                  />
-                }
-              }
+              <joshies-event-bet
+                [(selectedMainEventId)]="selectedMainEventId"
+                [(selectedEventBetSubtype)]="selectedEventBetSubtype"
+                (selectedMainEvent)="selectedMainEvent.set($event)"
+                [(selectedEventTeam)]="selectedEventTeam"
+                [(selectedTopBottomOption)]="selectedTopBottomOption"
+                [(selectedNumberOfTeams)]="selectedNumberOfTeams"
+                [(selectedOuOption)]="selectedOuOption"
+                [(ouValue)]="ouValue"
+              />
             }
             @case (BetType.GameboardMove) {
               <!-- Bet Player Dropdown -->
@@ -384,16 +306,15 @@ import { ChaosSpaceBetComponent } from '../ui/bet-types/chaos-space-bet.componen
     InputNumberModule,
     DropdownModule,
     RadioButtonModule,
-    OverUnderComponent,
     CardComponent,
     InputSwitchModule,
-    TopBottomComponent,
     ConfirmPlaceBetDialogComponent,
     DecimalPipe,
     AvatarModule,
     DuelWinnerBetComponent,
     SSEventBetComponent,
     ChaosSpaceBetComponent,
+    EventBetComponent,
   ],
 })
 export default class PlaceBetPageComponent implements OnInit {
@@ -460,13 +381,7 @@ export default class PlaceBetPageComponent implements OnInit {
   readonly selectedChaosPlayer = signal<PlayerWithUserAndRankInfo | null>(null);
   readonly selectedWinsLoses = signal<'WINS' | 'LOSES'>('LOSES');
   readonly selectedMainEventId = signal<EventModel['id'] | null>(null);
-
-  readonly selectedMainEvent = computed(
-    () =>
-      this.eventService
-        .events()
-        ?.find((event) => event.id === this.selectedMainEventId()) ?? null,
-  );
+  readonly selectedMainEvent = signal<EventModel | null>(null);
 
   readonly selectedEventBetSubtype = signal<BetSubtype>(
     BetSubtype.TeamPosition,
@@ -641,35 +556,6 @@ export default class PlaceBetPageComponent implements OnInit {
       return [];
     }
     return [selectedDuel.challenger, selectedDuel.opponent];
-  });
-
-  readonly openMainEvents = computed(() => {
-    const round = this.gameStateService.roundNumber();
-    const phase = this.gameStateService.roundPhase();
-    return this.eventService.events()?.filter((event) => {
-      if (!round || !phase) {
-        return false;
-      }
-      if (
-        // phase === RoundPhase.Event || // TODO: Determine whether players are allowed to bet on an event while we are in the `event` phase
-        phase === RoundPhase.WaitingForNextRound
-      ) {
-        return event.round_number > round;
-      }
-      return event.round_number >= round;
-    });
-  });
-
-  readonly eventTeams = computed(() => {
-    const teams = this.eventService.eventTeamsWithParticipantInfo() ?? [];
-    return teams
-      .filter((team) => team.event_id === this.selectedMainEvent()?.id)
-      .map((team) => {
-        return {
-          ...team,
-          participantList: getFormattedParticipantList(team.participants),
-        };
-      });
   });
 
   readonly gameboardSpaces = computed(() => {
