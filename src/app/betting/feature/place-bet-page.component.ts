@@ -39,7 +39,6 @@ import {
   BetStatus,
   BetSubtype,
   BetType,
-  DuelStatus,
   EventFormat,
   Table,
 } from '../../shared/util/supabase-helpers';
@@ -69,6 +68,7 @@ import { DuelWinnerBetComponent } from '../ui/bet-types/duel-winner-bet.componen
 import { SSEventBetComponent } from '../ui/bet-types/ss-event-bet.component';
 import { ChaosSpaceBetComponent } from '../ui/bet-types/chaos-space-bet.component';
 import { EventBetComponent } from '../ui/bet-types/event-bet.component';
+import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
 
 @Component({
   selector: 'joshies-place-bet-page',
@@ -175,29 +175,10 @@ import { EventBetComponent } from '../ui/bet-types/event-bet.component';
               />
             }
             @case (BetType.GameboardMove) {
-              <!-- Bet Player Dropdown -->
-              <label class="flex flex-column gap-2">
-                Player
-                <p-dropdown
-                  [options]="playerService.players() ?? []"
-                  [(ngModel)]="selectedGameboardPlayer"
-                  optionLabel="display_name"
-                  styleClass="flex"
-                  placeholder="Select a player"
-                />
-              </label>
-
-              <!-- Gameboard Space Dropdown -->
-              <label class="flex flex-column gap-2">
-                Next Gameboard Space
-                <p-dropdown
-                  [options]="gameboardSpaces()"
-                  [(ngModel)]="selectedGameboardSpace"
-                  optionLabel="name"
-                  styleClass="flex"
-                  placeholder="Select a space type"
-                />
-              </label>
+              <joshies-gameboard-bet
+                [(selectedGameboardPlayer)]="selectedGameboardPlayer"
+                [(selectedGameboardSpace)]="selectedGameboardSpace"
+              />
             }
             @default {
               <!-- Bet terms -->
@@ -315,6 +296,7 @@ import { EventBetComponent } from '../ui/bet-types/event-bet.component';
     SSEventBetComponent,
     ChaosSpaceBetComponent,
     EventBetComponent,
+    GameboardBetComponent,
   ],
 })
 export default class PlaceBetPageComponent implements OnInit {
@@ -526,40 +508,6 @@ export default class PlaceBetPageComponent implements OnInit {
     return (
       submitting || !selectedOpponent || !userPlayer || cannotSubmitMessage
     );
-  });
-
-  readonly openDuels = computed(() => {
-    let duels = this.duelService.duelsForThisTurn();
-    duels = duels?.filter((duel) => duel.status === DuelStatus.WaitingToBegin);
-    if (!duels || duels.length < 1) {
-      return [];
-    }
-    return duels.map((duel) => {
-      return {
-        duelName:
-          duel.game_name +
-          ': ' +
-          (duel.challenger?.display_name ?? 'challenger') +
-          ' vs. ' +
-          (duel.opponent?.display_name ?? 'opponent'),
-        id: duel.id,
-        challenger: duel.challenger,
-        opponent: duel.opponent,
-        game_name: duel.game_name,
-      };
-    });
-  });
-
-  readonly competitors = computed(() => {
-    const selectedDuel = this.selectedDuel();
-    if (!selectedDuel || !selectedDuel.challenger || !selectedDuel.opponent) {
-      return [];
-    }
-    return [selectedDuel.challenger, selectedDuel.opponent];
-  });
-
-  readonly gameboardSpaces = computed(() => {
-    return this.gameboardService.gameboardSpaces() ?? [];
   });
 
   // bet to be submitted to the database
