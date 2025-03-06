@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
@@ -16,50 +15,49 @@ import { InputTextModule } from 'primeng/inputtext';
 @Component({
   selector: 'joshies-reset-password-page',
   standalone: true,
-  imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule],
+  imports: [InputTextModule, ButtonModule, ReactiveFormsModule],
   template: `
-    <div
-      class="h-full flex flex-column justify-content-center align-items-center"
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="w-full max-w-30rem flex flex-column gap-3 px-3"
     >
-      <form
-        [formGroup]="form"
-        (ngSubmit)="onSubmit()"
-        class="w-full max-w-30rem flex flex-column gap-3 px-3"
-      >
-        <input
-          pInputText
-          type="password"
-          placeholder="New Password"
-          [formControl]="form.controls.newPassword"
-        />
+      <input
+        pInputText
+        type="password"
+        placeholder="New Password"
+        [formControl]="form.controls.newPassword"
+      />
 
-        <input
-          pInputText
-          type="password"
-          placeholder="Confirm New Password"
-          [formControl]="form.controls.confirmNewPassword"
-        />
+      <input
+        pInputText
+        type="password"
+        placeholder="Confirm New Password"
+        [formControl]="form.controls.confirmNewPassword"
+      />
 
-        <p-button
-          styleClass="w-full"
-          type="submit"
-          [disabled]="!form.valid"
-          label="Reset Password"
-        />
+      <p-button
+        styleClass="w-full"
+        type="submit"
+        [disabled]="!form.valid"
+        label="Reset Password"
+      />
 
-        @if (form.invalid) {
-          @if (
-            newPassword?.errors?.['minlength'] ||
-            newPassword?.errors?.['maxlength']
-          ) {
-            <div>Password must be between 8 and 20 characters.</div>
-          } @else if (form.errors?.['passwordsMustMatch']) {
-            <div>Passwords do not match.</div>
-          }
+      @if (form.invalid) {
+        @if (
+          newPassword?.errors?.['minlength'] ||
+          newPassword?.errors?.['maxlength']
+        ) {
+          <div>Password must be between 8 and 20 characters.</div>
+        } @else if (form.errors?.['passwordsMustMatch']) {
+          <div>Passwords do not match.</div>
         }
-      </form>
-    </div>
+      }
+    </form>
   `,
+  host: {
+    class: 'h-full flex flex-column justify-content-center align-items-center',
+  },
 })
 export default class ResetPasswordPageComponent {
   private readonly formBuilder = inject(FormBuilder);
@@ -99,9 +97,11 @@ export default class ResetPasswordPageComponent {
 
   async onSubmit(): Promise<void> {
     const { newPassword } = this.form.getRawValue();
+
     const { error } = await this.supabase.auth.updateUser({
       password: newPassword,
     });
+
     if (error) {
       this.messageService.add({ detail: error.message, severity: 'error' });
     } else {

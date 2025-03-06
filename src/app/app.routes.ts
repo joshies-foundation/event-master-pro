@@ -1,21 +1,11 @@
 import { Routes } from '@angular/router';
-import {
-  redirectLoggedInToHomePage,
-  redirectUnauthorizedToLoginPage,
-} from './auth/data-access/auth.guard';
+import { redirectUnauthorizedToLoginPage } from './auth/data-access/auth.guard';
 import { canAccessGmTools } from './auth/data-access/auth.gm.guard';
 
 export const routes: Routes = [
   {
-    path: 'login',
-    loadComponent: () =>
-      import('./auth/feature/login-page/login-page.component'),
-    canActivate: [redirectLoggedInToHomePage],
-  },
-  {
-    path: 'auth/confirm',
-    loadComponent: () =>
-      import('./auth/feature/confirm-page/confirm-page.component'),
+    path: 'auth',
+    loadChildren: () => import('./auth/feature/lib.routes'),
   },
   {
     path: 'dashboard',
@@ -53,14 +43,6 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadChildren: () => import('./profile/feature/lib.routes'),
-      },
-      {
-        path: 'auth/reset-password',
-        loadComponent: () =>
-          import(
-            './auth/feature/reset-password-page/reset-password-page.component'
-          ),
-        canActivate: [redirectUnauthorizedToLoginPage],
       },
       {
         path: '**',
