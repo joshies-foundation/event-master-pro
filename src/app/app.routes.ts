@@ -1,16 +1,11 @@
 import { Routes } from '@angular/router';
-import {
-  redirectLoggedInToHomePage,
-  redirectUnauthorizedToLoginPage,
-} from './auth/data-access/auth.guard';
+import { redirectUnauthorizedToLoginPage } from './auth/data-access/auth.guard';
 import { canAccessGmTools } from './auth/data-access/auth.gm.guard';
 
 export const routes: Routes = [
   {
-    path: 'login',
-    loadComponent: () =>
-      import('./auth/feature/login-page/login-page.component'),
-    canActivate: [redirectLoggedInToHomePage],
+    path: 'auth',
+    loadChildren: () => import('./auth/feature/lib.routes'),
   },
   {
     path: 'dashboard',

@@ -26,7 +26,7 @@ function createAuthGuardFromRedirectFunction(
 }
 
 export const redirectUnauthorizedToLoginPage =
-  createAuthGuardFromRedirectFunction((user) => !!user || '/login');
+  createAuthGuardFromRedirectFunction((user) => !!user || '/auth/login');
 
 export const redirectLoggedInToHomePage = createAuthGuardFromRedirectFunction(
   (user) => (!!user && '/') || true,
