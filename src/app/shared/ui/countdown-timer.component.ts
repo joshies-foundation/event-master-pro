@@ -3,7 +3,6 @@ import { Countdown } from '../data-access/session.service';
 
 @Component({
   selector: 'joshies-countdown-timer',
-  standalone: true,
   imports: [],
   template: `
     <div class="h-full flex flex-column justify-content-center">

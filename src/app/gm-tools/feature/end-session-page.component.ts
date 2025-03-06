@@ -18,7 +18,6 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'joshies-end-session-page',
-  standalone: true,
   imports: [PageHeaderComponent, HeaderLinkComponent, ButtonModule],
   template: `
     <joshies-page-header headerText="End Session" alwaysSmall>

@@ -25,7 +25,6 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 @Component({
   selector: 'joshies-create-session-page',
-  standalone: true,
   imports: [
     FormComponent,
     SkeletonModule,

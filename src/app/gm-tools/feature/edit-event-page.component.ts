@@ -25,7 +25,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'joshies-edit-event-page',
-  standalone: true,
   template: `
     <joshies-page-header [headerText]="headerText()" alwaysSmall>
       <joshies-header-link

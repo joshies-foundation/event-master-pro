@@ -19,7 +19,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
 @Component({
   selector: 'joshies-lifetime-stats-page',
-  standalone: true,
   imports: [
     DecimalPipe,
     InputNumberModule,

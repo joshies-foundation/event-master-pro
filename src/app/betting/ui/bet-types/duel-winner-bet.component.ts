@@ -9,7 +9,6 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-duel-winner',
-  standalone: true,
   imports: [DropdownModule, FormsModule],
   template: `
     <div class="flex flex-column gap-3">

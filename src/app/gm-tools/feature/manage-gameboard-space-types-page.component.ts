@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from 'primeng/skeleton';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { RouterLink } from '@angular/router';
@@ -11,12 +10,10 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 
 @Component({
   selector: 'joshies-manage-gameboard-space-types-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     SkeletonModule,
-    StronglyTypedTableRowDirective,
     GameboardSpaceDescriptionPipe,
     RouterLink,
     GameboardSpaceComponent,

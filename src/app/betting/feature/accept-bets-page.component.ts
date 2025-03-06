@@ -9,7 +9,6 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { TableModule } from 'primeng/table';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
 import { BetStatus } from '../../shared/util/supabase-helpers';
@@ -21,12 +20,10 @@ import { BetModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-accept-bets-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    NgOptimizedImage,
     ButtonModule,
     RouterLink,
     StronglyTypedTableRowDirective,

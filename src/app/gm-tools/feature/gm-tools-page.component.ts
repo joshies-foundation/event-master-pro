@@ -18,7 +18,6 @@ import { EventService } from '../../shared/data-access/event.service';
 
 @Component({
   selector: 'joshies-gm-tools-pages-wrapper',
-  standalone: true,
   imports: [CardComponent, PageHeaderComponent],
   template: `
     <joshies-page-header headerText="GM Tools" />

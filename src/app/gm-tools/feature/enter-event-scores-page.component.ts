@@ -1,16 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   computed,
   effect,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { TableModule } from 'primeng/table';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -27,7 +26,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
 @Component({
   selector: 'joshies-enter-event-scores-page',
-  standalone: true,
   template: `
     <joshies-page-header headerText="Enter Event Scores" alwaysSmall>
       <joshies-header-link
@@ -124,7 +122,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    NgOptimizedImage,
     ButtonModule,
     RouterLink,
     StronglyTypedTableRowDirective,

@@ -8,17 +8,14 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { TableModule } from 'primeng/table';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
 import { BetStatus, BetType } from '../../shared/util/supabase-helpers';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { BetModel } from '../../shared/util/supabase-types';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { BetComponent } from '../../shared/ui/bet.component';
 import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BetToResolveComponent } from '../../betting/ui/bet-to-resolve.component';
@@ -27,16 +24,12 @@ import { CardComponent } from '../../shared/ui/card.component';
 
 @Component({
   selector: 'joshies-resolve-bets-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    NgOptimizedImage,
     ButtonModule,
     RouterLink,
-    StronglyTypedTableRowDirective,
-    BetComponent,
     DividerModule,
     SkeletonModule,
     BetToResolveComponent,

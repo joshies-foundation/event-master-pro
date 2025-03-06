@@ -21,7 +21,6 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
 
 @Component({
   selector: 'joshies-player-duel-stats-page',
-  standalone: true,
   imports: [
     DecimalPipe,
     NgOptimizedImage,

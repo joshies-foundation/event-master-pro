@@ -14,7 +14,6 @@ import { AuthService } from '../../auth/data-access/auth.service';
 
 @Component({
   selector: 'joshies-current-rankings-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,

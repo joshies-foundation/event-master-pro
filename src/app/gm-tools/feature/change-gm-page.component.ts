@@ -28,7 +28,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-change-gm-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

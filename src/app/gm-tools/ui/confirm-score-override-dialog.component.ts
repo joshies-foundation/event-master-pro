@@ -21,7 +21,6 @@ export const confirmOverrideDialogKey = 'confirm-override';
 
 @Component({
   selector: 'joshies-confirm-score-override-dialog',
-  standalone: true,
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
     <p-confirmDialog styleClass="mx-3" [key]="confirmOverrideDialogKey">

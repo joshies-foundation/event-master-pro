@@ -12,7 +12,6 @@ interface GameboardSpaceVisualizationModel {
 
 @Component({
   selector: 'joshies-gameboard-space',
-  standalone: true,
   imports: [],
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,

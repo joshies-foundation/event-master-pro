@@ -36,12 +36,7 @@ import {
   whenAllValuesNotNull,
   whenNotNull,
 } from '../../shared/util/rxjs-helpers';
-import {
-  DecimalPipe,
-  JsonPipe,
-  NgOptimizedImage,
-  TitleCasePipe,
-} from '@angular/common';
+import { DecimalPipe, JsonPipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { DropdownModule } from 'primeng/dropdown';
 import {
@@ -75,19 +70,16 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
 @Component({
   selector: 'joshies-chaos-space-event-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     RouterLink,
     AvatarModule,
     SkeletonModule,
-    NgOptimizedImage,
     DropdownModule,
     FormsModule,
     ButtonModule,
     PaginatorModule,
-    TitleCasePipe,
     TableModule,
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,

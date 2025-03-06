@@ -48,7 +48,6 @@ enum TeamIds {
 
 @Component({
   selector: 'joshies-edit-event-teams-page',
-  standalone: true,
   template: `
     <joshies-page-header [headerText]="headerText()" alwaysSmall>
       <div class="w-full flex justify-content-between align-items-center">

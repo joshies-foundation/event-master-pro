@@ -1,27 +1,19 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TableModule } from 'primeng/table';
-import { DatePipe, DecimalPipe } from '@angular/common';
 import { AnalyticsService } from '../data-access/analytics.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { trackById } from '../../shared/util/supabase-helpers';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { TransactionTableComponent } from '../ui/transaction-table.component';
 
 @Component({
   selector: 'joshies-transactions-page',
-  standalone: true,
   imports: [
     TableModule,
-    DatePipe,
-    DecimalPipe,
     SkeletonModule,
     PageHeaderComponent,
     HeaderLinkComponent,
-    StronglyTypedTableRowDirective,
-    NumberWithSignAndColorPipe,
     TransactionTableComponent,
   ],
   template: `

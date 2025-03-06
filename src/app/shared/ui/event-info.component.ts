@@ -13,7 +13,6 @@ import { Button } from 'primeng/button';
 
 @Component({
   selector: 'joshies-event-info',
-  standalone: true,
   template: `
     <div class="flex flex-column gap-3">
       <div

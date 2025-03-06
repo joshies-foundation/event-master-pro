@@ -13,7 +13,6 @@ import { SpaceEventStatus } from '../../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-ss-event-bet',
-  standalone: true,
   imports: [DropdownModule, FormsModule, OverUnderComponent],
   template: `
     <div class="flex flex-column gap-3">

@@ -31,7 +31,6 @@ const numTransactionsToShow = 3;
 
 @Component({
   selector: 'joshies-analytics-tab',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     CardComponent,

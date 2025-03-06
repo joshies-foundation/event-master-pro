@@ -20,7 +20,6 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'joshies-space-event-table',
-  standalone: true,
   imports: [AvatarModule, ButtonModule, StatusTagComponent, RouterLink],
   template: `
     <table class="w-full">

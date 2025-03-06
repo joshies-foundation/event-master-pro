@@ -1,18 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   effect,
   inject,
+  Signal,
 } from '@angular/core';
-import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { NgOptimizedImage } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
@@ -21,23 +18,24 @@ import { ButtonModule } from 'primeng/button';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  LocalStorageRecord,
   getRecordFromLocalStorage,
+  LocalStorageRecord,
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
-import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 import { EventService } from '../../shared/data-access/event.service';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { AvatarModule } from 'primeng/avatar';
 import { switchMap } from 'rxjs';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
+import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
+import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 import { CardComponent } from '../../shared/ui/card.component';
 import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
 @Component({
   selector: 'joshies-end-round-page',
-  standalone: true,
   template: `
     <joshies-page-header headerText="Assign Session Points" alwaysSmall>
       <joshies-header-link
@@ -145,7 +143,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
     SkeletonModule,
     TableModule,
     InputNumberModule,
-    NgOptimizedImage,
     ReactiveFormsModule,
     ButtonModule,
     StronglyTypedTableRowDirective,
@@ -236,7 +233,7 @@ export default class EndRoundPageComponent {
       }
     });
     // Commented out until double elim brackets are in
-    /**} 
+    /**}
     else if (
       eventForThisRound?.format === EventFormat.SingleEliminationTournament
     ) {

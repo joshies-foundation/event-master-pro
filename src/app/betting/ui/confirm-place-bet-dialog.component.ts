@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { OverrideDefinitionTableComponent } from '../../gm-tools/ui/override-definition-table.component';
 import { PrimeTemplate } from 'primeng/api';
 import {
   BetModel,
@@ -13,13 +12,7 @@ export const confirmPlaceBetDialogKey = 'confirm-place-bet';
 
 @Component({
   selector: 'joshies-confirm-place-bet-dialog',
-  standalone: true,
-  imports: [
-    ConfirmDialogModule,
-    OverrideDefinitionTableComponent,
-    PrimeTemplate,
-    BetComponent,
-  ],
+  imports: [ConfirmDialogModule, PrimeTemplate, BetComponent],
   template: `
     <p-confirmDialog styleClass="mx-3" [key]="confirmPlaceBetDialogKey">
       <ng-template pTemplate="message" let-message>

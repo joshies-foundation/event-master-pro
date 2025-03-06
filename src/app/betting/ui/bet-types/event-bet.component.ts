@@ -20,7 +20,6 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-event-bet',
-  standalone: true,
   imports: [
     DropdownModule,
     FormsModule,

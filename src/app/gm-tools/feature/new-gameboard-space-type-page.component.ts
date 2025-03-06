@@ -27,7 +27,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-new-space-type-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

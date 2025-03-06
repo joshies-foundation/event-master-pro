@@ -9,7 +9,6 @@ import { TransactionModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-transaction-table',
-  standalone: true,
   imports: [
     DatePipe,
     NumberWithSignAndColorPipe,

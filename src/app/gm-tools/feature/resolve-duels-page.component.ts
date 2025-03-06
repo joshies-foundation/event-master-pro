@@ -13,14 +13,9 @@ import {
   RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
-import { MovesWithSpaceIdPipe } from '../ui/moves-with-space-id.pipe';
 import { AvatarModule } from 'primeng/avatar';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
-import { SpacesWithEffectPipe } from '../ui/spaces-with-effect.pipe';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
-import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -36,20 +31,13 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
 
 @Component({
   selector: 'joshies-resolve-duels-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     ButtonModule,
-    MovesWithSpaceIdPipe,
     AvatarModule,
-    DecimalPipe,
-    SpacesWithEffectPipe,
     SkeletonModule,
     SelectButtonModule,
-    LoseOrGainPipe,
-    TitleCasePipe,
-    NumberWithSignAndColorPipe,
     FormsModule,
     TableModule,
     StronglyTypedTableRowDirective,

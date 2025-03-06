@@ -19,7 +19,6 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 
 @Component({
   selector: 'joshies-space-stats-page',
-  standalone: true,
   imports: [
     DecimalPipe,
     NgOptimizedImage,

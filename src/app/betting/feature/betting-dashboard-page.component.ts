@@ -39,7 +39,6 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
 @Component({
   selector: 'joshies-betting-dashboard-page',
-  standalone: true,
   imports: [
     CardComponent,
     PageHeaderComponent,

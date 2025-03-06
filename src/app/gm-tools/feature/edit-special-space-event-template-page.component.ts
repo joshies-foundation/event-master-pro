@@ -21,13 +21,10 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { FormBuilder } from '@angular/forms';
 import { Form, FormComponent } from '../../shared/ui/form.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
-import { JsonPipe } from '@angular/common';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -37,16 +34,12 @@ import {
 
 @Component({
   selector: 'joshies-edit-special-space-event-template-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     ButtonModule,
     ConfirmDialogModule,
-    GameboardSpaceComponent,
     FormComponent,
-    GameboardSpaceDescriptionPipe,
-    JsonPipe,
   ],
   template: `
     <!-- Header -->

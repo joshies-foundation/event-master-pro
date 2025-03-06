@@ -32,7 +32,7 @@ import {
   distinctUntilIdChanged,
   whenNotNull,
 } from '../../shared/util/rxjs-helpers';
-import { JsonPipe, NgOptimizedImage, TitleCasePipe } from '@angular/common';
+import { JsonPipe, TitleCasePipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { DropdownModule } from 'primeng/dropdown';
 import {
@@ -60,14 +60,12 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
 @Component({
   selector: 'joshies-special-space-event-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     RouterLink,
     AvatarModule,
     SkeletonModule,
-    NgOptimizedImage,
     DropdownModule,
     FormsModule,
     ButtonModule,

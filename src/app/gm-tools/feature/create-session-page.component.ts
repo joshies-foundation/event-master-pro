@@ -25,7 +25,6 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 
 @Component({
   selector: 'joshies-create-session-page',
-  standalone: true,
   imports: [
     FormComponent,
     SkeletonModule,

@@ -1,11 +1,11 @@
 import { NgClass } from '@angular/common';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  booleanAttribute,
   input,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 
 export interface CardLinkModel {
@@ -18,8 +18,7 @@ export interface CardLinkModel {
 
 @Component({
   selector: 'joshies-card-link',
-  standalone: true,
-  imports: [RouterLink, RouterLinkActive, NgClass, RippleModule],
+  imports: [RouterLink, NgClass, RippleModule],
   template: `
     <a
       class="flex w-full no-underline text-color transition-colors transition-duration-100 transition-ease-in-out"

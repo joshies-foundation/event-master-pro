@@ -18,7 +18,6 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-roll-history-page',
-  standalone: true,
   imports: [
     DecimalPipe,
     NgOptimizedImage,

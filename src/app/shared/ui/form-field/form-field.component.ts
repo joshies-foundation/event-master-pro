@@ -17,12 +17,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import {
-  AsyncPipe,
-  LowerCasePipe,
-  NgClass,
-  NgOptimizedImage,
-} from '@angular/common';
+import { LowerCasePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import {
   takeUntilDestroyed,
@@ -152,7 +147,6 @@ export type FormField = {
 
 @Component({
   selector: 'joshies-form-field',
-  standalone: true,
   imports: [
     DropdownModule,
     FormsModule,
@@ -168,7 +162,6 @@ export type FormField = {
     InputTextareaModule,
     CheckboxModule,
     ImageModule,
-    AsyncPipe,
     SkeletonModule,
     NgOptimizedImage,
   ],

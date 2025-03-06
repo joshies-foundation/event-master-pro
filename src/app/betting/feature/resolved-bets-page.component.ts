@@ -17,7 +17,6 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
 
 @Component({
   selector: 'joshies-resolved-bets-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,

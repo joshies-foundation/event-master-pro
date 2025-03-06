@@ -35,14 +35,12 @@ import { Form, FormComponent } from '../../shared/ui/form.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
-import { JsonPipe } from '@angular/common';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-edit-gameboard-space-type-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -51,7 +49,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     GameboardSpaceComponent,
     FormComponent,
     GameboardSpaceDescriptionPipe,
-    JsonPipe,
   ],
   template: `
     <!-- Header -->

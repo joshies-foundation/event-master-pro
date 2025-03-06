@@ -23,7 +23,6 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 
 @Component({
   selector: 'joshies-previous-rankings-page',
-  standalone: true,
   imports: [
     DropdownModule,
     RankingsTableComponent,

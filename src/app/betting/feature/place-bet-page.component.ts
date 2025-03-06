@@ -65,7 +65,6 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
 
 @Component({
   selector: 'joshies-place-bet-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

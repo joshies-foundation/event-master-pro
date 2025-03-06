@@ -12,7 +12,6 @@ import { fromEvent, map } from 'rxjs';
 
 @Component({
   selector: 'joshies-page-header',
-  standalone: true,
   imports: [NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

@@ -10,7 +10,6 @@ import { DuelModel } from '../util/supabase-types';
 
 @Component({
   selector: 'joshies-duel-table-avatars',
-  standalone: true,
   imports: [AvatarModule],
   template: `
     <p-avatar

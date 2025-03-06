@@ -29,7 +29,6 @@ import { EventModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-manage-events-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

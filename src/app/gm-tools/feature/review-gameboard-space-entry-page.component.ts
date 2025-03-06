@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   inject,
+  Signal,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -22,8 +22,8 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import {
-  LocalStorageRecord,
   getRecordFromLocalStorage,
+  LocalStorageRecord,
   removeRecordFromLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
@@ -32,12 +32,10 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.component';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
-import { ReturnSpaceWithIdIfItsEffectIsPipe } from '../../shared/ui/return-space-with-id-if-its-effect-is.pipe';
 import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
-  standalone: true,
   template: ` <joshies-page-header headerText="Review Moves" alwaysSmall>
       <joshies-header-link
         text="Space Entry"
@@ -136,7 +134,6 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
     StronglyTypedTableRowDirective,
     GameboardSpaceComponent,
     DecimalPipe,
-    ReturnSpaceWithIdIfItsEffectIsPipe,
     LoseOrGainPipe,
     TitleCasePipe,
   ],

@@ -12,7 +12,6 @@ import { AuthService } from '../../data-access/auth.service';
 
 @Component({
   selector: 'joshies-login-page',
-  standalone: true,
   imports: [CommonModule, InputTextModule, ButtonModule, ReactiveFormsModule],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',

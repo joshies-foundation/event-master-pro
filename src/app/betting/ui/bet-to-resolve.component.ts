@@ -11,7 +11,6 @@ import { BetComponent } from '../../shared/ui/bet.component';
 
 @Component({
   selector: 'joshies-bet-to-resolve',
-  standalone: true,
   imports: [BetComponent, Button, BetComponent],
   template: `
     <joshies-bet [bet]="bet()" />

@@ -23,7 +23,6 @@ export interface OverrideDefinitionTableModel {
 
 @Component({
   selector: 'joshies-override-definition-table',
-  standalone: true,
   imports: [
     InputNumberModule,
     DecimalPipe,

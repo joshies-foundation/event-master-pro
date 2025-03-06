@@ -10,7 +10,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'joshies-top-bottom',
-  standalone: true,
   template: `
     <!-- Over/Under Radio Buttons -->
     <div class="flex flex-wrap gap-3 mt-2">

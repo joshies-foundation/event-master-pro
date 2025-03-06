@@ -13,7 +13,6 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
 
 @Component({
   selector: 'joshies-footer',
-  standalone: true,
   imports: [CommonModule, FooterLinkComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

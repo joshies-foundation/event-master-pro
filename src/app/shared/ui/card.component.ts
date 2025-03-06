@@ -1,17 +1,15 @@
 import { NgClass } from '@angular/common';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  booleanAttribute,
   input,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CardLinkComponent, CardLinkModel } from './card-link.component';
 
 @Component({
   selector: 'joshies-card',
-  standalone: true,
-  imports: [NgClass, RouterLink, CardLinkComponent, RouterLink],
+  imports: [NgClass, CardLinkComponent],
   template: `
     @if (headerText()) {
       @if (readOnly()) {

@@ -18,7 +18,6 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
 
 @Component({
   selector: 'joshies-duel-history-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,

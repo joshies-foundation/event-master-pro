@@ -25,7 +25,6 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Component({
   selector: 'joshies-edit-game-state-page',
-  standalone: true,
   imports: [
     FormComponent,
     SkeletonModule,

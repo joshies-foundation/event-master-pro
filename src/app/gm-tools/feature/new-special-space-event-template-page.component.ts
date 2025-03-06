@@ -7,8 +7,6 @@ import {
 } from '@angular/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Form, FormComponent } from '../../shared/ui/form.component';
-import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
-import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { ConfirmationService, MessageService, SharedModule } from 'primeng/api';
@@ -25,12 +23,9 @@ import {
 
 @Component({
   selector: 'joshies-new-special-space-event-template-page',
-  standalone: true,
   imports: [
     ConfirmDialogModule,
     FormComponent,
-    GameboardSpaceComponent,
-    GameboardSpaceDescriptionPipe,
     HeaderLinkComponent,
     PageHeaderComponent,
     SharedModule,

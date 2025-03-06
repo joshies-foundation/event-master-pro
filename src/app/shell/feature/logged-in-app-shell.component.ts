@@ -20,7 +20,6 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
-  standalone: true,
   imports: [RouterOutlet, FooterComponent, ConfirmDialogModule],
   template: `
     <!-- Pages -->

@@ -66,7 +66,6 @@ export type GameboardSpaceEntryFormModel = Record<
 
 @Component({
   selector: 'joshies-space-entry-page',
-  standalone: true,
   template: `
     <joshies-page-header headerText="Move Entry" alwaysSmall>
       <joshies-header-link

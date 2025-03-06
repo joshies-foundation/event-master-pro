@@ -25,7 +25,6 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 
 @Component({
   selector: 'joshies-send-notifications-page',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     FormComponent,

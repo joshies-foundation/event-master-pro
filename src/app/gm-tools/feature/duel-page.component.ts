@@ -26,7 +26,6 @@ import {
   map,
   switchMap,
 } from 'rxjs';
-import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { DropdownModule } from 'primeng/dropdown';
 import {
@@ -55,19 +54,16 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
 @Component({
   selector: 'joshies-duel-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     RouterLink,
     AvatarModule,
     SkeletonModule,
-    NgOptimizedImage,
     DropdownModule,
     FormsModule,
     ButtonModule,
     PaginatorModule,
-    TitleCasePipe,
     TableModule,
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,

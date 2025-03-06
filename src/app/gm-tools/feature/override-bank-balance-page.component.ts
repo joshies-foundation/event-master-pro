@@ -8,7 +8,6 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from 'primeng/skeleton';
-import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ButtonModule } from 'primeng/button';
@@ -31,12 +30,10 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Component({
   selector: 'joshies-override-bank-balance-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     SkeletonModule,
-    NgOptimizedImage,
     FormsModule,
     RadioButtonModule,
     ButtonModule,

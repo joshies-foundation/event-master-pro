@@ -10,7 +10,6 @@ import { GameboardService } from '../../../shared/data-access/gameboard.service'
 
 @Component({
   selector: 'joshies-gameboard-bet',
-  standalone: true,
   imports: [DropdownModule, FormsModule],
   template: `
     <div class="flex flex-column gap-3">

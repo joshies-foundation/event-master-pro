@@ -12,7 +12,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
 @Component({
   selector: 'joshies-override-points-choose-player-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

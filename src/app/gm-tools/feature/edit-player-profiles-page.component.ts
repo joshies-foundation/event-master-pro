@@ -18,7 +18,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
 @Component({
   selector: 'joshies-edit-player-profiles-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     TableModule,

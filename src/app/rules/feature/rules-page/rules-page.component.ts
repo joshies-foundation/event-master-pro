@@ -20,7 +20,6 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FooterService } from '../../../shared/data-access/footer.service';
-import { NgClass, NgOptimizedImage } from '@angular/common';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 import { EventService } from '../../../shared/data-access/event.service';
@@ -40,7 +39,6 @@ import { ImageModule } from 'primeng/image';
 
 @Component({
   selector: 'joshies-rules-page',
-  standalone: true,
   templateUrl: './rules-page.component.html',
   host: {
     class: 'block pb-6',
@@ -53,10 +51,8 @@ import { ImageModule } from 'primeng/image';
     FormComponent,
     ButtonModule,
     ConfirmDialogModule,
-    NgClass,
     RouterLink,
     RouterLinkActive,
-    NgOptimizedImage,
     CardComponent,
     GameboardSpaceComponent,
     GameboardSpaceDescriptionPipe,

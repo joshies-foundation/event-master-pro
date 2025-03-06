@@ -17,7 +17,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'joshies-start-session-early-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

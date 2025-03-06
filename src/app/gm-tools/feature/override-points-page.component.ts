@@ -38,7 +38,6 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'joshies-override-points-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

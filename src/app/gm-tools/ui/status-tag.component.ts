@@ -17,7 +17,6 @@ type Status = SpaceEventStatus | DuelStatus;
 
 @Component({
   selector: 'joshies-status-tag',
-  standalone: true,
   imports: [TagModule, SnakeCaseToTitleCasePipe],
   template: `
     <p-tag

@@ -37,7 +37,6 @@ import { BetComponent } from '../../shared/ui/bet.component';
 
 @Component({
   selector: 'joshies-dashboard-page',
-  standalone: true,
   imports: [
     CountdownTimerComponent,
     SkeletonModule,

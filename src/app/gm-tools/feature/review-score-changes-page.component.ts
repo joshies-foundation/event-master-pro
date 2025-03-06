@@ -8,7 +8,7 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { Router } from '@angular/router';
-import { DecimalPipe, KeyValuePipe, NgOptimizedImage } from '@angular/common';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { SessionService } from '../../shared/data-access/session.service';
@@ -16,8 +16,8 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import {
-  LocalStorageRecord,
   getRecordFromLocalStorage,
+  LocalStorageRecord,
   removeRecordFromLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { MessageService } from 'primeng/api';
@@ -32,12 +32,10 @@ import { EventService } from '../../shared/data-access/event.service';
 
 @Component({
   selector: 'joshies-review-score-changes-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    KeyValuePipe,
     NgOptimizedImage,
     SkeletonModule,
     ButtonModule,

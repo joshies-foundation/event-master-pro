@@ -24,7 +24,6 @@ import {
 
 @Component({
   selector: 'joshies-chaos-space-bet',
-  standalone: true,
   imports: [DropdownModule, FormsModule, RadioButtonModule, OverUnderComponent],
   template: `
     <div class="flex flex-column gap-3">

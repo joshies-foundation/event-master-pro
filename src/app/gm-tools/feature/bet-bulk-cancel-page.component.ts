@@ -22,7 +22,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-bet-bulk-cancel-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

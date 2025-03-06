@@ -14,7 +14,6 @@ import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'joshies-reset-password-page',
-  standalone: true,
   imports: [InputTextModule, ButtonModule, ReactiveFormsModule],
   template: `
     <form

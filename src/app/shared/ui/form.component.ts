@@ -22,7 +22,6 @@ export interface Form {
 
 @Component({
   selector: 'joshies-form',
-  standalone: true,
   imports: [FormFieldComponent, FormsModule, ReactiveFormsModule, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `

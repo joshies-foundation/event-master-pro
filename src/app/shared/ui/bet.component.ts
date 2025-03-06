@@ -14,18 +14,15 @@ import { AvatarModule } from 'primeng/avatar';
 import { BetStatus } from '../util/supabase-helpers';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { betGainOrLossAmount, betIsResolved } from '../util/bet-helpers';
-import { NumberWithSignAndColorPipe } from './number-with-sign-and-color.pipe';
 import { NumberWithSignPipe } from './number-with-sign.pipe';
 import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'joshies-bet',
-  standalone: true,
   imports: [
     AvatarGroupModule,
     AvatarModule,
     DecimalPipe,
-    NumberWithSignAndColorPipe,
     NumberWithSignPipe,
     TagModule,
     NgClass,

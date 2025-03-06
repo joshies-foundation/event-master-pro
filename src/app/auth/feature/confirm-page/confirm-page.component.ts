@@ -4,7 +4,6 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 @Component({
   selector: 'joshies-confirm-page',
-  standalone: true,
   imports: [],
   template: `{{ error() || 'Confirming...' }}`,
   host: {

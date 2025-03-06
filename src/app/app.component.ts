@@ -14,7 +14,6 @@ import { SquidwardService } from './shared/data-access/squidward.service';
 
 @Component({
   selector: 'joshies-root',
-  standalone: true,
   imports: [CommonModule, RouterOutlet, ToastModule],
   template: `
     <router-outlet />

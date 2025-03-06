@@ -24,7 +24,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
 @Component({
   selector: 'joshies-edit-player-permissions-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     TableModule,

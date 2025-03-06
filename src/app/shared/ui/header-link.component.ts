@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'joshies-header-link',
-  standalone: true,
   imports: [RouterLink, NgClass],
   template: `
     <a

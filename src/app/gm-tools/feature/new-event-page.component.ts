@@ -24,7 +24,6 @@ import {
 
 @Component({
   selector: 'joshies-new-event-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

@@ -12,7 +12,6 @@ import { getUserBetData } from '../../shared/util/bet-helpers';
 
 @Component({
   selector: 'joshies-bet-request',
-  standalone: true,
   imports: [BetComponent, Button],
   template: `
     <joshies-bet

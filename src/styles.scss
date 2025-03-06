@@ -1,7 +1,8 @@
+@use 'sass:meta';
 @import 'primeng/resources/primeng.css';
 @import 'primeflex/primeflex.css';
 @import 'primeicons/primeicons.css';
-@import 'customicons.scss';
+@include meta.load-css('customicons.scss');
 
 :root {
   --font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,

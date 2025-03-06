@@ -13,10 +13,8 @@ export interface FooterLinkModel {
 
 @Component({
   selector: 'joshies-footer-link',
-  standalone: true,
   imports: [RouterLink, NgClass, RouterLinkActive, BadgeModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-
   template: `
     <a
       class="flex flex-column justify-content-center align-items-center gap-1 no-underline text-600"

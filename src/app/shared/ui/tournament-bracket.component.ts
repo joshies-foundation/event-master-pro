@@ -18,7 +18,6 @@ import { ParticipantListPipe } from './participant-list.pipe';
 import { ButtonModule } from 'primeng/button';
 import { confirmBackendAction } from '../util/dialog-helpers';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JsonPipe } from '@angular/common';
 
 interface EventTeamModelWithWinnerFlag extends EventTeamModel {
   isWinner: boolean;
@@ -26,7 +25,6 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
 
 @Component({
   selector: 'joshies-tournament-bracket',
-  standalone: true,
   template: `
     <p-tree
       [value]="bracket()"
@@ -112,7 +110,6 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
     AvatarGroupModule,
     ParticipantListPipe,
     ButtonModule,
-    JsonPipe,
   ],
 })
 export class TournamentBracketComponent {

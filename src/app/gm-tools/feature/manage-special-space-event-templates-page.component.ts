@@ -2,21 +2,16 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { RouterLink } from '@angular/router';
-import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
-import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { SkeletonModule } from 'primeng/skeleton';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-manage-special-space-events-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     RouterLink,
-    GameboardSpaceComponent,
-    GameboardSpaceDescriptionPipe,
     SkeletonModule,
   ],
   template: `
