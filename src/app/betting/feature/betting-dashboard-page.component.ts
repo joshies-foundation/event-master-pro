@@ -34,8 +34,8 @@ import { BetToResolveComponent } from '../ui/bet-awaiting-acceptance.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 
 // const textColor = getCssVariableValue('--text-color');
-const textColorSecondary = getCssVariableValue('--p-text-color-secondary');
-const surfaceBorder = getCssVariableValue('--p-surface-border');
+const textColorSecondary = getCssVariableValue('--color-text-color-secondary');
+const surfaceBorder = getCssVariableValue('--color-surface-border');
 
 @Component({
   selector: 'joshies-betting-dashboard-page',

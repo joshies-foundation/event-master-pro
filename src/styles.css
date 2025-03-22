@@ -1,13 +1,15 @@
-@import 'primeflex/primeflex.css';
+/*@import 'primeflex/primeflex.css';*/
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
 @import 'primeicons/primeicons.css';
-@import 'customicons.css';
+@import './customicons.css';
 
 :root {
   --font-family:
     system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   --font-feature-settings: normal;
-  --yellow-highlight: var(--p-yellow-100);
+  --yellow-highlight: var(--color-yellow-100);
 }
 
 html,
@@ -22,7 +24,7 @@ body {
 }
 
 body {
-  background-color: var(--p-surface-ground);
+  background-color: var(--color-surface-ground);
 }
 
 pre {
@@ -34,7 +36,7 @@ pre {
   -webkit-touch-callout: none;
 }
 
-// disable selecting text not in a text box
+/* disable selecting text not in a text box */
 :not(input):not(textarea),
 :not(input):not(textarea)::after,
 :not(input):not(textarea)::before,
@@ -107,7 +109,7 @@ p-editor {
 
   h2 {
     font-size: 1.25rem;
-    color: var(--p-surface-600);
+    color: var(--color-surface-600);
   }
 }
 
@@ -126,7 +128,7 @@ p-editor {
 .p-datatable {
   border-radius: 0.75rem;
   overflow: hidden;
-  background-color: var(--p-surface-card);
+  background-color: var(--color-surface-card);
 
   .p-datatable-tbody {
     :last-child {
@@ -141,50 +143,50 @@ p-editor {
   border-bottom: none;
 }
 
-// fix icon vertical position in iOS Safari
+/* fix icon vertical position in iOS Safari */
 .pi,
 [class^='ci-'] {
   line-height: inherit;
 }
 
-$sizeVariants: (
-  \.25: 0.25,
-  \.5: 0.5,
-  \.75: 0.75,
-);
+/*$sizeVariants: (*/
+/*  \.25: 0.25,*/
+/*  \.5: 0.5,*/
+/*  \.75: 0.75,*/
+/*);*/
 
-@for $i from 0 through 29 {
-  @each $n, $v in $sizeVariants {
-    $name: $i + $n;
-    $value: $i + $v;
+/*@for $i from 0 through 29 {*/
+/*  @each $n, $v in $sizeVariants {*/
+/*    $name: $i + $n;*/
+/*    $value: $i + $v;*/
 
-    .h-#{$name}rem {
-      height: #{$value}rem;
-    }
+/*    .h-#{$name}rem {*/
+/*      height: #{$value}rem;*/
+/*    }*/
 
-    .w-#{$name}rem {
-      width: #{$value}rem;
-    }
-  }
-}
+/*    .w-#{$name}rem {*/
+/*      width: #{$value}rem;*/
+/*    }*/
+/*  }*/
+/*}*/
 
-@for $i from 1 through 9 {
-  .surface-alpha-#{$i}0 {
-    background-color: color-mix(
-      in srgb,
-      var(--p-surface-0) ($i * 10%),
-      transparent
-    );
-  }
-}
+/*@for $i from 1 through 9 {*/
+/*  .surface-alpha-#{$i}0 {*/
+/*    background-color: color-mix(*/
+/*      in srgb,*/
+/*      var(--color-surface-0) ($i * 10%),*/
+/*      transparent*/
+/*    );*/
+/*  }*/
+/*}*/
 
-@for $i from 6 through 20 {
-  .z-#{$i} {
-    z-index: $i;
-  }
-}
+/*@for $i from 6 through 20 {*/
+/*  .z-#{$i} {*/
+/*    z-index: $i;*/
+/*  }*/
+/*}*/
 
-// drag and drop
+/* drag and drop */
 
 .cdk-drop-list-dragging .cdk-drag {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
@@ -209,19 +211,20 @@ $sizeVariants: (
 
 @keyframes bg-highlight-fadeout {
   from {
-    background-color: var(--p-yellow-500);
+    background-color: var(--color-yellow-500);
   }
   to {
     background-color: transparent;
   }
 }
 
-// ~~~ Classes that are different in light vs. dark mode ~~~
+/* ~~~ Classes that are different in light vs. dark mode ~~~ */
 
 .bg-header-footer-alpha {
   background-color: color-mix(
     in srgb,
-    color-mix(in srgb, var(--p-surface-ground) 25%, var(--p-surface-0)) 80%,
+    color-mix(in srgb, var(--color-surface-ground) 25%, var(--color-surface-0))
+      80%,
     transparent
   );
 }
@@ -231,19 +234,27 @@ $sizeVariants: (
 }
 
 .text-green {
-  color: var(--p-green-700);
+  color: var(--color-green-700);
 }
 
 .text-red {
-  color: var(--p-red-700);
+  color: var(--color-red-700);
 }
 
 .bg-green {
-  background: color-mix(in srgb, var(--p-green-300) 50%, var(--p-surface-0));
+  background: color-mix(
+    in srgb,
+    var(--color-green-300) 50%,
+    var(--color-surface-0)
+  );
 }
 
 .bg-red {
-  background: color-mix(in srgb, var(--p-red-300) 50%, var(--p-surface-0));
+  background: color-mix(
+    in srgb,
+    var(--color-red-300) 50%,
+    var(--color-surface-0)
+  );
 }
 
 .bg-none {
@@ -251,11 +262,11 @@ $sizeVariants: (
 }
 
 .border-ground {
-  border-color: var(--p-surface-ground);
+  border-color: var(--color-surface-ground);
 }
 
 .border-card {
-  border-color: var(--p-surface-card);
+  border-color: var(--color-surface-card);
 }
 
 .hide-scrollbar {
@@ -266,32 +277,44 @@ $sizeVariants: (
 
 @media (prefers-color-scheme: light) {
   :root {
-    --yellow-highlight: var(--p-yellow-100);
+    --yellow-highlight: var(--color-yellow-100);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --yellow-highlight: var(--p-yellow-900);
+    --yellow-highlight: var(--color-yellow-900);
   }
 
   .bg-header-footer-alpha {
-    background-color: color-mix(in srgb, var(--p-surface-0) 80%, transparent);
+    background-color: color-mix(
+      in srgb,
+      var(--color-surface-0) 80%,
+      transparent
+    );
   }
 
   .text-green {
-    color: var(--p-green-300);
+    color: var(--color-green-300);
   }
 
   .text-red {
-    color: var(--p-red-300);
+    color: var(--color-red-300);
   }
 
   .bg-green {
-    background: color-mix(in srgb, var(--p-green-700) 25%, var(--p-surface-0));
+    background: color-mix(
+      in srgb,
+      var(--color-green-700) 25%,
+      var(--color-surface-0)
+    );
   }
 
   .bg-red {
-    background: color-mix(in srgb, var(--p-red-700) 25%, var(--p-surface-0));
+    background: color-mix(
+      in srgb,
+      var(--color-red-700) 25%,
+      var(--color-surface-0)
+    );
   }
 }
