@@ -28,7 +28,6 @@ import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { concat, delay, map, of, switchMap } from 'rxjs';
 import { EventService } from '../../data-access/event.service';
@@ -159,7 +158,6 @@ export type FormField = {
     MultiSelectModule,
     EditorModule,
     InputNumberModule,
-    InputTextareaModule,
     CheckboxModule,
     ImageModule,
     SkeletonModule,
@@ -199,22 +197,19 @@ export class FormFieldComponent implements AfterViewInit {
 
   protected readonly FormFieldType = FormFieldType;
 
-  private readonly enableAndDisableFieldEffect = effect(
-    () => {
-      const field = this.field();
+  private readonly enableAndDisableFieldEffect = effect(() => {
+    const field = this.field();
 
-      if (field.type === FormFieldType.Submit) {
-        return;
-      }
+    if (field.type === FormFieldType.Submit) {
+      return;
+    }
 
-      if (this.formDisabled() || field.disabled) {
-        field.control.disable();
-      } else {
-        field.control.enable();
-      }
-    },
-    { allowSignalWrites: true },
-  );
+    if (this.formDisabled() || field.disabled) {
+      field.control.disable();
+    } else {
+      field.control.enable();
+    }
+  });
 
   ngAfterViewInit() {
     if (this.field().type === FormFieldType.Submit) {

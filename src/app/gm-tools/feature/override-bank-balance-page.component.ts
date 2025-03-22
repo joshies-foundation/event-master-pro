@@ -168,8 +168,6 @@ export default class OverridePointsPageComponent {
     this.confirmationService.confirm({
       header: 'Confirmation',
       // dialog content defined in template
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       key: confirmOverrideDialogKey,
       accept: async () => {

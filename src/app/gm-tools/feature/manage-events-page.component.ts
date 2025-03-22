@@ -2,9 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
-  effect,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -13,12 +13,12 @@ import { RouterLink } from '@angular/router';
 import { EventService } from '../../shared/data-access/event.service';
 import { NgOptimizedImage } from '@angular/common';
 import {
-  CdkDropList,
   CdkDrag,
-  moveItemInArray,
   CdkDragDrop,
   CdkDragHandle,
   CdkDragPlaceholder,
+  CdkDropList,
+  moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -195,9 +195,8 @@ export default class ManageEventsPageComponent {
     });
   }
 
-  private readonly updateLocalEventsArrayOnDatabaseUpdates = effect(
-    () => this.localSortedEvents.set(this.databaseEvents()?.slice()),
-    { allowSignalWrites: true },
+  private readonly updateLocalEventsArrayOnDatabaseUpdates = effect(() =>
+    this.localSortedEvents.set(this.databaseEvents()?.slice()),
   );
 
   // prevent user from dragging an event into a round that is already over

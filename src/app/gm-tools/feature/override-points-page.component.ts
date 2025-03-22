@@ -25,9 +25,9 @@ import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { ActivatedRoute, Router } from '@angular/router';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
-  ConfirmScoreOverrideDialogComponent,
-  ConfirmOverrideDialogModel,
   confirmOverrideDialogKey,
+  ConfirmOverrideDialogModel,
+  ConfirmScoreOverrideDialogComponent,
 } from '../ui/confirm-score-override-dialog.component';
 import {
   OverrideDefinitionTableComponent,
@@ -238,8 +238,6 @@ export default class OverridePointsPageComponent {
     this.confirmationService.confirm({
       header: 'Confirmation',
       // dialog content defined in template
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       key: confirmOverrideDialogKey,
       accept: async () => {

@@ -61,17 +61,7 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/quill/dist/quill.snow.css",
-              {
-                "input": "src/theme-light.scss",
-                "bundleName": "theme-light",
-                "inject": false
-              },
-              {
-                "input": "src/theme-dark.scss",
-                "bundleName": "theme-dark",
-                "inject": false
-              }
+              "node_modules/quill/dist/quill.snow.css"
             ],
             "scripts": []
           },

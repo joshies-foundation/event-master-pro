@@ -19,7 +19,6 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { BetService } from '../../shared/data-access/bet.service';
@@ -62,6 +61,7 @@ import { SSEventBetComponent } from '../ui/bet-types/ss-event-bet.component';
 import { ChaosSpaceBetComponent } from '../ui/bet-types/chaos-space-bet.component';
 import { EventBetComponent } from '../ui/bet-types/event-bet.component';
 import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
+import { Textarea } from 'primeng/textarea';
 
 @Component({
   selector: 'joshies-place-bet-page',
@@ -70,7 +70,6 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
     HeaderLinkComponent,
     FormsModule,
     ButtonModule,
-    InputTextareaModule,
     CheckboxModule,
     InputNumberModule,
     DropdownModule,
@@ -85,6 +84,7 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
     ChaosSpaceBetComponent,
     EventBetComponent,
     GameboardBetComponent,
+    Textarea,
   ],
   template: `
     <joshies-page-header headerText="Place a Bet" alwaysSmall>
@@ -199,7 +199,7 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
                 Bet Terms
                 <textarea
                   rows="2"
-                  pInputTextarea
+                  pTextarea
                   [(ngModel)]="terms"
                   [required]="true"
                 >
@@ -715,52 +715,46 @@ export default class PlaceBetPageComponent implements OnInit {
   }
 
   constructor() {
-    effect(
-      () => {
-        const playersWithoutUser = this.playersWithoutUser();
-        if (playersWithoutUser && this.staticPlayersWithoutUser.length < 1) {
-          this.staticPlayersWithoutUser = playersWithoutUser;
-        }
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const playersWithoutUser = this.playersWithoutUser();
+      if (playersWithoutUser && this.staticPlayersWithoutUser.length < 1) {
+        this.staticPlayersWithoutUser = playersWithoutUser;
+      }
+    });
 
-    effect(
-      () => {
-        const playersWithoutUser = this.playersWithoutUser();
-        this.selectedOpponent.set(
-          playersWithoutUser?.find(
-            (player) =>
-              player.player_id === this.staticSelectedOpponent()?.player_id,
-          ) ?? null,
-        );
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const playersWithoutUser = this.playersWithoutUser();
+      this.selectedOpponent.set(
+        playersWithoutUser?.find(
+          (player) =>
+            player.player_id === this.staticSelectedOpponent()?.player_id,
+        ) ?? null,
+      );
+    });
 
-    effect(
-      () => {
-        this.selectedDuel();
-        this.selectedWinner.set(null);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      this.selectedDuel();
+      this.selectedWinner.set(null);
+    });
 
-    effect(
-      () => {
-        this.selectedMainEvent();
-        this.selectedEventBetSubtype.set(BetSubtype.TeamPosition);
-        this.selectedEventTeam.set(null);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      this.selectedMainEvent();
+      this.selectedEventBetSubtype.set(BetSubtype.TeamPosition);
+      this.selectedEventTeam.set(null);
+    });
   }
 
   ngOnInit() {
     this.selectedBetType.set(this.betType() ?? BetType.Custom);
-    this.selectedDuelId.set(Number(this.duelId()) ?? null);
-    this.selectedMainEventId.set(Number(this.eventId()) ?? null);
-    this.selectedSsEventId.set(Number(this.ssEventId()) ?? null);
-    this.selectedChaosEventId.set(Number(this.chaosEventId()) ?? null);
+    this.selectedDuelId.set(this.duelId() ? Number(this.duelId()) : null);
+    this.selectedMainEventId.set(
+      this.eventId() ? Number(this.eventId()) : null,
+    );
+    this.selectedSsEventId.set(
+      this.ssEventId() ? Number(this.ssEventId()) : null,
+    );
+    this.selectedChaosEventId.set(
+      this.chaosEventId() ? Number(this.chaosEventId()) : null,
+    );
   }
 }

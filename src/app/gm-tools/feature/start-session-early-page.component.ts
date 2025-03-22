@@ -59,8 +59,6 @@ export default class StartSessionEarlyPageComponent {
       header: 'Confirmation',
       message: `Are you sure you want to start ${this.sessionService.session()?.name} early? This will set the start date to now, and begin the session right away.`,
       icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: async () => {
         this.startingSession.set(true);

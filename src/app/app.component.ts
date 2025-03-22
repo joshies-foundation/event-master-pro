@@ -1,15 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnInit,
   Renderer2,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { pagePaddingXCssClass } from './shared/util/css-helpers';
-import { PrimeNGConfig } from 'primeng/api';
+import { PrimeNG } from 'primeng/config';
 import { SquidwardService } from './shared/data-access/squidward.service';
 
 @Component({
@@ -28,13 +28,13 @@ import { SquidwardService } from './shared/data-access/squidward.service';
 })
 export class AppComponent implements OnInit {
   private readonly renderer = inject(Renderer2);
-  private readonly primeNgConfig = inject(PrimeNGConfig);
+  private readonly primeNg = inject(PrimeNG);
 
   // required to start squidward mode
   private readonly squidwardService = inject(SquidwardService);
 
   ngOnInit(): void {
     this.renderer.addClass(document.body, pagePaddingXCssClass);
-    this.primeNgConfig.ripple = true;
+    this.primeNg.ripple.set(true);
   }
 }

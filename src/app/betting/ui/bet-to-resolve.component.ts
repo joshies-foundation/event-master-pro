@@ -47,7 +47,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
       <!-- Push Button -->
       <p-button
         label="Push"
-        severity="warning"
+        severity="warn"
         icon="pi pi-equals"
         class="col"
         styleClass="w-full"

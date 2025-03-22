@@ -23,9 +23,9 @@ import { DividerModule } from 'primeng/divider';
 import { RouterLink } from '@angular/router';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 
-const textColor = getCssVariableValue('--text-color');
-const textColorSecondary = getCssVariableValue('--text-color-secondary');
-const surfaceBorder = getCssVariableValue('--surface-border');
+const textColor = getCssVariableValue('--p-text-color');
+const textColorSecondary = getCssVariableValue('--p-text-color-secondary');
+const surfaceBorder = getCssVariableValue('--p-surface-border');
 
 const numTransactionsToShow = 3;
 

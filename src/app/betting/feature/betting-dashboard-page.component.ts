@@ -34,8 +34,8 @@ import { BetToResolveComponent } from '../ui/bet-awaiting-acceptance.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 
 // const textColor = getCssVariableValue('--text-color');
-const textColorSecondary = getCssVariableValue('--text-color-secondary');
-const surfaceBorder = getCssVariableValue('--surface-border');
+const textColorSecondary = getCssVariableValue('--p-text-color-secondary');
+const surfaceBorder = getCssVariableValue('--p-surface-border');
 
 @Component({
   selector: 'joshies-betting-dashboard-page',
@@ -149,34 +149,34 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
               @if (showViewAllBetRequestsAccordion()) {
                 <p-accordion>
-                  <p-accordionTab
-                    header="All Requests"
-                    headerStyleClass="px-0 pb-2 bg-none"
-                    contentStyleClass="p-0 mt-3 bg-none"
-                  >
-                    @for (
-                      bet of betRequests;
-                      track bet.id;
-                      let first = $first;
-                      let last = $last
-                    ) {
-                      @if (!first) {
-                        <joshies-bet-request
-                          [bet]="bet"
-                          [userPlayerId]="userPlayerId"
-                          [submitting]="submitting()"
-                          [acceptingBetId]="acceptingBetId()"
-                          [rejectingBetId]="rejectingBetId()"
-                          (accept)="confirmAcceptBet(bet, userPlayerId)"
-                          (reject)="confirmRejectBet(bet, userPlayerId)"
-                        />
+                  <p-accordion-panel value="0">
+                    <p-accordion-header>All Requests</p-accordion-header>
 
-                        @if (!last) {
-                          <p-divider />
+                    <p-accordion-content>
+                      @for (
+                        bet of betRequests;
+                        track bet.id;
+                        let first = $first;
+                        let last = $last
+                      ) {
+                        @if (!first) {
+                          <joshies-bet-request
+                            [bet]="bet"
+                            [userPlayerId]="userPlayerId"
+                            [submitting]="submitting()"
+                            [acceptingBetId]="acceptingBetId()"
+                            [rejectingBetId]="rejectingBetId()"
+                            (accept)="confirmAcceptBet(bet, userPlayerId)"
+                            (reject)="confirmRejectBet(bet, userPlayerId)"
+                          />
+
+                          @if (!last) {
+                            <p-divider />
+                          }
                         }
                       }
-                    }
-                  </p-accordionTab>
+                    </p-accordion-content>
+                  </p-accordion-panel>
                 </p-accordion>
               }
             </joshies-card>
@@ -229,34 +229,36 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
               @if (showViewAllBetsAwaitingAcceptanceAccordion()) {
                 <p-accordion>
-                  <p-accordionTab
-                    header="All Bets Awaiting Acceptance"
-                    headerStyleClass="px-0 pb-2 bg-none"
-                    contentStyleClass="p-0 mt-3 bg-none"
-                  >
-                    @for (
-                      bet of betsAwaitingAcceptance;
-                      track bet.id;
-                      let first = $first;
-                      let last = $last
-                    ) {
-                      @if (!first) {
-                        <joshies-bet-awaiting-acceptance
-                          [bet]="bet"
-                          [userPlayerId]="userPlayerId"
-                          [submitting]="submitting()"
-                          [cancelingBetId]="cancelingBetId()"
-                          (cancelBet)="
-                            confirmCancelBetByRequester(bet, userPlayerId)
-                          "
-                        />
+                  <p-accordion-panel value="0">
+                    <p-accordion-header>
+                      All Bets Awaiting Acceptance
+                    </p-accordion-header>
 
-                        @if (!last) {
-                          <p-divider />
+                    <p-accordion-content>
+                      @for (
+                        bet of betsAwaitingAcceptance;
+                        track bet.id;
+                        let first = $first;
+                        let last = $last
+                      ) {
+                        @if (!first) {
+                          <joshies-bet-awaiting-acceptance
+                            [bet]="bet"
+                            [userPlayerId]="userPlayerId"
+                            [submitting]="submitting()"
+                            [cancelingBetId]="cancelingBetId()"
+                            (cancelBet)="
+                              confirmCancelBetByRequester(bet, userPlayerId)
+                            "
+                          />
+
+                          @if (!last) {
+                            <p-divider />
+                          }
                         }
                       }
-                    }
-                  </p-accordionTab>
+                    </p-accordion-content>
+                  </p-accordion-panel>
                 </p-accordion>
               }
             </joshies-card>
@@ -282,26 +284,30 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
           @if (showViewActiveBetsAccordion()) {
             <p-accordion>
-              <p-accordionTab
-                header="All Open Bets"
-                headerStyleClass="px-0 pb-2 bg-none"
-                contentStyleClass="p-0 mt-3 bg-none"
-              >
-                @for (
-                  bet of activeBets();
-                  track bet.id;
-                  let first = $first;
-                  let last = $last
-                ) {
-                  @if (!first) {
-                    <joshies-bet [bet]="bet" [userPlayerId]="userPlayerId" />
+              <p-accordion-panel value="0">
+                <p-accordion-header>All Open Bets</p-accordion-header>
 
-                    @if (!last) {
-                      <p-divider />
+                <p-accordion-content>
+                  @for (
+                    bet of activeBets();
+                    track bet.id;
+                    let first = $first;
+                    let last = $last
+                  ) {
+                    @if (!first) {
+                      <joshies-bet
+                        [bet]="bet"
+                        [userPlayerId]="userPlayerId"
+                        [class.mt-3]="first"
+                      />
+
+                      @if (!last) {
+                        <p-divider />
+                      }
                     }
                   }
-                }
-              </p-accordionTab>
+                </p-accordion-content>
+              </p-accordion-panel>
             </p-accordion>
           }
         </joshies-card>

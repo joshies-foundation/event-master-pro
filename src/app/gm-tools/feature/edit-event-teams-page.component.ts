@@ -1,12 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   effect,
   inject,
   input,
   numberAttribute,
+  Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -356,12 +356,8 @@ export default class EditEventTeamsPageComponent {
       .map((eventTeam) => eventTeam.id.toString()) ?? []),
   ]);
 
-  private readonly updateLocalEventTeamsArrayOnDatabaseUpdates = effect(
-    () =>
-      this.localSortedEventTeams.set(
-        structuredClone(this.databaseEventTeams()),
-      ),
-    { allowSignalWrites: true },
+  private readonly updateLocalEventTeamsArrayOnDatabaseUpdates = effect(() =>
+    this.localSortedEventTeams.set(structuredClone(this.databaseEventTeams())),
   );
 
   private readonly updateLocalEventParticipantsArrayOnDatabaseUpdates = effect(
@@ -387,7 +383,6 @@ export default class EditEventTeamsPageComponent {
         ...(structuredClone(this.databaseEventParticipants()) ??
           ([] as EventParticipantWithPlayerInfo[])),
       ]),
-    { allowSignalWrites: true },
   );
 
   readonly unsavedChangesExist = computed(() => {

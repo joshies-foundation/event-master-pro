@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   inject,
+  Signal,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -121,8 +121,6 @@ export default class ChangeGmPageComponent {
       header: `Really? ${newGmUser.real_name}?`,
       message: `Are you sure you want to make ${newGmUser.real_name} the new GM? You will immediately lose all GM privileges.`,
       icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: async () => {
         this.submittingUserIdInProgress.set(newGmUser.id);

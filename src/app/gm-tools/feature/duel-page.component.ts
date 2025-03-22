@@ -47,6 +47,7 @@ import { DuelService } from '../../shared/data-access/duel.service';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { BetService } from '../../shared/data-access/bet.service';
+import { InputNumber } from 'primeng/inputnumber';
 
 interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
   scoreChange: number;
@@ -68,6 +69,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,
     SelectButtonModule,
+    InputNumber,
   ],
   template: `
     <joshies-page-header headerText="Duel" alwaysSmall>

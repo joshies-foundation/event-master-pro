@@ -51,118 +51,124 @@ import { CardComponent } from '../../shared/ui/card.component';
 
     @if (allBets(); as bets) {
       <joshies-card styleClass="px-3 py-1">
-        <p-accordion [multiple]="true" [activeIndex]="[0]">
+        <p-accordion [multiple]="true" value="0">
           <!-- Custom Bets -->
-          <p-accordionTab
-            [header]="customBetsHeader()"
-            headerStyleClass="px-0"
-            contentStyleClass="px-0 pt-2"
-          >
-            @for (bet of customBets(); track bet.id; let last = $last) {
-              <joshies-bet-to-resolve
-                [bet]="bet"
-                [submitting]="submitting()"
-                [requesterWinningBetId]="requesterWinningBetId()"
-                [opponentWinningBetId]="opponentWinningBetId()"
-                [pushingBetId]="pushingBetId()"
-                [cancelingBetId]="cancelingBetId()"
-                (requesterWins)="
-                  confirmRequesterWins(
-                    bet.id,
-                    bet.requester?.display_name ?? 'Requester'
-                  )
-                "
-                (opponentWins)="
-                  confirmOpponentWins(
-                    bet.id,
-                    bet.opponent?.display_name ?? 'Opponent'
-                  )
-                "
-                (push)="confirmPushBet(bet.id)"
-                (cancelBet)="confirmCancelBet(bet.id)"
-              />
+          <p-accordion-panel value="0">
+            <p-accordion-header>
+              {{ customBetsHeader() }}
+            </p-accordion-header>
 
-              @if (!last) {
-                <p-divider />
+            <p-accordion-content>
+              @for (bet of customBets(); track bet.id; let last = $last) {
+                <joshies-bet-to-resolve
+                  [bet]="bet"
+                  [submitting]="submitting()"
+                  [requesterWinningBetId]="requesterWinningBetId()"
+                  [opponentWinningBetId]="opponentWinningBetId()"
+                  [pushingBetId]="pushingBetId()"
+                  [cancelingBetId]="cancelingBetId()"
+                  (requesterWins)="
+                    confirmRequesterWins(
+                      bet.id,
+                      bet.requester?.display_name ?? 'Requester'
+                    )
+                  "
+                  (opponentWins)="
+                    confirmOpponentWins(
+                      bet.id,
+                      bet.opponent?.display_name ?? 'Opponent'
+                    )
+                  "
+                  (push)="confirmPushBet(bet.id)"
+                  (cancelBet)="confirmCancelBet(bet.id)"
+                />
+
+                @if (!last) {
+                  <p-divider />
+                }
+              } @empty {
+                <p class="font-italic text-center text-500 mt-2 mb-4">
+                  No active custom bets
+                </p>
               }
-            } @empty {
-              <p class="font-italic text-center text-500 mt-0 mb-2">
-                No active custom bets
-              </p>
-            }
-          </p-accordionTab>
+            </p-accordion-content>
+          </p-accordion-panel>
 
           <!-- Auto-Resolve Bets -->
-          <p-accordionTab
-            [header]="autoResolveBetsHeader()"
-            headerStyleClass="px-0"
-            contentStyleClass="px-0 pt-2"
-          >
-            @for (bet of autoResolveBets(); track bet.id; let last = $last) {
-              <joshies-bet-to-resolve
-                [bet]="bet"
-                [submitting]="submitting()"
-                [requesterWinningBetId]="requesterWinningBetId()"
-                [opponentWinningBetId]="opponentWinningBetId()"
-                [pushingBetId]="pushingBetId()"
-                [cancelingBetId]="cancelingBetId()"
-                (requesterWins)="
-                  confirmRequesterWins(
-                    bet.id,
-                    bet.requester?.display_name ?? 'Requester'
-                  )
-                "
-                (opponentWins)="
-                  confirmOpponentWins(
-                    bet.id,
-                    bet.opponent?.display_name ?? 'Opponent'
-                  )
-                "
-                (push)="confirmPushBet(bet.id)"
-                (cancelBet)="confirmCancelBet(bet.id)"
-              />
+          <p-accordion-panel value="1">
+            <p-accordion-header>
+              {{ autoResolveBetsHeader() }}
+            </p-accordion-header>
 
-              @if (!last) {
-                <p-divider />
+            <p-accordion-content>
+              @for (bet of autoResolveBets(); track bet.id; let last = $last) {
+                <joshies-bet-to-resolve
+                  [bet]="bet"
+                  [submitting]="submitting()"
+                  [requesterWinningBetId]="requesterWinningBetId()"
+                  [opponentWinningBetId]="opponentWinningBetId()"
+                  [pushingBetId]="pushingBetId()"
+                  [cancelingBetId]="cancelingBetId()"
+                  (requesterWins)="
+                    confirmRequesterWins(
+                      bet.id,
+                      bet.requester?.display_name ?? 'Requester'
+                    )
+                  "
+                  (opponentWins)="
+                    confirmOpponentWins(
+                      bet.id,
+                      bet.opponent?.display_name ?? 'Opponent'
+                    )
+                  "
+                  (push)="confirmPushBet(bet.id)"
+                  (cancelBet)="confirmCancelBet(bet.id)"
+                />
+
+                @if (!last) {
+                  <p-divider />
+                }
+              } @empty {
+                <p class="font-italic text-center text-500 mt-0 mb-2">
+                  No active auto-resolve bets
+                </p>
               }
-            } @empty {
-              <p class="font-italic text-center text-500 mt-0 mb-2">
-                No active auto-resolve bets
-              </p>
-            }
-          </p-accordionTab>
+            </p-accordion-content>
+          </p-accordion-panel>
 
           <!-- Bets Pending Acceptance -->
-          <p-accordionTab
-            [header]="betsPendingAcceptanceHeader()"
-            headerStyleClass="px-0"
-            contentStyleClass="px-0 pt-2"
-          >
-            @for (
-              bet of betsPendingAcceptance();
-              track bet.id;
-              let last = $last
-            ) {
-              <joshies-bet-to-resolve
-                [bet]="bet"
-                [submitting]="submitting()"
-                [requesterWinningBetId]="requesterWinningBetId()"
-                [opponentWinningBetId]="opponentWinningBetId()"
-                [pushingBetId]="pushingBetId()"
-                [cancelingBetId]="cancelingBetId()"
-                (push)="confirmPushBet(bet.id)"
-                (cancelBet)="confirmCancelBet(bet.id)"
-              />
+          <p-accordion-panel value="2">
+            <p-accordion-header>
+              {{ betsPendingAcceptanceHeader() }}
+            </p-accordion-header>
 
-              @if (!last) {
-                <p-divider />
+            <p-accordion-content>
+              @for (
+                bet of betsPendingAcceptance();
+                track bet.id;
+                let last = $last
+              ) {
+                <joshies-bet-to-resolve
+                  [bet]="bet"
+                  [submitting]="submitting()"
+                  [requesterWinningBetId]="requesterWinningBetId()"
+                  [opponentWinningBetId]="opponentWinningBetId()"
+                  [pushingBetId]="pushingBetId()"
+                  [cancelingBetId]="cancelingBetId()"
+                  (push)="confirmPushBet(bet.id)"
+                  (cancelBet)="confirmCancelBet(bet.id)"
+                />
+
+                @if (!last) {
+                  <p-divider />
+                }
+              } @empty {
+                <p class="font-italic text-center text-500 mt-0 mb-2">
+                  No bets pending acceptance
+                </p>
               }
-            } @empty {
-              <p class="font-italic text-center text-500 mt-0 mb-2">
-                No bets pending acceptance
-              </p>
-            }
-          </p-accordionTab>
+            </p-accordion-content>
+          </p-accordion-panel>
         </p-accordion>
       </joshies-card>
     } @else {

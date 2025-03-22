@@ -37,6 +37,7 @@
     "@angular/platform-browser-dynamic": "^19.2.1",
     "@angular/router": "^19.2.1",
     "@angular/service-worker": "^19.2.1",
+    "@primeng/themes": "^19.0.9",
     "@supabase/supabase-js": "^2.49.1",
     "chart.js": "^4.4.8",
     "chartjs-plugin-datalabels": "^2.2.0",

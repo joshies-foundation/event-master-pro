@@ -56,7 +56,7 @@ export class StatusTagComponent {
       (
         ({
           [SpaceEventStatus.EventNotSelected]: 'secondary',
-          [SpaceEventStatus.WaitingToBegin]: 'warning',
+          [SpaceEventStatus.WaitingToBegin]: 'warn',
           [SpaceEventStatus.InProgress]: 'info',
           [SpaceEventStatus.Finished]: 'success',
           [SpaceEventStatus.Canceled]: 'danger',

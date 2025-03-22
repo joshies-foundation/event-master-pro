@@ -139,12 +139,10 @@ export default class RulesPageComponent {
     }),
   );
 
-  private readonly disableFooterEffect = effect(
-    () =>
-      this.editMode()
-        ? this.footerService.enableFooter()
-        : this.footerService.disableFooter(),
-    { allowSignalWrites: true },
+  private readonly disableFooterEffect = effect(() =>
+    this.editMode()
+      ? this.footerService.enableFooter()
+      : this.footerService.disableFooter(),
   );
 
   private readonly scrollToAnchorAfterRulesLoad = effect(() => {
@@ -211,8 +209,6 @@ export default class RulesPageComponent {
         'Are you sure you want close the editor?  Any unsaved changes will be lost.',
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: () => this.exitEditMode(),
     });

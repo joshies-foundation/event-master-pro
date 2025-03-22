@@ -53,6 +53,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
+import { InputNumber } from 'primeng/inputnumber';
 
 interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
   scoreChange: number;
@@ -75,6 +76,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,
     JsonPipe,
+    InputNumber,
   ],
   template: `
     <joshies-page-header headerText="Special Space Event" alwaysSmall>

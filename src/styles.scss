@@ -1,14 +1,13 @@
-@use 'sass:meta';
-@import 'primeng/resources/primeng.css';
 @import 'primeflex/primeflex.css';
 @import 'primeicons/primeicons.css';
-@include meta.load-css('customicons.scss');
+@import 'customicons.css';
 
 :root {
-  --font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+  --font-family:
+    system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   --font-feature-settings: normal;
-  --yellow-highlight: var(--yellow-100);
+  --yellow-highlight: var(--p-yellow-100);
 }
 
 html,
@@ -23,7 +22,7 @@ body {
 }
 
 body {
-  background-color: var(--surface-ground);
+  background-color: var(--p-surface-ground);
 }
 
 pre {
@@ -108,7 +107,7 @@ p-editor {
 
   h2 {
     font-size: 1.25rem;
-    color: var(--surface-600);
+    color: var(--p-surface-600);
   }
 }
 
@@ -127,7 +126,7 @@ p-editor {
 .p-datatable {
   border-radius: 0.75rem;
   overflow: hidden;
-  background-color: var(--surface-card);
+  background-color: var(--p-surface-card);
 
   .p-datatable-tbody {
     :last-child {
@@ -136,6 +135,10 @@ p-editor {
       }
     }
   }
+}
+
+.p-accordion p-accordion-panel:last-of-type {
+  border-bottom: none;
 }
 
 // fix icon vertical position in iOS Safari
@@ -169,7 +172,7 @@ $sizeVariants: (
   .surface-alpha-#{$i}0 {
     background-color: color-mix(
       in srgb,
-      var(--surface-0) ($i * 10%),
+      var(--p-surface-0) ($i * 10%),
       transparent
     );
   }
@@ -206,7 +209,7 @@ $sizeVariants: (
 
 @keyframes bg-highlight-fadeout {
   from {
-    background-color: var(--yellow-500);
+    background-color: var(--p-yellow-500);
   }
   to {
     background-color: transparent;
@@ -218,7 +221,7 @@ $sizeVariants: (
 .bg-header-footer-alpha {
   background-color: color-mix(
     in srgb,
-    color-mix(in srgb, var(--surface-ground) 25%, var(--surface-0)) 80%,
+    color-mix(in srgb, var(--p-surface-ground) 25%, var(--p-surface-0)) 80%,
     transparent
   );
 }
@@ -228,19 +231,19 @@ $sizeVariants: (
 }
 
 .text-green {
-  color: var(--green-700);
+  color: var(--p-green-700);
 }
 
 .text-red {
-  color: var(--red-700);
+  color: var(--p-red-700);
 }
 
 .bg-green {
-  background: color-mix(in srgb, var(--green-300) 50%, var(--surface-0));
+  background: color-mix(in srgb, var(--p-green-300) 50%, var(--p-surface-0));
 }
 
 .bg-red {
-  background: color-mix(in srgb, var(--red-300) 50%, var(--surface-0));
+  background: color-mix(in srgb, var(--p-red-300) 50%, var(--p-surface-0));
 }
 
 .bg-none {
@@ -248,11 +251,11 @@ $sizeVariants: (
 }
 
 .border-ground {
-  border-color: var(--surface-ground);
+  border-color: var(--p-surface-ground);
 }
 
 .border-card {
-  border-color: var(--surface-card);
+  border-color: var(--p-surface-card);
 }
 
 .hide-scrollbar {
@@ -263,34 +266,32 @@ $sizeVariants: (
 
 @media (prefers-color-scheme: light) {
   :root {
-    --surface-ground: #f3f2f8; // iOS app surface color
-    --yellow-highlight: var(--yellow-100);
+    --yellow-highlight: var(--p-yellow-100);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface-ground: black; // iOS app surface color
-    --yellow-highlight: var(--yellow-900);
+    --yellow-highlight: var(--p-yellow-900);
   }
 
   .bg-header-footer-alpha {
-    background-color: color-mix(in srgb, var(--surface-0) 80%, transparent);
+    background-color: color-mix(in srgb, var(--p-surface-0) 80%, transparent);
   }
 
   .text-green {
-    color: var(--green-300);
+    color: var(--p-green-300);
   }
 
   .text-red {
-    color: var(--red-300);
+    color: var(--p-red-300);
   }
 
   .bg-green {
-    background: color-mix(in srgb, var(--green-700) 25%, var(--surface-0));
+    background: color-mix(in srgb, var(--p-green-700) 25%, var(--p-surface-0));
   }
 
   .bg-red {
-    background: color-mix(in srgb, var(--red-700) 25%, var(--surface-0));
+    background: color-mix(in srgb, var(--p-red-700) 25%, var(--p-surface-0));
   }
 }

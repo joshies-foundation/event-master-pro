@@ -27,6 +27,7 @@ export interface FooterLinkModel {
           pBadge
           [value]="badgeValue"
           severity="danger"
+          badgeStyleClass="h-1rem w-1rem min-w-0 line-height-2"
           [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
         ></i>
       } @else {
