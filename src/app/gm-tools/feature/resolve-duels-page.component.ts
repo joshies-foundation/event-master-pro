@@ -55,7 +55,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
     </joshies-page-header>
 
     @if (duels(); as duels) {
-      <p class="mt-5">Duels for turn {{ roundNumber() }}</p>
+      <p class="mt-8">Duels for turn {{ roundNumber() }}</p>
 
       @if (duels.length) {
         <p-table [value]="duels" [rowTrackBy]="trackById">
@@ -84,13 +84,17 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
                 <joshies-status-tag [status]="duel.status" />
               </td>
               <td class="px-1">
-                <i class="pi pi-angle-right text-400"></i>
+                <i
+                  class="pi pi-angle-right text-surface-400 dark:text-surface-400"
+                ></i>
               </td>
             </tr>
           </ng-template>
         </p-table>
       } @else {
-        <p class="my-6 py-6 text-center text-500 font-italic">
+        <p
+          class="my-12 py-12 text-center text-surface-500 dark:text-surface-300 italic"
+        >
           No duels for this turn
         </p>
       }
@@ -98,7 +102,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
       @if (allDuelsAreResolved()) {
         <p-button
           label="Proceed to Chaos Space Event Phase"
-          styleClass="w-full mt-3"
+          styleClass="w-full mt-4"
           (onClick)="proceedToChaosSpaceEventPhase()"
         />
       }

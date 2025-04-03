@@ -45,13 +45,13 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 
     @if (form.fields()) {
       <!-- Form -->
-      <joshies-card padded class="mt-5">
+      <joshies-card padded class="mt-8">
         <joshies-form [form]="form" />
       </joshies-card>
     } @else {
       <!-- Loading Skeleton -->
-      <div class="h-4rem"></div>
-      <p-skeleton height="2.25rem" styleClass="mb-4" />
+      <div class="h-16"></div>
+      <p-skeleton height="2.25rem" styleClass="mb-6" />
       <p-skeleton width="100%" height="19rem" />
     }
   `,

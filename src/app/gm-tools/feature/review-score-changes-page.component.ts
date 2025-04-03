@@ -53,9 +53,11 @@ import { EventService } from '../../shared/data-access/event.service';
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="mt-6">
+      <h4 class="mt-12">
         Session points for round {{ vm.roundNumber }} of {{ vm.numRounds }}
-        <span class="text-500 font-italic">(Draft)</span>
+        <span class="text-surface-500 dark:text-surface-300 italic"
+          >(Draft)</span
+        >
       </h4>
 
       <p-table
@@ -82,19 +84,19 @@ import { EventService } from '../../shared/data-access/event.service';
           <tr>
             <!-- Player -->
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="rounded-full bg-surface-100 dark:bg-surface-700"
                 />
                 {{ player.display_name }}
               </div>
             </td>
             <!-- Before -->
-            <td class="text-right text-400">
+            <td class="text-right text-surface-400 dark:text-surface-400">
               {{ player.score | number }}
             </td>
             <!-- Change -->
@@ -116,11 +118,11 @@ import { EventService } from '../../shared/data-access/event.service';
           submitSessionPointsForEvent(vm.roundNumber!, vm.teamScoreChanges)
         "
         severity="success"
-        styleClass="mt-4 w-full"
+        styleClass="mt-6 w-full"
         [loading]="submittingInProgress()"
       />
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-6" />
+      <p-skeleton height="30rem" styleClass="mt-12" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

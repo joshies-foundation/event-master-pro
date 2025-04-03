@@ -45,13 +45,13 @@ import { ImageModule } from 'primeng/image';
             }
           </td>
           <td>
-            <div class="flex align-items-center gap-2 -py-2">
+            <div class="flex items-center gap-2 -py-2">
               <p-image
                 [src]="player.avatar_url"
                 alt=""
                 width="32"
                 height="32"
-                styleClass="surface-100 border-circle overflow-hidden"
+                styleClass="bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden"
                 [preview]="true"
               />
               {{ player.display_name }}

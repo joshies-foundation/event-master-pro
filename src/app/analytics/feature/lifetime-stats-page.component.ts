@@ -48,7 +48,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByUserId"
-        styleClass="mt-5"
+        styleClass="mt-8"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -75,13 +75,13 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
             }"
           >
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="row.avatar_url!"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="rounded-full bg-surface-100 dark:bg-surface-700"
                 />
                 {{ row.display_name }}
               </div>

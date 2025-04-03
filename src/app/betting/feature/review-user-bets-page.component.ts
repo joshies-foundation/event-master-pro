@@ -39,7 +39,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 
     @if (bets()?.length) {
       @if (bets(); as bets) {
-        <p class="mt-5">Review bets that are open or awaiting approval.</p>
+        <p class="mt-8">Review bets that are open or awaiting approval.</p>
         <p-table
           [value]="bets"
           [defaultSortOrder]="-1"
@@ -70,7 +70,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
               <!-- Status Buttons -->
               <td>
                 <div
-                  class="text-left flex gap-2 flex-column md:flex-row justify-content-end"
+                  class="text-left flex gap-2 flex-col md:flex-row justify-end"
                 >
                   @if (bet.status === BetStatus.Active) {
                     Open
@@ -114,7 +114,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
         </p-table>
       }
     } @else {
-      <p class="text-500 font-italic text-center mt-5">
+      <p class="text-surface-500 dark:text-surface-300 italic text-center mt-8">
         No open or pending bets
       </p>
     }

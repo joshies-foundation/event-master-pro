@@ -41,13 +41,13 @@ import {
     </joshies-page-header>
 
     <!-- Form -->
-    <joshies-form [form]="form" class="block mt-5 mb-8" />
+    <joshies-form [form]="form" class="block mt-8 mb-20" />
 
     <!-- Confirm Dialog -->
-    <p-confirmDialog styleClass="mx-3" [key]="confirmDialogKey">
+    <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
       <ng-template pTemplate="message">
         <div class="block">
-          <p class="mt-0 mb-4">
+          <p class="mt-0 mb-6">
             Are you sure you want to create the Chaos Space Event
             <strong>{{ chaosSpaceEventTemplateName() }}</strong
             >?
@@ -56,11 +56,11 @@ import {
           <h4 class="mt-0 mb-2">
             {{ chaosSpaceEventTemplateName() }}
           </h4>
-          <p class="m-0 text-sm text-600">
+          <p class="m-0 text-sm text-surface-600 dark:text-surface-200">
             {{ chaosSpaceEventTemplateFormValue().description }}
           </p>
 
-          <p class="mt-4 text-primary font-italic text-sm">
+          <p class="mt-6 text-primary italic text-sm">
             (Note: This event will not be available until it is added to a Chaos
             Space in the
             <strong>Manage Gameboard Space Types</strong> page)

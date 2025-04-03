@@ -15,8 +15,8 @@ import { SpaceEventStatus } from '../../../shared/util/supabase-helpers';
   selector: 'joshies-ss-event-bet',
   imports: [DropdownModule, FormsModule, OverUnderComponent],
   template: `
-    <div class="flex flex-column gap-3">
-      <label class="flex flex-column gap-2">
+    <div class="flex flex-col gap-4">
+      <label class="flex flex-col gap-2">
         Special Space Event
         <p-dropdown
           [options]="openSsEvents()"

@@ -53,7 +53,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
     </joshies-page-header>
 
     @if (specialSpaceEvents(); as specialSpaceEvents) {
-      <p class="mt-5">Special Space events for turn {{ roundNumber() }}</p>
+      <p class="mt-8">Special Space events for turn {{ roundNumber() }}</p>
 
       @if (specialSpaceEvents.length) {
         <p-table [value]="specialSpaceEvents" [rowTrackBy]="trackById">
@@ -73,7 +73,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
           >
             <tr [routerLink]="[specialSpaceEvent.id]">
               <td class="pr-0">
-                <div class="flex align-items-center">
+                <div class="flex items-center">
                   <p-avatar
                     [image]="specialSpaceEvent.player?.avatar_url!"
                     shape="circle"
@@ -89,13 +89,17 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
                 <joshies-status-tag [status]="specialSpaceEvent.status" />
               </td>
               <td class="px-1">
-                <i class="pi pi-angle-right text-400"></i>
+                <i
+                  class="pi pi-angle-right text-surface-400 dark:text-surface-400"
+                ></i>
               </td>
             </tr>
           </ng-template>
         </p-table>
       } @else {
-        <p class="my-6 py-6 text-center text-500 font-italic">
+        <p
+          class="my-12 py-12 text-center text-surface-500 dark:text-surface-300 italic"
+        >
           No special space events for this turn
         </p>
       }
@@ -103,7 +107,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
       @if (allSpecialSpaceEventsAreResolved()) {
         <p-button
           label="Proceed to Duel Phase"
-          styleClass="w-full mt-3"
+          styleClass="w-full mt-4"
           (onClick)="proceedToDuelPhase()"
         />
       }

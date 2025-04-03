@@ -50,7 +50,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       <!-- Player Table -->
       <p-table
         [value]="players"
-        styleClass="mt-4"
+        styleClass="mt-6"
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
@@ -71,17 +71,19 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         >
           <tr>
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="rounded-full bg-surface-100 dark:bg-surface-700"
                   alt=""
                 />
                 <div>
                   <p class="m-0">{{ player.display_name }}</p>
-                  <p class="m-0 text-500 text-xs">{{ player.real_name }}</p>
+                  <p class="m-0 text-surface-500 dark:text-surface-300 text-xs">
+                    {{ player.real_name }}
+                  </p>
                 </div>
               </div>
             </td>
@@ -131,7 +133,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         </ng-template>
       </p-table>
     } @else {
-      <p-skeleton width="100%" height="30rem" styleClass="mt-4" />
+      <p-skeleton width="100%" height="30rem" styleClass="mt-6" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

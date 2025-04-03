@@ -48,7 +48,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       />
     </joshies-page-header>
 
-    <p class="mt-5">Who do you want to be the new GM?</p>
+    <p class="mt-8">Who do you want to be the new GM?</p>
 
     @if (users(); as users) {
       <p-table
@@ -67,17 +67,19 @@ import { toSignal } from '@angular/core/rxjs-interop';
           <tr>
             <!-- User -->
             <td>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="user.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="rounded-full bg-surface-100 dark:bg-surface-700"
                 />
                 <div>
                   <p class="m-0">{{ user.display_name }}</p>
-                  <p class="m-0 text-500 text-xs">{{ user.real_name }}</p>
+                  <p class="m-0 text-surface-500 dark:text-surface-300 text-xs">
+                    {{ user.real_name }}
+                  </p>
                 </div>
               </div>
             </td>
@@ -95,7 +97,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
         </ng-template>
       </p-table>
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-5" />
+      <p-skeleton height="30rem" styleClass="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

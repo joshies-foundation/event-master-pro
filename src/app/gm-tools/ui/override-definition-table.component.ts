@@ -38,7 +38,10 @@ export interface OverrideDefinitionTableModel {
         <!-- Before -->
         <tr>
           <td>Before</td>
-          <td class="text-right text-400" [ngClass]="oldScorePaddingClass()">
+          <td
+            class="text-right text-surface-400 dark:text-surface-400"
+            [ngClass]="oldScorePaddingClass()"
+          >
             <span class="mr-1">{{ model().oldScore | number }}</span>
           </td>
         </tr>
@@ -135,14 +138,14 @@ export class OverrideDefinitionTableComponent {
   );
 
   readonly oldScorePaddingClass = computed(() =>
-    this.model().readonly ? '' : ' pr-6',
+    this.model().readonly ? '' : ' pr-12',
   );
 
   readonly changePaddingClass = computed(() =>
-    this.model().readonly ? '' : this.showChangeInput() ? ' pr-0' : ' pr-6',
+    this.model().readonly ? '' : this.showChangeInput() ? ' pr-0' : ' pr-12',
   );
 
   readonly newScorePaddingClass = computed(() =>
-    this.model().readonly ? '' : this.showReplaceInput() ? ' pr-0' : 'pr-6',
+    this.model().readonly ? '' : this.showReplaceInput() ? ' pr-0' : 'pr-12',
   );
 }

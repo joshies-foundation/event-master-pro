@@ -68,7 +68,7 @@ interface Countdown {
   templateUrl: './home-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'h-full block pb-6',
+    class: 'h-full block pb-12',
   },
   imports: [
     CardComponent,

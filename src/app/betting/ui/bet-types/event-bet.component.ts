@@ -28,9 +28,9 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
     TopBottomComponent,
   ],
   template: `
-    <div class="flex flex-column gap-3">
+    <div class="flex flex-col gap-4">
       <!-- Event Dropdown -->
-      <label class="flex flex-column gap-2">
+      <label class="flex flex-col gap-2">
         Event
         <p-dropdown
           [options]="openMainEvents()"
@@ -44,8 +44,8 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       </label>
 
       <!-- Subtype Radio Buttons -->
-      <div class="flex flex-wrap gap-3">
-        <div class="flex align-items-center">
+      <div class="flex flex-wrap gap-4">
+        <div class="flex items-center">
           <label class="ml-2">
             <p-radioButton
               name="eventBetSubtype"
@@ -60,7 +60,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
           selectedMainEventSignal()?.format ===
           EventFormat.ScoreBasedSingleRound
         ) {
-          <div class="flex align-items-center">
+          <div class="flex items-center">
             <label class="ml-2">
               <p-radioButton
                 name="eventBetSubtype"
@@ -77,7 +77,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       @switch (selectedEventBetSubtype()) {
         @case (BetSubtype.TeamPosition) {
           <!-- Bet Team Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Team
             <p-dropdown
               [options]="eventTeams()"
@@ -97,7 +97,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
         }
         @case (BetSubtype.Score) {
           <!-- Bet Team Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Team
             <p-dropdown
               [options]="eventTeams()"

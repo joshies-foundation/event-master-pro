@@ -12,9 +12,9 @@ import { GameboardService } from '../../../shared/data-access/gameboard.service'
   selector: 'joshies-gameboard-bet',
   imports: [DropdownModule, FormsModule],
   template: `
-    <div class="flex flex-column gap-3">
+    <div class="flex flex-col gap-4">
       <!-- Bet Player Dropdown -->
-      <label class="flex flex-column gap-2">
+      <label class="flex flex-col gap-2">
         Player
         <p-dropdown
           [options]="playerService.players() ?? []"
@@ -26,7 +26,7 @@ import { GameboardService } from '../../../shared/data-access/gameboard.service'
       </label>
 
       <!-- Gameboard Space Dropdown -->
-      <label class="flex flex-column gap-2">
+      <label class="flex flex-col gap-2">
         Next Gameboard Space
         <p-dropdown
           [options]="gameboardService.gameboardSpaces() ?? []"

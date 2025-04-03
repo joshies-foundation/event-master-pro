@@ -38,7 +38,7 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
           <p class="m-0">
             Randomly wager a percentage of your points and duel another player 1-on-1:
           </p>
-          <ul class="pl-5 mt-1 mb-0">
+          <ul class="pl-8 mt-1 mb-0">
             ${(
               (gameboardSpace.effect_data as DuelSpaceEffectData)?.duelGames ??
               []

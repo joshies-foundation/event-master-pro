@@ -35,7 +35,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
       />
     </joshies-page-header>
 
-    <p class="mt-5">
+    <p class="mt-8">
       Enter event scores for each team.
       {{
         eventForThisRound()?.lower_scores_are_better
@@ -64,8 +64,8 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
         >
           <tr>
             <td>
-              <div class="flex flex-column align-items-center gap-2">
-                <div class="flex flex-row align-items-center gap-2">
+              <div class="flex flex-col items-center gap-2">
+                <div class="flex flex-row items-center gap-2">
                   <p-avatarGroup styleClass="mr-2">
                     @for (
                       participant of team.participants;

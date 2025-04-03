@@ -14,11 +14,11 @@ export const confirmPlaceBetDialogKey = 'confirm-place-bet';
   selector: 'joshies-confirm-place-bet-dialog',
   imports: [ConfirmDialogModule, PrimeTemplate, BetComponent],
   template: `
-    <p-confirmDialog styleClass="mx-3" [key]="confirmPlaceBetDialogKey">
+    <p-confirmDialog styleClass="mx-4" [key]="confirmPlaceBetDialogKey">
       <ng-template pTemplate="message" let-message>
         <div>
           <!-- Prompt -->
-          <p class="mt-0 mb-4">Do you want to submit this bet request?</p>
+          <p class="mt-0 mb-6">Do you want to submit this bet request?</p>
 
           <!-- Bet Preview -->
           <joshies-bet [bet]="bet()" [userPlayerId]="userPlayerId()" />

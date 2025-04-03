@@ -57,15 +57,15 @@ import { BetComponent } from '../../shared/ui/bet.component';
       @if (vm.countdown) {
         <joshies-countdown-timer [countdown]="vm.countdown" />
       } @else {
-        <div class="flex flex-column justify-content-between m-4 h-full">
-          <div class="flex-shrink-1">
-            <h1 class="text-6xl font-semibold mt-0 mb-4">
+        <div class="flex flex-col justify-between m-6 h-full">
+          <div class="shrink">
+            <h1 class="text-6xl font-semibold mt-0 mb-6">
               {{ vm.session.name }}
             </h1>
-            <div class="grid">
+            <div class="grid grid-cols-12 gap-4">
               @if (vm.showRankingsTable) {
                 <!-- Rankings Table -->
-                <div class="col-3">
+                <div class="col-span-3">
                   <h2 class="mt-0 mb-2">
                     <i class="pi pi-trophy text-primary mr-2"></i>
                     {{ vm.rankingsTableHeader }}
@@ -77,10 +77,10 @@ import { BetComponent } from '../../shared/ui/bet.component';
                 </div>
               }
               @if (vm.sessionIsInProgress) {
-                <div class="col-4 ml-7">
+                <div class="col-span-4 ml-16">
                   <!-- Happening Now -->
                   <joshies-card
-                    class="mb-7"
+                    class="mb-16"
                     headerText="Happening Now"
                     headerIconClass="pi pi-star text-primary mr-2"
                     readOnly
@@ -88,13 +88,13 @@ import { BetComponent } from '../../shared/ui/bet.component';
                   >
                     @switch (vm.roundPhase) {
                       @case (RoundPhase.GameboardMoves) {
-                        <div class="flex gap-3">
+                        <div class="flex gap-4">
                           <img
                             ngSrc="/assets/dice-roll.gif"
                             alt=""
                             width="48"
                             height="48"
-                            class="border-round"
+                            class="rounded-border"
                           />
                           <div>
                             <p class="mt-0 mb-1">
@@ -135,7 +135,9 @@ import { BetComponent } from '../../shared/ui/bet.component';
                               </tr>
                             } @empty {
                               <tr>
-                                <td class="font-italic text-600">
+                                <td
+                                  class="italic text-surface-600 dark:text-surface-200"
+                                >
                                   No duels for this turn
                                 </td>
                               </tr>
@@ -175,7 +177,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
 
                   <!-- Up Next -->
                   <joshies-card
-                    class="mb-7"
+                    class="mb-16"
                     headerText="Up Next"
                     headerIconClass="pi pi-arrow-circle-right text-primary mr-2"
                     readOnly
@@ -296,7 +298,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                     point{{ vm.bankBalance > 1 ? 's' : '' }}
                   </joshies-card>
                 </div>
-                <div class="col-4 ml-7">
+                <div class="col-span-4 ml-16">
                   <!-- Recent Duels -->
                   <joshies-card
                     headerText="Latest Duels"
@@ -330,7 +332,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                                     [duel]="duel"
                                   ></joshies-duel-table-avatars>
                                 </td>
-                                <td class="pl-3">
+                                <td class="pl-4">
                                   <h4 class="text-lg mb-0">
                                     {{ duel.winner?.display_name }} beat
                                     {{ duel.loser?.display_name }} at
@@ -354,7 +356,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         </p-carousel>
                       } @else {
                         <!-- Fixes the issue of carousel going blank when container size decreases to equal numVisible -->
-                        <div class="w-full flex flex-column h-28rem">
+                        <div class="w-full flex flex-col h-[28rem]">
                           @for (duel of vm.latestDuels; track duel.id) {
                             <div
                               class="
@@ -367,7 +369,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                                       [duel]="duel"
                                     ></joshies-duel-table-avatars>
                                   </td>
-                                  <td class="pl-3">
+                                  <td class="pl-4">
                                     <h4 class="text-lg mb-0">
                                       {{ duel.winner?.display_name }} beat
                                       {{ duel.loser?.display_name }} at
@@ -392,7 +394,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         </div>
                       }
                     } @else {
-                      <div class="font-italic h-28rem">
+                      <div class="italic h-[28rem]">
                         Well this is boring, there are no recent duels.
                       </div>
                     }
@@ -439,7 +441,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                   </div>
                 }
               } @else {
-                <span class="font-italic"
+                <span class="italic"
                   >Seriously? No open bets? It's not even real money.</span
                 >
               }

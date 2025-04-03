@@ -40,7 +40,7 @@ import { CardComponent } from '../../shared/ui/card.component';
     <joshies-page-header
       headerText="Settle Bets"
       alwaysSmall
-      class="block mb-5"
+      class="block mb-8"
     >
       <joshies-header-link
         text="GM Tools"
@@ -50,7 +50,7 @@ import { CardComponent } from '../../shared/ui/card.component';
     </joshies-page-header>
 
     @if (allBets(); as bets) {
-      <joshies-card styleClass="px-3 py-1">
+      <joshies-card styleClass="px-4 py-1">
         <p-accordion [multiple]="true" value="0">
           <!-- Custom Bets -->
           <p-accordion-panel value="0">
@@ -87,7 +87,9 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p class="font-italic text-center text-500 mt-2 mb-4">
+                <p
+                  class="italic text-center text-surface-500 dark:text-surface-300 mt-2 mb-6"
+                >
                   No active custom bets
                 </p>
               }
@@ -129,7 +131,9 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p class="font-italic text-center text-500 mt-0 mb-2">
+                <p
+                  class="italic text-center text-surface-500 dark:text-surface-300 mt-0 mb-2"
+                >
                   No active auto-resolve bets
                 </p>
               }
@@ -163,7 +167,9 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p class="font-italic text-center text-500 mt-0 mb-2">
+                <p
+                  class="italic text-center text-surface-500 dark:text-surface-300 mt-0 mb-2"
+                >
                   No bets pending acceptance
                 </p>
               }
@@ -172,15 +178,15 @@ import { CardComponent } from '../../shared/ui/card.component';
         </p-accordion>
       </joshies-card>
     } @else {
-      <p-skeleton height="2rem" styleClass="mt-6 mb-3" />
+      <p-skeleton height="2rem" styleClass="mt-12 mb-4" />
 
       @for (i of [1, 2]; track i) {
         <p-skeleton height="9rem" styleClass="mb-2" />
-        <div class="grid">
+        <div class="grid grid-cols-12 gap-4">
           <p-skeleton class="col" height="37px" />
           <p-skeleton class="col" height="37px" />
         </div>
-        <div class="grid mb-3">
+        <div class="grid grid-cols-12 gap-4 mb-4">
           <p-skeleton class="col" height="37px" />
           <p-skeleton class="col" height="37px" />
         </div>

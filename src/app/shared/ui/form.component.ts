@@ -29,7 +29,7 @@ export interface Form {
       [formGroup]="form().formGroup"
       (ngSubmit)="form().onSubmit($event)"
       [ngClass]="form().styleClass"
-      class="flex flex-column gap-3"
+      class="flex flex-col gap-4"
     >
       @for (field of visibleFields(); track field.name) {
         <joshies-form-field

@@ -23,11 +23,11 @@ export const confirmOverrideDialogKey = 'confirm-override';
   selector: 'joshies-confirm-score-override-dialog',
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
-    <p-confirmDialog styleClass="mx-3" [key]="confirmOverrideDialogKey">
+    <p-confirmDialog styleClass="mx-4" [key]="confirmOverrideDialogKey">
       <ng-template pTemplate="message" let-message>
         <div>
           <!-- Prompt -->
-          <p class="mt-0 mb-4">
+          <p class="mt-0 mb-6">
             Do you want to submit this override for
             <strong>{{ model().player.display_name }}</strong
             >?
@@ -38,7 +38,7 @@ export const confirmOverrideDialogKey = 'confirm-override';
 
           <!-- Comment -->
           @if (model().comment) {
-            <p class="font-italic text-500 mx-3 mb-0">
+            <p class="italic text-surface-500 dark:text-surface-300 mx-4 mb-0">
               GM Discretion: {{ model().comment }}
             </p>
           }

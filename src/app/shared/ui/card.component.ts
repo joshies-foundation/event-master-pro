@@ -20,7 +20,7 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
           {{ headerText() }}
         </h2>
       } @else {
-        <h3 class="mt-4 mb-2">
+        <h3 class="mt-6 mb-2">
           @if (headerIconClass()) {
             <i [ngClass]="headerIconClass()"></i>
           }
@@ -30,7 +30,7 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
     }
 
     <div
-      class="surface-card border-round-xl"
+      class="bg-surface-0 dark:bg-surface-900 rounded-xl"
       [class.padded]="padded()"
       [ngClass]="styleClass()"
     >

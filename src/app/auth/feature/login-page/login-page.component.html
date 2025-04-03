@@ -1,12 +1,12 @@
-<div class="h-full flex flex-column justify-content-center align-items-center">
-  <div class="flex-1 w-full text-5xl pr-6 pb-6 bounce-1">
+<div class="h-full flex flex-col justify-center items-center">
+  <div class="flex-1 w-full text-5xl pr-12 pb-12 bounce-1">
     <span>🍄</span>
   </div>
 
   <form
     [formGroup]="form"
     (ngSubmit)="onSubmit()"
-    class="w-full max-w-30rem flex flex-column gap-3 px-3"
+    class="w-full max-w-[30rem] flex flex-col gap-4 px-4"
   >
     <!-- Username -->
     <input
@@ -33,7 +33,7 @@
     />
   </form>
 
-  <div class="flex-1 w-full text-5xl pr-6 pb-6 bounce-2">
+  <div class="flex-1 w-full text-5xl pr-12 pb-12 bounce-2">
     <span>🦷</span>
   </div>
 </div>

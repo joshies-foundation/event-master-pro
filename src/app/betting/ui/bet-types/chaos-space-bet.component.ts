@@ -26,8 +26,8 @@ import {
   selector: 'joshies-chaos-space-bet',
   imports: [DropdownModule, FormsModule, RadioButtonModule, OverUnderComponent],
   template: `
-    <div class="flex flex-column gap-3">
-      <label class="flex flex-column gap-2">
+    <div class="flex flex-col gap-4">
+      <label class="flex flex-col gap-2">
         Chaos Space Event
         <p-dropdown
           [options]="openChaosEvents()"
@@ -39,8 +39,8 @@ import {
           placeholder="Select a chaos space event"
         />
       </label>
-      <div class="flex flex-wrap gap-3">
-        <div class="flex align-items-center">
+      <div class="flex flex-wrap gap-4">
+        <div class="flex items-center">
           <label class="ml-2">
             <p-radioButton
               name="chaosBetSubtype"
@@ -51,7 +51,7 @@ import {
             Number of Losers
           </label>
         </div>
-        <div class="flex align-items-center">
+        <div class="flex items-center">
           <label class="ml-2">
             <p-radioButton
               name="chaosBetSubtype"
@@ -72,7 +72,7 @@ import {
         }
         @case (BetSubtype.PlayerLoses) {
           <!-- Bet Player Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Player
             <p-dropdown
               [options]="playerService.players() ?? []"
@@ -84,8 +84,8 @@ import {
           </label>
 
           <!-- Wins/Loses Radio Buttons -->
-          <div class="flex flex-wrap gap-3">
-            <div class="flex align-items-center">
+          <div class="flex flex-wrap gap-4">
+            <div class="flex items-center">
               <label class="ml-2">
                 <p-radioButton
                   name="winsLoses"
@@ -96,7 +96,7 @@ import {
                 Wins
               </label>
             </div>
-            <div class="flex align-items-center">
+            <div class="flex items-center">
               <label class="ml-2">
                 <p-radioButton
                   name="winsLoses"

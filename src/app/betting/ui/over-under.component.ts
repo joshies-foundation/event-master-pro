@@ -7,8 +7,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
   selector: 'joshies-over-under',
   template: `
     <!-- Over/Under Radio Buttons -->
-    <div class="flex flex-wrap gap-3 mt-2">
-      <div class="flex align-items-center">
+    <div class="flex flex-wrap gap-4 mt-2">
+      <div class="flex items-center">
         <label class="ml-2">
           <p-radioButton
             name="overUnder"
@@ -19,7 +19,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
           Over
         </label>
       </div>
-      <div class="flex align-items-center">
+      <div class="flex items-center">
         <label class="ml-2">
           <p-radioButton
             name="overUnder"
@@ -33,7 +33,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     </div>
 
     <!-- Over/Under Value -->
-    <label class="flex flex-column gap-2 mt-3">
+    <label class="flex flex-col gap-2 mt-4">
       Over/Under Value
       <p-inputNumber
         #ouInput

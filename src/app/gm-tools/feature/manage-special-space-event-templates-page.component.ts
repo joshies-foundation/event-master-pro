@@ -16,7 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   ],
   template: `
     <joshies-page-header headerText="Special Space Events" alwaysSmall>
-      <div class="w-full flex justify-content-between">
+      <div class="w-full flex justify-between">
         <joshies-header-link
           text="GM Tools"
           routerLink=".."
@@ -35,28 +35,36 @@ import { toSignal } from '@angular/core/rxjs-interop';
         let first = $first
       ) {
         <a
-          class="w-full flex align-items-center border-bottom-1 border-100 p-3 text-color no-underline"
+          class="w-full flex items-center border-b border-surface-100 dark:border-surface-700 p-4 text-color no-underline"
           [class.mt-5]="first"
           [routerLink]="[eventTemplate.id]"
         >
-          <div class="flex-grow-1">
+          <div class="grow">
             <h4 class="mt-0 mb-2">{{ eventTemplate.name }}</h4>
-            <p class="m-0 text-sm text-600">{{ eventTemplate.description }}</p>
+            <p class="m-0 text-sm text-surface-600 dark:text-surface-200">
+              {{ eventTemplate.description }}
+            </p>
           </div>
-          <i class="pi pi-angle-right ml-2 text-300"></i>
+          <i
+            class="pi pi-angle-right ml-2 text-surface-300 dark:text-surface-500"
+          ></i>
         </a>
       } @empty {
-        <p class="mt-6 pt-6 text-center text-500 font-italic">
+        <p
+          class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
+        >
           Tap <span class="font-bold text-primary">+</span> to add a Special
           Space event
         </p>
       }
     } @else if (specialSpaceEventTemplates() === null) {
-      <p class="mt-6 pt-6 text-center text-500 font-italic">
+      <p
+        class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
+      >
         No active session
       </p>
     } @else {
-      <p-skeleton height="5rem" styleClass="mt-5 mb-2" />
+      <p-skeleton height="5rem" styleClass="mt-8 mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />

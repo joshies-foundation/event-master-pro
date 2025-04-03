@@ -20,7 +20,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
       label="Cancel Bet Request"
       severity="danger"
       icon="pi pi-times"
-      styleClass="w-full mt-3 mb-2"
+      styleClass="w-full mt-4 mb-2"
       [loading]="submitting() && bet().id === cancelingBetId()"
       [disabled]="submitting()"
       (onClick)="onCancelBetButtonClick()"

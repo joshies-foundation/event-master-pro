@@ -53,7 +53,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
     </joshies-page-header>
 
     @if (chaosSpaceEvents(); as chaosSpaceEvents) {
-      <p class="mt-5">Chaos Space events for turn {{ roundNumber() }}</p>
+      <p class="mt-8">Chaos Space events for turn {{ roundNumber() }}</p>
 
       @if (chaosSpaceEvents.length) {
         <p-table [value]="chaosSpaceEvents" [rowTrackBy]="trackById">
@@ -73,7 +73,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
           >
             <tr [routerLink]="[chaosSpaceEvent.id]">
               <td class="pr-0">
-                <div class="flex align-items-center">
+                <div class="flex items-center">
                   <p-avatar
                     [image]="chaosSpaceEvent.player?.avatar_url!"
                     shape="circle"
@@ -89,13 +89,17 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
                 <joshies-status-tag [status]="chaosSpaceEvent.status" />
               </td>
               <td class="px-1">
-                <i class="pi pi-angle-right text-400"></i>
+                <i
+                  class="pi pi-angle-right text-surface-400 dark:text-surface-400"
+                ></i>
               </td>
             </tr>
           </ng-template>
         </p-table>
       } @else {
-        <p class="my-6 py-6 text-center text-500 font-italic">
+        <p
+          class="my-12 py-12 text-center text-surface-500 dark:text-surface-300 italic"
+        >
           No chaos space events for this turn
         </p>
       }
@@ -103,7 +107,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
       @if (allChaosSpaceEventsAreResolved()) {
         <p-button
           label="Proceed to Event Phase"
-          styleClass="w-full mt-3"
+          styleClass="w-full mt-4"
           (onClick)="proceedToEventPhase()"
         />
       }

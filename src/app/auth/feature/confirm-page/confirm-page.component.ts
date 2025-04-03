@@ -7,7 +7,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
   imports: [],
   template: `{{ error() || 'Confirming...' }}`,
   host: {
-    class: 'block mt-3',
+    class: 'block mt-4',
   },
 })
 export default class ConfirmPageComponent implements OnInit {

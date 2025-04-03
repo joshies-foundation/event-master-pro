@@ -61,11 +61,13 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
 
     @if (pageLoaded()) {
       <!-- Stats -->
-      <div class="grid">
+      <div class="grid grid-cols-12 gap-4">
         @if (stats(); as stats) {
           <!-- Resolved Bets -->
-          <div class="col pb-3">
-            <div class="h-full surface-card p-2 border-round text-center">
+          <div class="col pb-4">
+            <div
+              class="h-full bg-surface-0 dark:bg-surface-900 p-2 rounded-border text-center"
+            >
               <p class="text-sm m-0">Settled Bets</p>
               @if (stats.numResolvedBets === null) {
                 <p class="text-2xl my-2">—</p>
@@ -81,8 +83,10 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
           </div>
 
           <!-- Total Profit -->
-          <div class="col pb-3">
-            <div class="h-full surface-card p-2 border-round text-center">
+          <div class="col pb-4">
+            <div
+              class="h-full bg-surface-0 dark:bg-surface-900 p-2 rounded-border text-center"
+            >
               <p class="text-sm m-0">Total Profit</p>
               @if (stats.totalProfit === null) {
                 <p class="text-2xl my-2">—</p>
@@ -96,8 +100,10 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
           </div>
 
           <!-- Overall Win % -->
-          <div class="col pb-3">
-            <div class="h-full surface-card p-2 border-round text-center">
+          <div class="col pb-4">
+            <div
+              class="h-full bg-surface-0 dark:bg-surface-900 p-2 rounded-border text-center"
+            >
               <p class="text-sm m-0">Overall Win %</p>
               @if (stats.totalProfit === null) {
                 <p class="text-2xl my-2">—</p>
@@ -117,7 +123,9 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
       </div>
 
       <!-- Chart -->
-      <div class="surface-card border-round p-2 pb-0 mb-3">
+      <div
+        class="bg-surface-0 dark:bg-surface-900 rounded-border p-2 pb-0 mb-4"
+      >
         <p-chart
           type="bar"
           [options]="chartOptions"
@@ -134,7 +142,7 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
               padded
               [headerText]="betRequestsHeaderText()"
               headerIconClass="pi pi-info-circle text-primary mr-2"
-              class="mb-4"
+              class="mb-6"
             >
               <!-- Always show 1st bet request -->
               <joshies-bet-request
@@ -188,7 +196,7 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
           <h3 class="my-2">
             <i class="pi pi-plus text-primary mr-2"></i> Place Bet For
           </h3>
-          <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-3 px-3">
+          <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4">
             @for (
               betTypeButtonModel of betTypeButtonModels;
               track betTypeButtonModel.label
@@ -196,7 +204,7 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
               <a
                 [routerLink]="betTypeButtonModel.routerLink"
                 [queryParams]="betTypeButtonModel.queryParams"
-                class="flex flex-column flex-shrink-0 gap-1 text-xs h-4rem w-6rem p-2 justify-content-center text-center align-items-center no-underline p-button p-button-outlined"
+                class="flex flex-col shrink-0 gap-1 text-xs h-16 w-24 p-2 justify-center text-center items-center no-underline p-button p-button-outlined"
                 pRipple
               >
                 <i [class]="betTypeButtonModel.iconClass"></i>
@@ -278,7 +286,9 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
                 [userPlayerId]="userPlayerId"
               />
             } @else {
-              <p class="m-0 font-italic text-600">No open bets</p>
+              <p class="m-0 italic text-surface-600 dark:text-surface-200">
+                No open bets
+              </p>
             }
           }
 
@@ -325,7 +335,9 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
               <p-divider />
             }
           } @empty {
-            <p class="m-0 font-italic text-600">No settled bets</p>
+            <p class="m-0 italic text-surface-600 dark:text-surface-200">
+              No settled bets
+            </p>
           }
 
           @if (showViewAllResolvedBetsLink()) {
@@ -344,27 +356,27 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
       }
     } @else {
       <!-- Stats -->
-      <div class="grid">
+      <div class="grid grid-cols-12 gap-4">
         <p-skeleton class="col" height="5rem" />
         <p-skeleton class="col" height="5rem" />
         <p-skeleton class="col" height="5rem" />
       </div>
 
       <!-- Chart -->
-      <div class="h-11rem py-1">
+      <div class="h-44 py-1">
         <p-skeleton height="100%" />
       </div>
 
       <!-- Pace Bet -->
-      <div class="flex gap-2 mt-3 mb-2">
+      <div class="flex gap-2 mt-4 mb-2">
         <p-skeleton
           height="1.25rem"
           width="1.25rem"
-          styleClass="border-circle"
+          styleClass="rounded-full"
         />
         <p-skeleton height="1.25rem" width="7rem" />
       </div>
-      <div class="flex gap-2 overflow-x-hidden -mx-3 px-3">
+      <div class="flex gap-2 overflow-x-hidden -mx-4 px-4">
         @for (
           betTypeButtonModel of betTypeButtonModels;
           track betTypeButtonModel.label
@@ -378,11 +390,11 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
       </div>
 
       <!-- Open Bets -->
-      <div class="flex gap-2 mt-4 mb-2">
+      <div class="flex gap-2 mt-6 mb-2">
         <p-skeleton
           height="1.25rem"
           width="1.25rem"
-          styleClass="border-circle"
+          styleClass="rounded-full"
         />
         <p-skeleton height="1.25rem" width="7.5rem" />
       </div>
@@ -390,7 +402,7 @@ const surfaceBorder = getCssVariableValue('--color-surface-border');
     }
   `,
   host: {
-    class: 'block pb-6',
+    class: 'block pb-12',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -11,8 +11,8 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
   selector: 'joshies-duel-winner',
   imports: [DropdownModule, FormsModule],
   template: `
-    <div class="flex flex-column gap-3">
-      <label class="flex flex-column gap-2">
+    <div class="flex flex-col gap-4">
+      <label class="flex flex-col gap-2">
         Duel
         <p-dropdown
           [options]="openDuels()"
@@ -26,7 +26,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       </label>
 
       <!-- Duel Winner Dropdown -->
-      <label class="flex flex-column gap-2">
+      <label class="flex flex-col gap-2">
         Winner
         <p-dropdown
           [options]="competitors()"

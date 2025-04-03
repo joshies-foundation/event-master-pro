@@ -48,7 +48,7 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
         [ngModel]="analyticsPreviousResolvedData().mostRecentSessionId"
         optionLabel="name"
         optionValue="id"
-        styleClass="w-full mt-5 mb-3"
+        styleClass="w-full mt-8 mb-4"
         placeholder="Select a previous session"
       />
     }
@@ -60,7 +60,9 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
           [userId]="vm.userId"
         />
       } @else {
-        <p class="mt-6 pt-6 text-center text-500 font-italic">
+        <p
+          class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
+        >
           No previous sessions
         </p>
       }

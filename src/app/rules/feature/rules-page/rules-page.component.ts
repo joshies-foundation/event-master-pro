@@ -41,7 +41,7 @@ import { ImageModule } from 'primeng/image';
   selector: 'joshies-rules-page',
   templateUrl: './rules-page.component.html',
   host: {
-    class: 'block pb-6',
+    class: 'block pb-12',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

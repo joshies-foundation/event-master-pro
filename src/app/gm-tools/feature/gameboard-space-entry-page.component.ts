@@ -76,7 +76,7 @@ export type GameboardSpaceEntryFormModel = Record<
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <p class="mt-5">
+      <p class="mt-8">
         Enter gameboard moves for turn
         <strong>{{ vm.roundNumber }}</strong>
       </p>
@@ -93,7 +93,7 @@ export type GameboardSpaceEntryFormModel = Record<
       >
         <ng-template pTemplate="header">
           <tr>
-            <th class="w-8rem p-0"></th>
+            <th class="w-32 p-0"></th>
             <th class="p-0"></th>
           </tr>
         </ng-template>
@@ -105,13 +105,13 @@ export type GameboardSpaceEntryFormModel = Record<
           <tr [formGroupName]="player.player_id">
             <!-- Player -->
             <td>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="rounded-full bg-surface-100 dark:bg-surface-700"
                 />
                 {{ player.display_name }}
               </div>
@@ -182,7 +182,7 @@ export type GameboardSpaceEntryFormModel = Record<
 
       <p-button
         label="Review Moves"
-        styleClass="mt-4 w-full"
+        styleClass="mt-6 w-full"
         (onClick)="reviewGameboardSpaces()"
         icon="pi pi-chevron-right"
         iconPos="right"

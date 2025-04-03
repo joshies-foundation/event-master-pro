@@ -35,11 +35,13 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       [(selection)]="selectedNodes"
       propagateSelectionUp="false"
       propagateSelectionDown="false"
-      class="block mt-3"
+      class="block mt-4"
     >
       <ng-template let-node pTemplate="node">
-        <div class="flex align-items-center rotate-180 w-10rem h-2rem">
-          <span class="text-xs text-400 mr-1">{{ node.data?.seed }}</span>
+        <div class="flex items-center rotate-180 w-40 h-8">
+          <span class="text-xs text-surface-400 dark:text-surface-400 mr-1">{{
+            node.data?.seed
+          }}</span>
           <p-avatarGroup styleClass="mr-1">
             @for (
               participant of node.data.participants;
@@ -48,12 +50,12 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
               <p-avatar [image]="participant.avatar_url" shape="circle" />
             }
           </p-avatarGroup>
-          <span class="text-800 text-sm">
+          <span class="text-surface-800 dark:text-surface-50 text-sm">
             {{ node.data.participants | participantList }}
           </span>
           @if (node.checked) {
             <i
-              class="pi pi-check text-white bg-green-500 p-1 text-xs font-bold border-circle block ml-auto mr-1"
+              class="pi pi-check text-white bg-green-500 p-1 text-xs font-bold rounded-full block ml-auto mr-1"
             ></i>
           }
         </div>
@@ -64,7 +66,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       <!-- Submit Button -->
       <p-button
         label="Save"
-        styleClass="w-full mt-4"
+        styleClass="w-full mt-6"
         class="flex-1"
         [hidden]="!editable()"
         (onClick)="save()"
@@ -168,7 +170,6 @@ export class TournamentBracketComponent {
     node.children?.forEach((child) => {
       this.setWinnersRecursively(child, bracket, depth + 1, teamsByRound);
     });
-    node.partialSelected;
     if (
       node.data &&
       node.data.seed &&

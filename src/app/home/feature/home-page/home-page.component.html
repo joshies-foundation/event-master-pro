@@ -6,7 +6,7 @@
     <joshies-page-header [headerText]="vm.session.name" />
 
     <!-- Date Range -->
-    <p class="-mt-3 text-400">
+    <p class="-mt-4 text-surface-400 dark:text-surface-400">
       {{ vm.session.start_date | date: 'longDate' }} -
       {{ vm.session.end_date | date: 'longDate' }}
     </p>
@@ -20,13 +20,13 @@
       >
         @switch (vm.roundPhase) {
           @case (RoundPhase.GameboardMoves) {
-            <div class="flex gap-3" routerLink="/rules" fragment="gameboard">
+            <div class="flex gap-4" routerLink="/rules" fragment="gameboard">
               <img
                 ngSrc="/assets/dice-roll.gif"
                 alt=""
                 width="48"
                 height="48"
-                class="border-round"
+                class="rounded-border"
               />
               <div>
                 <p class="mt-0 mb-1">
@@ -37,11 +37,13 @@
                 </p>
                 <p class="m-0">Let's get rolling!</p>
               </div>
-              <i class="pi pi-angle-right text-300 align-self-center"></i>
+              <i
+                class="pi pi-angle-right text-surface-300 dark:text-surface-500 self-center"
+              ></i>
             </div>
             <p-button
               label="Place Bet for space someone lands on"
-              styleClass="w-full mt-3"
+              styleClass="w-full mt-4"
               routerLink="/betting/place-bet"
               [queryParams]="{
                 betType: BetType.GameboardMove,
@@ -50,7 +52,7 @@
             @if (vm.userIsGameMaster) {
               <p-button
                 label="Enter Gameboard Moves"
-                styleClass="w-full mt-3"
+                styleClass="w-full mt-4"
                 routerLink="/gm-tools/space-entry"
               />
             }
@@ -110,7 +112,9 @@
                   </tr>
                 } @empty {
                   <tr>
-                    <td class="font-italic text-600">No duels for this turn</td>
+                    <td class="italic text-surface-600 dark:text-surface-200">
+                      No duels for this turn
+                    </td>
                   </tr>
                 }
               </tbody>
@@ -207,7 +211,7 @@
 
               <p-button
                 label="Place Bet for space someone lands on"
-                styleClass="w-full mt-3"
+                styleClass="w-full mt-4"
                 routerLink="/betting/place-bet"
                 [queryParams]="{
                   betType: BetType.GameboardMove,
@@ -217,7 +221,7 @@
               @if (vm.userIsGameMaster) {
                 <p-button
                   [label]="'Start Turn ' + (vm.roundNumber + 1)"
-                  styleClass="w-full mt-3"
+                  styleClass="w-full mt-4"
                   (onClick)="proceedToGameboardMovePhase(vm.roundNumber + 1)"
                 />
               }
@@ -346,7 +350,9 @@
           (onClick)="startSession()"
         />
       } @else {
-        <p class="mt-8 text-center text-500 font-italic">
+        <p
+          class="mt-20 text-center text-surface-500 dark:text-surface-300 italic"
+        >
           is about to begin...
         </p>
       }
@@ -374,19 +380,19 @@
     }
   }
 } @else {
-  <div class="h-4rem"></div>
+  <div class="h-16"></div>
 
   <!-- Header -->
   <p-skeleton height="2.25rem" styleClass="mb-2" />
-  <p-skeleton height="1.25rem" styleClass="mb-4" />
+  <p-skeleton height="1.25rem" styleClass="mb-6" />
 
   <!-- Happening Now -->
   <p-skeleton height="1.5rem" width="10.5rem" styleClass="mb-2" />
-  <p-skeleton height="6rem" styleClass="mb-4" />
+  <p-skeleton height="6rem" styleClass="mb-6" />
 
   <!-- Up Next -->
   <p-skeleton height="1.5rem" width="6.5rem" styleClass="mb-2" />
-  <p-skeleton height="6rem" styleClass="mb-4" />
+  <p-skeleton height="6rem" styleClass="mb-6" />
 
   <!-- Current Rankings -->
   <div class="h-0.5rem"></div>

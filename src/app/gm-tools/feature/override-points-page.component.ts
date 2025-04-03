@@ -63,17 +63,19 @@ import { CheckboxModule } from 'primeng/checkbox';
 
     @if (player(); as player) {
       <!-- Player Header -->
-      <h2 class="flex align-items-center gap-3 mt-6 mb-5">
+      <h2 class="flex items-center gap-4 mt-12 mb-8">
         <img
           [ngSrc]="player.avatar_url"
           alt=""
           height="48"
           width="48"
-          class="border-circle surface-100"
+          class="rounded-full bg-surface-100 dark:bg-surface-700"
         />
         <div>
           <p class="m-0">{{ player.display_name }}</p>
-          <p class="m-0 text-500 text-base font-normal">
+          <p
+            class="m-0 text-surface-500 dark:text-surface-300 text-base font-normal"
+          >
             {{ player.real_name }}
           </p>
         </div>
@@ -81,8 +83,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 
       <joshies-card padded>
         <!-- Override Type -->
-        <p class="mt-0 mb-3">Override Type</p>
-        <div class="flex flex-column gap-3 mb-5">
+        <p class="mt-0 mb-4">Override Type</p>
+        <div class="flex flex-col gap-4 mb-8">
           @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
             <label class="ml-2">
               <p-radioButton
@@ -105,7 +107,7 @@ import { CheckboxModule } from 'primeng/checkbox';
         />
 
         @if (changeValue() < 0) {
-          <label class="flex align-items-center gap-2 mt-4">
+          <label class="flex items-center gap-2 mt-6">
             <p-checkbox
               [binary]="true"
               [(ngModel)]="addLostPointsToBankBalance"
@@ -115,7 +117,7 @@ import { CheckboxModule } from 'primeng/checkbox';
         }
 
         <!-- Comment -->
-        <label class="flex flex-column gap-2 mt-4">
+        <label class="flex flex-col gap-2 mt-6">
           Reason for Override (Optional)
           <input pInputText [(ngModel)]="comment" />
         </label>
@@ -124,7 +126,7 @@ import { CheckboxModule } from 'primeng/checkbox';
       <!-- Submit Button -->
       <p-button
         label="Submit Override"
-        styleClass="w-full mt-5"
+        styleClass="w-full mt-8"
         (onClick)="confirmSubmit()"
         [disabled]="submitButtonDisabled()"
         [loading]="submitting()"
@@ -133,12 +135,12 @@ import { CheckboxModule } from 'primeng/checkbox';
       <!-- Confirm Dialog -->
       <joshies-confirm-score-override-dialog [model]="confirmDialogModel()" />
     } @else if (player() === null) {
-      <p class="mt-6">
+      <p class="mt-12">
         No player found in this session with ID
         <span class="font-bold">{{ playerId() }}</span>
       </p>
     } @else {
-      <p-skeleton height="35rem" styleClass="mt-5" />
+      <p-skeleton height="35rem" styleClass="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

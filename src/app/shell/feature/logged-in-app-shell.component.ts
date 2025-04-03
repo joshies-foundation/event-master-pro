@@ -35,11 +35,11 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
       />
     }
 
-    <p-confirmDialog styleClass="mx-3" />
+    <p-confirmDialog styleClass="mx-4" />
   `,
   animations: [layerPages],
   host: {
-    class: 'h-full flex flex-column',
+    class: 'h-full flex flex-col',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

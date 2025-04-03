@@ -17,18 +17,16 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Spacer -->
-    <div class="h-6rem"></div>
+    <div class="h-24"></div>
 
     <!-- Disabled Cover -->
     @if (disabled()) {
-      <div
-        class="surface-alpha-70 w-full h-5rem fixed z-6 bottom-0 left-0"
-      ></div>
+      <div class="surface-alpha-70 w-full h-20 fixed z-6 bottom-0 left-0"></div>
     }
 
     <!-- Footer -->
     <nav
-      class="w-full h-5rem border-top-1 flex justify-between fixed z-5 bottom-0 left-0 pb-4 text-center"
+      class="w-full h-20 border-t flex justify-between fixed z-50 bottom-0 left-0 pb-6 text-center"
       [ngClass]="dynamicClasses()"
     >
       @for (footerLink of footerLinks(); track footerLink.href) {
@@ -60,7 +58,7 @@ export class FooterComponent {
   readonly dynamicClasses = computed(() =>
     this.isScrolledToBottom()
       ? 'border-transparent'
-      : 'surface-border blur-background bg-header-footer-alpha',
+      : 'border-surface blur-background bg-header-footer-alpha',
   );
 
   readonly largeHeaderDynamicClasses = computed(() =>

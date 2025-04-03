@@ -15,7 +15,7 @@
         <!-- Edit Button -->
         <i
           tabindex="0"
-          class="pi pi-pencil text-700 p-2 ml-auto cursor"
+          class="pi pi-pencil text-surface-700 dark:text-surface-100 p-2 ml-auto cursor"
           (click)="enterEditMode()"
           (keyup.enter)="enterEditMode()"
         ></i>
@@ -33,21 +33,21 @@
       <!-- Intro -->
       <div
         [innerHTML]="vm.rules.intro"
-        class="content surface-card border-round-xl p-3"
+        class="content bg-surface-0 dark:bg-surface-900 rounded-xl p-4"
       ></div>
 
       <!-- Event Rules -->
-      <h2 class="mt-5 mb-3">Events</h2>
+      <h2 class="mt-8 mb-4">Events</h2>
 
       @if (vm.rules.events) {
         <div
           [innerHTML]="vm.rules.events"
-          class="content surface-card border-round-xl p-3 mb-3"
+          class="content bg-surface-0 dark:bg-surface-900 rounded-xl p-4 mb-4"
         ></div>
       }
 
       @for (event of vm.events; track event.id) {
-        <joshies-card padded styleClass="mb-3" class="relative">
+        <joshies-card padded styleClass="mb-4" class="relative">
           <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link -->
           <span
             #eventInfo
@@ -65,14 +65,14 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="flex align-items-center gap-3 mt-0 border-round"
+            class="flex items-center gap-4 mt-0 rounded-border"
           >
             <p-image
               [src]="event.image_url || '/assets/icons/icon-96x96.png'"
               alt=""
               width="48"
               height="48"
-              styleClass="border-round overflow-hidden"
+              styleClass="rounded-border overflow-hidden"
               [preview]="true"
             />
             {{ event.name }}
@@ -81,7 +81,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+                class="pi pi-pencil text-surface-700 dark:text-surface-100 p-2 ml-auto self-start cursor"
                 [routerLink]="['/gm-tools/events/edit', event.id]"
                 (click)="$event.stopPropagation()"
               ></i>
@@ -106,7 +106,7 @@
             matrixParams: 'ignored',
             queryParams: 'ignored',
           }"
-          class="mt-5 mb-3 border-round"
+          class="mt-8 mb-4 rounded-border"
         >
           Gameboard
         </h2>
@@ -115,12 +115,12 @@
       @if (vm.rules.gameboard) {
         <div
           [innerHTML]="vm.rules.gameboard"
-          class="content surface-card border-round-xl p-3 mb-3"
+          class="content bg-surface-0 dark:bg-surface-900 rounded-xl p-4 mb-4"
         ></div>
       }
 
       @for (space of vm.spaces; track space.id) {
-        <joshies-card padded styleClass="mb-3" class="relative">
+        <joshies-card padded styleClass="mb-4" class="relative">
           <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link  -->
           <span
             #spaceInfo
@@ -138,7 +138,7 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="flex align-items-center gap-3 mt-0 border-round"
+            class="flex items-center gap-4 mt-0 rounded-border"
           >
             <joshies-gameboard-space [model]="space" />
             {{ space.name }} Space
@@ -147,7 +147,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+                class="pi pi-pencil text-surface-700 dark:text-surface-100 p-2 ml-auto self-start cursor"
                 [routerLink]="['/gm-tools/space-types', space.id]"
                 (click)="$event.stopPropagation()"
               ></i>
@@ -161,12 +161,12 @@
       }
 
       <!-- Special Space Event Rules -->
-      <h2 class="mt-5 mb-3">Special Space Events</h2>
+      <h2 class="mt-8 mb-4">Special Space Events</h2>
 
       @if (vm.rules.special_space_events) {
         <div
           [innerHTML]="vm.rules.special_space_events"
-          class="content surface-card border-round-xl p-3 mb-3"
+          class="content bg-surface-0 dark:bg-surface-900 rounded-xl p-4 mb-4"
         ></div>
       }
 
@@ -174,7 +174,7 @@
         specialSpaceEvent of vm.specialSpaceEvents;
         track specialSpaceEvent.id
       ) {
-        <joshies-card padded styleClass="mb-3" class="relative">
+        <joshies-card padded styleClass="mb-4" class="relative">
           <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link -->
           <span
             #eventInfo
@@ -192,7 +192,7 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="flex align-items-center gap-3 mt-0 border-round mb-2"
+            class="flex items-center gap-4 mt-0 rounded-border mb-2"
           >
             {{ specialSpaceEvent.name }}
 
@@ -200,7 +200,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+                class="pi pi-pencil text-surface-700 dark:text-surface-100 p-2 ml-auto self-start cursor"
                 [routerLink]="[
                   '/gm-tools/special-space-event-templates',
                   specialSpaceEvent.id,
@@ -214,17 +214,17 @@
       }
 
       <!-- Chaos Space Event Rules -->
-      <h2 class="mt-5 mb-3">Chaos Space Events</h2>
+      <h2 class="mt-8 mb-4">Chaos Space Events</h2>
 
       @if (vm.rules.chaos_space_events) {
         <div
           [innerHTML]="vm.rules.chaos_space_events"
-          class="content surface-card border-round-xl p-3 mb-3"
+          class="content bg-surface-0 dark:bg-surface-900 rounded-xl p-4 mb-4"
         ></div>
       }
 
       @for (chaosSpaceEvent of vm.chaosSpaceEvents; track chaosSpaceEvent.id) {
-        <joshies-card padded styleClass="mb-3" class="relative">
+        <joshies-card padded styleClass="mb-4" class="relative">
           <!-- invisible element that adds padding at the top of the screen when a user clicks on a hash link -->
           <span
             #eventInfo
@@ -242,7 +242,7 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="flex align-items-center gap-3 mt-0 border-round mb-2"
+            class="flex items-center gap-4 mt-0 rounded-border mb-2"
           >
             {{ chaosSpaceEvent.name }}
 
@@ -250,7 +250,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-700 p-2 ml-auto align-self-start cursor"
+                class="pi pi-pencil text-surface-700 dark:text-surface-100 p-2 ml-auto self-start cursor"
                 [routerLink]="[
                   '/gm-tools/chaos-space-event-templates',
                   chaosSpaceEvent.id,

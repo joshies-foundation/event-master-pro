@@ -17,19 +17,19 @@ import { fromEvent, map } from 'rxjs';
   template: `
     <!-- Small Header Container -->
     <div
-      class="h-5.75rem mt-0 flex justify-content-between align-items-center fixed top-0 left-0 mb-0 pt-6 w-full z-4 border-bottom-1"
+      class="h-5.75rem mt-0 flex justify-between items-center fixed top-0 left-0 mb-0 pt-12 w-full z-40 border-b"
       [ngClass]="[pagePaddingXCssClass, smallHeaderContainerDynamicClasses()]"
     >
       <!-- Small Header -->
       <p
-        class="transition-duration-200 text-center w-full absolute left-0 m-0 font-semibold"
+        class="duration-200 text-center w-full absolute left-0 m-0 font-semibold"
         [ngClass]="smallHeaderDynamicClasses()"
       >
         {{ headerText() }}
       </p>
 
       <!-- Other Header Content -->
-      <div class="z-5 flex w-full">
+      <div class="z-50 flex w-full">
         <ng-content />
       </div>
     </div>
@@ -40,7 +40,7 @@ import { fromEvent, map } from 'rxjs';
     @if (!alwaysSmall()) {
       <!-- Large Header -->
       <h1
-        class="mt-0 flex justify-content-between align-items-start w-full"
+        class="mt-0 flex justify-between items-start w-full"
         [ngClass]="largeHeaderDynamicClasses()"
       >
         {{ headerText() }}
@@ -74,8 +74,8 @@ export class PageHeaderComponent {
 
   readonly smallHeaderContainerDynamicClasses = computed(() =>
     this.inSmallMode() && this.pageIsScrolledBeyondTop()
-      ? 'surface-border blur-background bg-header-footer-alpha'
-      : 'border-transparent surface-ground',
+      ? 'border-surface blur-background bg-header-footer-alpha'
+      : 'border-transparent bg-surface-50 dark:bg-surface-950',
   );
 
   readonly largeHeaderDynamicClasses = computed(() =>

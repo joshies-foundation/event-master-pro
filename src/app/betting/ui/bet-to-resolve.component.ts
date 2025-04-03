@@ -15,7 +15,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
   template: `
     <joshies-bet [bet]="bet()" />
 
-    <div class="grid mt-2">
+    <div class="grid grid-cols-12 gap-4 mt-2">
       <!-- Requester Wins Button -->
       <p-button
         [label]="bet().requester?.display_name + ' Wins'"
@@ -43,7 +43,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
       />
     </div>
 
-    <div class="grid">
+    <div class="grid grid-cols-12 gap-4">
       <!-- Push Button -->
       <p-button
         label="Push"

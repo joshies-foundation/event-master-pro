@@ -38,7 +38,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
       />
     </joshies-page-header>
 
-    <p class="mt-5">How many times each player landed on each space</p>
+    <p class="mt-8">How many times each player landed on each space</p>
 
     @if (spaceStats(); as spaceStats) {
       <!-- Lifetime Rankings Table -->
@@ -71,13 +71,13 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
             }"
           >
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="rounded-full bg-surface-100 dark:bg-surface-700"
                 />
                 {{ player.display_name }}
               </div>
@@ -88,7 +88,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
                 @if (player.space_stats[space.id]; as numTimesLandedOnSpace) {
                   {{ numTimesLandedOnSpace | number }}
                 } @else {
-                  <span class="text-300">–</span>
+                  <span class="text-surface-300 dark:text-surface-500">–</span>
                 }
               </td>
             }

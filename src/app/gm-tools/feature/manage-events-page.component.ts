@@ -44,19 +44,19 @@ import { EventModel } from '../../shared/util/supabase-types';
   template: `
     <!-- Header -->
     <joshies-page-header headerText="Events" alwaysSmall>
-      <div class="w-full flex justify-content-between align-items-center">
+      <div class="w-full flex justify-between items-center">
         <!-- TODO: Add a save confirmation when leaving page if edits have been made -->
         <joshies-header-link
           text="GM Tools"
           routerLink=".."
           chevronDirection="left"
         />
-        <div class="flex align-items-center">
+        <div class="flex items-center">
           <!-- Save Changes Button-->
           @if (unsavedChangesExist()) {
             <p-button
               [text]="true"
-              class="mr-3"
+              class="mr-4"
               (onClick)="saveChanges(databaseEvents()!, localSortedEvents()!)"
             >
               <i class="pi pi-save text-xl text-primary"></i>
@@ -84,7 +84,7 @@ import { EventModel } from '../../shared/util/supabase-types';
           let index = $index
         ) {
           <div
-            class="w-full h-6rem flex border-bottom-1 border-100 pt-3 pb-3 pr-3 text-color no-underline surface-card"
+            class="w-full h-24 flex border-b border-surface-100 dark:border-surface-700 pt-4 pb-4 pr-4 text-color no-underline bg-surface-0 dark:bg-surface-900"
             [class.mt-2]="first"
             cdkDrag
             [cdkDragDisabled]="
@@ -92,12 +92,12 @@ import { EventModel } from '../../shared/util/supabase-types';
             "
           >
             <div
-              class="flex flex-column align-items-center justify-content-center text-sm text-center"
+              class="flex flex-col items-center justify-center text-sm text-center"
             >
               {{ index + 1 }}
               @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
                 <i
-                  class="pi pi-bars text-300 align-self-center pl-2 pr-3"
+                  class="pi pi-bars text-surface-300 dark:text-surface-500 self-center pl-2 pr-4"
                   cdkDragHandle
                 ></i>
               }
@@ -109,15 +109,15 @@ import { EventModel } from '../../shared/util/supabase-types';
               alt=""
               width="48"
               height="48"
-              class="border-round mr-3"
+              class="rounded-border mr-4"
             />
-            <div class="flex-grow-1">
+            <div class="grow">
               <!-- Event Name -->
               <h4 class="mt-0 mb-1">{{ event.name }}</h4>
 
               <!-- Event Description -->
               <p
-                class="mt-2 w-11rem white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                class="mt-2 w-44 whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {{ event.description }}
               </p>
@@ -125,33 +125,42 @@ import { EventModel } from '../../shared/util/supabase-types';
 
             <!-- Event Edit Links -->
             @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
-              <div class="flex flex-column">
+              <div class="flex flex-col">
                 <a
-                  class="text-center px-2 py-1 mb-2 bg-primary border-round-md"
+                  class="text-center px-2 py-1 mb-2 bg-primary text-primary-contrast rounded-md"
                   [routerLink]="'edit/' + [event.id]"
                 >
                   <i class="pi pi-pencil"></i>
                 </a>
                 <a
-                  class="text-center px-2 py-1 bg-primary border-round-md"
+                  class="text-center px-2 py-1 bg-primary text-primary-contrast rounded-md"
                   [routerLink]="'teams/' + [event.id]"
                 >
                   <i class="pi pi-users"></i>
                 </a>
               </div>
-              <div class="surface-200 h-6rem w-full" *cdkDragPlaceholder></div>
+              <div
+                class="bg-surface-200 dark:bg-surface-600 h-24 w-full"
+                *cdkDragPlaceholder
+              ></div>
             }
           </div>
         } @empty {
-          <p class="mt-5 text-center font-italic text-400">No events</p>
+          <p
+            class="mt-8 text-center italic text-surface-400 dark:text-surface-400"
+          >
+            No events
+          </p>
         }
       </div>
     } @else if (databaseEvents === null) {
-      <p class="mt-6 pt-6 text-center text-500 font-italic">
+      <p
+        class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
+      >
         No active session
       </p>
     } @else {
-      <p-skeleton height="5rem" styleClass="mt-5 mb-2" />
+      <p-skeleton height="5rem" styleClass="mt-8 mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />

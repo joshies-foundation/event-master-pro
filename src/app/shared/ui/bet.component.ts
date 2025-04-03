@@ -32,7 +32,7 @@ import { TagModule } from 'primeng/tag';
       <tbody>
         <tr>
           <!-- Avatars -->
-          <td class="vertical-align-top w-1rem">
+          <td class="align-top w-4">
             <p-avatarGroup styleClass="mr-2">
               @for (
                 avatarUrl of mainAvatarUrls();
@@ -61,11 +61,12 @@ import { TagModule } from 'primeng/tag';
           </td>
 
           @if (resultAmount() !== null) {
-            <td class="vertical-align-top text-right text-xl pl-2">
+            <td class="align-top text-right text-xl pl-2">
               <div
-                class="ml-auto text-center flex flex-column w-max px-2 py-1 border-round"
+                class="ml-auto text-center flex flex-col w-max px-2 py-1 rounded-border"
                 [ngClass]="{
-                  'surface-100 text-600': resultAmount()! === 0,
+                  'bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-200':
+                    resultAmount()! === 0,
                   'bg-red text-red': resultAmount()! < 0,
                   'bg-green text-green': resultAmount()! > 0,
                 }"
@@ -91,7 +92,7 @@ import { TagModule } from 'primeng/tag';
           <!-- Both Wager -->
           <tr>
             <td>
-              <p-avatarGroup styleClass="justify-content-end mr-1">
+              <p-avatarGroup styleClass="justify-end mr-1">
                 <p-avatar
                   [image]="bet().requester?.avatar_url"
                   [styleClass]="

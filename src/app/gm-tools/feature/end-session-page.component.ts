@@ -33,7 +33,7 @@ import { Router } from '@angular/router';
       label="End Session"
       severity="danger"
       styleClass="w-full"
-      class="block mt-6 pt-6"
+      class="block mt-12 pt-12"
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

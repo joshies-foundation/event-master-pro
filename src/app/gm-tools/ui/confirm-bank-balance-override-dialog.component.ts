@@ -10,8 +10,10 @@ import {
   OverrideDefinitionTableModel,
 } from './override-definition-table.component';
 
-export interface ConfirmBankBalanceOverrideDialogModel
-  extends Omit<OverrideDefinitionTableModel, 'inputDisabled'> {}
+type ConfirmBankBalanceOverrideDialogModel = Omit<
+  OverrideDefinitionTableModel,
+  'inputDisabled'
+>;
 
 export const confirmOverrideDialogKey = 'confirm-override';
 
@@ -19,11 +21,11 @@ export const confirmOverrideDialogKey = 'confirm-override';
   selector: 'joshies-confirm-bank-balance-override-dialog',
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
-    <p-confirmDialog styleClass="mx-3" [key]="confirmOverrideDialogKey">
+    <p-confirmDialog styleClass="mx-4" [key]="confirmOverrideDialogKey">
       <ng-template pTemplate="message" let-message>
         <div>
           <!-- Prompt -->
-          <p class="mt-0 mb-4">
+          <p class="mt-0 mb-6">
             Do you want to submit this override for the Bank balance?
           </p>
 

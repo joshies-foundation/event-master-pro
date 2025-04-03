@@ -98,12 +98,12 @@ import { Textarea } from 'primeng/textarea';
     @if (loadMessage(); as loadMessage) {
       <h4>{{ loadMessage }}</h4>
     } @else {
-      <h4 class="mt-5">Your score: {{ userPlayer()?.score }}</h4>
+      <h4 class="mt-8">Your score: {{ userPlayer()?.score }}</h4>
 
-      <div class="flex flex-column gap-3">
-        <joshies-card padded styleClass="flex flex-column gap-3">
+      <div class="flex flex-col gap-4">
+        <joshies-card padded styleClass="flex flex-col gap-4">
           <!-- Opponent Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Opponent
             <p-dropdown
               [options]="staticPlayersWithoutUser"
@@ -113,7 +113,7 @@ import { Textarea } from 'primeng/textarea';
               placeholder="Select an opponent"
             >
               <ng-template pTemplate="item" let-player>
-                <div class="flex gap-2 align-items-center">
+                <div class="flex gap-2 items-center">
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
@@ -123,7 +123,7 @@ import { Textarea } from 'primeng/textarea';
                 </div>
               </ng-template>
               <ng-template pTemplate="selectedItem" let-player>
-                <div class="flex gap-2 align-items-center">
+                <div class="flex gap-2 items-center">
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
@@ -136,9 +136,9 @@ import { Textarea } from 'primeng/textarea';
           </label>
         </joshies-card>
 
-        <joshies-card padded styleClass="flex flex-column gap-3">
+        <joshies-card padded styleClass="flex flex-col gap-4">
           <!-- Bet Type Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Bet Type
             <p-dropdown
               [options]="betTypes"
@@ -195,7 +195,7 @@ import { Textarea } from 'primeng/textarea';
             }
             @default {
               <!-- Bet terms -->
-              <label class="flex flex-column gap-2">
+              <label class="flex flex-col gap-2">
                 Bet Terms
                 <textarea
                   rows="2"
@@ -209,9 +209,9 @@ import { Textarea } from 'primeng/textarea';
           }
         </joshies-card>
 
-        <joshies-card padded styleClass="flex flex-column gap-3">
+        <joshies-card padded styleClass="flex flex-col gap-4">
           <!-- Even Odds Checkbox -->
-          <div class="flex align-items-center justify-content-end gap-3">
+          <div class="flex items-center justify-end gap-4">
             <label for="even-odds"> Even Odds </label>
             <p-inputSwitch
               inputId="event-odds"
@@ -221,7 +221,7 @@ import { Textarea } from 'primeng/textarea';
           </div>
 
           <!-- Requester bet -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             {{
               evenOdds()
                 ? 'Both Wager'
@@ -247,7 +247,7 @@ import { Textarea } from 'primeng/textarea';
 
           @if (!evenOdds()) {
             <!-- Opponent bet -->
-            <label class="flex flex-column gap-2">
+            <label class="flex flex-col gap-2">
               {{ selectedOpponent()?.display_name ?? 'Opponent' }} Wagers
               <p-inputNumber
                 #inputOpponentBet

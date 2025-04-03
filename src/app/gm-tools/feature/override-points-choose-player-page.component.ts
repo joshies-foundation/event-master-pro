@@ -32,7 +32,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       />
     </joshies-page-header>
 
-    <p class="mt-5">Whose points do you want to change?</p>
+    <p class="mt-8">Whose points do you want to change?</p>
 
     @if (players(); as players) {
       <p-table
@@ -58,17 +58,19 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
           <tr>
             <!-- Player -->
             <td>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="rounded-full bg-surface-100 dark:bg-surface-700"
                 />
                 <div>
                   <p class="m-0">{{ player.display_name }}</p>
-                  <p class="m-0 text-500 text-xs">{{ player.real_name }}</p>
+                  <p class="m-0 text-surface-500 dark:text-surface-300 text-xs">
+                    {{ player.real_name }}
+                  </p>
                 </div>
               </div>
             </td>

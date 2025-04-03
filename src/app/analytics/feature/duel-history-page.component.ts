@@ -43,7 +43,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
           [value]="duels"
           [rowTrackBy]="trackById"
           sortField="round_number"
-          styleClass="mt-5"
+          styleClass="mt-8"
         >
           <ng-template pTemplate="header">
             <tr>
@@ -83,7 +83,9 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
                     duel.points_gained_by_winner | numberWithSignAndColor
                   "
                 ></div>
-                <div class="text-sm text-500 mt-1">
+                <div
+                  class="text-sm text-surface-500 dark:text-surface-300 mt-1"
+                >
                   ({{ duel.wager_percentage }}%)
                 </div>
               </td>
@@ -91,7 +93,11 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
           </ng-template>
         </p-table>
       } @else {
-        <p class="my-6 py-6 text-center text-500 font-italic">No duels yet</p>
+        <p
+          class="my-12 py-12 text-center text-surface-500 dark:text-surface-300 italic"
+        >
+          No duels yet
+        </p>
       }
     } @else {
       <p class="text-red700">Error loading data</p>

@@ -46,11 +46,11 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="mt-6">
+      <h4 class="mt-12">
         Assign session points based on {{ vm.event?.name }} results
       </h4>
 
-      <joshies-card padded styleClass="flex flex-column gap-3">
+      <joshies-card padded styleClass="flex flex-col gap-4">
         <p-button
           label="Calculate Recommended Points"
           (onClick)="populateRecommendedScores()"
@@ -78,7 +78,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
           >
             <tr>
               <td>
-                <div class="flex flex-column align-items-center gap-2">
+                <div class="flex flex-col items-center gap-2">
                   <p-avatarGroup>
                     @for (
                       participant of team.participants;
@@ -94,7 +94,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                     <p class="mt-0 mb-1">
                       {{ team.participants | participantList }}
                     </p>
-                    <p class="m-0 text-500">
+                    <p class="m-0 text-surface-500 dark:text-surface-300">
                       Event Score: <strong>{{ team.score }}</strong>
                     </p>
                   </div>
@@ -125,7 +125,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
         <p-button
           label="Review Score Changes"
-          styleClass="mt-4 w-full"
+          styleClass="mt-6 w-full"
           (onClick)="reviewScoreChanges()"
           [disabled]="formGroup().invalid"
           icon="pi pi-chevron-right"
@@ -133,7 +133,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
         />
       </joshies-card>
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-6" />
+      <p-skeleton height="30rem" styleClass="mt-12" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

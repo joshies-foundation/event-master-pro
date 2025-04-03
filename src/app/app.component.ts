@@ -21,7 +21,7 @@ import { SquidwardService } from './shared/data-access/squidward.service';
       [life]="5000"
       [breakpoints]="{ '420px': { width: '95vw' } }"
       position="top-center"
-      styleClass="mt-5"
+      styleClass="mt-8"
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

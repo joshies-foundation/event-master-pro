@@ -89,10 +89,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
     @if (viewModel(); as vm) {
       @if (vm.specialSpaceEvent) {
-        <div class="flex-grow-1 flex flex-column justify-content-between">
+        <div class="grow flex flex-col justify-between">
           <div>
             <!-- Player -->
-            <div class="mt-5 flex align-items-center gap-3">
+            <div class="mt-8 flex items-center gap-4">
               <p-avatar
                 size="large"
                 shape="circle"
@@ -106,7 +106,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
             @switch (vm.specialSpaceEvent.status) {
               @case (SpaceEventStatus.EventNotSelected) {
                 <!-- Select Event -->
-                <label class="mt-5 flex flex-column gap-2">
+                <label class="mt-8 flex flex-col gap-2">
                   Select Event
                   <p-dropdown
                     [options]="eventOptions()"
@@ -149,7 +149,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           >
                             <tr>
                               <td>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                   <p-avatar
                                     [image]="player.avatar_url"
                                     shape="circle"
@@ -171,7 +171,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         <!-- Submit Changes Button -->
                         <p-button
                           label="Submit Score Changes"
-                          styleClass="mt-4 w-full"
+                          styleClass="mt-6 w-full"
                           [disabled]="backendActionInProgress()"
                           [loading]="selectingEvent()"
                           (onClick)="
@@ -206,10 +206,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.WaitingToBegin) {
                 @if (vm.specialSpaceEvent.template) {
-                  <h3 class="mt-5 mb-2">
+                  <h3 class="mt-8 mb-2">
                     {{ vm.specialSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-5 pre-wrap">{{
+                  <pre class="mt-0 mb-8 pre-wrap">{{
                     vm.specialSpaceEvent.template.description
                   }}</pre>
 
@@ -227,14 +227,14 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.InProgress) {
                 @if (vm.specialSpaceEvent.template) {
-                  <h3 class="mt-5 mb-2">
+                  <h3 class="mt-8 mb-2">
                     {{ vm.specialSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-5 pre-wrap">{{
+                  <pre class="mt-0 mb-8 pre-wrap">{{
                     vm.specialSpaceEvent.template.description
                   }}</pre>
 
-                  <label class="flex flex-column gap-2">
+                  <label class="flex flex-col gap-2">
                     {{
                       $any(vm.specialSpaceEvent.template.details)
                         ?.pointsLabelPlural ?? 'points' | titlecase
@@ -258,7 +258,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
                   <p-button
                     label="Submit Score"
-                    styleClass="mt-5 w-full"
+                    styleClass="mt-8 w-full"
                     [disabled]="backendActionInProgress()"
                     [loading]="startingEvent()"
                     (onClick)="
@@ -293,7 +293,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               [text]="true"
               severity="danger"
               label="Cancel this Special Space Event"
-              styleClass="mt-6 w-full"
+              styleClass="mt-12 w-full"
               [disabled]="backendActionInProgress()"
               [loading]="cancelingEvent()"
               (onClick)="
@@ -306,17 +306,17 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
           }
         </div>
       } @else {
-        <p class="mt-5">
+        <p class="mt-8">
           No special space event found with ID
           <strong>{{ vm.specialSpaceEventId }}</strong>
         </p>
       }
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-5" />
+      <p-skeleton height="30rem" styleClass="mt-8" />
     }
   `,
   host: {
-    class: 'flex flex-column h-full',
+    class: 'flex flex-col h-full',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

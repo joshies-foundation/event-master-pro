@@ -37,7 +37,7 @@ import { EventService } from '../../shared/data-access/event.service';
     <joshies-card headerText="Session" [links]="sessionLinks()" />
   `,
   host: {
-    class: 'block pb-6',
+    class: 'block pb-12',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

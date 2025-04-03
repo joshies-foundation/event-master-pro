@@ -52,10 +52,10 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
     </joshies-page-header>
 
     @if (oldBankBalance() !== undefined; as player) {
-      <joshies-card padded class="mt-5">
+      <joshies-card padded class="mt-8">
         <!-- Override Type -->
-        <p class="mt-0 mb-3">Override Type</p>
-        <div class="flex flex-column gap-3 mb-5">
+        <p class="mt-0 mb-4">Override Type</p>
+        <div class="flex flex-col gap-4 mb-8">
           @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
             <label class="ml-2">
               <p-radioButton
@@ -81,7 +81,7 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
       <!-- Submit Button -->
       <p-button
         label="Submit Override"
-        styleClass="w-full mt-5"
+        styleClass="w-full mt-8"
         (onClick)="confirmSubmit()"
         [disabled]="submitButtonDisabled()"
         [loading]="submitting()"
@@ -92,7 +92,7 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
         [model]="confirmDialogModel()"
       />
     } @else {
-      <p-skeleton height="35rem" styleClass="mt-5" />
+      <p-skeleton height="35rem" styleClass="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

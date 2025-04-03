@@ -19,7 +19,7 @@ import { InputTextModule } from 'primeng/inputtext';
     <form
       [formGroup]="form"
       (ngSubmit)="onSubmit()"
-      class="w-full max-w-30rem flex flex-column gap-3 px-3"
+      class="w-full max-w-[30rem] flex flex-col gap-4 px-4"
     >
       <input
         pInputText
@@ -55,7 +55,7 @@ import { InputTextModule } from 'primeng/inputtext';
     </form>
   `,
   host: {
-    class: 'h-full flex flex-column justify-content-center align-items-center',
+    class: 'h-full flex flex-col justify-center items-center',
   },
 })
 export default class ResetPasswordPageComponent {

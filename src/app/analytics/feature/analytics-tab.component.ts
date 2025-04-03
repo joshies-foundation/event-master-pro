@@ -82,7 +82,7 @@ const numTransactionsToShow = 3;
                   label="All Transactions"
                   icon="pi pi-angle-right"
                   iconPos="right"
-                  class="block border-top-1 surface-border pb-1"
+                  class="block border-t border-surface pb-1"
                   styleClass="w-full my-2"
                   routerLink="transactions"
                   severity="secondary"
@@ -90,7 +90,9 @@ const numTransactionsToShow = 3;
                 />
               }
             } @else {
-              <p class="pt-3 pb-3 text-center text-500 font-italic">
+              <p
+                class="pt-4 pb-4 text-center text-surface-500 dark:text-surface-300 italic"
+              >
                 No transactions yet
               </p>
             }
@@ -125,7 +127,7 @@ const numTransactionsToShow = 3;
     <!--    />-->
   `,
   host: {
-    class: 'block pb-6',
+    class: 'block pb-12',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

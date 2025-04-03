@@ -53,7 +53,7 @@ import {
 
     @if (originalChaosSpaceEventTemplate(); as originalGameboardSpace) {
       <!-- Form -->
-      <joshies-form [form]="form!" class="block mt-5 mb-8" />
+      <joshies-form [form]="form!" class="block mt-8 mb-20" />
 
       <!-- Delete Button -->
       <p-button
@@ -65,33 +65,33 @@ import {
         "
         [label]="deleteButtonText()"
         severity="danger"
-        styleClass="w-full mt-6"
+        styleClass="w-full mt-12"
         [disabled]="deleteButtonDisabled()"
         [loading]="deleting()"
       />
 
       <!-- Confirm Submit Changes Dialog -->
-      <p-confirmDialog styleClass="mx-3" [key]="confirmSubmitChangesDialogKey">
+      <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
         <ng-template pTemplate="message">
           <div class="block">
             <p class="m-0">Are you sure you want submit these changes?</p>
 
             <!-- Before -->
-            <h4 class="mt-4 mb-2">Before</h4>
+            <h4 class="mt-6 mb-2">Before</h4>
             <div>
               <h4 class="mt-0 mb-2">{{ originalGameboardSpace.name }} Space</h4>
-              <p class="text-sm text-600">
+              <p class="text-sm text-surface-600 dark:text-surface-200">
                 {{ originalGameboardSpace.description }}
               </p>
             </div>
 
             <!-- After -->
-            <h4 class="mt-3 mb-2">After</h4>
+            <h4 class="mt-4 mb-2">After</h4>
             <div>
               <h4 class="mt-0 mb-2">
                 {{ chaosSpaceEventTemplateName() }}
               </h4>
-              <p class="text-sm text-600">
+              <p class="text-sm text-surface-600 dark:text-surface-200">
                 {{ chaosSpaceEventTemplateFormValue().description }}
               </p>
             </div>
@@ -100,7 +100,7 @@ import {
       </p-confirmDialog>
     } @else {
       <!-- Data Not Found Message -->
-      <p class="mt-6">
+      <p class="mt-12">
         No chaos space event template found in this session with ID
         <span class="font-bold">{{ chaosSpaceEventTemplateId() }}</span>
       </p>

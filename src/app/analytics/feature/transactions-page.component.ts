@@ -29,15 +29,19 @@ import { TransactionTableComponent } from '../ui/transaction-table.component';
       @if (transactions.length > 0) {
         <joshies-transaction-table
           [transactions]="transactions"
-          class="block mt-5 mb-8"
+          class="block mt-8 mb-20"
         />
       } @else {
-        <p class="mt-6 pt-6 text-center text-500 font-italic">
+        <p
+          class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
+        >
           No transactions yet
         </p>
       }
     } @else if (transactions() === null) {
-      <p class="mt-6 pt-6 text-center text-500 font-italic">
+      <p
+        class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
+      >
         You are not a player in this session
       </p>
     } @else {

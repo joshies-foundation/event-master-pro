@@ -24,7 +24,7 @@ import { getUserBetData } from '../../shared/util/bet-helpers';
         {{ betCannotBeAcceptedMessage() }}
       </p>
     }
-    <div class="grid mt-1">
+    <div class="grid grid-cols-12 gap-4 mt-1">
       <p-button
         label="Accept"
         icon="pi pi-check"
