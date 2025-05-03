@@ -11,12 +11,11 @@ import { BetComponent } from '../../shared/ui/bet.component';
 
 @Component({
   selector: 'joshies-bet-to-resolve',
-  standalone: true,
   imports: [BetComponent, Button, BetComponent],
   template: `
     <joshies-bet [bet]="bet()" />
 
-    <div class="grid mt-2">
+    <div class="grid grid-rows-2 grid-cols-2 gap-4 mt-4">
       <!-- Requester Wins Button -->
       <p-button
         [label]="bet().requester?.display_name + ' Wins'"
@@ -42,13 +41,11 @@ import { BetComponent } from '../../shared/ui/bet.component';
         [disabled]="submitting()"
         (onClick)="onOpponentWinsButtonClick()"
       />
-    </div>
 
-    <div class="grid">
       <!-- Push Button -->
       <p-button
         label="Push"
-        severity="warning"
+        severity="warn"
         icon="pi pi-equals"
         class="col"
         styleClass="w-full"
@@ -65,6 +62,8 @@ import { BetComponent } from '../../shared/ui/bet.component';
         icon="pi pi-times"
         class="col"
         styleClass="w-full"
+        [class.row-span-2]="bet().status === BetStatus.PendingAcceptance"
+        [class.col-span-2]="bet().status === BetStatus.PendingAcceptance"
         [loading]="submitting() && bet().id === cancelingBetId()"
         [disabled]="submitting()"
         (onClick)="onCancelBetButtonClick()"

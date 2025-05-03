@@ -25,7 +25,6 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Component({
   selector: 'joshies-edit-game-state-page',
-  standalone: true,
   imports: [
     FormComponent,
     SkeletonModule,
@@ -44,11 +43,11 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 
     @if (form(); as form) {
       <!-- Form -->
-      <joshies-form [form]="form" class="block mt-5 mb-8" />
+      <joshies-form [form]="form" class="block mt-8 mb-20" />
     } @else {
       <!-- Loading Skeleton -->
-      <div class="h-4rem"></div>
-      <p-skeleton height="2.25rem" styleClass="mb-4" />
+      <div class="h-16"></div>
+      <p-skeleton height="2.25rem" styleClass="mb-6" />
       <p-skeleton width="100%" height="19rem" />
     }
   `,

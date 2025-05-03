@@ -21,13 +21,10 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { FormBuilder } from '@angular/forms';
 import { Form, FormComponent } from '../../shared/ui/form.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
-import { JsonPipe } from '@angular/common';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -37,16 +34,12 @@ import {
 
 @Component({
   selector: 'joshies-edit-special-space-event-template-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     ButtonModule,
     ConfirmDialogModule,
-    GameboardSpaceComponent,
     FormComponent,
-    GameboardSpaceDescriptionPipe,
-    JsonPipe,
   ],
   template: `
     <!-- Header -->
@@ -60,7 +53,7 @@ import {
 
     @if (originalSpecialSpaceEventTemplate(); as originalGameboardSpace) {
       <!-- Form -->
-      <joshies-form [form]="form!" class="block mt-5 mb-8" />
+      <joshies-form [form]="form!" class="block mt-8 mb-20" />
 
       <!-- Delete Button -->
       <p-button
@@ -72,33 +65,35 @@ import {
         "
         [label]="deleteButtonText()"
         severity="danger"
-        styleClass="w-full mt-6"
+        styleClass="w-full mt-12"
         [disabled]="deleteButtonDisabled()"
         [loading]="deleting()"
       />
 
       <!-- Confirm Submit Changes Dialog -->
-      <p-confirmDialog styleClass="mx-3" [key]="confirmSubmitChangesDialogKey">
-        <ng-template pTemplate="message">
+      <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
+        <ng-template #message>
           <div class="block">
-            <p class="m-0">Are you sure you want submit these changes?</p>
+            <p>Are you sure you want submit these changes?</p>
 
             <!-- Before -->
-            <h4 class="mt-4 mb-2">Before</h4>
+            <h4 class="font-bold mt-6 mb-2">Before</h4>
             <div>
-              <h4 class="mt-0 mb-2">{{ originalGameboardSpace.name }} Space</h4>
-              <p class="text-sm text-600">
+              <h4 class="font-bold mb-2">
+                {{ originalGameboardSpace.name }}
+              </h4>
+              <p class="my-4 text-sm text-neutral-600">
                 {{ originalGameboardSpace.description }}
               </p>
             </div>
 
             <!-- After -->
-            <h4 class="mt-3 mb-2">After</h4>
+            <h4 class="font-bold mb-2">After</h4>
             <div>
-              <h4 class="mt-0 mb-2">
+              <h4 class="font-bold mb-2">
                 {{ specialSpaceEventTemplateName() }}
               </h4>
-              <p class="text-sm text-600">
+              <p class="my-4 text-sm text-neutral-600">
                 {{ specialSpaceEventTemplateFormValue().description }}
               </p>
             </div>
@@ -107,7 +102,7 @@ import {
       </p-confirmDialog>
     } @else {
       <!-- Data Not Found Message -->
-      <p class="mt-6">
+      <p class="mt-12">
         No special space event template found in this session with ID
         <span class="font-bold">{{ specialSpaceEventTemplateId() }}</span>
       </p>

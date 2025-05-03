@@ -37,7 +37,6 @@ import { BetComponent } from '../../shared/ui/bet.component';
 
 @Component({
   selector: 'joshies-dashboard-page',
-  standalone: true,
   imports: [
     CountdownTimerComponent,
     SkeletonModule,
@@ -58,16 +57,16 @@ import { BetComponent } from '../../shared/ui/bet.component';
       @if (vm.countdown) {
         <joshies-countdown-timer [countdown]="vm.countdown" />
       } @else {
-        <div class="flex flex-column justify-content-between m-4 h-full">
-          <div class="flex-shrink-1">
-            <h1 class="text-6xl font-semibold mt-0 mb-4">
+        <div class="flex flex-col justify-between m-6 h-full">
+          <div class="shrink">
+            <h1 class="text-6xl font-semibold mb-6">
               {{ vm.session.name }}
             </h1>
-            <div class="grid">
+            <div class="grid grid-cols-12 gap-4">
               @if (vm.showRankingsTable) {
                 <!-- Rankings Table -->
-                <div class="col-3">
-                  <h2 class="mt-0 mb-2">
+                <div class="col-span-3">
+                  <h2 class="font-bold mb-2">
                     <i class="pi pi-trophy text-primary mr-2"></i>
                     {{ vm.rankingsTableHeader }}
                   </h2>
@@ -78,10 +77,10 @@ import { BetComponent } from '../../shared/ui/bet.component';
                 </div>
               }
               @if (vm.sessionIsInProgress) {
-                <div class="col-4 ml-7">
+                <div class="col-span-4 ml-16">
                   <!-- Happening Now -->
                   <joshies-card
-                    class="mb-7"
+                    class="mb-16"
                     headerText="Happening Now"
                     headerIconClass="pi pi-star text-primary mr-2"
                     readOnly
@@ -89,27 +88,27 @@ import { BetComponent } from '../../shared/ui/bet.component';
                   >
                     @switch (vm.roundPhase) {
                       @case (RoundPhase.GameboardMoves) {
-                        <div class="flex gap-3">
+                        <div class="flex gap-4">
                           <img
                             ngSrc="/assets/dice-roll.gif"
                             alt=""
                             width="48"
                             height="48"
-                            class="border-round"
+                            class="size-12 rounded-border"
                           />
                           <div>
-                            <p class="mt-0 mb-1">
+                            <p class="mb-1">
                               Gameboard moves for turn
                               <strong>{{ vm.roundNumber | number }}</strong>
                               of <strong>{{ vm.numRounds }}</strong
                               >.
                             </p>
-                            <p class="m-0">Let's get rolling!</p>
+                            <p>Let's get rolling!</p>
                           </div>
                         </div>
                       }
                       @case (RoundPhase.SpecialSpaceEvents) {
-                        <p class="mt-0 mb-2">Special Space Events:</p>
+                        <p class="mb-2">Special Space Events:</p>
 
                         <joshies-space-event-table
                           [spaceEvents]="vm.specialSpaceEvents"
@@ -118,7 +117,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         />
                       }
                       @case (RoundPhase.Duels) {
-                        <p class="mt-0 mb-2">Duels:</p>
+                        <p class="mb-2">Duels:</p>
 
                         <table class="w-full">
                           <tbody>
@@ -136,7 +135,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                               </tr>
                             } @empty {
                               <tr>
-                                <td class="font-italic text-600">
+                                <td class="italic text-neutral-600">
                                   No duels for this turn
                                 </td>
                               </tr>
@@ -145,7 +144,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         </table>
                       }
                       @case (RoundPhase.ChaosSpaceEvents) {
-                        <p class="mt-0 mb-2">Chaos Space Events:</p>
+                        <p class="mb-2">Chaos Space Events:</p>
 
                         <joshies-space-event-table
                           [spaceEvents]="vm.chaosSpaceEvents"
@@ -157,7 +156,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-red font-semibold">
+                          <span class="text-danger-foreground font-semibold">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -176,7 +175,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
 
                   <!-- Up Next -->
                   <joshies-card
-                    class="mb-7"
+                    class="mb-16"
                     headerText="Up Next"
                     headerIconClass="pi pi-arrow-circle-right text-primary mr-2"
                     readOnly
@@ -184,42 +183,42 @@ import { BetComponent } from '../../shared/ui/bet.component';
                   >
                     @switch (vm.roundPhase) {
                       @case (RoundPhase.GameboardMoves) {
-                        <p class="mt-0 mb-1">
+                        <p class="mb-1">
                           Special Space events, duels, and Chaos Space events.
                         </p>
-                        <p class="mt-0">Then, our next event:</p>
+                        <p class="mb-4">Then, our next event:</p>
 
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-red font-semibold">
+                          <span class="text-danger-foreground font-semibold">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
                         }
                       }
                       @case (RoundPhase.SpecialSpaceEvents) {
-                        <p class="mt-0 mb-1">Duels and Chaos Space events.</p>
-                        <p class="mt-0">Then, our next event:</p>
+                        <p class="mb-1">Duels and Chaos Space events.</p>
+                        <p class="mb-4">Then, our next event:</p>
 
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-red font-semibold">
+                          <span class="text-danger-foreground font-semibold">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
                         }
                       }
                       @case (RoundPhase.Duels) {
-                        <p class="mt-0">
+                        <p class="mb-4">
                           Chaos Space events, and then our next event:
                         </p>
 
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-red font-semibold">
+                          <span class="text-danger-foreground font-semibold">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -229,7 +228,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-red font-semibold">
+                          <span class="text-danger-foreground font-semibold">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -237,19 +236,19 @@ import { BetComponent } from '../../shared/ui/bet.component';
                       }
                       @case (RoundPhase.Event) {
                         @if (vm.roundNumber < vm.numRounds) {
-                          <p class="mt-0 mb-1">
+                          <p class="mb-1">
                             Gameboard moves for turn
                             <strong>{{ vm.roundNumber + 1 | number }}</strong>
                             of <strong>{{ vm.numRounds }}</strong
                             >.
                           </p>
 
-                          <p class="mt-0">Then, our next event:</p>
+                          <p class="mb-4">Then, our next event:</p>
 
                           @if (vm.eventForNextRound; as event) {
                             <joshies-event-info [event]="event" readOnly />
                           } @else {
-                            <span class="text-red font-semibold">
+                            <span class="text-danger-foreground font-semibold">
                               There's no event scheduled for this turn 😳 Tell
                               the GM to get on it 😤
                             </span>
@@ -260,19 +259,19 @@ import { BetComponent } from '../../shared/ui/bet.component';
                       }
                       @case (RoundPhase.WaitingForNextRound) {
                         @if (vm.roundNumber < vm.numRounds) {
-                          <p class="mt-0 mb-1">
+                          <p class="mb-1">
                             Gameboard moves for turn
                             <strong>{{ vm.roundNumber + 1 | number }}</strong>
                             of <strong>{{ vm.numRounds }}</strong
                             >.
                           </p>
 
-                          <p class="mt-0">Then, our next event:</p>
+                          <p class="mb-4">Then, our next event:</p>
 
                           @if (vm.eventForNextRound; as event) {
                             <joshies-event-info [event]="event" readOnly />
                           } @else {
-                            <span class="text-red font-semibold">
+                            <span class="text-danger-foreground font-semibold">
                               There's no event scheduled for this turn 😳 Tell
                               the GM to get on it 😤
                             </span>
@@ -297,7 +296,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                     point{{ vm.bankBalance > 1 ? 's' : '' }}
                   </joshies-card>
                 </div>
-                <div class="col-4 ml-7">
+                <div class="col-span-4 ml-16">
                   <!-- Recent Duels -->
                   <joshies-card
                     headerText="Latest Duels"
@@ -323,7 +322,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                           orientation="vertical"
                           verticalViewPortHeight="28rem"
                         >
-                          <ng-template let-duel pTemplate="item">
+                          <ng-template let-duel #item>
                             <table>
                               <tr>
                                 <td>
@@ -331,8 +330,8 @@ import { BetComponent } from '../../shared/ui/bet.component';
                                     [duel]="duel"
                                   ></joshies-duel-table-avatars>
                                 </td>
-                                <td class="pl-3">
-                                  <h4 class="text-lg mb-0">
+                                <td class="pl-4">
+                                  <h4 class="font-bold text-lg mt-4">
                                     {{ duel.winner?.display_name }} beat
                                     {{ duel.loser?.display_name }} at
                                     {{ duel.game_name }}
@@ -355,7 +354,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         </p-carousel>
                       } @else {
                         <!-- Fixes the issue of carousel going blank when container size decreases to equal numVisible -->
-                        <div class="w-full flex flex-column h-28rem">
+                        <div class="w-full flex flex-col h-[28rem]">
                           @for (duel of vm.latestDuels; track duel.id) {
                             <div
                               class="
@@ -368,8 +367,8 @@ import { BetComponent } from '../../shared/ui/bet.component';
                                       [duel]="duel"
                                     ></joshies-duel-table-avatars>
                                   </td>
-                                  <td class="pl-3">
-                                    <h4 class="text-lg mb-0">
+                                  <td class="pl-4">
+                                    <h4 class="font-bold text-lg mt-4">
                                       {{ duel.winner?.display_name }} beat
                                       {{ duel.loser?.display_name }} at
                                       {{ duel.game_name }}
@@ -393,7 +392,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         </div>
                       }
                     } @else {
-                      <div class="font-italic h-28rem">
+                      <div class="italic h-[28rem]">
                         Well this is boring, there are no recent duels.
                       </div>
                     }
@@ -427,7 +426,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                     [showNavigators]="false"
                     autoplayInterval="5000"
                   >
-                    <ng-template let-bet pTemplate="item">
+                    <ng-template let-bet #item>
                       <joshies-bet [bet]="bet"></joshies-bet>
                     </ng-template>
                   </p-carousel>
@@ -440,7 +439,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                   </div>
                 }
               } @else {
-                <span class="font-italic"
+                <span class="italic"
                   >Seriously? No open bets? It's not even real money.</span
                 >
               }

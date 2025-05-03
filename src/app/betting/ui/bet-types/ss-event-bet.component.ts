@@ -1,6 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { OverUnderComponent } from '../over-under.component';
 import { SpecialSpaceEventModel } from '../../../shared/util/supabase-types';
 import { GameboardService } from '../../../shared/data-access/gameboard.service';
@@ -13,13 +13,12 @@ import { SpaceEventStatus } from '../../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-ss-event-bet',
-  standalone: true,
-  imports: [DropdownModule, FormsModule, OverUnderComponent],
+  imports: [Select, FormsModule, OverUnderComponent],
   template: `
-    <div class="flex flex-column gap-3">
-      <label class="flex flex-column gap-2">
+    <div class="flex flex-col gap-4">
+      <label class="flex flex-col gap-2">
         Special Space Event
-        <p-dropdown
+        <p-select
           [options]="openSsEvents()"
           [(ngModel)]="selectedSsEventId"
           optionLabel="ssEventName"

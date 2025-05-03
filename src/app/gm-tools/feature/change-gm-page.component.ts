@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   inject,
+  Signal,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -28,7 +28,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-change-gm-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -49,7 +48,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       />
     </joshies-page-header>
 
-    <p class="mt-5">Who do you want to be the new GM?</p>
+    <p class="mb-4 mt-8">Who do you want to be the new GM?</p>
 
     @if (users(); as users) {
       <p-table
@@ -60,25 +59,23 @@ import { toSignal } from '@angular/core/rxjs-interop';
         [scrollable]="true"
         [rowTrackBy]="trackById"
       >
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="users"
-          let-user
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="users" let-user>
           <tr>
             <!-- User -->
             <td>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="user.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 <div>
-                  <p class="m-0">{{ user.display_name }}</p>
-                  <p class="m-0 text-500 text-xs">{{ user.real_name }}</p>
+                  <p>{{ user.display_name }}</p>
+                  <p class="m-0 text-neutral-500 text-xs">
+                    {{ user.real_name }}
+                  </p>
                 </div>
               </div>
             </td>
@@ -96,7 +93,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
         </ng-template>
       </p-table>
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-5" />
+      <p-skeleton height="30rem" styleClass="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -122,8 +119,6 @@ export default class ChangeGmPageComponent {
       header: `Really? ${newGmUser.real_name}?`,
       message: `Are you sure you want to make ${newGmUser.real_name} the new GM? You will immediately lose all GM privileges.`,
       icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: async () => {
         this.submittingUserIdInProgress.set(newGmUser.id);

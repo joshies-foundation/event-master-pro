@@ -1,11 +1,11 @@
 import { NgClass } from '@angular/common';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  booleanAttribute,
   input,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 
 export interface CardLinkModel {
@@ -18,35 +18,38 @@ export interface CardLinkModel {
 
 @Component({
   selector: 'joshies-card-link',
-  standalone: true,
-  imports: [RouterLink, RouterLinkActive, NgClass, RippleModule],
+  imports: [RouterLink, NgClass, RippleModule],
   template: `
     <a
-      class="flex w-full no-underline text-color transition-colors transition-duration-100 transition-ease-in-out"
+      class="flex w-full transition-colors duration-100 ease-in-out"
       [routerLink]="model().routerLink"
     >
       <i
-        class="h-2rem w-2rem flex-shrink-0 text-lg text-white mx-3 my-2 flex justify-content-center align-items-center align-self-center border-round-md"
+        class="size-8 shrink-0 text-lg text-white mx-4 my-2 flex! justify-center items-center self-center rounded-md"
         [ngClass]="model().iconClass"
       ></i>
       <div
-        class="flex align-items-center w-full justify-content-between pl-0 p-2 surface-border"
-        [class.border-bottom-1]="!last()"
+        class="flex items-center w-full justify-between pl-0 p-2 border-standard-border-color"
+        [class.border-b]="!last()"
       >
         @if (model().subtext || model().pretext) {
           <div>
             @if (model().pretext) {
-              <p class="m-0 text-400 text-sm">{{ model().pretext }}</p>
+              <p class="m-0 text-neutral-400 text-sm">
+                {{ model().pretext }}
+              </p>
             }
-            <p class="m-0">{{ model().text }}</p>
+            <p>{{ model().text }}</p>
             @if (model().subtext) {
-              <p class="m-0 text-400 text-sm">{{ model().subtext }}</p>
+              <p class="m-0 text-neutral-400 text-sm">
+                {{ model().subtext }}
+              </p>
             }
           </div>
         } @else {
           {{ model().text }}
         }
-        <i class="pi pi-angle-right text-300 ml-3"></i>
+        <i class="pi pi-angle-right text-neutral-300 ml-4"></i>
       </div>
     </a>
   `,

@@ -19,7 +19,6 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { BetService } from '../../shared/data-access/bet.service';
@@ -33,7 +32,7 @@ import {
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
 import { SessionService } from '../../shared/data-access/session.service';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import {
   BetStatus,
@@ -62,19 +61,18 @@ import { SSEventBetComponent } from '../ui/bet-types/ss-event-bet.component';
 import { ChaosSpaceBetComponent } from '../ui/bet-types/chaos-space-bet.component';
 import { EventBetComponent } from '../ui/bet-types/event-bet.component';
 import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
+import { Textarea } from 'primeng/textarea';
 
 @Component({
   selector: 'joshies-place-bet-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     FormsModule,
     ButtonModule,
-    InputTextareaModule,
     CheckboxModule,
     InputNumberModule,
-    DropdownModule,
+    Select,
     RadioButtonModule,
     CardComponent,
     InputSwitchModule,
@@ -86,6 +84,7 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
     ChaosSpaceBetComponent,
     EventBetComponent,
     GameboardBetComponent,
+    Textarea,
   ],
   template: `
     <joshies-page-header headerText="Place a Bet" alwaysSmall>
@@ -97,51 +96,51 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
     </joshies-page-header>
 
     @if (loadMessage(); as loadMessage) {
-      <h4>{{ loadMessage }}</h4>
+      <h4 class="font-bold my-4">{{ loadMessage }}</h4>
     } @else {
-      <h4 class="mt-5">Your score: {{ userPlayer()?.score }}</h4>
+      <h4 class="font-bold mt-8 mb-4">Your score: {{ userPlayer()?.score }}</h4>
 
-      <div class="flex flex-column gap-3">
-        <joshies-card padded styleClass="flex flex-column gap-3">
+      <div class="flex flex-col gap-4">
+        <joshies-card padded styleClass="flex flex-col gap-4">
           <!-- Opponent Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Opponent
-            <p-dropdown
+            <p-select
               [options]="staticPlayersWithoutUser"
               [(ngModel)]="staticSelectedOpponent"
               optionLabel="nameAndScore"
               styleClass="flex"
               placeholder="Select an opponent"
             >
-              <ng-template pTemplate="item" let-player>
-                <div class="flex gap-2 align-items-center">
+              <ng-template #item let-player>
+                <div class="flex gap-2 items-center">
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
-                    styleClass="h-1.5rem w-1.5rem"
+                    styleClass="h-6 w-6"
                   />
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
               </ng-template>
-              <ng-template pTemplate="selectedItem" let-player>
-                <div class="flex gap-2 align-items-center">
+              <ng-template #selectedItem let-player>
+                <div class="flex gap-2 items-center">
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
-                    styleClass="h-1.5rem w-1.5rem"
+                    styleClass="h-6 w-6"
                   />
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
               </ng-template>
-            </p-dropdown>
+            </p-select>
           </label>
         </joshies-card>
 
-        <joshies-card padded styleClass="flex flex-column gap-3">
+        <joshies-card padded styleClass="flex flex-col gap-4">
           <!-- Bet Type Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Bet Type
-            <p-dropdown
+            <p-select
               [options]="betTypes"
               [(ngModel)]="selectedBetType"
               optionLabel="betTypeString"
@@ -196,11 +195,11 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
             }
             @default {
               <!-- Bet terms -->
-              <label class="flex flex-column gap-2">
+              <label class="flex flex-col gap-2">
                 Bet Terms
                 <textarea
                   rows="2"
-                  pInputTextarea
+                  pTextarea
                   [(ngModel)]="terms"
                   [required]="true"
                 >
@@ -210,9 +209,9 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
           }
         </joshies-card>
 
-        <joshies-card padded styleClass="flex flex-column gap-3">
+        <joshies-card padded styleClass="flex flex-col gap-4">
           <!-- Even Odds Checkbox -->
-          <div class="flex align-items-center justify-content-end gap-3">
+          <div class="flex items-center justify-end gap-4">
             <label for="even-odds"> Even Odds </label>
             <p-inputSwitch
               inputId="event-odds"
@@ -222,7 +221,7 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
           </div>
 
           <!-- Requester bet -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             {{
               evenOdds()
                 ? 'Both Wager'
@@ -248,7 +247,7 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
 
           @if (!evenOdds()) {
             <!-- Opponent bet -->
-            <label class="flex flex-column gap-2">
+            <label class="flex flex-col gap-2">
               {{ selectedOpponent()?.display_name ?? 'Opponent' }} Wagers
               <p-inputNumber
                 #inputOpponentBet
@@ -271,7 +270,7 @@ import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
 
         <!-- Submit Button -->
         @if (cannotSubmitMessage(); as cannotSubmitMessage) {
-          <div class="text-sm text-red font-semibold">
+          <div class="text-sm text-danger-foreground font-semibold">
             {{ cannotSubmitMessage }}
           </div>
         }
@@ -716,52 +715,46 @@ export default class PlaceBetPageComponent implements OnInit {
   }
 
   constructor() {
-    effect(
-      () => {
-        const playersWithoutUser = this.playersWithoutUser();
-        if (playersWithoutUser && this.staticPlayersWithoutUser.length < 1) {
-          this.staticPlayersWithoutUser = playersWithoutUser;
-        }
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const playersWithoutUser = this.playersWithoutUser();
+      if (playersWithoutUser && this.staticPlayersWithoutUser.length < 1) {
+        this.staticPlayersWithoutUser = playersWithoutUser;
+      }
+    });
 
-    effect(
-      () => {
-        const playersWithoutUser = this.playersWithoutUser();
-        this.selectedOpponent.set(
-          playersWithoutUser?.find(
-            (player) =>
-              player.player_id === this.staticSelectedOpponent()?.player_id,
-          ) ?? null,
-        );
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const playersWithoutUser = this.playersWithoutUser();
+      this.selectedOpponent.set(
+        playersWithoutUser?.find(
+          (player) =>
+            player.player_id === this.staticSelectedOpponent()?.player_id,
+        ) ?? null,
+      );
+    });
 
-    effect(
-      () => {
-        this.selectedDuel();
-        this.selectedWinner.set(null);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      this.selectedDuel();
+      this.selectedWinner.set(null);
+    });
 
-    effect(
-      () => {
-        this.selectedMainEvent();
-        this.selectedEventBetSubtype.set(BetSubtype.TeamPosition);
-        this.selectedEventTeam.set(null);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      this.selectedMainEvent();
+      this.selectedEventBetSubtype.set(BetSubtype.TeamPosition);
+      this.selectedEventTeam.set(null);
+    });
   }
 
   ngOnInit() {
     this.selectedBetType.set(this.betType() ?? BetType.Custom);
-    this.selectedDuelId.set(Number(this.duelId()) ?? null);
-    this.selectedMainEventId.set(Number(this.eventId()) ?? null);
-    this.selectedSsEventId.set(Number(this.ssEventId()) ?? null);
-    this.selectedChaosEventId.set(Number(this.chaosEventId()) ?? null);
+    this.selectedDuelId.set(this.duelId() ? Number(this.duelId()) : null);
+    this.selectedMainEventId.set(
+      this.eventId() ? Number(this.eventId()) : null,
+    );
+    this.selectedSsEventId.set(
+      this.ssEventId() ? Number(this.ssEventId()) : null,
+    );
+    this.selectedChaosEventId.set(
+      this.chaosEventId() ? Number(this.chaosEventId()) : null,
+    );
   }
 }

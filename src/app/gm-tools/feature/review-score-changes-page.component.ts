@@ -8,7 +8,7 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { Router } from '@angular/router';
-import { DecimalPipe, KeyValuePipe, NgOptimizedImage } from '@angular/common';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { SessionService } from '../../shared/data-access/session.service';
@@ -16,8 +16,8 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import {
-  LocalStorageRecord,
   getRecordFromLocalStorage,
+  LocalStorageRecord,
   removeRecordFromLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { MessageService } from 'primeng/api';
@@ -32,12 +32,10 @@ import { EventService } from '../../shared/data-access/event.service';
 
 @Component({
   selector: 'joshies-review-score-changes-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    KeyValuePipe,
     NgOptimizedImage,
     SkeletonModule,
     ButtonModule,
@@ -55,9 +53,9 @@ import { EventService } from '../../shared/data-access/event.service';
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="mt-6">
+      <h4 class="font-bold mt-12 mb-4">
         Session points for round {{ vm.roundNumber }} of {{ vm.numRounds }}
-        <span class="text-500 font-italic">(Draft)</span>
+        <span class="text-neutral-500 italic">(Draft)</span>
       </h4>
 
       <p-table
@@ -68,7 +66,7 @@ import { EventService } from '../../shared/data-access/event.service';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             <th class="text-right">Before</th>
@@ -77,26 +75,26 @@ import { EventService } from '../../shared/data-access/event.service';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="vm.players"
           let-player
         >
           <tr>
             <!-- Player -->
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>
             </td>
             <!-- Before -->
-            <td class="text-right text-400">
+            <td class="text-right text-neutral-400">
               {{ player.score | number }}
             </td>
             <!-- Change -->
@@ -118,11 +116,11 @@ import { EventService } from '../../shared/data-access/event.service';
           submitSessionPointsForEvent(vm.roundNumber!, vm.teamScoreChanges)
         "
         severity="success"
-        styleClass="mt-4 w-full"
+        styleClass="mt-6 w-full"
         [loading]="submittingInProgress()"
       />
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-6" />
+      <p-skeleton height="30rem" styleClass="mt-12" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

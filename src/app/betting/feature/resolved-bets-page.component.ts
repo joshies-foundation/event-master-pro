@@ -17,7 +17,6 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
 
 @Component({
   selector: 'joshies-resolved-bets-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
@@ -30,7 +29,7 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
     <joshies-page-header
       headerText="Settled Bets"
       alwaysSmall
-      class="block mb-5"
+      class="block mb-8"
     >
       <joshies-header-link
         text="Betting"
@@ -47,14 +46,14 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
           </joshies-card>
 
           @if (last) {
-            <div class="h-6rem"></div>
+            <div class="h-24"></div>
           }
         }
       } @else {
         <p>Bruh, you're not even a player.</p>
       }
     } @else {
-      <p-skeleton height="9.5rem" styleClass="mt-5 mb-2" />
+      <p-skeleton height="9.5rem" styleClass="mt-8 mb-2" />
       <p-skeleton height="9.5rem" styleClass="mb-2" />
       <p-skeleton height="9.5rem" />
     }

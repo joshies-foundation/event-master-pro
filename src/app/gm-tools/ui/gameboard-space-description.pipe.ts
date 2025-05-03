@@ -24,21 +24,21 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
 
       case GameboardSpaceEffect.GainPointsOrDoActivity:
         return `
-          <p class="m-0">
+          <p >
             ${this.titleCasePipe.transform(this.loseOrGainPipe.transform((gameboardSpace.effect_data as GainPointsOrDoActivitySpaceEffectData)?.pointsGained ?? '[Missing Data]'))} points
           </p>
           <p class="my-1"><strong>OR</strong></p>
-          <p class="m-0">
+          <p >
             ${(gameboardSpace.effect_data as GainPointsOrDoActivitySpaceEffectData)?.alternativeActivity ?? '[Missing Data]'}
           </p>
         `;
 
       case GameboardSpaceEffect.Duel:
         return `
-          <p class="m-0">
+          <p >
             Randomly wager a percentage of your points and duel another player 1-on-1:
           </p>
-          <ul class="pl-5 mt-1 mb-0">
+          <ul class="pl-8 mt-1">
             ${(
               (gameboardSpace.effect_data as DuelSpaceEffectData)?.duelGames ??
               []
@@ -47,8 +47,8 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
         `;
 
       case GameboardSpaceEffect.Special:
-        return `<p class="m-0">Trigger a special event</p>`;
-      // let specialEventsDescriptions = '<ul class="pl-5 mt-1 mb-0">';
+        return `<p >Trigger a special event</p>`;
+      // let specialEventsDescriptions = '<ul class="pl-5 mt-1">';
       //
       // (
       //   (gameboardSpace.effect_data as SpecialSpaceEffectData)
@@ -77,17 +77,17 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
       // specialEventsDescriptions += '</ul>';
       //
       // return `
-      //   <p class="m-0">
+      //   <p >
       //     Trigger a special event:
       //   </p>
       //   ${specialEventsDescriptions}
       // `;
 
       case GameboardSpaceEffect.Chaos:
-        return `<p class="m-0">Trigger a chaotic event</p>`;
+        return `<p >Trigger a chaotic event</p>`;
 
       case GameboardSpaceEffect.Bank:
-        return `<p class="m-0">Get all the points in the Bank</p>`;
+        return `<p >Get all the points in the Bank</p>`;
 
       default:
         return `Unknown gameboard_space_effect: "${(gameboardSpace as { effect: string }).effect}"`;

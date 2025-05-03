@@ -9,7 +9,6 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { TableModule } from 'primeng/table';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
 import { BetStatus } from '../../shared/util/supabase-helpers';
@@ -21,12 +20,10 @@ import { BetModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-accept-bets-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    NgOptimizedImage,
     ButtonModule,
     RouterLink,
     StronglyTypedTableRowDirective,
@@ -42,9 +39,9 @@ import { BetModel } from '../../shared/util/supabase-types';
 
     @if (displayBets()?.length) {
       @if (displayBets(); as bets) {
-        <p class="mt-5">Review bets that are awaiting your approval.</p>
+        <p class="mb-4 mt-8">Review bets that are awaiting your approval.</p>
         <p-table [value]="bets" [scrollable]="true">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th style="width: 60%;">
                 Bet Terms (Your score: {{ userPlayer()?.score }})
@@ -52,11 +49,7 @@ import { BetModel } from '../../shared/util/supabase-types';
               <th></th>
             </tr>
           </ng-template>
-          <ng-template
-            pTemplate="body"
-            [joshiesStronglyTypedTableRow]="bets"
-            let-bet
-          >
+          <ng-template #body [joshiesStronglyTypedTableRow]="bets" let-bet>
             <tr>
               <!-- Bet Terms -->
               <td>
@@ -76,7 +69,7 @@ import { BetModel } from '../../shared/util/supabase-types';
               <!-- Accept/Reject Buttons -->
               <td>
                 <div
-                  class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
+                  class="text-right flex gap-2 flex-col md:flex-row justify-end"
                 >
                   <p-button
                     label="Accept Bet"
@@ -105,7 +98,9 @@ import { BetModel } from '../../shared/util/supabase-types';
         </p-table>
       }
     } @else {
-      <p class="text-500 font-italic text-center mt-5">No pending bets</p>
+      <p class="my-4 text-neutral-500 italic text-center mt-8">
+        No pending bets
+      </p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

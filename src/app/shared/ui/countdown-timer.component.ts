@@ -3,26 +3,25 @@ import { Countdown } from '../data-access/session.service';
 
 @Component({
   selector: 'joshies-countdown-timer',
-  standalone: true,
   imports: [],
   template: `
-    <div class="h-full flex flex-column justify-content-center">
+    <div class="h-full flex flex-col justify-center">
       <h1
-        class="grid grid-nogutter text-center font-semibold mb-0"
+        class="grid grid-rows-1 grid-cols-4 gap-4 text-center font-semibold"
         style="font-size: 12vw"
       >
-        <span class="col-3">{{ countdown().days }}</span>
-        <span class="col-3">{{ countdown().hours }}</span>
-        <span class="col-3">{{ countdown().minutes }}</span>
-        <span class="col-3">{{ countdown().seconds }}</span>
+        <span>{{ countdown().days }}</span>
+        <span>{{ countdown().hours }}</span>
+        <span>{{ countdown().minutes }}</span>
+        <span>{{ countdown().seconds }}</span>
       </h1>
       <p
-        class="grid grid-nogutter text-center text-sm lg:text-2xl mt-0 lg:font-semibold text-primary"
+        class="grid grid-rows-1 grid-cols-4 gap-4 text-center text-sm lg:text-2xl lg:font-semibold text-primary"
       >
-        <span class="col-3">Days</span>
-        <span class="col-3">Hours</span>
-        <span class="col-3">Minutes</span>
-        <span class="col-3">Seconds</span>
+        <span>Days</span>
+        <span>Hours</span>
+        <span>Minutes</span>
+        <span>Seconds</span>
       </p>
     </div>
   `,

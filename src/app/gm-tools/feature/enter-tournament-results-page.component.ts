@@ -7,10 +7,8 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { TableModule } from 'primeng/table';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EventService } from '../../shared/data-access/event.service';
 import { AvatarModule } from 'primeng/avatar';
@@ -21,7 +19,6 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
 
 @Component({
   selector: 'joshies-enter-tournament-results-page',
-  standalone: true,
   template: `
     <joshies-page-header headerText="Enter Tournament Results" alwaysSmall>
       <joshies-header-link
@@ -42,10 +39,8 @@ import { TournamentBracketComponent } from '../../shared/ui/tournament-bracket.c
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    NgOptimizedImage,
     ButtonModule,
     RouterLink,
-    StronglyTypedTableRowDirective,
     SkeletonModule,
     AvatarModule,
     AvatarGroupModule,

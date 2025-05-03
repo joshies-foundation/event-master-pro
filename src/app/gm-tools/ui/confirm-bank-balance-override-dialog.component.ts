@@ -10,21 +10,22 @@ import {
   OverrideDefinitionTableModel,
 } from './override-definition-table.component';
 
-export interface ConfirmBankBalanceOverrideDialogModel
-  extends Omit<OverrideDefinitionTableModel, 'inputDisabled'> {}
+type ConfirmBankBalanceOverrideDialogModel = Omit<
+  OverrideDefinitionTableModel,
+  'inputDisabled'
+>;
 
 export const confirmOverrideDialogKey = 'confirm-override';
 
 @Component({
   selector: 'joshies-confirm-bank-balance-override-dialog',
-  standalone: true,
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
-    <p-confirmDialog styleClass="mx-3" [key]="confirmOverrideDialogKey">
-      <ng-template pTemplate="message" let-message>
+    <p-confirmDialog styleClass="mx-4" [key]="confirmOverrideDialogKey">
+      <ng-template #message let-message>
         <div>
           <!-- Prompt -->
-          <p class="mt-0 mb-4">
+          <p class="mb-6">
             Do you want to submit this override for the Bank balance?
           </p>
 
@@ -35,15 +36,13 @@ export const confirmOverrideDialogKey = 'confirm-override';
     </p-confirmDialog>
   `,
   styles: `
-    $tableBorder: 1px solid var(--surface-50);
-
     table {
       width: 100%;
       border-collapse: collapse;
 
       td {
-        border-top: $tableBorder;
-        border-bottom: $tableBorder;
+        border-top: var(--color-neutral-50);
+        border-bottom: var(--color-neutral-50);
         padding: 0.75rem 1rem;
       }
     }

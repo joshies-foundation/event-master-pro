@@ -9,7 +9,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import {
   FormControl,
   FormGroup,
@@ -17,12 +17,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import {
-  AsyncPipe,
-  LowerCasePipe,
-  NgClass,
-  NgOptimizedImage,
-} from '@angular/common';
+import { LowerCasePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import {
   takeUntilDestroyed,
@@ -33,7 +28,6 @@ import { CalendarModule } from 'primeng/calendar';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { concat, delay, map, of, switchMap } from 'rxjs';
 import { EventService } from '../../data-access/event.service';
@@ -152,9 +146,8 @@ export type FormField = {
 
 @Component({
   selector: 'joshies-form-field',
-  standalone: true,
   imports: [
-    DropdownModule,
+    Select,
     FormsModule,
     InputTextModule,
     LowerCasePipe,
@@ -165,10 +158,8 @@ export type FormField = {
     MultiSelectModule,
     EditorModule,
     InputNumberModule,
-    InputTextareaModule,
     CheckboxModule,
     ImageModule,
-    AsyncPipe,
     SkeletonModule,
     NgOptimizedImage,
   ],
@@ -206,22 +197,19 @@ export class FormFieldComponent implements AfterViewInit {
 
   protected readonly FormFieldType = FormFieldType;
 
-  private readonly enableAndDisableFieldEffect = effect(
-    () => {
-      const field = this.field();
+  private readonly enableAndDisableFieldEffect = effect(() => {
+    const field = this.field();
 
-      if (field.type === FormFieldType.Submit) {
-        return;
-      }
+    if (field.type === FormFieldType.Submit) {
+      return;
+    }
 
-      if (this.formDisabled() || field.disabled) {
-        field.control.disable();
-      } else {
-        field.control.enable();
-      }
-    },
-    { allowSignalWrites: true },
-  );
+    if (this.formDisabled() || field.disabled) {
+      field.control.disable();
+    } else {
+      field.control.enable();
+    }
+  });
 
   ngAfterViewInit() {
     if (this.field().type === FormFieldType.Submit) {

@@ -10,7 +10,6 @@ import {
 } from '@angular/router';
 import { routes } from './app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
 import { provideHttpClient } from '@angular/common/http';
@@ -19,6 +18,9 @@ import { NumberSignColorClassPipe } from './shared/ui/number-sign-color-class.pi
 import { NumberWithSignPipe } from './shared/ui/number-with-sign.pipe';
 import { NumberSignPipe } from './shared/ui/number-sign.pipe';
 import { LoseOrGainPipe } from './gm-tools/ui/lose-or-gain.pipe';
+import { providePrimeNG } from 'primeng/config';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { preset } from './primeng-preset';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,9 +40,20 @@ export const appConfig: ApplicationConfig = {
     provideSupabase(),
 
     // animations
-    provideAnimations(),
+    provideAnimationsAsync(),
 
-    // PrimeNG services
+    // PrimeNG
+    providePrimeNG({
+      theme: {
+        preset,
+        options: {
+          cssLayer: {
+            name: 'primeng',
+            order: 'theme, base, primeng',
+          },
+        },
+      },
+    }),
     MessageService,
     ConfirmationService,
 

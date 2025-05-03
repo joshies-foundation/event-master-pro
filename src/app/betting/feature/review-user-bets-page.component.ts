@@ -9,7 +9,6 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { TableModule } from 'primeng/table';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
 import { BetStatus } from '../../shared/util/supabase-helpers';
@@ -21,12 +20,10 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-review-user-bets-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    NgOptimizedImage,
     ButtonModule,
     RouterLink,
     StronglyTypedTableRowDirective,
@@ -42,7 +39,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 
     @if (bets()?.length) {
       @if (bets(); as bets) {
-        <p class="mt-5">Review bets that are open or awaiting approval.</p>
+        <p class="mb-4 mt-8">Review bets that are open or awaiting approval.</p>
         <p-table
           [value]="bets"
           [defaultSortOrder]="-1"
@@ -50,7 +47,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
           [sortOrder]="-1"
           [scrollable]="true"
         >
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th style="width: 60%;">
                 Bet Terms (Your score: {{ userPlayer()?.score }})
@@ -58,11 +55,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
               <th></th>
             </tr>
           </ng-template>
-          <ng-template
-            pTemplate="body"
-            [joshiesStronglyTypedTableRow]="bets"
-            let-bet
-          >
+          <ng-template #body [joshiesStronglyTypedTableRow]="bets" let-bet>
             <tr>
               <!-- Bet Terms -->
               <td>
@@ -73,7 +66,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
               <!-- Status Buttons -->
               <td>
                 <div
-                  class="text-left flex gap-2 flex-column md:flex-row justify-content-end"
+                  class="text-left flex gap-2 flex-col md:flex-row justify-end"
                 >
                   @if (bet.status === BetStatus.Active) {
                     Open
@@ -117,7 +110,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
         </p-table>
       }
     } @else {
-      <p class="text-500 font-italic text-center mt-5">
+      <p class="mb-4 text-neutral-500 italic text-center mt-8">
         No open or pending bets
       </p>
     }

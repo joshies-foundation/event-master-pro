@@ -3,37 +3,44 @@
   <!-- Refresh Button -->
   <i
     tabindex="0"
-    class="pi pi-refresh text-700 font-bold text-xl ml-auto"
+    class="pi pi-refresh text-neutral-700 font-bold text-xl ml-auto"
     (click)="reloadApp()"
     (keyup.enter)="reloadApp()"
   ></i>
 </joshies-page-header>
 
 @if (viewModel(); as vm) {
-  <div class="flex justify-content-center my-5 align-items-baseline">
+  <div class="flex justify-center my-8 items-baseline">
     @if (vm.updatedAvatarLoading) {
       <!-- Updating Avatar Loading Skeleton -->
-      <p-skeleton height="10rem" width="10rem" styleClass="border-circle" />
-      <i tabindex="0" class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-300"></i>
+      <p-skeleton height="10rem" width="10rem" styleClass="rounded-full" />
+      <i
+        tabindex="0"
+        class="pi pi-camera p-1 -ml-6 -mb-1 text-xl text-neutral-300"
+      ></i>
     } @else {
       <!-- Avatar -->
       <img
         [src]="vm.updatedAvatarLoading ? '' : vm.user.avatar_url"
         alt=""
-        class="w-10rem h-10rem border-circle block surface-100"
+        class="w-40 h-40 rounded-full block bg-neutral-100"
       />
 
       @if (vm.user.can_edit_profile) {
         <!-- Choose Image Button -->
         <i
           tabindex="0"
-          class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-700"
+          class="pi pi-camera p-1 -ml-6 -mb-1 text-xl text-neutral-700"
           (click)="avatarFileInput.click()"
           (keyup.enter)="avatarFileInput.click()"
         ></i>
       } @else {
-        <i class="pi pi-camera p-1 -ml-4 -mb-1 text-xl text-400 relative">
-          <i class="pi pi-times text-3xl -mt-1 text-red-500 absolute left-0">
+        <i
+          class="pi pi-camera p-1 -ml-6 -mb-1 text-xl text-neutral-400 relative"
+        >
+          <i
+            class="pi pi-times text-3xl -mt-1 text-danger-foreground-500 absolute left-0"
+          >
           </i>
         </i>
       }
@@ -57,15 +64,17 @@
       <!-- Edit Button -->
       <i
         tabindex="0"
-        class="pi pi-pencil text-700 p-2 ml-1"
+        class="pi pi-pencil text-neutral-700 p-2 ml-1"
         (click)="promptChangeDisplayName(vm.user.id, vm.user.display_name)"
         (keyup.enter)="
           promptChangeDisplayName(vm.user.id, vm.user.display_name)
         "
       ></i>
     } @else {
-      <i class="pi pi-pencil p-2 ml-1 text-400 relative">
-        <i class="pi pi-times text-2xl ml-1 -mt-1 text-red-500 absolute left-0">
+      <i class="pi pi-pencil p-2 ml-1 text-neutral-400 relative">
+        <i
+          class="pi pi-times text-2xl ml-1 -mt-1 text-danger-foreground-500 absolute left-0"
+        >
         </i>
       </i>
     }
@@ -73,8 +82,8 @@
 
   @if (vm.user.can_toggle_squidward_mode || vm.user.squidward_mode) {
     <!-- Squidward Mode -->
-    <p class="flex align-items-center">
-      <strong class="mr-3">Squidward Mode:</strong>
+    <p class="flex items-center my-4">
+      <strong class="mr-4">Squidward Mode:</strong>
 
       <!-- Toggle Switch -->
       <p-inputSwitch
@@ -83,13 +92,16 @@
         [disabled]="!vm.user.can_toggle_squidward_mode"
       />
       @if (!vm.user.can_toggle_squidward_mode) {
-        <i class="pi pi-times text-4xl -ml-5 -mt-1 text-red-500 z-5"> </i>
+        <i
+          class="pi pi-times text-4xl -ml-8 -mt-1 text-danger-foreground-500 z-50"
+        >
+        </i>
       }
     </p>
   }
 
   <!-- Login Username -->
-  <p class="mt-0 mb-6">
+  <p class="mt-4 mb-12">
     <strong class="mr-2">Login Username:</strong> {{ vm.loginUsername }}
   </p>
 
@@ -98,7 +110,7 @@
     <p-button
       (onClick)="enablePushNotifications(vm.user.id)"
       label="Enable Push Notifications"
-      styleClass="block mx-auto mt-4"
+      styleClass="block mx-auto mt-6"
     />
   }
 } @else {
@@ -106,9 +118,9 @@
   <p-skeleton
     width="10rem"
     height="10.2rem"
-    styleClass="border-circle mx-auto my-5"
+    styleClass="rounded-full mx-auto my-8"
   />
-  <p-skeleton width="100%" height="4rem" styleClass="mb-6" />
+  <p-skeleton width="100%" height="4rem" styleClass="mb-12" />
 }
 
 <!-- Sign Out Button -->
@@ -117,11 +129,11 @@
   label="Sign Out"
   severity="danger"
   [text]="true"
-  styleClass="block mx-auto mt-4"
+  styleClass="block mx-auto mt-6"
 />
 
 <!-- Last Updated -->
-<p class="pt-4 text-400 text-xs text-center">
+<p class="pt-6 text-neutral-400 text-xs text-center">
   <!-- This value is replaced with the current date in the npm "prebuild" script -->
   App last updated: {{ 0 | date: 'medium' }}
 </p>

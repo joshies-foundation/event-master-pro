@@ -36,14 +36,9 @@ import {
   whenAllValuesNotNull,
   whenNotNull,
 } from '../../shared/util/rxjs-helpers';
-import {
-  DecimalPipe,
-  JsonPipe,
-  NgOptimizedImage,
-  TitleCasePipe,
-} from '@angular/common';
+import { DecimalPipe, JsonPipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import {
   ChaosSpaceEffectData,
   ChaosSpaceEventModel,
@@ -75,19 +70,16 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
 @Component({
   selector: 'joshies-chaos-space-event-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     RouterLink,
     AvatarModule,
     SkeletonModule,
-    NgOptimizedImage,
-    DropdownModule,
+    Select,
     FormsModule,
     ButtonModule,
     PaginatorModule,
-    TitleCasePipe,
     TableModule,
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,
@@ -106,10 +98,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
     @if (viewModel(); as vm) {
       @if (vm.chaosSpaceEvent) {
-        <div class="flex-grow-1 flex flex-column justify-content-between">
+        <div class="grow flex flex-col justify-between">
           <div>
             <!-- Player -->
-            <div class="mt-5 flex align-items-center gap-3">
+            <div class="mt-8 flex items-center gap-4">
               <p-avatar
                 size="large"
                 shape="circle"
@@ -123,9 +115,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
             @switch (vm.chaosSpaceEvent.status) {
               @case (SpaceEventStatus.EventNotSelected) {
                 <!-- Select Event -->
-                <label class="mt-5 flex flex-column gap-2">
+                <label class="mt-8 flex flex-col gap-2">
                   Select Event
-                  <p-dropdown
+                  <p-select
                     [options]="eventOptions()"
                     optionLabel="name"
                     optionValue="id"
@@ -148,7 +140,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         as playersWithScoreChanges
                       ) {
                         <p-table [value]="playersWithScoreChanges">
-                          <ng-template pTemplate="header">
+                          <ng-template #header>
                             <tr>
                               <th>Player</th>
                               <th class="text-right">Current Score</th>
@@ -156,7 +148,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                             </tr>
                           </ng-template>
                           <ng-template
-                            pTemplate="body"
+                            #body
                             let-player
                             [joshiesStronglyTypedTableRow]="
                               playersWithScoreChanges
@@ -164,7 +156,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           >
                             <tr>
                               <td>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                   <p-avatar
                                     [image]="player.avatar_url"
                                     shape="circle"
@@ -186,7 +178,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         <!-- Submit Changes Button -->
                         <p-button
                           label="Submit Score Changes"
-                          styleClass="mt-4 w-full"
+                          styleClass="mt-6 w-full"
                           [disabled]="backendActionInProgress()"
                           [loading]="submittingScoreChanges()"
                           (onClick)="
@@ -217,7 +209,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           [value]="playersWithEveryonePointLosses"
                           [rowTrackBy]="trackByPlayerId"
                         >
-                          <ng-template pTemplate="header">
+                          <ng-template #header>
                             <tr>
                               <th>Player</th>
                               <th class="text-right">Current Score</th>
@@ -225,7 +217,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                             </tr>
                           </ng-template>
                           <ng-template
-                            pTemplate="body"
+                            #body
                             let-player
                             [joshiesStronglyTypedTableRow]="
                               playersWithEveryonePointLosses
@@ -233,7 +225,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           >
                             <tr>
                               <td>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                   <p-avatar
                                     [image]="player.avatar_url"
                                     shape="circle"
@@ -255,7 +247,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         <!-- Submit Changes Button -->
                         <p-button
                           label="Submit Score Changes"
-                          styleClass="mt-4 w-full"
+                          styleClass="mt-6 w-full"
                           [disabled]="backendActionInProgress()"
                           [loading]="submittingScoreChanges()"
                           (onClick)="
@@ -276,7 +268,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         playersWithSwappedPointScoreChanges();
                         as playersWithSwappedPointScoreChanges
                       ) {
-                        <h4>Choose 2 players who will swap points:</h4>
+                        <h4 class="my-4 font-bold">
+                          Choose 2 players who will swap points:
+                        </h4>
 
                         <p-table
                           [value]="playersWithSwappedPointScoreChanges"
@@ -284,7 +278,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           selectionMode="multiple"
                           [(selection)]="playerIdsWhoWillSwapPoints"
                         >
-                          <ng-template pTemplate="header">
+                          <ng-template #header>
                             <tr>
                               <th>Player</th>
                               <th class="text-right">Current Score</th>
@@ -292,7 +286,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                             </tr>
                           </ng-template>
                           <ng-template
-                            pTemplate="body"
+                            #body
                             let-player
                             [joshiesStronglyTypedTableRow]="
                               playersWithSwappedPointScoreChanges
@@ -300,7 +294,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           >
                             <tr>
                               <td>
-                                <div class="flex align-items-center gap-2">
+                                <div class="flex items-center gap-2">
                                   <p-tableCheckbox
                                     [value]="player.player_id"
                                     [disabled]="
@@ -332,7 +326,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         <!-- Submit Changes Button -->
                         <p-button
                           label="Submit Score Changes"
-                          styleClass="mt-4 w-full"
+                          styleClass="mt-6 w-full"
                           [disabled]="
                             backendActionInProgress() ||
                             playerIdsWhoWillSwapPoints().length !== 2
@@ -370,10 +364,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.WaitingToBegin) {
                 @if (vm.chaosSpaceEvent.template) {
-                  <h3 class="mt-5 mb-2">
+                  <h3 class="text-lg font-bold mt-8 mb-2">
                     {{ vm.chaosSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-5 pre-wrap">{{
+                  <pre class="mb-8 pre-wrap">{{
                     vm.chaosSpaceEvent.template.description
                   }}</pre>
 
@@ -391,10 +385,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.InProgress) {
                 @if (vm.chaosSpaceEvent.template) {
-                  <h3 class="mt-5 mb-2">
+                  <h3 class="text-lg font-bold mt-8 mb-2">
                     {{ vm.chaosSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-5 pre-wrap">{{
+                  <pre class="mb-8 pre-wrap">{{
                     vm.chaosSpaceEvent.template.description
                   }}</pre>
 
@@ -403,7 +397,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                     <strong>{{ percentageLoss() }}%</strong>
                   </p>
 
-                  <h4>Who failed?</h4>
+                  <h4 class="my-4 font-bold">Who failed?</h4>
 
                   @if (
                     playersWithScoreChangesBasedOnTaskFailure();
@@ -415,7 +409,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       selectionMode="multiple"
                       [(selection)]="playerIdsWhoFailedTask"
                     >
-                      <ng-template pTemplate="header">
+                      <ng-template #header>
                         <tr>
                           <th>Player</th>
                           <th class="text-right pl-0">Current Score</th>
@@ -423,7 +417,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         </tr>
                       </ng-template>
                       <ng-template
-                        pTemplate="body"
+                        #body
                         let-player
                         [joshiesStronglyTypedTableRow]="
                           playersWithScoreChangesBasedOnTaskFailure
@@ -431,7 +425,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       >
                         <tr>
                           <td>
-                            <div class="flex align-items-center gap-2">
+                            <div class="flex items-center gap-2">
                               <p-tableCheckbox [value]="player.player_id" />
                               <p-avatar
                                 [image]="player.avatar_url"
@@ -456,7 +450,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                     <!-- Submit Changes Button -->
                     <p-button
                       label="Submit Score Changes"
-                      styleClass="mt-4 w-full"
+                      styleClass="mt-6 w-full"
                       [disabled]="backendActionInProgress()"
                       [loading]="submittingScoreChanges()"
                       (onClick)="
@@ -478,14 +472,14 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 }
               }
               @default {
-                <h3>
+                <h3 class="text-lg font-bold">
                   {{
                     vm.chaosSpaceEvent.template?.name ??
                       'Cannot find Chaos Space Event Template with ID ' +
                         vm.chaosSpaceEvent.template_id
                   }}
                 </h3>
-                <h4>Results</h4>
+                <h4 class="my-4 font-bold">Results</h4>
                 <p>{{ vm.chaosSpaceEvent.results | json }}</p>
               }
             }
@@ -496,7 +490,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               [text]="true"
               severity="danger"
               label="Cancel this Chaos Space Event"
-              styleClass="mt-6 w-full"
+              styleClass="mt-12 w-full"
               [disabled]="backendActionInProgress()"
               [loading]="cancelingEvent()"
               (onClick)="
@@ -509,17 +503,17 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
           }
         </div>
       } @else {
-        <p class="mt-5">
+        <p class="mt-8">
           No chaos space event found with ID
           <strong>{{ vm.chaosSpaceEventId }}</strong>
         </p>
       }
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-5" />
+      <p-skeleton height="30rem" styleClass="mt-8" />
     }
   `,
   host: {
-    class: 'flex flex-column h-full',
+    class: 'flex flex-col h-full',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

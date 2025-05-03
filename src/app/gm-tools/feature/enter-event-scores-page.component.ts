@@ -1,16 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   computed,
   effect,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { TableModule } from 'primeng/table';
-import { NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -27,7 +26,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
 @Component({
   selector: 'joshies-enter-event-scores-page',
-  standalone: true,
   template: `
     <joshies-page-header headerText="Enter Event Scores" alwaysSmall>
       <joshies-header-link
@@ -37,7 +35,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
       />
     </joshies-page-header>
 
-    <p class="mt-5">
+    <p class="mb-4 mt-8">
       Enter event scores for each team.
       {{
         eventForThisRound()?.lower_scores_are_better
@@ -52,22 +50,18 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
         [scrollable]="true"
         [formGroup]="vm.formGroup"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th>Team</th>
             <th>Event Score</th>
             <th>Pos</th>
           </tr>
         </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="vm.teams!"
-          let-team
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="vm.teams!" let-team>
           <tr>
             <td>
-              <div class="flex flex-column align-items-center gap-2">
-                <div class="flex flex-row align-items-center gap-2">
+              <div class="flex flex-col items-center gap-2">
+                <div class="flex flex-row items-center gap-2">
                   <p-avatarGroup styleClass="mr-2">
                     @for (
                       participant of team.participants;
@@ -124,7 +118,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
     PageHeaderComponent,
     HeaderLinkComponent,
     TableModule,
-    NgOptimizedImage,
     ButtonModule,
     RouterLink,
     StronglyTypedTableRowDirective,

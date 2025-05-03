@@ -1,6 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { DuelService } from '../../../shared/data-access/duel.service';
 import { DuelStatus } from '../../../shared/util/supabase-helpers';
 import { DuelModel } from '../../../shared/util/supabase-types';
@@ -9,13 +9,12 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-duel-winner',
-  standalone: true,
-  imports: [DropdownModule, FormsModule],
+  imports: [Select, FormsModule],
   template: `
-    <div class="flex flex-column gap-3">
-      <label class="flex flex-column gap-2">
+    <div class="flex flex-col gap-4">
+      <label class="flex flex-col gap-2">
         Duel
-        <p-dropdown
+        <p-select
           [options]="openDuels()"
           [(ngModel)]="selectedDuelId"
           optionLabel="duelName"
@@ -27,9 +26,9 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       </label>
 
       <!-- Duel Winner Dropdown -->
-      <label class="flex flex-column gap-2">
+      <label class="flex flex-col gap-2">
         Winner
-        <p-dropdown
+        <p-select
           [options]="competitors()"
           [(ngModel)]="selectedWinner"
           optionLabel="display_name"

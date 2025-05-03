@@ -1,27 +1,19 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TableModule } from 'primeng/table';
-import { DatePipe, DecimalPipe } from '@angular/common';
 import { AnalyticsService } from '../data-access/analytics.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { trackById } from '../../shared/util/supabase-helpers';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { TransactionTableComponent } from '../ui/transaction-table.component';
 
 @Component({
   selector: 'joshies-transactions-page',
-  standalone: true,
   imports: [
     TableModule,
-    DatePipe,
-    DecimalPipe,
     SkeletonModule,
     PageHeaderComponent,
     HeaderLinkComponent,
-    StronglyTypedTableRowDirective,
-    NumberWithSignAndColorPipe,
     TransactionTableComponent,
   ],
   template: `
@@ -37,15 +29,15 @@ import { TransactionTableComponent } from '../ui/transaction-table.component';
       @if (transactions.length > 0) {
         <joshies-transaction-table
           [transactions]="transactions"
-          class="block mt-5 mb-8"
+          class="block mt-8 mb-20"
         />
       } @else {
-        <p class="mt-6 pt-6 text-center text-500 font-italic">
+        <p class="mt-12 pt-12 text-center text-neutral-500 italic">
           No transactions yet
         </p>
       }
     } @else if (transactions() === null) {
-      <p class="mt-6 pt-6 text-center text-500 font-italic">
+      <p class="mt-12 pt-12 text-center text-neutral-500 italic">
         You are not a player in this session
       </p>
     } @else {

@@ -19,7 +19,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
 @Component({
   selector: 'joshies-lifetime-stats-page',
-  standalone: true,
   imports: [
     DecimalPipe,
     InputNumberModule,
@@ -49,9 +48,9 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByUserId"
-        styleClass="mt-5"
+        styleClass="mt-8"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             <th pSortableColumn="lifetime_score">
@@ -65,24 +64,20 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
             </th>
           </tr>
         </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="data"
-          let-row
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="data" let-row>
           <tr
             [ngClass]="{
               'font-semibold bg-highlight': row.user_id === userId(),
             }"
           >
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="row.avatar_url!"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ row.display_name }}
               </div>
@@ -100,7 +95,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         </ng-template>
       </p-table>
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

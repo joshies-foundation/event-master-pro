@@ -35,14 +35,12 @@ import { Form, FormComponent } from '../../shared/ui/form.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
-import { JsonPipe } from '@angular/common';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-edit-gameboard-space-type-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -51,7 +49,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     GameboardSpaceComponent,
     FormComponent,
     GameboardSpaceDescriptionPipe,
-    JsonPipe,
   ],
   template: `
     <!-- Header -->
@@ -65,11 +62,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
     @if (originalGameboardSpace(); as originalGameboardSpace) {
       <!-- Visual Preview -->
-      <div
-        class="flex gap-3 mt-5 mb-3 align-items-center justify-content-center w-full"
-      >
+      <div class="flex gap-4 mt-8 mb-4 items-center justify-center w-full">
         <joshies-gameboard-space [model]="originalGameboardSpace" />
-        <i class="pi pi-arrow-right text-400"></i>
+        <i class="pi pi-arrow-right text-neutral-400"></i>
         <joshies-gameboard-space [model]="updatedGameboardSpaceFormValue()" />
       </div>
 
@@ -83,27 +78,27 @@ import { toSignal } from '@angular/core/rxjs-interop';
         "
         [label]="deleteButtonText()"
         severity="danger"
-        styleClass="w-full mt-6"
+        styleClass="w-full mt-12"
         [disabled]="deleteButtonDisabled()"
         [loading]="deleting()"
       />
 
       <!-- Confirm Submit Changes Dialog -->
-      <p-confirmDialog styleClass="mx-3" [key]="confirmSubmitChangesDialogKey">
-        <ng-template pTemplate="message">
+      <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
+        <ng-template #message>
           <div class="block">
-            <p class="m-0">Are you sure you want submit these changes?</p>
+            <p>Are you sure you want submit these changes?</p>
 
             <!-- Before -->
-            <h4 class="mt-4 mb-2">Before</h4>
-            <div class="flex gap-3">
+            <h4 class="font-bold mt-6 mb-2">Before</h4>
+            <div class="flex gap-4">
               <joshies-gameboard-space [model]="originalGameboardSpace" />
               <div>
-                <h4 class="mt-0 mb-2">
+                <h4 class="font-bold mb-2">
                   {{ originalGameboardSpace.name }} Space
                 </h4>
                 <div
-                  class="text-sm text-600"
+                  class="text-sm text-neutral-600"
                   [innerHtml]="
                     originalGameboardSpace | gameboardSpaceDescription
                   "
@@ -112,17 +107,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
             </div>
 
             <!-- After -->
-            <h4 class="mt-3 mb-2">After</h4>
-            <div class="flex gap-3">
+            <h4 class="font-bold mt-4 mb-2">After</h4>
+            <div class="flex gap-4">
               <joshies-gameboard-space
                 [model]="updatedGameboardSpaceFormValue()"
               />
               <div>
-                <h4 class="mt-0 mb-2">
+                <h4 class="font-bold mb-2">
                   {{ updatedGameboardSpaceName() }} Space
                 </h4>
                 <div
-                  class="text-sm text-600"
+                  class="text-sm text-neutral-600"
                   [innerHtml]="
                     updatedGameboardSpacePreviewData()
                       | gameboardSpaceDescription
@@ -135,7 +130,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </p-confirmDialog>
     } @else {
       <!-- Data Not Found Message -->
-      <p class="mt-6">
+      <p class="mb-4 mt-12">
         No gameboard space found in this session with ID
         <span class="font-bold">{{ gameboardSpaceId() }}</span>
       </p>

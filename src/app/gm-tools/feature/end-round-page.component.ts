@@ -1,18 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   effect,
   inject,
+  Signal,
 } from '@angular/core';
-import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { NgOptimizedImage } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
@@ -21,23 +18,24 @@ import { ButtonModule } from 'primeng/button';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  LocalStorageRecord,
   getRecordFromLocalStorage,
+  LocalStorageRecord,
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
-import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 import { EventService } from '../../shared/data-access/event.service';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { AvatarModule } from 'primeng/avatar';
 import { switchMap } from 'rxjs';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
+import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
+import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 import { CardComponent } from '../../shared/ui/card.component';
 import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
 @Component({
   selector: 'joshies-end-round-page',
-  standalone: true,
   template: `
     <joshies-page-header headerText="Assign Session Points" alwaysSmall>
       <joshies-header-link
@@ -48,11 +46,11 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="mt-6">
+      <h4 class="font-bold mt-12 mb-4">
         Assign session points based on {{ vm.event?.name }} results
       </h4>
 
-      <joshies-card padded styleClass="flex flex-column gap-3">
+      <joshies-card padded styleClass="flex flex-col gap-4">
         <p-button
           label="Calculate Recommended Points"
           (onClick)="populateRecommendedScores()"
@@ -66,7 +64,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
           [sortOrder]="1"
           [scrollable]="true"
         >
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th>Team</th>
               <th style="padding: 0.75rem 0.25rem">Pos</th>
@@ -74,13 +72,13 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
             </tr>
           </ng-template>
           <ng-template
-            pTemplate="body"
+            #body
             [joshiesStronglyTypedTableRow]="vm.teams!"
             let-team
           >
             <tr>
               <td>
-                <div class="flex flex-column align-items-center gap-2">
+                <div class="flex flex-col items-center gap-2">
                   <p-avatarGroup>
                     @for (
                       participant of team.participants;
@@ -93,10 +91,10 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                     }
                   </p-avatarGroup>
                   <div class="text-xs text-center">
-                    <p class="mt-0 mb-1">
+                    <p class="mb-1">
                       {{ team.participants | participantList }}
                     </p>
-                    <p class="m-0 text-500">
+                    <p class="m-0 text-neutral-500">
                       Event Score: <strong>{{ team.score }}</strong>
                     </p>
                   </div>
@@ -127,7 +125,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 
         <p-button
           label="Review Score Changes"
-          styleClass="mt-4 w-full"
+          styleClass="mt-6 w-full"
           (onClick)="reviewScoreChanges()"
           [disabled]="formGroup().invalid"
           icon="pi pi-chevron-right"
@@ -135,7 +133,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
         />
       </joshies-card>
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-6" />
+      <p-skeleton height="30rem" styleClass="mt-12" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -145,7 +143,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
     SkeletonModule,
     TableModule,
     InputNumberModule,
-    NgOptimizedImage,
     ReactiveFormsModule,
     ButtonModule,
     StronglyTypedTableRowDirective,
@@ -236,7 +233,7 @@ export default class EndRoundPageComponent {
       }
     });
     // Commented out until double elim brackets are in
-    /**} 
+    /**}
     else if (
       eventForThisRound?.format === EventFormat.SingleEliminationTournament
     ) {

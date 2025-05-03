@@ -19,7 +19,6 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 
 @Component({
   selector: 'joshies-space-stats-page',
-  standalone: true,
   imports: [
     DecimalPipe,
     NgOptimizedImage,
@@ -39,7 +38,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
       />
     </joshies-page-header>
 
-    <p class="mt-5">How many times each player landed on each space</p>
+    <p class="mt-8 mb-4">How many times each player landed on each space</p>
 
     @if (spaceStats(); as spaceStats) {
       <!-- Lifetime Rankings Table -->
@@ -51,7 +50,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             @for (space of gameboardSpaces(); track space.id) {
@@ -62,7 +61,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="spaceStats"
           let-player
         >
@@ -72,13 +71,13 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
             }"
           >
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>
@@ -89,7 +88,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
                 @if (player.space_stats[space.id]; as numTimesLandedOnSpace) {
                   {{ numTimesLandedOnSpace | number }}
                 } @else {
-                  <span class="text-300">–</span>
+                  <span class="text-neutral-300">–</span>
                 }
               </td>
             }
@@ -97,7 +96,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
         </ng-template>
       </p-table>
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

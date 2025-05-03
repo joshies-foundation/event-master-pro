@@ -1,11 +1,11 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  booleanAttribute,
   computed,
   input,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { FooterLinkComponent, FooterLinkModel } from './footer-link.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { fromEvent, map, merge } from 'rxjs';
@@ -13,36 +13,28 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
 
 @Component({
   selector: 'joshies-footer',
-  standalone: true,
-  imports: [CommonModule, FooterLinkComponent],
+  imports: [FooterLinkComponent, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Spacer -->
-    <div class="h-6rem"></div>
+    <div class="h-24"></div>
 
     <!-- Disabled Cover -->
     @if (disabled()) {
       <div
-        class="surface-alpha-70 w-full h-5rem fixed z-6 bottom-0 left-0"
+        class="bg-app-background-color/70 w-full h-20 fixed z-60 bottom-0 left-0"
       ></div>
     }
 
     <!-- Footer -->
     <nav
-      class="w-full h-5rem border-top-1 flex justify-between fixed z-5 bottom-0 left-0 pb-4 text-center"
+      class="w-full h-20 border-t grid auto-cols-fr grid-rows-1 grid-flow-col fixed z-50 bottom-0 left-0 pb-6 text-center"
       [ngClass]="dynamicClasses()"
     >
       @for (footerLink of footerLinks(); track footerLink.href) {
-        <joshies-footer-link class="col" [model]="footerLink" />
+        <joshies-footer-link class="grow basis-0 p-2" [model]="footerLink" />
       }
     </nav>
-  `,
-  styles: `
-    ::ng-deep .p-badge {
-      min-width: 1rem;
-      height: 1rem;
-      line-height: 1.05rem;
-    }
   `,
 })
 export class FooterComponent {
@@ -61,7 +53,7 @@ export class FooterComponent {
   readonly dynamicClasses = computed(() =>
     this.isScrolledToBottom()
       ? 'border-transparent'
-      : 'surface-border blur-background bg-header-footer-alpha',
+      : 'border-standard-border-color blur-background bg-header-footer-alpha',
   );
 
   readonly largeHeaderDynamicClasses = computed(() =>

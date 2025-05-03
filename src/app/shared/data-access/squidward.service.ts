@@ -34,14 +34,15 @@ export class SquidwardService {
   });
 
   constructor() {
-    // load sounds
-    this.touchStartSound.load();
-    this.touchEndSound.load();
-
-    // play sounds while in Squidward Mode
+    // Play sounds only while in Squidward Mode
     this.squidwardMode$
       .pipe(
         filter((squidwardMode) => squidwardMode),
+        tap(() => {
+          // Load sounds when Squidward mode turns on
+          void this.touchStartSound.load();
+          void this.touchEndSound.load();
+        }),
         switchMap(() =>
           forkJoin([
             fromEvent(document, 'touchstart').pipe(

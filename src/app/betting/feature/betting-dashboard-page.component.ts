@@ -33,13 +33,11 @@ import { BetType } from '../../shared/util/supabase-helpers';
 import { BetToResolveComponent } from '../ui/bet-awaiting-acceptance.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 
-// const textColor = getCssVariableValue('--text-color');
-const textColorSecondary = getCssVariableValue('--text-color-secondary');
-const surfaceBorder = getCssVariableValue('--surface-border');
+const textColorMuted = getCssVariableValue('--color-muted-color');
+const borderColor = getCssVariableValue('--color-standard-border-color');
 
 @Component({
   selector: 'joshies-betting-dashboard-page',
-  standalone: true,
   imports: [
     CardComponent,
     PageHeaderComponent,
@@ -62,63 +60,57 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
     @if (pageLoaded()) {
       <!-- Stats -->
-      <div class="grid">
+      <div class="grid grid-rows-1 grid-cols-3 gap-4 mb-4">
         @if (stats(); as stats) {
           <!-- Resolved Bets -->
-          <div class="col pb-3">
-            <div class="h-full surface-card p-2 border-round text-center">
-              <p class="text-sm m-0">Settled Bets</p>
-              @if (stats.numResolvedBets === null) {
-                <p class="text-2xl my-2">—</p>
-              } @else {
-                <p
-                  class="text-2xl my-2 font-semibold"
-                  [ngClass]="stats.numResolvedBets | numberSignColorClass"
-                >
-                  {{ stats.numResolvedBets | number }}
-                </p>
-              }
-            </div>
+          <div class="bg-neutral-0 p-2 rounded-border text-center">
+            <p class="text-sm">Settled Bets</p>
+            @if (stats.numResolvedBets === null) {
+              <p class="text-2xl my-1">—</p>
+            } @else {
+              <p
+                class="text-2xl my-1 font-semibold"
+                [ngClass]="stats.numResolvedBets | numberSignColorClass"
+              >
+                {{ stats.numResolvedBets | number }}
+              </p>
+            }
           </div>
 
           <!-- Total Profit -->
-          <div class="col pb-3">
-            <div class="h-full surface-card p-2 border-round text-center">
-              <p class="text-sm m-0">Total Profit</p>
-              @if (stats.totalProfit === null) {
-                <p class="text-2xl my-2">—</p>
-              } @else {
-                <p
-                  class="text-2xl my-2"
-                  [innerHTML]="stats.totalProfit | numberWithSignAndColor"
-                ></p>
-              }
-            </div>
+          <div class="bg-neutral-0 p-2 rounded-border text-center">
+            <p class="text-sm">Total Profit</p>
+            @if (stats.totalProfit === null) {
+              <p class="text-2xl my-1">—</p>
+            } @else {
+              <p
+                class="text-2xl my-1"
+                [innerHTML]="stats.totalProfit | numberWithSignAndColor"
+              ></p>
+            }
           </div>
 
           <!-- Overall Win % -->
-          <div class="col pb-3">
-            <div class="h-full surface-card p-2 border-round text-center">
-              <p class="text-sm m-0">Overall Win %</p>
-              @if (stats.totalProfit === null) {
-                <p class="text-2xl my-2">—</p>
-              } @else {
-                <p
-                  class="text-2xl my-2 font-semibold"
-                  [ngClass]="
-                    stats.overallWinPercentage ?? 0 | numberSignColorClass
-                  "
-                >
-                  {{ stats.overallWinPercentage | number: '1.0-2' }}%
-                </p>
-              }
-            </div>
+          <div class="bg-neutral-0 p-2 rounded-border text-center">
+            <p class="text-sm">Overall Win %</p>
+            @if (stats.totalProfit === null) {
+              <p class="text-2xl my-1">—</p>
+            } @else {
+              <p
+                class="text-2xl my-1 font-semibold"
+                [ngClass]="
+                  stats.overallWinPercentage ?? 0 | numberSignColorClass
+                "
+              >
+                {{ stats.overallWinPercentage | number: '1.0-2' }}%
+              </p>
+            }
           </div>
         }
       </div>
 
       <!-- Chart -->
-      <div class="surface-card border-round p-2 pb-0 mb-3">
+      <div class="bg-neutral-0 rounded-border p-2 pb-0 mb-4">
         <p-chart
           type="bar"
           [options]="chartOptions"
@@ -135,7 +127,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
               padded
               [headerText]="betRequestsHeaderText()"
               headerIconClass="pi pi-info-circle text-primary mr-2"
-              class="mb-4"
+              class="mb-6"
             >
               <!-- Always show 1st bet request -->
               <joshies-bet-request
@@ -150,34 +142,38 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
               @if (showViewAllBetRequestsAccordion()) {
                 <p-accordion>
-                  <p-accordionTab
-                    header="All Requests"
-                    headerStyleClass="px-0 pb-2 bg-none"
-                    contentStyleClass="p-0 mt-3 bg-none"
-                  >
-                    @for (
-                      bet of betRequests;
-                      track bet.id;
-                      let first = $first;
-                      let last = $last
-                    ) {
-                      @if (!first) {
-                        <joshies-bet-request
-                          [bet]="bet"
-                          [userPlayerId]="userPlayerId"
-                          [submitting]="submitting()"
-                          [acceptingBetId]="acceptingBetId()"
-                          [rejectingBetId]="rejectingBetId()"
-                          (accept)="confirmAcceptBet(bet, userPlayerId)"
-                          (reject)="confirmRejectBet(bet, userPlayerId)"
-                        />
+                  <p-accordion-panel value="0">
+                    <p-accordion-header class="pb-2">
+                      All Requests
+                    </p-accordion-header>
 
-                        @if (!last) {
-                          <p-divider />
+                    <p-accordion-content>
+                      @for (
+                        bet of betRequests;
+                        track bet.id;
+                        let first = $first;
+                        let last = $last
+                      ) {
+                        @if (!first) {
+                          <joshies-bet-request
+                            class="block mt-4"
+                            [class.-mb-4]="!last"
+                            [bet]="bet"
+                            [userPlayerId]="userPlayerId"
+                            [submitting]="submitting()"
+                            [acceptingBetId]="acceptingBetId()"
+                            [rejectingBetId]="rejectingBetId()"
+                            (accept)="confirmAcceptBet(bet, userPlayerId)"
+                            (reject)="confirmRejectBet(bet, userPlayerId)"
+                          />
+
+                          @if (!last) {
+                            <p-divider />
+                          }
                         }
                       }
-                    }
-                  </p-accordionTab>
+                    </p-accordion-content>
+                  </p-accordion-panel>
                 </p-accordion>
               }
             </joshies-card>
@@ -186,10 +182,10 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
         @if (sessionIsInProgress()) {
           <!-- Pace Bet -->
-          <h3 class="my-2">
+          <h3 class="text-lg font-bold my-2">
             <i class="pi pi-plus text-primary mr-2"></i> Place Bet For
           </h3>
-          <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-3 px-3">
+          <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4">
             @for (
               betTypeButtonModel of betTypeButtonModels;
               track betTypeButtonModel.label
@@ -197,7 +193,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
               <a
                 [routerLink]="betTypeButtonModel.routerLink"
                 [queryParams]="betTypeButtonModel.queryParams"
-                class="flex flex-column flex-shrink-0 gap-1 text-xs h-4rem w-6rem p-2 justify-content-center text-center align-items-center no-underline p-button p-button-outlined"
+                class="flex flex-col shrink-0 gap-1 text-xs h-16 w-24 p-2 justify-center text-center items-center p-button p-button-outlined"
                 pRipple
               >
                 <i [class]="betTypeButtonModel.iconClass"></i>
@@ -230,34 +226,38 @@ const surfaceBorder = getCssVariableValue('--surface-border');
 
               @if (showViewAllBetsAwaitingAcceptanceAccordion()) {
                 <p-accordion>
-                  <p-accordionTab
-                    header="All Bets Awaiting Acceptance"
-                    headerStyleClass="px-0 pb-2 bg-none"
-                    contentStyleClass="p-0 mt-3 bg-none"
-                  >
-                    @for (
-                      bet of betsAwaitingAcceptance;
-                      track bet.id;
-                      let first = $first;
-                      let last = $last
-                    ) {
-                      @if (!first) {
-                        <joshies-bet-awaiting-acceptance
-                          [bet]="bet"
-                          [userPlayerId]="userPlayerId"
-                          [submitting]="submitting()"
-                          [cancelingBetId]="cancelingBetId()"
-                          (cancelBet)="
-                            confirmCancelBetByRequester(bet, userPlayerId)
-                          "
-                        />
+                  <p-accordion-panel value="0">
+                    <p-accordion-header class="pb-2">
+                      All Bets Awaiting Acceptance
+                    </p-accordion-header>
 
-                        @if (!last) {
-                          <p-divider />
+                    <p-accordion-content>
+                      @for (
+                        bet of betsAwaitingAcceptance;
+                        track bet.id;
+                        let first = $first;
+                        let last = $last
+                      ) {
+                        @if (!first) {
+                          <joshies-bet-awaiting-acceptance
+                            class="block mt-4"
+                            [class.-mb-4]="!last"
+                            [bet]="bet"
+                            [userPlayerId]="userPlayerId"
+                            [submitting]="submitting()"
+                            [cancelingBetId]="cancelingBetId()"
+                            (cancelBet)="
+                              confirmCancelBetByRequester(bet, userPlayerId)
+                            "
+                          />
+
+                          @if (!last) {
+                            <p-divider />
+                          }
                         }
                       }
-                    }
-                  </p-accordionTab>
+                    </p-accordion-content>
+                  </p-accordion-panel>
                 </p-accordion>
               }
             </joshies-card>
@@ -277,32 +277,39 @@ const surfaceBorder = getCssVariableValue('--surface-border');
                 [userPlayerId]="userPlayerId"
               />
             } @else {
-              <p class="m-0 font-italic text-600">No open bets</p>
+              <p class="m-0 italic text-neutral-600">No open bets</p>
             }
           }
 
           @if (showViewActiveBetsAccordion()) {
             <p-accordion>
-              <p-accordionTab
-                header="All Open Bets"
-                headerStyleClass="px-0 pb-2 bg-none"
-                contentStyleClass="p-0 mt-3 bg-none"
-              >
-                @for (
-                  bet of activeBets();
-                  track bet.id;
-                  let first = $first;
-                  let last = $last
-                ) {
-                  @if (!first) {
-                    <joshies-bet [bet]="bet" [userPlayerId]="userPlayerId" />
+              <p-accordion-panel value="0">
+                <p-accordion-header class="pb-2">
+                  All Open Bets
+                </p-accordion-header>
 
-                    @if (!last) {
-                      <p-divider />
+                <p-accordion-content>
+                  @for (
+                    bet of activeBets();
+                    track bet.id;
+                    let first = $first;
+                    let last = $last
+                  ) {
+                    @if (!first) {
+                      <joshies-bet
+                        class="block mt-4"
+                        [class.-mb-4]="!last"
+                        [bet]="bet"
+                        [userPlayerId]="userPlayerId"
+                      />
+
+                      @if (!last) {
+                        <p-divider />
+                      }
                     }
                   }
-                }
-              </p-accordionTab>
+                </p-accordion-content>
+              </p-accordion-panel>
             </p-accordion>
           }
         </joshies-card>
@@ -320,7 +327,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
               <p-divider />
             }
           } @empty {
-            <p class="m-0 font-italic text-600">No settled bets</p>
+            <p class="m-0 italic text-neutral-600">No settled bets</p>
           }
 
           @if (showViewAllResolvedBetsLink()) {
@@ -339,45 +346,39 @@ const surfaceBorder = getCssVariableValue('--surface-border');
       }
     } @else {
       <!-- Stats -->
-      <div class="grid">
-        <p-skeleton class="col" height="5rem" />
-        <p-skeleton class="col" height="5rem" />
-        <p-skeleton class="col" height="5rem" />
+      <div class="grid grid-rows-1 grid-cols-3 gap-4 mb-4">
+        <p-skeleton height="4.75rem" />
+        <p-skeleton height="4.75rem" />
+        <p-skeleton height="4.75rem" />
       </div>
 
       <!-- Chart -->
-      <div class="h-11rem py-1">
-        <p-skeleton height="100%" />
-      </div>
+      <p-skeleton height="10.5rem" />
 
       <!-- Pace Bet -->
-      <div class="flex gap-2 mt-3 mb-2">
-        <p-skeleton
-          height="1.25rem"
-          width="1.25rem"
-          styleClass="border-circle"
-        />
-        <p-skeleton height="1.25rem" width="7rem" />
-      </div>
-      <div class="flex gap-2 overflow-x-hidden -mx-3 px-3">
-        @for (
-          betTypeButtonModel of betTypeButtonModels;
-          track betTypeButtonModel.label
-        ) {
-          <p-skeleton
-            [routerLink]="betTypeButtonModel.routerLink"
-            height="4rem"
-            width="6rem"
-          />
-        }
-      </div>
-
-      <!-- Open Bets -->
       <div class="flex gap-2 mt-4 mb-2">
         <p-skeleton
           height="1.25rem"
           width="1.25rem"
-          styleClass="border-circle"
+          styleClass="rounded-full"
+        />
+        <p-skeleton height="1.25rem" width="7rem" />
+      </div>
+      <div class="flex gap-2 overflow-x-hidden -mx-4 px-4">
+        @for (
+          betTypeButtonModel of betTypeButtonModels;
+          track betTypeButtonModel.label
+        ) {
+          <p-skeleton height="4rem" width="6rem" />
+        }
+      </div>
+
+      <!-- Open Bets -->
+      <div class="flex gap-2 mt-6 mb-2">
+        <p-skeleton
+          height="1.25rem"
+          width="1.25rem"
+          styleClass="rounded-full"
         />
         <p-skeleton height="1.25rem" width="7.5rem" />
       </div>
@@ -385,7 +386,7 @@ const surfaceBorder = getCssVariableValue('--surface-border');
     }
   `,
   host: {
-    class: 'block pb-6',
+    class: 'block pb-12',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -484,18 +485,18 @@ export default class BettingDashboardPageComponent {
     scales: {
       x: {
         ticks: {
-          color: textColorSecondary,
+          color: textColorMuted,
         },
         grid: {
-          color: surfaceBorder,
+          color: borderColor,
         },
       },
       y: {
         ticks: {
-          color: textColorSecondary,
+          color: textColorMuted,
         },
         grid: {
-          color: surfaceBorder,
+          color: borderColor,
         },
       },
     },

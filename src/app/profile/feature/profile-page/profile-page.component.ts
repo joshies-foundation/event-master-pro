@@ -20,7 +20,6 @@ import { SquidwardService } from '../../../shared/data-access/squidward.service'
 
 @Component({
   selector: 'joshies-profile-page',
-  standalone: true,
   templateUrl: './profile-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

@@ -4,12 +4,11 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'joshies-header-link',
-  standalone: true,
   imports: [RouterLink, NgClass],
   template: `
     <a
       [routerLink]="routerLink()"
-      class="text-primary no-underline -ml-2 py-2"
+      class="text-primary -ml-2 py-2"
       [ngClass]="{
         '-ml-2 pr-2': chevronDirection() === 'left',
         '-mr-2 pl-2': chevronDirection() === 'right',

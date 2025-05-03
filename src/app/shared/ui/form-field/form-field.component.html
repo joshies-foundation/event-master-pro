@@ -3,8 +3,8 @@
     class="flex gap-1"
     [ngClass]="
       field.type === FormFieldType.Checkbox
-        ? 'flex-row-reverse justify-content-end'
-        : 'flex-column'
+        ? 'flex-row-reverse justify-end'
+        : 'flex-col'
     "
   >
     @if (field.type !== FormFieldType.Submit) {
@@ -47,7 +47,7 @@
         />
       }
       @case (FormFieldType.Dropdown) {
-        <p-dropdown
+        <p-select
           [inputId]="field.name"
           [name]="field.name"
           [required]="field.required ?? false"
@@ -89,7 +89,7 @@
             },
           }"
         >
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <span class="ql-formats">
               <select class="ql-header">
                 <option value="1">Heading</option>
@@ -199,7 +199,7 @@
       @case (FormFieldType.Image) {
         @if (uploading()) {
           <p-skeleton
-            styleClass="border-round"
+            styleClass="rounded-border"
             class="mx-auto"
             [width]="field.previewWidth + 'px'"
             [height]="field.previewHeight + 'px'"
@@ -210,13 +210,13 @@
               #image
               [alt]="field.altText"
               [ngSrc]="$any(imageUrl)"
-              class="border-round mx-auto max-w-full surface-200"
+              class="rounded-border mx-auto max-w-full bg-surface-200"
               [width]="field.previewWidth"
               [height]="field.previewHeight"
             />
           } @else {
             <div
-              class="border-round mx-auto max-w-full surface-100 pi pi-question text-6xl text-center text-300 flex flex-column justify-content-center"
+              class="rounded-border mx-auto max-w-full bg-neutral-100 pi pi-question text-6xl text-center text-neutral-300 flex flex-col justify-center"
               [style]="{
                 width: field.previewWidth + 'px',
                 height: field.previewHeight + 'px',

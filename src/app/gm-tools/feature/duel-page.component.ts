@@ -26,9 +26,8 @@ import {
   map,
   switchMap,
 } from 'rxjs';
-import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import {
   DuelModel,
   DuelSpaceEffectData,
@@ -48,6 +47,7 @@ import { DuelService } from '../../shared/data-access/duel.service';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { BetService } from '../../shared/data-access/bet.service';
+import { InputNumber } from 'primeng/inputnumber';
 
 interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
   scoreChange: number;
@@ -55,23 +55,21 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
 @Component({
   selector: 'joshies-duel-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     RouterLink,
     AvatarModule,
     SkeletonModule,
-    NgOptimizedImage,
-    DropdownModule,
+    Select,
     FormsModule,
     ButtonModule,
     PaginatorModule,
-    TitleCasePipe,
     TableModule,
     StronglyTypedTableRowDirective,
     NumberWithSignAndColorPipe,
     SelectButtonModule,
+    InputNumber,
   ],
   template: `
     <joshies-page-header headerText="Duel" alwaysSmall>
@@ -84,13 +82,11 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
     @if (viewModel(); as vm) {
       @if (vm.duel) {
-        <div class="flex-grow-1 flex flex-column justify-content-between">
+        <div class="grow flex flex-col justify-between">
           <div>
             <!-- Players -->
-            <div
-              class="mt-5 flex align-items-center justify-content-center gap-3"
-            >
-              <div class="flex flex-column align-items-center gap-1 text-500">
+            <div class="mt-8 flex items-center justify-center gap-4">
+              <div class="flex flex-col items-center gap-1 text-neutral-500">
                 <p-avatar
                   size="xlarge"
                   shape="circle"
@@ -99,10 +95,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 {{ vm.duel.challenger?.display_name }}
               </div>
 
-              <span class="mb-4">vs.</span>
+              <span class="mb-6">vs.</span>
 
               @if (vm.duel.opponent; as opponent) {
-                <div class="flex flex-column align-items-center gap-1 text-500">
+                <div class="flex flex-col items-center gap-1 text-neutral-500">
                   <p-avatar
                     size="xlarge"
                     shape="circle"
@@ -111,16 +107,18 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   {{ opponent.display_name }}
                 </div>
               } @else {
-                <i class="pi pi-question-circle text-6xl text-300 mb-4"></i>
+                <i
+                  class="pi pi-question-circle text-6xl text-neutral-300 mb-6"
+                ></i>
               }
             </div>
 
             @switch (vm.duel.status) {
               @case (DuelStatus.OpponentNotSelected) {
                 <!-- Select Game -->
-                <label class="mt-5 flex flex-column gap-2">
+                <label class="mt-8 flex flex-col gap-2">
                   Select Opponent
-                  <p-dropdown
+                  <p-select
                     [options]="vm.allPlayersExceptChallenger"
                     optionLabel="display_name"
                     optionValue="player_id"
@@ -134,7 +132,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   <!-- "Lock in Game" Button -->
                   <p-button
                     label="Lock in Opponent"
-                    styleClass="mt-3 w-full"
+                    styleClass="mt-4 w-full"
                     [disabled]="backendActionInProgress()"
                     [loading]="selectingOpponent()"
                     (onClick)="
@@ -149,7 +147,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (DuelStatus.WagerNotSelected) {
                 <!-- Select Wager -->
-                <label class="mt-5 flex flex-column gap-2">
+                <label class="mt-8 flex flex-col gap-2">
                   Select Wager
 
                   <p-inputNumber
@@ -171,7 +169,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 <!-- "Lock in Wager" Button -->
                 <p-button
                   label="Lock in Wager"
-                  styleClass="mt-3 w-full"
+                  styleClass="mt-4 w-full"
                   [disabled]="backendActionInProgress()"
                   [loading]="selectingWagerPercentage()"
                   (onClick)="
@@ -183,7 +181,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 />
               }
               @case (DuelStatus.GameNotSelected) {
-                <p class="mt-5 text-500">
+                <p class="mb-4 mt-8 text-neutral-500">
                   Wager:
                   <span class="font-bold">
                     {{ vm.duel.wager_percentage }}%
@@ -192,9 +190,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 </p>
 
                 <!-- Select Game -->
-                <label class="mt-5 flex flex-column gap-2">
+                <label class="mt-8 flex flex-col gap-2">
                   Select Game
-                  <p-dropdown
+                  <p-select
                     [options]="gameOptions()"
                     styleClass="w-full"
                     [(ngModel)]="selectedGame"
@@ -206,7 +204,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   <!-- "Lock in Game" Button -->
                   <p-button
                     label="Lock in Game (Opens Betting)"
-                    styleClass="mt-3 w-full"
+                    styleClass="mt-4 w-full"
                     [disabled]="backendActionInProgress()"
                     [loading]="selectingGame()"
                     (onClick)="confirmSelectGame(vm.duel.id, selectedGame)"
@@ -214,9 +212,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 }
               }
               @case (DuelStatus.WaitingToBegin) {
-                <h2 class="mt-5 mb-2">{{ vm.duel.game_name }}</h2>
+                <h2 class="font-bold mt-8 mb-2">{{ vm.duel.game_name }}</h2>
 
-                <p class="mt-0 text-500">
+                <p class="mb-4 text-neutral-500">
                   Wager:
                   <span class="font-bold">
                     {{ vm.duel.wager_percentage }}%
@@ -234,9 +232,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 />
               }
               @case (DuelStatus.InProgress) {
-                <h2 class="mt-5 mb-2">{{ vm.duel.game_name }}</h2>
+                <h2 class="font-bold mt-8 mb-2">{{ vm.duel.game_name }}</h2>
 
-                <p class="mt-0 text-500">
+                <p class="mb-4 text-neutral-500">
                   Wager:
                   <span class="font-bold">
                     {{ vm.duel.wager_percentage }}%
@@ -244,7 +242,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   of the loser's points
                 </p>
 
-                <label class="flex align-items-center gap-3 mt-5 mb-4">
+                <label class="flex items-center gap-4 mt-8 mb-6">
                   Winner:
                   <p-selectButton
                     [options]="winnerOptions()"
@@ -256,7 +254,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
                 @if (playersWithScoreChanges(); as playersWithScoreChanges) {
                   <p-table [value]="playersWithScoreChanges">
-                    <ng-template pTemplate="header">
+                    <ng-template #header>
                       <tr>
                         <th>Player</th>
                         <th class="text-right">Current Score</th>
@@ -264,13 +262,13 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       </tr>
                     </ng-template>
                     <ng-template
-                      pTemplate="body"
+                      #body
                       let-player
                       [joshiesStronglyTypedTableRow]="playersWithScoreChanges"
                     >
                       <tr>
                         <td>
-                          <div class="flex align-items-center gap-2">
+                          <div class="flex items-center gap-2">
                             <p-avatar
                               [image]="player.avatar_url"
                               shape="circle"
@@ -291,7 +289,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
                   <p-button
                     label="Submit Results"
-                    styleClass="mt-5 w-full"
+                    styleClass="mt-8 w-full"
                     [disabled]="backendActionInProgress()"
                     [loading]="submittingResults()"
                     (onClick)="
@@ -314,7 +312,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               [text]="true"
               severity="danger"
               label="Cancel this Duel"
-              styleClass="mt-6 w-full"
+              styleClass="mt-12 w-full"
               [disabled]="backendActionInProgress()"
               [loading]="cancelingDuel()"
               (onClick)="
@@ -327,17 +325,17 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
           }
         </div>
       } @else {
-        <p class="mt-5">
+        <p class="mb-4 mt-8">
           No special space event found with ID
           <strong>{{ vm.duelId }}</strong>
         </p>
       }
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-5" />
+      <p-skeleton height="30rem" styleClass="mt-8" />
     }
   `,
   host: {
-    class: 'flex flex-column h-full',
+    class: 'flex flex-col h-full',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

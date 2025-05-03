@@ -27,7 +27,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-new-space-type-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -49,27 +48,27 @@ import { toSignal } from '@angular/core/rxjs-interop';
     <!-- Visual Preview -->
     <joshies-gameboard-space
       [model]="gameboardSpaceFormValue()"
-      class="mt-5 mb-3 mx-auto"
+      class="mt-8 mb-4 mx-auto"
     />
 
     <!-- Form -->
     <joshies-form [form]="form" />
 
     <!-- Confirm Dialog -->
-    <p-confirmDialog styleClass="mx-3" [key]="confirmDialogKey">
-      <ng-template pTemplate="message">
+    <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
+      <ng-template #message>
         <div class="block">
-          <p class="mt-0 mb-4">
+          <p class="mb-6">
             Are you sure you want to create the
             <strong>{{ gameboardSpaceName() }} Space</strong>?
           </p>
 
-          <div class="flex gap-3">
+          <div class="flex gap-4">
             <joshies-gameboard-space [model]="gameboardSpaceFormValue()" />
             <div>
-              <h4 class="mt-0 mb-2">{{ gameboardSpaceName() }} Space</h4>
+              <h4 class="font-bold mb-2">{{ gameboardSpaceName() }} Space</h4>
               <div
-                class="text-sm text-600"
+                class="text-sm text-neutral-600"
                 [innerHtml]="
                   gameboardSpacePreviewData() | gameboardSpaceDescription
                 "

@@ -154,7 +154,7 @@ export function specialSpaceEventTemplateFormFactory(
         type: FormFieldType.Text,
         name: 'points-label-singular',
         label: 'Points Label Singular',
-        placeholder: 'successful flip',
+        placeholder: 'successful animate-flip',
         required:
           specialSpaceEventType() ===
           SpecialSpaceEventType.PlayerGainsPointsBasedOnGameScore,

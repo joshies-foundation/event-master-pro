@@ -36,8 +36,6 @@ export function confirmBackendAction(config: ConfirmBackendActionConfig): void {
     icon:
       config.icon ??
       (config.confirmDialogKey ? 'none' : 'pi pi-exclamation-triangle'),
-    acceptIcon: 'none',
-    rejectIcon: 'none',
     rejectButtonStyleClass: 'p-button-text',
     key: config.confirmDialogKey,
     accept: async () => {

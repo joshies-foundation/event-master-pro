@@ -14,14 +14,9 @@ import {
   RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
-import { MovesWithSpaceIdPipe } from '../ui/moves-with-space-id.pipe';
 import { AvatarModule } from 'primeng/avatar';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
-import { SpacesWithEffectPipe } from '../ui/spaces-with-effect.pipe';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
-import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -35,20 +30,13 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
 
 @Component({
   selector: 'joshies-resolve-chaos-space-events-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     ButtonModule,
-    MovesWithSpaceIdPipe,
     AvatarModule,
-    DecimalPipe,
-    SpacesWithEffectPipe,
     SkeletonModule,
     SelectButtonModule,
-    LoseOrGainPipe,
-    TitleCasePipe,
-    NumberWithSignAndColorPipe,
     FormsModule,
     TableModule,
     StronglyTypedTableRowDirective,
@@ -65,11 +53,11 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
     </joshies-page-header>
 
     @if (chaosSpaceEvents(); as chaosSpaceEvents) {
-      <p class="mt-5">Chaos Space events for turn {{ roundNumber() }}</p>
+      <p class="mt-8">Chaos Space events for turn {{ roundNumber() }}</p>
 
       @if (chaosSpaceEvents.length) {
         <p-table [value]="chaosSpaceEvents" [rowTrackBy]="trackById">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th class="pr-0">Player</th>
               <th>Event</th>
@@ -79,13 +67,13 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
           </ng-template>
 
           <ng-template
-            pTemplate="body"
+            #body
             let-chaosSpaceEvent
             [joshiesStronglyTypedTableRow]="chaosSpaceEvents"
           >
             <tr [routerLink]="[chaosSpaceEvent.id]">
               <td class="pr-0">
-                <div class="flex align-items-center">
+                <div class="flex items-center">
                   <p-avatar
                     [image]="chaosSpaceEvent.player?.avatar_url!"
                     shape="circle"
@@ -101,13 +89,13 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
                 <joshies-status-tag [status]="chaosSpaceEvent.status" />
               </td>
               <td class="px-1">
-                <i class="pi pi-angle-right text-400"></i>
+                <i class="pi pi-angle-right text-neutral-400"></i>
               </td>
             </tr>
           </ng-template>
         </p-table>
       } @else {
-        <p class="my-6 py-6 text-center text-500 font-italic">
+        <p class="my-12 py-12 text-center text-neutral-500 italic">
           No chaos space events for this turn
         </p>
       }
@@ -115,7 +103,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
       @if (allChaosSpaceEventsAreResolved()) {
         <p-button
           label="Proceed to Event Phase"
-          styleClass="w-full mt-3"
+          styleClass="w-full mt-4"
           (onClick)="proceedToEventPhase()"
         />
       }

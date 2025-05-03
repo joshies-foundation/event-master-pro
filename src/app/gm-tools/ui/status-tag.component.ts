@@ -17,7 +17,6 @@ type Status = SpaceEventStatus | DuelStatus;
 
 @Component({
   selector: 'joshies-status-tag',
-  standalone: true,
   imports: [TagModule, SnakeCaseToTitleCasePipe],
   template: `
     <p-tag
@@ -57,7 +56,7 @@ export class StatusTagComponent {
       (
         ({
           [SpaceEventStatus.EventNotSelected]: 'secondary',
-          [SpaceEventStatus.WaitingToBegin]: 'warning',
+          [SpaceEventStatus.WaitingToBegin]: 'warn',
           [SpaceEventStatus.InProgress]: 'info',
           [SpaceEventStatus.Finished]: 'success',
           [SpaceEventStatus.Canceled]: 'danger',

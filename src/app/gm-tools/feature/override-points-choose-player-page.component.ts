@@ -12,7 +12,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
 @Component({
   selector: 'joshies-override-points-choose-player-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -33,7 +32,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       />
     </joshies-page-header>
 
-    <p class="mt-5">Whose points do you want to change?</p>
+    <p class="mb-4 mt-8">Whose points do you want to change?</p>
 
     @if (players(); as players) {
       <p-table
@@ -44,32 +43,30 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th>Player</th>
             <th class="text-right">Score</th>
             <th></th>
           </tr>
         </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="players"
-          let-player
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="players" let-player>
           <tr>
             <!-- Player -->
             <td>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 <div>
-                  <p class="m-0">{{ player.display_name }}</p>
-                  <p class="m-0 text-500 text-xs">{{ player.real_name }}</p>
+                  <p>{{ player.display_name }}</p>
+                  <p class="m-0 text-neutral-500 text-xs">
+                    {{ player.real_name }}
+                  </p>
                 </div>
               </div>
             </td>

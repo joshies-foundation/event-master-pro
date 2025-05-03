@@ -72,7 +72,7 @@ export function gameboardSpaceFormFactory(
   const gameboardSpaceFormGroup: ModelFormGroup<GameboardSpaceTypeForm> =
     formBuilder.nonNullable.group({
       name: ['', Validators.required],
-      color: ['var(--gray-600)', Validators.required],
+      color: ['var(--color-gray-600)', Validators.required],
       icon_class: 'pi pi-bolt',
       effect: [GameboardSpaceEffect.GainPoints, Validators.required],
       pointsGained: [0, Validators.required],
@@ -120,43 +120,43 @@ export function gameboardSpaceFormFactory(
         options: [
           {
             label: 'Red',
-            value: 'var(--red-600)',
+            value: 'var(--color-red-600)',
           },
           {
             label: 'Orange',
-            value: 'var(--orange-600)',
+            value: 'var(--color-orange-600)',
           },
           {
             label: 'Yellow',
-            value: 'var(--yellow-600)',
+            value: 'var(--color-yellow-600)',
           },
           {
             label: 'Green',
-            value: 'var(--green-600)',
+            value: 'var(--color-green-600)',
           },
           {
             label: 'Blue',
-            value: 'var(--blue-500)',
+            value: 'var(--color-blue-500)',
           },
           {
             label: 'Purple',
-            value: 'var(--purple-500)',
+            value: 'var(--color-purple-500)',
           },
           {
             label: 'Pink',
-            value: 'var(--pink-500)',
+            value: 'var(--color-pink-500)',
           },
           {
             label: 'Teal',
-            value: 'var(--teal-500)',
+            value: 'var(--color-teal-500)',
           },
           {
             label: 'Brown',
-            value: 'var(--orange-900)',
+            value: 'var(--color-orange-900)',
           },
           {
             label: 'Gray',
-            value: 'var(--gray-600)',
+            value: 'var(--color-gray-600)',
           },
           {
             label: 'Black',

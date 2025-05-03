@@ -1,4 +1,4 @@
-import { CommonModule, NgClass, NgOptimizedImage } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -9,31 +9,25 @@ import { ImageModule } from 'primeng/image';
 
 @Component({
   selector: 'joshies-rankings-table',
-  standalone: true,
   imports: [
-    CommonModule,
     TableModule,
     NgClass,
     FormsModule,
-    NgOptimizedImage,
     StronglyTypedTableRowDirective,
     ImageModule,
+    DecimalPipe,
   ],
   template: `
     <!-- Rankings Table -->
     <p-table [value]="players()" [rowTrackBy]="trackByUserId">
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr>
           <th>Rank</th>
           <th>Player</th>
           <th class="text-right">Score</th>
         </tr>
       </ng-template>
-      <ng-template
-        pTemplate="body"
-        [joshiesStronglyTypedTableRow]="players()"
-        let-player
-      >
+      <ng-template #body [joshiesStronglyTypedTableRow]="players()" let-player>
         <tr
           [ngClass]="{
             'font-semibold bg-highlight': player.user_id === userId(),
@@ -47,13 +41,13 @@ import { ImageModule } from 'primeng/image';
             }
           </td>
           <td>
-            <div class="flex align-items-center gap-2 -py-2">
+            <div class="flex items-center gap-2 -py-2">
               <p-image
                 [src]="player.avatar_url"
                 alt=""
                 width="32"
                 height="32"
-                styleClass="surface-100 border-circle overflow-hidden"
+                styleClass="bg-neutral-100 rounded-full overflow-hidden"
                 [preview]="true"
               />
               {{ player.display_name }}

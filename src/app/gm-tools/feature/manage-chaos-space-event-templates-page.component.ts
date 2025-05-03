@@ -2,26 +2,21 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { RouterLink } from '@angular/router';
-import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
-import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { SkeletonModule } from 'primeng/skeleton';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-manage-chaos-space-event-templates-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     RouterLink,
-    GameboardSpaceComponent,
-    GameboardSpaceDescriptionPipe,
     SkeletonModule,
   ],
   template: `
     <joshies-page-header headerText="Chaos Space Events" alwaysSmall>
-      <div class="w-full flex justify-content-between">
+      <div class="w-full flex justify-between">
         <joshies-header-link
           text="GM Tools"
           routerLink=".."
@@ -40,28 +35,30 @@ import { toSignal } from '@angular/core/rxjs-interop';
         let first = $first
       ) {
         <a
-          class="w-full flex align-items-center border-bottom-1 border-100 p-3 text-color no-underline"
+          class="w-full flex items-center border-b border-neutral-100 p-4 no-underline"
           [class.mt-5]="first"
           [routerLink]="[eventTemplate.id]"
         >
-          <div class="flex-grow-1">
-            <h4 class="mt-0 mb-2">{{ eventTemplate.name }}</h4>
-            <p class="m-0 text-sm text-600">{{ eventTemplate.description }}</p>
+          <div class="grow">
+            <h4 class="font-bold mb-2">{{ eventTemplate.name }}</h4>
+            <p class="m-0 text-sm text-neutral-600">
+              {{ eventTemplate.description }}
+            </p>
           </div>
-          <i class="pi pi-angle-right ml-2 text-300"></i>
+          <i class="pi pi-angle-right ml-2 text-neutral-300"></i>
         </a>
       } @empty {
-        <p class="mt-6 pt-6 text-center text-500 font-italic">
+        <p class="mt-12 pt-12 text-center text-neutral-500 italic">
           Tap <span class="font-bold text-primary">+</span> to add a Chaos Space
           event
         </p>
       }
     } @else if (chaosSpaceEventTemplates() === null) {
-      <p class="mt-6 pt-6 text-center text-500 font-italic">
+      <p class="mt-12 pt-12 text-center text-neutral-500 italic">
         No active session
       </p>
     } @else {
-      <p-skeleton height="5rem" styleClass="mt-5 mb-2" />
+      <p-skeleton height="5rem" styleClass="mt-8 mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />
       <p-skeleton height="5rem" styleClass="mb-2" />

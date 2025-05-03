@@ -6,6 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class NumberSignColorClassPipe implements PipeTransform {
   transform(n: number): string {
-    return n > 0 ? 'text-green ' : n < 0 ? 'text-red ' : 'text-500 ';
+    return n > 0
+      ? 'text-success-foreground '
+      : n < 0
+        ? 'text-danger-foreground '
+        : 'text-neutral-500 ';
   }
 }

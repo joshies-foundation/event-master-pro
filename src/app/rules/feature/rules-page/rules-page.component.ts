@@ -20,7 +20,6 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FooterService } from '../../../shared/data-access/footer.service';
-import { NgClass, NgOptimizedImage } from '@angular/common';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 import { EventService } from '../../../shared/data-access/event.service';
@@ -40,10 +39,9 @@ import { ImageModule } from 'primeng/image';
 
 @Component({
   selector: 'joshies-rules-page',
-  standalone: true,
   templateUrl: './rules-page.component.html',
   host: {
-    class: 'block pb-6',
+    class: 'block pb-12',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -53,10 +51,8 @@ import { ImageModule } from 'primeng/image';
     FormComponent,
     ButtonModule,
     ConfirmDialogModule,
-    NgClass,
     RouterLink,
     RouterLinkActive,
-    NgOptimizedImage,
     CardComponent,
     GameboardSpaceComponent,
     GameboardSpaceDescriptionPipe,
@@ -143,12 +139,10 @@ export default class RulesPageComponent {
     }),
   );
 
-  private readonly disableFooterEffect = effect(
-    () =>
-      this.editMode()
-        ? this.footerService.enableFooter()
-        : this.footerService.disableFooter(),
-    { allowSignalWrites: true },
+  private readonly disableFooterEffect = effect(() =>
+    this.editMode()
+      ? this.footerService.enableFooter()
+      : this.footerService.disableFooter(),
   );
 
   private readonly scrollToAnchorAfterRulesLoad = effect(() => {
@@ -215,8 +209,6 @@ export default class RulesPageComponent {
         'Are you sure you want close the editor?  Any unsaved changes will be lost.',
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: () => this.exitEditMode(),
     });

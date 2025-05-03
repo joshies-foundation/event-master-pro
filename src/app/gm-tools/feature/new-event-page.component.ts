@@ -24,7 +24,6 @@ import {
 
 @Component({
   selector: 'joshies-new-event-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -42,13 +41,13 @@ import {
     </joshies-page-header>
 
     <!-- Form -->
-    <joshies-form [form]="form" class="block mt-5 mb-8" />
+    <joshies-form [form]="form" class="block mt-8 mb-20" />
 
     <!-- Confirm Dialog -->
-    <p-confirmDialog styleClass="mx-3" [key]="confirmDialogKey">
-      <ng-template pTemplate="message">
+    <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
+      <ng-template #message>
         <div class="block">
-          <p class="mt-0 mb-4">Are you sure you want to create this event?</p>
+          <p class="mb-6">Are you sure you want to create this event?</p>
         </div>
       </ng-template>
     </p-confirmDialog>

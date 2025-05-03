@@ -1,6 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { OverUnderComponent } from '../over-under.component';
 import {
@@ -20,20 +20,19 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-event-bet',
-  standalone: true,
   imports: [
-    DropdownModule,
+    Select,
     FormsModule,
     RadioButtonModule,
     OverUnderComponent,
     TopBottomComponent,
   ],
   template: `
-    <div class="flex flex-column gap-3">
+    <div class="flex flex-col gap-4">
       <!-- Event Dropdown -->
-      <label class="flex flex-column gap-2">
+      <label class="flex flex-col gap-2">
         Event
-        <p-dropdown
+        <p-select
           [options]="openMainEvents()"
           [(ngModel)]="selectedMainEventId"
           optionLabel="name"
@@ -45,42 +44,38 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       </label>
 
       <!-- Subtype Radio Buttons -->
-      <div class="flex flex-wrap gap-3">
-        <div class="flex align-items-center">
-          <label class="ml-2">
-            <p-radioButton
-              name="eventBetSubtype"
-              [value]="BetSubtype.TeamPosition"
-              [(ngModel)]="selectedEventBetSubtype"
-              styleClass="w-full"
-            />
-            Team Position
-          </label>
-        </div>
+      <div class="flex flex-wrap gap-4 px-2">
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="eventBetSubtype"
+            [value]="BetSubtype.TeamPosition"
+            [(ngModel)]="selectedEventBetSubtype"
+            styleClass="w-full"
+          />
+          Team Position
+        </label>
         @if (
           selectedMainEventSignal()?.format ===
           EventFormat.ScoreBasedSingleRound
         ) {
-          <div class="flex align-items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="eventBetSubtype"
-                [value]="BetSubtype.Score"
-                [(ngModel)]="selectedEventBetSubtype"
-                styleClass="w-full"
-              />
-              Score
-            </label>
-          </div>
+          <label class="flex items-center gap-2">
+            <p-radioButton
+              name="eventBetSubtype"
+              [value]="BetSubtype.Score"
+              [(ngModel)]="selectedEventBetSubtype"
+              styleClass="w-full"
+            />
+            Score
+          </label>
         }
       </div>
 
       @switch (selectedEventBetSubtype()) {
         @case (BetSubtype.TeamPosition) {
           <!-- Bet Team Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Team
-            <p-dropdown
+            <p-select
               [options]="eventTeams()"
               [(ngModel)]="selectedEventTeam"
               optionLabel="participantList"
@@ -98,9 +93,9 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
         }
         @case (BetSubtype.Score) {
           <!-- Bet Team Dropdown -->
-          <label class="flex flex-column gap-2">
+          <label class="flex flex-col gap-2">
             Team
-            <p-dropdown
+            <p-select
               [options]="eventTeams()"
               [(ngModel)]="selectedEventTeam"
               optionLabel="participantList"

@@ -14,7 +14,6 @@ import { AuthService } from '../../auth/data-access/auth.service';
 
 @Component({
   selector: 'joshies-current-rankings-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
@@ -36,16 +35,16 @@ import { AuthService } from '../../auth/data-access/auth.service';
         <joshies-rankings-table
           [players]="players"
           [userId]="vm.userId"
-          class="block mt-5 mb-8"
+          class="block mt-8 mb-20"
         />
       } @else {
-        <p class="mt-6 pt-6 text-center text-500 font-italic">
+        <p class="mt-12 pt-12 text-center text-neutral-500 italic">
           No active session
         </p>
       }
     } @else {
       <!-- Loading Skeleton -->
-      <p-skeleton height="25rem" styleClass="mt-5" />
+      <p-skeleton height="25rem" styleClass="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

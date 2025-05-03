@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   inject,
+  Signal,
   signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -22,8 +22,8 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import {
-  LocalStorageRecord,
   getRecordFromLocalStorage,
+  LocalStorageRecord,
   removeRecordFromLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
@@ -32,12 +32,10 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.component';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
-import { ReturnSpaceWithIdIfItsEffectIsPipe } from '../../shared/ui/return-space-with-id-if-its-effect-is.pipe';
 import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 
 @Component({
   selector: 'joshies-review-gameboard-space-entry-page',
-  standalone: true,
   template: ` <joshies-page-header headerText="Review Moves" alwaysSmall>
       <joshies-header-link
         text="Space Entry"
@@ -46,9 +44,9 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
       />
     </joshies-page-header>
     @if (viewModel(); as vm) {
-      <p class="mt-5">
+      <p class="mb-4 mt-8">
         Gameboard moves for turn {{ vm.roundNumber }}
-        <span class="text-500 font-italic">(Draft)</span>
+        <span class="text-neutral-500 italic">(Draft)</span>
       </p>
       <!-- Fixed layout allows indivdual scrolling of cells instead of whole table -->
       <p-table
@@ -59,7 +57,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th>Player</th>
             <th class="text-right">Distance</th>
@@ -67,20 +65,20 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="vm.players!"
           let-player
         >
           <tr>
             <!-- Player -->
             <td>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>
@@ -99,15 +97,15 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
                 player.gameboardSpace!.effect ===
                 GameboardSpaceEffect.GainPointsOrDoActivity
               ) {
-                <p class="text-sm text-500 mt-1 mb-0">
+                <p class="text-sm text-neutral-500 mt-1">
                   {{
                     player.decision === 'points'
                       ? ($any(player.gameboardSpace!.effect_data)
                           ?.pointsGained ?? 0
                           | loseOrGain
                           | titlecase) + ' points'
-                      : $any(player.gameboardSpace!.effect_data)
-                          ?.alternativeActivity ?? 'Do activity'
+                      : ($any(player.gameboardSpace!.effect_data)
+                          ?.alternativeActivity ?? 'Do activity')
                   }}
                 </p>
               }
@@ -118,7 +116,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
       <p-button
         [label]="'Submit Moves for Round ' + vm.roundNumber"
         severity="success"
-        styleClass="mt-4 w-full"
+        styleClass="mt-6 w-full"
         (onClick)="submitPlayerSpaceChanges(roundNumber()!, playerSpaceChanges)"
         [loading]="submittingInProgress()"
       />
@@ -136,7 +134,6 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
     StronglyTypedTableRowDirective,
     GameboardSpaceComponent,
     DecimalPipe,
-    ReturnSpaceWithIdIfItsEffectIsPipe,
     LoseOrGainPipe,
     TitleCasePipe,
   ],

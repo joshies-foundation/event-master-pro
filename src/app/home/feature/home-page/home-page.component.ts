@@ -14,12 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
-import {
-  DatePipe,
-  DecimalPipe,
-  NgClass,
-  NgOptimizedImage,
-} from '@angular/common';
+import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { SessionService } from '../../../shared/data-access/session.service';
 import { RankingsTableComponent } from '../../../shared/ui/rankings-table.component';
 import { AuthService } from '../../../auth/data-access/auth.service';
@@ -70,11 +65,10 @@ interface Countdown {
 
 @Component({
   selector: 'joshies-home-page',
-  standalone: true,
   templateUrl: './home-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'h-full block pb-6',
+    class: 'h-full block pb-12',
   },
   imports: [
     CardComponent,
@@ -84,7 +78,6 @@ interface Countdown {
     FormsModule,
     SkeletonModule,
     DecimalPipe,
-    NgClass,
     NgOptimizedImage,
     RankingsTableComponent,
     DatePipe,

@@ -20,7 +20,6 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'joshies-space-event-table',
-  standalone: true,
   imports: [AvatarModule, ButtonModule, StatusTagComponent, RouterLink],
   template: `
     <table class="w-full">
@@ -28,7 +27,7 @@ import { RouterLink } from '@angular/router';
         @for (spaceEvent of spaceEvents(); track spaceEvent.id) {
           <tr>
             <td class="pt-1 pr-2">
-              <div class="flex align-items-center gap-2 text-sm">
+              <div class="flex items-center gap-2 text-sm">
                 <p-avatar
                   [image]="spaceEvent.player?.avatar_url"
                   shape="circle"
@@ -70,7 +69,7 @@ import { RouterLink } from '@angular/router';
           </tr>
         } @empty {
           <tr>
-            <td class="font-italic text-600">
+            <td class="italic text-neutral-600">
               No {{ spaceType() }} space events for this turn
             </td>
           </tr>

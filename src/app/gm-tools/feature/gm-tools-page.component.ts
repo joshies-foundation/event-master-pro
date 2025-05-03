@@ -18,7 +18,6 @@ import { EventService } from '../../shared/data-access/event.service';
 
 @Component({
   selector: 'joshies-gm-tools-pages-wrapper',
-  standalone: true,
   imports: [CardComponent, PageHeaderComponent],
   template: `
     <joshies-page-header headerText="GM Tools" />
@@ -38,7 +37,7 @@ import { EventService } from '../../shared/data-access/event.service';
     <joshies-card headerText="Session" [links]="sessionLinks()" />
   `,
   host: {
-    class: 'block pb-6',
+    class: 'block pb-12',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

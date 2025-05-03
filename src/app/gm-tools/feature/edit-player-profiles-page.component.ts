@@ -18,7 +18,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
 
 @Component({
   selector: 'joshies-edit-player-profiles-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     TableModule,
@@ -44,40 +43,36 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       <p-table
         [value]="players"
         [rowTrackBy]="trackByPlayerId"
-        styleClass="mt-4"
+        styleClass="mt-6"
       >
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="players"
-          let-player
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="players" let-player>
           <tr>
             <td>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 @if (updatingAvatarForUserId() === player.user_id) {
                   <p-skeleton
                     width="2rem"
                     height="2rem"
-                    styleClass="border-circle"
+                    styleClass="rounded-full"
                   />
                 } @else {
                   <img
                     [ngSrc]="player.avatar_url"
                     width="32"
                     height="32"
-                    class="border-circle surface-100"
+                    class="size-8 rounded-full bg-neutral-100"
                     alt=""
                   />
                 }
                 <div>
-                  <p class="m-0">{{ player.display_name }}</p>
-                  <p class="m-0 text-500 text-xs">{{ player.real_name }}</p>
+                  <p>{{ player.display_name }}</p>
+                  <p class="m-0 text-neutral-500 text-xs">
+                    {{ player.real_name }}
+                  </p>
                 </div>
               </div>
             </td>
-            <td
-              class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
-            >
+            <td class="text-right flex gap-2 flex-col md:flex-row justify-end">
               <p-button
                 label="Change Avatar"
                 icon="pi pi-camera"
@@ -109,7 +104,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         </ng-template>
       </p-table>
     } @else {
-      <p-skeleton width="100%" height="30rem" styleClass="mt-4" />
+      <p-skeleton width="100%" height="30rem" styleClass="mt-6" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

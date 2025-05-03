@@ -1,28 +1,26 @@
 import { NgClass } from '@angular/common';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  booleanAttribute,
   input,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CardLinkComponent, CardLinkModel } from './card-link.component';
 
 @Component({
   selector: 'joshies-card',
-  standalone: true,
-  imports: [NgClass, RouterLink, CardLinkComponent, RouterLink],
+  imports: [NgClass, CardLinkComponent],
   template: `
     @if (headerText()) {
       @if (readOnly()) {
-        <h2 class="mt-0 mb-2">
+        <h2 class="font-bold mb-2">
           @if (headerIconClass()) {
             <i [ngClass]="headerIconClass()"></i>
           }
           {{ headerText() }}
         </h2>
       } @else {
-        <h3 class="mt-4 mb-2">
+        <h3 class="text-lg font-bold mt-6 mb-2">
           @if (headerIconClass()) {
             <i [ngClass]="headerIconClass()"></i>
           }
@@ -32,7 +30,7 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
     }
 
     <div
-      class="surface-card border-round-xl"
+      class="bg-neutral-0 rounded-xl"
       [class.padded]="padded()"
       [ngClass]="styleClass()"
     >

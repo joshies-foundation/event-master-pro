@@ -10,23 +10,20 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'joshies-top-bottom',
-  standalone: true,
   template: `
     <!-- Over/Under Radio Buttons -->
-    <div class="flex flex-wrap gap-3 mt-2">
-      <div class="flex align-items-center">
-        <label class="ml-2">
-          <p-radioButton
-            name="topBottom"
-            value="TOP"
-            [(ngModel)]="selectedTopBottomOption"
-            styleClass="w-full"
-          />
-          Top
-        </label>
-      </div>
-      <div class="flex align-items-center">
-        <label class="ml-2">
+    <div class="flex flex-wrap gap-4 mt-2 px-2">
+      <label class="flex items-center gap-2">
+        <p-radioButton
+          name="topBottom"
+          value="TOP"
+          [(ngModel)]="selectedTopBottomOption"
+          styleClass="w-full"
+        />
+        Top
+      </label>
+      <div class="flex items-center">
+        <label class="flex items-center gap-2">
           <p-radioButton
             name="topBottom"
             value="BOTTOM"
@@ -39,7 +36,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     </div>
 
     <!-- Over/Under Value -->
-    <label class="flex flex-column gap-2 mt-3">
+    <label class="flex flex-col gap-2 mt-4">
       <p-inputNumber
         #numTeamsInput
         [(ngModel)]="selectedNumberOfTeams"

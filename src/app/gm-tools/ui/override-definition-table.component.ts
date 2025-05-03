@@ -23,7 +23,6 @@ export interface OverrideDefinitionTableModel {
 
 @Component({
   selector: 'joshies-override-definition-table',
-  standalone: true,
   imports: [
     InputNumberModule,
     DecimalPipe,
@@ -39,7 +38,10 @@ export interface OverrideDefinitionTableModel {
         <!-- Before -->
         <tr>
           <td>Before</td>
-          <td class="text-right text-400" [ngClass]="oldScorePaddingClass()">
+          <td
+            class="text-right text-neutral-400"
+            [ngClass]="oldScorePaddingClass()"
+          >
             <span class="mr-1">{{ model().oldScore | number }}</span>
           </td>
         </tr>
@@ -106,15 +108,13 @@ export interface OverrideDefinitionTableModel {
     </table>
   `,
   styles: `
-    $tableBorder: 1px solid var(--surface-50);
-
     table {
       width: 100%;
       border-collapse: collapse;
 
       td {
-        border-top: $tableBorder;
-        border-bottom: $tableBorder;
+        border-top: var(--color-neutral-50);
+        border-bottom: var(--color-neutral-50);
         padding: 0.75rem 1rem;
       }
     }
@@ -136,14 +136,14 @@ export class OverrideDefinitionTableComponent {
   );
 
   readonly oldScorePaddingClass = computed(() =>
-    this.model().readonly ? '' : ' pr-6',
+    this.model().readonly ? '' : ' pr-12',
   );
 
   readonly changePaddingClass = computed(() =>
-    this.model().readonly ? '' : this.showChangeInput() ? ' pr-0' : ' pr-6',
+    this.model().readonly ? '' : this.showChangeInput() ? ' pr-0' : ' pr-12',
   );
 
   readonly newScorePaddingClass = computed(() =>
-    this.model().readonly ? '' : this.showReplaceInput() ? ' pr-0' : 'pr-6',
+    this.model().readonly ? '' : this.showReplaceInput() ? ' pr-0' : 'pr-12',
   );
 }

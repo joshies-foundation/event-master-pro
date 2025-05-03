@@ -13,14 +13,9 @@ import {
   RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
-import { MovesWithSpaceIdPipe } from '../ui/moves-with-space-id.pipe';
 import { AvatarModule } from 'primeng/avatar';
-import { DecimalPipe, TitleCasePipe } from '@angular/common';
-import { SpacesWithEffectPipe } from '../ui/spaces-with-effect.pipe';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
-import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -36,20 +31,13 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
 
 @Component({
   selector: 'joshies-resolve-duels-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
     ButtonModule,
-    MovesWithSpaceIdPipe,
     AvatarModule,
-    DecimalPipe,
-    SpacesWithEffectPipe,
     SkeletonModule,
     SelectButtonModule,
-    LoseOrGainPipe,
-    TitleCasePipe,
-    NumberWithSignAndColorPipe,
     FormsModule,
     TableModule,
     StronglyTypedTableRowDirective,
@@ -67,11 +55,11 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
     </joshies-page-header>
 
     @if (duels(); as duels) {
-      <p class="mt-5">Duels for turn {{ roundNumber() }}</p>
+      <p class="mt-8">Duels for turn {{ roundNumber() }}</p>
 
       @if (duels.length) {
         <p-table [value]="duels" [rowTrackBy]="trackById">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th class="pr-0">Players</th>
               <th>Game</th>
@@ -80,11 +68,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
             </tr>
           </ng-template>
 
-          <ng-template
-            pTemplate="body"
-            let-duel
-            [joshiesStronglyTypedTableRow]="duels"
-          >
+          <ng-template #body let-duel [joshiesStronglyTypedTableRow]="duels">
             <tr [routerLink]="[duel.id]">
               <td class="pr-0">
                 <joshies-duel-table-avatars [duel]="duel" />
@@ -96,13 +80,13 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
                 <joshies-status-tag [status]="duel.status" />
               </td>
               <td class="px-1">
-                <i class="pi pi-angle-right text-400"></i>
+                <i class="pi pi-angle-right text-neutral-400"></i>
               </td>
             </tr>
           </ng-template>
         </p-table>
       } @else {
-        <p class="my-6 py-6 text-center text-500 font-italic">
+        <p class="my-12 py-12 text-center text-neutral-500 italic">
           No duels for this turn
         </p>
       }
@@ -110,7 +94,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
       @if (allDuelsAreResolved()) {
         <p-button
           label="Proceed to Chaos Space Event Phase"
-          styleClass="w-full mt-3"
+          styleClass="w-full mt-4"
           (onClick)="proceedToChaosSpaceEventPhase()"
         />
       }

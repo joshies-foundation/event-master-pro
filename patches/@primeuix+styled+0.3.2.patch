@@ -1,0 +1,25 @@
+diff --git a/node_modules/@primeuix/styled/index.d.mts b/node_modules/@primeuix/styled/index.d.mts
+index 1fafc44..38d871b 100644
+--- a/node_modules/@primeuix/styled/index.d.mts
++++ b/node_modules/@primeuix/styled/index.d.mts
+@@ -1,4 +1,4 @@
+-import * as _primeuix_utils_eventbus from '@primeuix/utils/eventbus';
++// import * as _primeuix_utils_eventbus from '@primeuix/utils/eventbus';
+ 
+ declare function definePreset(...presets: any[]): any;
+ 
+@@ -142,7 +142,7 @@ declare function export_default(theme: any, options?: any): {
+     css: string;
+ };
+ 
+-declare const ThemeService: _primeuix_utils_eventbus.EventBusOptions;
++// declare const ThemeService: _primeuix_utils_eventbus.EventBusOptions;
+ 
+ declare function toTokenKey(str: string): string;
+ declare function merge(value1: any, value2: any): void;
+@@ -249,4 +249,4 @@ declare const _default: {
+     transformCSS(name: string, css: string, mode?: string, type?: string, options?: any, set?: any, defaults?: any, selector?: string): string;
+ };
+ 
+-export { $dt, $t, _default$5 as Theme, ThemeService, _default as ThemeUtils, css, definePreset, dt, dtwt, getComputedValue, getRule, getVariableName, getVariableValue, hasOddBraces, merge, _default$4 as mix, _default$3 as palette, setProperty, _default$2 as shade, _default$1 as tint, toNormalizePrefix, toNormalizeVariable, toTokenKey, toUnit, toValue, export_default as toVariables, updatePreset, updatePrimaryPalette, updateSurfacePalette, usePreset, useTheme };
++export { $dt, $t, _default$5 as Theme, /* ThemeService, */ _default as ThemeUtils, css, definePreset, dt, dtwt, getComputedValue, getRule, getVariableName, getVariableValue, hasOddBraces, merge, _default$4 as mix, _default$3 as palette, setProperty, _default$2 as shade, _default$1 as tint, toNormalizePrefix, toNormalizeVariable, toTokenKey, toUnit, toValue, export_default as toVariables, updatePreset, updatePrimaryPalette, updateSurfacePalette, usePreset, useTheme };

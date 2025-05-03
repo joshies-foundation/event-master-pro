@@ -209,7 +209,7 @@ export class BetService {
                 ],
                 [],
               ),
-              borderColor: getCssVariableValue('--text-color'),
+              borderColor: getCssVariableValue('--color-foreground'),
               borderWidth: 2,
               type: 'line',
             },
@@ -220,14 +220,18 @@ export class BetService {
               backgroundColor:
                 bets.map((bet) =>
                   betGainOrLossAmount(bet, userPlayerId) > 0
-                    ? `${getCssVariableValue('--green-300')}70`
-                    : `${getCssVariableValue('--red-300')}70`,
+                    ? getCssVariableValue(
+                        '--color-success-background-translucent',
+                      )
+                    : getCssVariableValue(
+                        '--color-danger-background-translucent',
+                      ),
                 ) ?? [],
               borderColor:
                 bets.map((bet) =>
                   betGainOrLossAmount(bet, userPlayerId) > 0
-                    ? getCssVariableValue('--green-300')
-                    : getCssVariableValue('--red-300'),
+                    ? getCssVariableValue('--color-success-foreground')
+                    : getCssVariableValue('--color-danger-foreground'),
                 ) ?? [],
               borderWidth: 1,
               borderRadius: 20,

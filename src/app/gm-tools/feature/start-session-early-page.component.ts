@@ -17,7 +17,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'joshies-start-session-early-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -37,7 +36,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
       (onClick)="confirmStartSessionEarly()"
       [label]="'Start ' + sessionName() + ' Right Now'"
       styleClass="w-full"
-      class="block mt-6 pt-6"
+      class="block mt-12 pt-12"
       [loading]="startingSession()"
     />
   `,
@@ -60,8 +59,6 @@ export default class StartSessionEarlyPageComponent {
       header: 'Confirmation',
       message: `Are you sure you want to start ${this.sessionService.session()?.name} early? This will set the start date to now, and begin the session right away.`,
       icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
       rejectButtonStyleClass: 'p-button-text',
       accept: async () => {
         this.startingSession.set(true);

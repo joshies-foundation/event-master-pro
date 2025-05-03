@@ -18,7 +18,6 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
 
 @Component({
   selector: 'joshies-duel-history-page',
-  standalone: true,
   imports: [
     HeaderLinkComponent,
     PageHeaderComponent,
@@ -44,9 +43,9 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
           [value]="duels"
           [rowTrackBy]="trackById"
           sortField="round_number"
-          styleClass="mt-5"
+          styleClass="mt-8"
         >
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th pSortableColumn="round_number">
                 Turn
@@ -63,11 +62,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
             </tr>
           </ng-template>
 
-          <ng-template
-            pTemplate="body"
-            let-duel
-            [joshiesStronglyTypedTableRow]="duels"
-          >
+          <ng-template #body let-duel [joshiesStronglyTypedTableRow]="duels">
             <tr>
               <td class="text-center">{{ duel.round_number | number }}</td>
               <td>
@@ -84,7 +79,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
                     duel.points_gained_by_winner | numberWithSignAndColor
                   "
                 ></div>
-                <div class="text-sm text-500 mt-1">
+                <div class="text-sm text-neutral-500 mt-1">
                   ({{ duel.wager_percentage }}%)
                 </div>
               </td>
@@ -92,10 +87,12 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
           </ng-template>
         </p-table>
       } @else {
-        <p class="my-6 py-6 text-center text-500 font-italic">No duels yet</p>
+        <p class="my-12 py-12 text-center text-neutral-500 italic">
+          No duels yet
+        </p>
       }
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

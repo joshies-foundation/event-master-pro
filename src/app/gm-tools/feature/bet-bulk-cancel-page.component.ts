@@ -22,7 +22,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'joshies-bet-bulk-cancel-page',
-  standalone: true,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
@@ -41,7 +40,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       />
     </joshies-page-header>
 
-    <p class="mt-5">
+    <p class="mb-4 mt-8">
       Cancel all bets where the given user is the requester. Can choose to
       cancel just pending bets or all bets that are pending (P) or open (O).
     </p>
@@ -53,7 +52,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             <th class="text-right">P</th>
@@ -62,20 +61,20 @@ import { toSignal } from '@angular/core/rxjs-interop';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="players"
           let-displayPlayer
         >
           <tr>
             <!-- Player -->
             <td pFrozenColumn>
-              <div class="flex align-items-center gap-2 -py-2">
+              <div class="flex items-center gap-2 -py-2">
                 <img
                   [ngSrc]="displayPlayer.player.avatar_url"
                   alt=""
                   width="32"
                   height="32"
-                  class="border-circle surface-100"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ displayPlayer.player.display_name }}
               </div>
@@ -90,7 +89,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
             <!-- Edit Score Button -->
             <td>
               <div
-                class="text-right flex gap-2 flex-column md:flex-row justify-content-end"
+                class="text-right flex gap-2 flex-col md:flex-row justify-end"
               >
                 <p-button
                   label="Cancel Pend."

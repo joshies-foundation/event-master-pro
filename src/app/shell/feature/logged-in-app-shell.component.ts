@@ -20,7 +20,6 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
-  standalone: true,
   imports: [RouterOutlet, FooterComponent, ConfirmDialogModule],
   template: `
     <!-- Pages -->
@@ -36,11 +35,11 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
       />
     }
 
-    <p-confirmDialog styleClass="mx-3" />
+    <p-confirmDialog styleClass="mx-4" />
   `,
   animations: [layerPages],
   host: {
-    class: 'h-full flex flex-column',
+    class: 'h-full flex flex-col',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
