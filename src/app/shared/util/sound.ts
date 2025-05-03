@@ -1,5 +1,3 @@
-import { unmute } from './unmute';
-
 window.AudioContext =
   window.AudioContext ||
   (window as unknown as { webkitAudioContext: AudioContext })
@@ -7,7 +5,20 @@ window.AudioContext =
 
 const context = new AudioContext();
 
-unmute(context);
+/**
+ * By default, iPhones play sound in the "ringer" channel, so if your phone's
+ * ringer is on silent, then the sound will not play. Here, we set the
+ * `audioSession` type to `playback` to allow playback even when the phone is on
+ * silent.
+ *
+ * https://www.w3.org/TR/audio-session/#audio-session-types
+ *
+ * As of May 2025, Safari is the only browser that supports `audioSession`
+ * https://developer.mozilla.org/en-US/docs/Web/API/Navigator#browser_compatibility
+ */
+if ('audioSession' in navigator) {
+  (navigator.audioSession as { type: string }).type = 'playback';
+}
 
 export class Sound {
   url = '';
