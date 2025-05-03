@@ -7,18 +7,17 @@ import {
 const authRoutes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./login-page/login-page.component'),
+    loadComponent: () => import('./login-page.component'),
     canActivate: [redirectLoggedInToHomePage],
   },
   {
     path: 'reset-password',
-    loadComponent: () =>
-      import('./reset-password-page/reset-password-page.component'),
+    loadComponent: () => import('./reset-password-page.component'),
     canActivate: [redirectUnauthorizedToLoginPage],
   },
   {
     path: 'confirm',
-    loadComponent: () => import('./confirm-page/confirm-page.component'),
+    loadComponent: () => import('./confirm-page.component'),
   },
 ];
 
