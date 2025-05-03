@@ -254,7 +254,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
                 @if (playersWithScoreChanges(); as playersWithScoreChanges) {
                   <p-table [value]="playersWithScoreChanges">
-                    <ng-template pTemplate="header">
+                    <ng-template #header>
                       <tr>
                         <th>Player</th>
                         <th class="text-right">Current Score</th>
@@ -262,7 +262,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       </tr>
                     </ng-template>
                     <ng-template
-                      pTemplate="body"
+                      #body
                       let-player
                       [joshiesStronglyTypedTableRow]="playersWithScoreChanges"
                     >

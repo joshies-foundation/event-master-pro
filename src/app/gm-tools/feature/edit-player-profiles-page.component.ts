@@ -45,11 +45,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [rowTrackBy]="trackByPlayerId"
         styleClass="mt-6"
       >
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="players"
-          let-player
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="players" let-player>
           <tr>
             <td>
               <div class="flex items-center gap-2 -py-2">

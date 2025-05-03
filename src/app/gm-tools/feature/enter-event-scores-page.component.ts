@@ -50,18 +50,14 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
         [scrollable]="true"
         [formGroup]="vm.formGroup"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th>Team</th>
             <th>Event Score</th>
             <th>Pos</th>
           </tr>
         </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="vm.teams!"
-          let-team
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="vm.teams!" let-team>
           <tr>
             <td>
               <div class="flex flex-col items-center gap-2">

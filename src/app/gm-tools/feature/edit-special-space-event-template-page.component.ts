@@ -72,7 +72,7 @@ import {
 
       <!-- Confirm Submit Changes Dialog -->
       <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
-        <ng-template pTemplate="message">
+        <ng-template #message>
           <div class="block">
             <p>Are you sure you want submit these changes?</p>
 

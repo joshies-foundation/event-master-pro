@@ -54,7 +54,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             <th class="text-center">Enabled</th>
@@ -64,11 +64,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
             <th class="text-center">Can Toggle Squidward Mode</th>
           </tr>
         </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="players"
-          let-player
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="players" let-player>
           <tr>
             <td pFrozenColumn>
               <div class="flex items-center gap-2 -py-2">

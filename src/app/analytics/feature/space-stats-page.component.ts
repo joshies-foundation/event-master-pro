@@ -50,7 +50,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             @for (space of gameboardSpaces(); track space.id) {
@@ -61,7 +61,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="spaceStats"
           let-player
         >

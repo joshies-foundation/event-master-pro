@@ -15,7 +15,7 @@ export const confirmPlaceBetDialogKey = 'confirm-place-bet';
   imports: [ConfirmDialogModule, PrimeTemplate, BetComponent],
   template: `
     <p-confirmDialog styleClass="mx-4" [key]="confirmPlaceBetDialogKey">
-      <ng-template pTemplate="message" let-message>
+      <ng-template #message let-message>
         <div>
           <!-- Prompt -->
           <p class="mb-6">Do you want to submit this bet request?</p>

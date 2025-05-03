@@ -45,7 +45,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
           sortField="round_number"
           styleClass="mt-8"
         >
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th pSortableColumn="round_number">
                 Turn
@@ -62,11 +62,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
             </tr>
           </ng-template>
 
-          <ng-template
-            pTemplate="body"
-            let-duel
-            [joshiesStronglyTypedTableRow]="duels"
-          >
+          <ng-template #body let-duel [joshiesStronglyTypedTableRow]="duels">
             <tr>
               <td class="text-center">{{ duel.round_number | number }}</td>
               <td>

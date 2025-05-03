@@ -43,18 +43,14 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th>Player</th>
             <th class="text-right">Score</th>
             <th></th>
           </tr>
         </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="players"
-          let-player
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="players" let-player>
           <tr>
             <!-- Player -->
             <td>

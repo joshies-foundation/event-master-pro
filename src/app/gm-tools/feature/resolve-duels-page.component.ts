@@ -59,7 +59,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
 
       @if (duels.length) {
         <p-table [value]="duels" [rowTrackBy]="trackById">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th class="pr-0">Players</th>
               <th>Game</th>
@@ -68,11 +68,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
             </tr>
           </ng-template>
 
-          <ng-template
-            pTemplate="body"
-            let-duel
-            [joshiesStronglyTypedTableRow]="duels"
-          >
+          <ng-template #body let-duel [joshiesStronglyTypedTableRow]="duels">
             <tr [routerLink]="[duel.id]">
               <td class="pr-0">
                 <joshies-duel-table-avatars [duel]="duel" />

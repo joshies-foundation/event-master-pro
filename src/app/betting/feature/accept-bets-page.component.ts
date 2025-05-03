@@ -41,7 +41,7 @@ import { BetModel } from '../../shared/util/supabase-types';
       @if (displayBets(); as bets) {
         <p class="mb-4 mt-8">Review bets that are awaiting your approval.</p>
         <p-table [value]="bets" [scrollable]="true">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th style="width: 60%;">
                 Bet Terms (Your score: {{ userPlayer()?.score }})
@@ -49,11 +49,7 @@ import { BetModel } from '../../shared/util/supabase-types';
               <th></th>
             </tr>
           </ng-template>
-          <ng-template
-            pTemplate="body"
-            [joshiesStronglyTypedTableRow]="bets"
-            let-bet
-          >
+          <ng-template #body [joshiesStronglyTypedTableRow]="bets" let-bet>
             <tr>
               <!-- Bet Terms -->
               <td>

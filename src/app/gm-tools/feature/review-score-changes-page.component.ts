@@ -66,7 +66,7 @@ import { EventService } from '../../shared/data-access/event.service';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             <th class="text-right">Before</th>
@@ -75,7 +75,7 @@ import { EventService } from '../../shared/data-access/event.service';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="vm.players"
           let-player
         >

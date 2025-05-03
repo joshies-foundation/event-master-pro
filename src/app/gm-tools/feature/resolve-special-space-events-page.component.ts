@@ -57,7 +57,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
 
       @if (specialSpaceEvents.length) {
         <p-table [value]="specialSpaceEvents" [rowTrackBy]="trackById">
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th class="pr-0">Player</th>
               <th>Event</th>
@@ -67,7 +67,7 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
           </ng-template>
 
           <ng-template
-            pTemplate="body"
+            #body
             let-specialSpaceEvent
             [joshiesStronglyTypedTableRow]="specialSpaceEvents"
           >

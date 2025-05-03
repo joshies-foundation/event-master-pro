@@ -322,7 +322,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                           orientation="vertical"
                           verticalViewPortHeight="28rem"
                         >
-                          <ng-template let-duel pTemplate="item">
+                          <ng-template let-duel #item>
                             <table>
                               <tr>
                                 <td>
@@ -426,7 +426,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                     [showNavigators]="false"
                     autoplayInterval="5000"
                   >
-                    <ng-template let-bet pTemplate="item">
+                    <ng-template let-bet #item>
                       <joshies-bet [bet]="bet"></joshies-bet>
                     </ng-template>
                   </p-carousel>

@@ -50,7 +50,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         [rowTrackBy]="trackByUserId"
         styleClass="mt-8"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             <th pSortableColumn="lifetime_score">
@@ -64,11 +64,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
             </th>
           </tr>
         </ng-template>
-        <ng-template
-          pTemplate="body"
-          [joshiesStronglyTypedTableRow]="data"
-          let-row
-        >
+        <ng-template #body [joshiesStronglyTypedTableRow]="data" let-row>
           <tr
             [ngClass]="{
               'font-semibold bg-highlight': row.user_id === userId(),

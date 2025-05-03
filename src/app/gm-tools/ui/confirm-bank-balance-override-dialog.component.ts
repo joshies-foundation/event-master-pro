@@ -22,7 +22,7 @@ export const confirmOverrideDialogKey = 'confirm-override';
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
     <p-confirmDialog styleClass="mx-4" [key]="confirmOverrideDialogKey">
-      <ng-template pTemplate="message" let-message>
+      <ng-template #message let-message>
         <div>
           <!-- Prompt -->
           <p class="mb-6">

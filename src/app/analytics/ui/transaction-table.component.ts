@@ -19,7 +19,7 @@ import { TransactionModel } from '../../shared/util/supabase-types';
   template: `
     <p-table [value]="transactions()" [rowTrackBy]="trackById">
       <ng-template
-        pTemplate="body"
+        #body
         [joshiesStronglyTypedTableRow]="transactions()"
         let-transaction
       >

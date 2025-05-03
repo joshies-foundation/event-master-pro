@@ -57,7 +57,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th>Player</th>
             <th class="text-right">Distance</th>
@@ -65,7 +65,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="vm.players!"
           let-player
         >

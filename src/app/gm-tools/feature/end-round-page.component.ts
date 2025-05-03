@@ -64,7 +64,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
           [sortOrder]="1"
           [scrollable]="true"
         >
-          <ng-template pTemplate="header">
+          <ng-template #header>
             <tr>
               <th>Team</th>
               <th style="padding: 0.75rem 0.25rem">Pos</th>
@@ -72,7 +72,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
             </tr>
           </ng-template>
           <ng-template
-            pTemplate="body"
+            #body
             [joshiesStronglyTypedTableRow]="vm.teams!"
             let-team
           >

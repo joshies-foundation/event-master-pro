@@ -20,18 +20,14 @@ import { ImageModule } from 'primeng/image';
   template: `
     <!-- Rankings Table -->
     <p-table [value]="players()" [rowTrackBy]="trackByUserId">
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr>
           <th>Rank</th>
           <th>Player</th>
           <th class="text-right">Score</th>
         </tr>
       </ng-template>
-      <ng-template
-        pTemplate="body"
-        [joshiesStronglyTypedTableRow]="players()"
-        let-player
-      >
+      <ng-template #body [joshiesStronglyTypedTableRow]="players()" let-player>
         <tr
           [ngClass]="{
             'font-semibold bg-highlight': player.user_id === userId(),

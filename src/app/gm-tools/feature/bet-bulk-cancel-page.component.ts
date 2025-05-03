@@ -52,7 +52,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             <th class="text-right">P</th>
@@ -61,7 +61,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="players"
           let-displayPlayer
         >

@@ -45,7 +45,7 @@ import {
 
     <!-- Confirm Dialog -->
     <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
-      <ng-template pTemplate="message">
+      <ng-template #message>
         <div class="block">
           <p class="mb-6">
             Are you sure you want to create the Chaos Space Event

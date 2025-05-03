@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   effect,
   inject,
+  Signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -28,17 +28,17 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
 import {
-  Observable,
+  concat,
   map,
+  Observable,
+  of,
   shareReplay,
   switchMap,
   take,
-  concat,
-  of,
 } from 'rxjs';
 import {
-  LocalStorageRecord,
   getRecordFromLocalStorage,
+  LocalStorageRecord,
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
@@ -91,14 +91,14 @@ export type GameboardSpaceEntryFormModel = Record<
         [rowTrackBy]="trackByPlayerId"
         [tableStyle]="{ 'table-layout': 'fixed' }"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th class="w-32 p-0"></th>
             <th class="p-0"></th>
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="vm.players!"
           let-player
         >
@@ -117,7 +117,7 @@ export type GameboardSpaceEntryFormModel = Record<
               </div>
             </td>
             <!-- Distance -->
-            <td class="text-right">
+            <td class="text-right overflow-hidden">
               <p-inputNumber
                 formControlName="distanceTraveled"
                 [showButtons]="true"
@@ -130,22 +130,19 @@ export type GameboardSpaceEntryFormModel = Record<
               />
 
               <!-- Space -->
-              <p-selectButton
-                [options]="vm.gameboardSpaces"
-                optionLabel="icon_class"
-                optionValue="id"
-                formControlName="gameboardSpaceId"
-                [style]="{ 'text-wrap': 'nowrap' }"
-                styleClass="overflow-x-auto mt-2"
-                [allowEmpty]="false"
-              >
-                <ng-template let-gameboardSpace pTemplate>
-                  <joshies-gameboard-space
-                    [model]="gameboardSpace"
-                    class="relative"
-                  />
-                </ng-template>
-              </p-selectButton>
+              <div class="overflow-x-auto mt-2 text-nowrap">
+                <p-selectButton
+                  [options]="vm.gameboardSpaces"
+                  optionLabel="icon_class"
+                  optionValue="id"
+                  formControlName="gameboardSpaceId"
+                  [allowEmpty]="false"
+                >
+                  <ng-template #item let-gameboardSpace>
+                    <joshies-gameboard-space [model]="gameboardSpace" />
+                  </ng-template>
+                </p-selectButton>
+              </div>
 
               <!-- If player must choose between gaining/losing points and doing an activity, show the options here-->
               @if (

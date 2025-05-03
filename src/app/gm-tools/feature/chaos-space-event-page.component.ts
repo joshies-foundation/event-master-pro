@@ -140,7 +140,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         as playersWithScoreChanges
                       ) {
                         <p-table [value]="playersWithScoreChanges">
-                          <ng-template pTemplate="header">
+                          <ng-template #header>
                             <tr>
                               <th>Player</th>
                               <th class="text-right">Current Score</th>
@@ -148,7 +148,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                             </tr>
                           </ng-template>
                           <ng-template
-                            pTemplate="body"
+                            #body
                             let-player
                             [joshiesStronglyTypedTableRow]="
                               playersWithScoreChanges
@@ -209,7 +209,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           [value]="playersWithEveryonePointLosses"
                           [rowTrackBy]="trackByPlayerId"
                         >
-                          <ng-template pTemplate="header">
+                          <ng-template #header>
                             <tr>
                               <th>Player</th>
                               <th class="text-right">Current Score</th>
@@ -217,7 +217,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                             </tr>
                           </ng-template>
                           <ng-template
-                            pTemplate="body"
+                            #body
                             let-player
                             [joshiesStronglyTypedTableRow]="
                               playersWithEveryonePointLosses
@@ -278,7 +278,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                           selectionMode="multiple"
                           [(selection)]="playerIdsWhoWillSwapPoints"
                         >
-                          <ng-template pTemplate="header">
+                          <ng-template #header>
                             <tr>
                               <th>Player</th>
                               <th class="text-right">Current Score</th>
@@ -286,7 +286,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                             </tr>
                           </ng-template>
                           <ng-template
-                            pTemplate="body"
+                            #body
                             let-player
                             [joshiesStronglyTypedTableRow]="
                               playersWithSwappedPointScoreChanges
@@ -409,7 +409,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       selectionMode="multiple"
                       [(selection)]="playerIdsWhoFailedTask"
                     >
-                      <ng-template pTemplate="header">
+                      <ng-template #header>
                         <tr>
                           <th>Player</th>
                           <th class="text-right pl-0">Current Score</th>
@@ -417,7 +417,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         </tr>
                       </ng-template>
                       <ng-template
-                        pTemplate="body"
+                        #body
                         let-player
                         [joshiesStronglyTypedTableRow]="
                           playersWithScoreChangesBasedOnTaskFailure

@@ -30,7 +30,7 @@ export interface CardLinkModel {
       ></i>
       <div
         class="flex items-center w-full justify-between pl-0 p-2 border-standard-border-color"
-        [class.border-bottom-1]="!last()"
+        [class.border-b]="!last()"
       >
         @if (model().subtext || model().pretext) {
           <div>

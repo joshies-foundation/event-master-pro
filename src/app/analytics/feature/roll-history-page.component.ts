@@ -48,7 +48,7 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pFrozenColumn>Player</th>
             @for (turnIndex of turnIndices(); track turnIndex) {
@@ -57,7 +57,7 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
           </tr>
         </ng-template>
         <ng-template
-          pTemplate="body"
+          #body
           [joshiesStronglyTypedTableRow]="rollHistory"
           let-player
         >
