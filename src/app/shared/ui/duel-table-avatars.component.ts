@@ -22,7 +22,7 @@ import { DuelModel } from '../util/supabase-types';
       }
     </p-avatar>
 
-    <span class="text-sm text-surface-600 dark:text-surface-200 mb-1">vs.</span>
+    <span class="text-sm text-neutral-600 mb-1">vs.</span>
 
     @if (duel().opponent; as opponent) {
       <p-avatar [image]="opponent.avatar_url" shape="circle" class="relative">
@@ -31,9 +31,7 @@ import { DuelModel } from '../util/supabase-types';
         }
       </p-avatar>
     } @else {
-      <i
-        class="pi pi-question-circle text-4xl -mt-1 text-surface-300 dark:text-surface-500"
-      ></i>
+      <i class="pi pi-question-circle text-4xl -mt-1 text-neutral-300"></i>
     }
   `,
   host: {

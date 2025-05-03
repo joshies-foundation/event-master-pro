@@ -32,7 +32,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       />
     </joshies-page-header>
 
-    <p class="mt-8">Whose points do you want to change?</p>
+    <p class="mb-4 mt-8">Whose points do you want to change?</p>
 
     @if (players(); as players) {
       <p-table
@@ -64,11 +64,11 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 <div>
-                  <p class="m-0">{{ player.display_name }}</p>
-                  <p class="m-0 text-surface-500 dark:text-surface-300 text-xs">
+                  <p>{{ player.display_name }}</p>
+                  <p class="m-0 text-neutral-500 text-xs">
                     {{ player.real_name }}
                   </p>
                 </div>

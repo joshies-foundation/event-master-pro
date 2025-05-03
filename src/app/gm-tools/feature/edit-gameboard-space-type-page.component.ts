@@ -64,7 +64,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       <!-- Visual Preview -->
       <div class="flex gap-4 mt-8 mb-4 items-center justify-center w-full">
         <joshies-gameboard-space [model]="originalGameboardSpace" />
-        <i class="pi pi-arrow-right text-surface-400 dark:text-surface-400"></i>
+        <i class="pi pi-arrow-right text-neutral-400"></i>
         <joshies-gameboard-space [model]="updatedGameboardSpaceFormValue()" />
       </div>
 
@@ -87,18 +87,18 @@ import { toSignal } from '@angular/core/rxjs-interop';
       <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
         <ng-template pTemplate="message">
           <div class="block">
-            <p class="m-0">Are you sure you want submit these changes?</p>
+            <p>Are you sure you want submit these changes?</p>
 
             <!-- Before -->
-            <h4 class="mt-6 mb-2">Before</h4>
+            <h4 class="font-bold mt-6 mb-2">Before</h4>
             <div class="flex gap-4">
               <joshies-gameboard-space [model]="originalGameboardSpace" />
               <div>
-                <h4 class="mt-0 mb-2">
+                <h4 class="font-bold mb-2">
                   {{ originalGameboardSpace.name }} Space
                 </h4>
                 <div
-                  class="text-sm text-surface-600 dark:text-surface-200"
+                  class="text-sm text-neutral-600"
                   [innerHtml]="
                     originalGameboardSpace | gameboardSpaceDescription
                   "
@@ -107,17 +107,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
             </div>
 
             <!-- After -->
-            <h4 class="mt-4 mb-2">After</h4>
+            <h4 class="font-bold mt-4 mb-2">After</h4>
             <div class="flex gap-4">
               <joshies-gameboard-space
                 [model]="updatedGameboardSpaceFormValue()"
               />
               <div>
-                <h4 class="mt-0 mb-2">
+                <h4 class="font-bold mb-2">
                   {{ updatedGameboardSpaceName() }} Space
                 </h4>
                 <div
-                  class="text-sm text-surface-600 dark:text-surface-200"
+                  class="text-sm text-neutral-600"
                   [innerHtml]="
                     updatedGameboardSpacePreviewData()
                       | gameboardSpaceDescription
@@ -130,7 +130,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </p-confirmDialog>
     } @else {
       <!-- Data Not Found Message -->
-      <p class="mt-12">
+      <p class="mb-4 mt-12">
         No gameboard space found in this session with ID
         <span class="font-bold">{{ gameboardSpaceId() }}</span>
       </p>

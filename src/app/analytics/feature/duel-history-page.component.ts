@@ -83,9 +83,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
                     duel.points_gained_by_winner | numberWithSignAndColor
                   "
                 ></div>
-                <div
-                  class="text-sm text-surface-500 dark:text-surface-300 mt-1"
-                >
+                <div class="text-sm text-neutral-500 mt-1">
                   ({{ duel.wager_percentage }}%)
                 </div>
               </td>
@@ -93,14 +91,12 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
           </ng-template>
         </p-table>
       } @else {
-        <p
-          class="my-12 py-12 text-center text-surface-500 dark:text-surface-300 italic"
-        >
+        <p class="my-12 py-12 text-center text-neutral-500 italic">
           No duels yet
         </p>
       }
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

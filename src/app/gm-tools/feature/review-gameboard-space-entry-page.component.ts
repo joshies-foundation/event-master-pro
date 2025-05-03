@@ -44,11 +44,9 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
       />
     </joshies-page-header>
     @if (viewModel(); as vm) {
-      <p class="mt-8">
+      <p class="mb-4 mt-8">
         Gameboard moves for turn {{ vm.roundNumber }}
-        <span class="text-surface-500 dark:text-surface-300 italic"
-          >(Draft)</span
-        >
+        <span class="text-neutral-500 italic">(Draft)</span>
       </p>
       <!-- Fixed layout allows indivdual scrolling of cells instead of whole table -->
       <p-table
@@ -80,7 +78,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>
@@ -99,9 +97,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
                 player.gameboardSpace!.effect ===
                 GameboardSpaceEffect.GainPointsOrDoActivity
               ) {
-                <p
-                  class="text-sm text-surface-500 dark:text-surface-300 mt-1 mb-0"
-                >
+                <p class="text-sm text-neutral-500 mt-1">
                   {{
                     player.decision === 'points'
                       ? ($any(player.gameboardSpace!.effect_data)

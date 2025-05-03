@@ -51,7 +51,7 @@ import { ImageModule } from 'primeng/image';
                 alt=""
                 width="32"
                 height="32"
-                styleClass="bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden"
+                styleClass="bg-neutral-100 rounded-full overflow-hidden"
                 [preview]="true"
               />
               {{ player.display_name }}

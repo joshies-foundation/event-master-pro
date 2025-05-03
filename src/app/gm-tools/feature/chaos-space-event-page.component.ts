@@ -268,7 +268,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                         playersWithSwappedPointScoreChanges();
                         as playersWithSwappedPointScoreChanges
                       ) {
-                        <h4>Choose 2 players who will swap points:</h4>
+                        <h4 class="my-4 font-bold">
+                          Choose 2 players who will swap points:
+                        </h4>
 
                         <p-table
                           [value]="playersWithSwappedPointScoreChanges"
@@ -362,10 +364,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.WaitingToBegin) {
                 @if (vm.chaosSpaceEvent.template) {
-                  <h3 class="mt-8 mb-2">
+                  <h3 class="text-lg font-bold mt-8 mb-2">
                     {{ vm.chaosSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-8 pre-wrap">{{
+                  <pre class="mb-8 pre-wrap">{{
                     vm.chaosSpaceEvent.template.description
                   }}</pre>
 
@@ -383,10 +385,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.InProgress) {
                 @if (vm.chaosSpaceEvent.template) {
-                  <h3 class="mt-8 mb-2">
+                  <h3 class="text-lg font-bold mt-8 mb-2">
                     {{ vm.chaosSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-8 pre-wrap">{{
+                  <pre class="mb-8 pre-wrap">{{
                     vm.chaosSpaceEvent.template.description
                   }}</pre>
 
@@ -395,7 +397,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                     <strong>{{ percentageLoss() }}%</strong>
                   </p>
 
-                  <h4>Who failed?</h4>
+                  <h4 class="my-4 font-bold">Who failed?</h4>
 
                   @if (
                     playersWithScoreChangesBasedOnTaskFailure();
@@ -470,14 +472,14 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 }
               }
               @default {
-                <h3>
+                <h3 class="text-lg font-bold">
                   {{
                     vm.chaosSpaceEvent.template?.name ??
                       'Cannot find Chaos Space Event Template with ID ' +
                         vm.chaosSpaceEvent.template_id
                   }}
                 </h3>
-                <h4>Results</h4>
+                <h4 class="my-4 font-bold">Results</h4>
                 <p>{{ vm.chaosSpaceEvent.results | json }}</p>
               }
             }

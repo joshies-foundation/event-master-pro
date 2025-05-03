@@ -47,7 +47,7 @@ import {
     <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
       <ng-template pTemplate="message">
         <div class="block">
-          <p class="mt-0 mb-6">Are you sure you want to create this event?</p>
+          <p class="mb-6">Are you sure you want to create this event?</p>
         </div>
       </ng-template>
     </p-confirmDialog>

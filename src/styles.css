@@ -1,34 +1,111 @@
-/*@import 'primeflex/primeflex.css';*/
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
 @import 'primeicons/primeicons.css';
 @import './customicons.css';
 
-:root {
-  --font-family:
-    system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  --font-feature-settings: normal;
-  --yellow-highlight: var(--color-yellow-100);
+@theme {
+  --color-app-background-color: light-dark(
+    #f3f2f8,
+    black
+  ); /* copied from iOS */
+
+  --color-foreground: light-dark(black, white);
+
+  --color-danger-foreground: light-dark(
+    var(--color-red-700),
+    var(--color-red-300)
+  );
+  --color-danger-background: light-dark(
+    color-mix(in srgb, var(--color-red-300) 50%, var(--color-surface-0)),
+    color-mix(in srgb, var(--color-red-500) 20%, var(--color-surface-900))
+  );
+  --color-danger-background-translucent: --alpha(
+    var(--color-danger-foreground) / 40%
+  );
+
+  --color-success-foreground: light-dark(
+    var(--color-green-700),
+    var(--color-green-300)
+  );
+  --color-success-background: light-dark(
+    color-mix(in srgb, var(--color-green-300) 50%, var(--color-surface-0)),
+    color-mix(in srgb, var(--color-green-500) 20%, var(--color-surface-900))
+  );
+  --color-success-background-translucent: --alpha(
+    var(--color-success-foreground) / 40%
+  );
+
+  --color-neutral-0: light-dark(
+    var(--color-surface-0),
+    var(--color-surface-900)
+  );
+  --color-neutral-50: light-dark(
+    var(--color-surface-50),
+    var(--color-surface-800)
+  );
+  --color-neutral-100: light-dark(
+    var(--color-surface-100),
+    var(--color-surface-700)
+  );
+  --color-neutral-200: light-dark(
+    var(--color-surface-200),
+    var(--color-surface-600)
+  );
+  --color-neutral-300: light-dark(
+    var(--color-surface-300),
+    var(--color-surface-500)
+  );
+  --color-neutral-400: light-dark(
+    var(--color-surface-400),
+    var(--color-surface-400)
+  );
+  --color-neutral-500: light-dark(
+    var(--color-surface-500),
+    var(--color-surface-300)
+  );
+  --color-neutral-600: light-dark(
+    var(--color-surface-600),
+    var(--color-surface-200)
+  );
+  --color-neutral-700: light-dark(
+    var(--color-surface-700),
+    var(--color-surface-100)
+  );
+  --color-neutral-800: light-dark(
+    var(--color-surface-800),
+    var(--color-surface-50)
+  );
+  --color-neutral-900: light-dark(
+    var(--color-surface-900),
+    var(--color-surface-0)
+  );
+  --color-neutral-950: lime; /* do not use */
+
+  --color-muted-color: light-dark(
+    var(--color-neutral-500),
+    var(--color-neutral-400)
+  );
+
+  --color-standard-border-color: light-dark(
+    var(--color-neutral-200),
+    var(--color-neutral-50)
+  );
 }
 
 html,
 body {
-  margin: 0;
-  padding: 0;
   width: 100%;
   height: calc(100% + env(safe-area-inset-top) / 2);
   overscroll-behavior: contain;
-  font-family: var(--font-family);
-  font-feature-settings: var(--font-feature-settings);
+  line-height: 1.2; /* override Tailwind's default of 1.5 to match PrimeNG's styles */
 }
 
 body {
-  background-color: var(--color-surface-ground);
+  background-color: var(--color-app-background-color);
 }
 
 pre {
-  font-family: var(--font-family);
+  font-family: var(--font-sans);
 }
 
 * {
@@ -67,8 +144,49 @@ p-tabmenu {
     margin-top: 0;
   }
 
+  h1,
+  h2,
+  h3,
+  p,
+  ol,
+  ul {
+    margin-bottom: 0.75rem;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+  }
+
   p {
     line-height: 1.25;
+  }
+
+  ol,
+  ul {
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  ul {
+    list-style-type: disk;
   }
 
   :last-child {
@@ -78,7 +196,7 @@ p-tabmenu {
 
 p-editor {
   .ql-container {
-    font-family: var(--font-family);
+    font-family: var(--font-sans);
     font-size: unset;
   }
 
@@ -100,16 +218,20 @@ p-editor {
 }
 
 .content,
-.p-editor-container .p-editor-content .ql-editor {
-  color: unset;
+.p-editor-container {
+  .p-editor-content {
+    .ql-editor {
+      color: unset;
 
-  h1 {
-    font-size: 1.5rem;
-  }
+      h1 {
+        font-size: 1.5rem;
+      }
 
-  h2 {
-    font-size: 1.25rem;
-    color: var(--color-surface-600);
+      h2 {
+        font-size: 1.25rem;
+        color: var(--color-neutral-600);
+      }
+    }
   }
 }
 
@@ -128,7 +250,7 @@ p-editor {
 .p-datatable {
   border-radius: 0.75rem;
   overflow: hidden;
-  background-color: var(--color-surface-card);
+  background-color: var(--color-neutral-0);
 
   .p-datatable-tbody {
     :last-child {
@@ -139,8 +261,16 @@ p-editor {
   }
 }
 
-.p-accordion p-accordion-panel:last-of-type {
-  border-bottom: none;
+.p-accordion {
+  .p-accordionpanel:last-of-type {
+    border-bottom: none;
+  }
+
+  .p-accordionheader {
+    .p-iconwrapper {
+      transform: rotate(180deg); /* flip accordion expand icon */
+    }
+  }
 }
 
 /* fix icon vertical position in iOS Safari */
@@ -148,43 +278,6 @@ p-editor {
 [class^='ci-'] {
   line-height: inherit;
 }
-
-/*$sizeVariants: (*/
-/*  \.25: 0.25,*/
-/*  \.5: 0.5,*/
-/*  \.75: 0.75,*/
-/*);*/
-
-/*@for $i from 0 through 29 {*/
-/*  @each $n, $v in $sizeVariants {*/
-/*    $name: $i + $n;*/
-/*    $value: $i + $v;*/
-
-/*    .h-#{$name}rem {*/
-/*      height: #{$value}rem;*/
-/*    }*/
-
-/*    .w-#{$name}rem {*/
-/*      width: #{$value}rem;*/
-/*    }*/
-/*  }*/
-/*}*/
-
-/*@for $i from 1 through 9 {*/
-/*  .surface-alpha-#{$i}0 {*/
-/*    background-color: color-mix(*/
-/*      in srgb,*/
-/*      var(--color-surface-0) ($i * 10%),*/
-/*      transparent*/
-/*    );*/
-/*  }*/
-/*}*/
-
-/*@for $i from 6 through 20 {*/
-/*  .z-#{$i} {*/
-/*    z-index: $i;*/
-/*  }*/
-/*}*/
 
 /* drag and drop */
 
@@ -218,103 +311,21 @@ p-editor {
   }
 }
 
-/* ~~~ Classes that are different in light vs. dark mode ~~~ */
-
 .bg-header-footer-alpha {
   background-color: color-mix(
     in srgb,
-    color-mix(in srgb, var(--color-surface-ground) 25%, var(--color-surface-0))
+    color-mix(
+        in srgb,
+        var(--color-app-background-color) 25%,
+        var(--color-neutral-0)
+      )
       80%,
     transparent
   );
 }
 
-.bg-highlight {
-  background-color: var(--yellow-highlight) !important;
-}
-
-.text-green {
-  color: var(--color-green-700);
-}
-
-.text-red {
-  color: var(--color-red-700);
-}
-
-.bg-green {
-  background: color-mix(
-    in srgb,
-    var(--color-green-300) 50%,
-    var(--color-surface-0)
-  );
-}
-
-.bg-red {
-  background: color-mix(
-    in srgb,
-    var(--color-red-300) 50%,
-    var(--color-surface-0)
-  );
-}
-
-.bg-none {
-  background: unset !important;
-}
-
-.border-ground {
-  border-color: var(--color-surface-ground);
-}
-
-.border-card {
-  border-color: var(--color-surface-card);
-}
-
 .hide-scrollbar {
   &::-webkit-scrollbar {
     display: none;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --yellow-highlight: var(--color-yellow-100);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --yellow-highlight: var(--color-yellow-900);
-  }
-
-  .bg-header-footer-alpha {
-    background-color: color-mix(
-      in srgb,
-      var(--color-surface-0) 80%,
-      transparent
-    );
-  }
-
-  .text-green {
-    color: var(--color-green-300);
-  }
-
-  .text-red {
-    color: var(--color-red-300);
-  }
-
-  .bg-green {
-    background: color-mix(
-      in srgb,
-      var(--color-green-700) 25%,
-      var(--color-surface-0)
-    );
-  }
-
-  .bg-red {
-    background: color-mix(
-      in srgb,
-      var(--color-red-700) 25%,
-      var(--color-surface-0)
-    );
   }
 }

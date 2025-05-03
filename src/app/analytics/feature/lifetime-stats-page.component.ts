@@ -81,7 +81,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ row.display_name }}
               </div>
@@ -99,7 +99,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         </ng-template>
       </p-table>
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

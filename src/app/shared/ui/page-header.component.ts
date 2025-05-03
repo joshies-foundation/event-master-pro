@@ -17,12 +17,12 @@ import { fromEvent, map } from 'rxjs';
   template: `
     <!-- Small Header Container -->
     <div
-      class="h-5.75rem mt-0 flex justify-between items-center fixed top-0 left-0 mb-0 pt-12 w-full z-40 border-b"
+      class="h-23 mt-0 flex justify-between items-center fixed top-0 left-0 mb-0 pt-12 w-full z-40 border-b"
       [ngClass]="[pagePaddingXCssClass, smallHeaderContainerDynamicClasses()]"
     >
       <!-- Small Header -->
       <p
-        class="duration-200 text-center w-full absolute left-0 m-0 font-semibold"
+        class="duration-200 text-center w-full absolute left-0 font-semibold"
         [ngClass]="smallHeaderDynamicClasses()"
       >
         {{ headerText() }}
@@ -40,7 +40,7 @@ import { fromEvent, map } from 'rxjs';
     @if (!alwaysSmall()) {
       <!-- Large Header -->
       <h1
-        class="mt-0 flex justify-between items-start w-full"
+        class="mb-5 flex justify-between items-start w-full text-[2rem] font-bold"
         [ngClass]="largeHeaderDynamicClasses()"
       >
         {{ headerText() }}
@@ -74,8 +74,8 @@ export class PageHeaderComponent {
 
   readonly smallHeaderContainerDynamicClasses = computed(() =>
     this.inSmallMode() && this.pageIsScrolledBeyondTop()
-      ? 'border-surface blur-background bg-header-footer-alpha'
-      : 'border-transparent bg-surface-50 dark:bg-surface-950',
+      ? 'border-standard-border-color blur-background bg-header-footer-alpha'
+      : 'border-transparent bg-app-background-color',
   );
 
   readonly largeHeaderDynamicClasses = computed(() =>
@@ -83,7 +83,7 @@ export class PageHeaderComponent {
   );
 
   readonly spacerDynamicClasses = computed(() =>
-    this.alwaysSmall() ? 'h-3.25rem' : 'h-4.25rem',
+    this.alwaysSmall() ? 'h-13' : 'h-17',
   );
 }
 

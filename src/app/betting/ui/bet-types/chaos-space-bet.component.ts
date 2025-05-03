@@ -39,29 +39,25 @@ import {
           placeholder="Select a chaos space event"
         />
       </label>
-      <div class="flex flex-wrap gap-4">
-        <div class="flex items-center">
-          <label class="ml-2">
-            <p-radioButton
-              name="chaosBetSubtype"
-              [value]="BetSubtype.NumberOfLosers"
-              [(ngModel)]="selectedChaosBetSubtype"
-              styleClass="w-full"
-            />
-            Number of Losers
-          </label>
-        </div>
-        <div class="flex items-center">
-          <label class="ml-2">
-            <p-radioButton
-              name="chaosBetSubtype"
-              [value]="BetSubtype.PlayerLoses"
-              [(ngModel)]="selectedChaosBetSubtype"
-              styleClass="w-full"
-            />
-            Selected Player's Result
-          </label>
-        </div>
+      <div class="flex flex-wrap gap-4 px-2">
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="chaosBetSubtype"
+            [value]="BetSubtype.NumberOfLosers"
+            [(ngModel)]="selectedChaosBetSubtype"
+            styleClass="w-full"
+          />
+          Number of Losers
+        </label>
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="chaosBetSubtype"
+            [value]="BetSubtype.PlayerLoses"
+            [(ngModel)]="selectedChaosBetSubtype"
+            styleClass="w-full"
+          />
+          Selected Player's Result
+        </label>
       </div>
       @switch (selectedChaosBetSubtype()) {
         @case (BetSubtype.NumberOfLosers) {
@@ -84,29 +80,25 @@ import {
           </label>
 
           <!-- Wins/Loses Radio Buttons -->
-          <div class="flex flex-wrap gap-4">
-            <div class="flex items-center">
-              <label class="ml-2">
-                <p-radioButton
-                  name="winsLoses"
-                  value="WINS"
-                  [(ngModel)]="selectedWinsLoses"
-                  styleClass="w-full"
-                />
-                Wins
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="ml-2">
-                <p-radioButton
-                  name="winsLoses"
-                  value="LOSES"
-                  [(ngModel)]="selectedWinsLoses"
-                  styleClass="w-full"
-                />
-                Loses
-              </label>
-            </div>
+          <div class="flex flex-wrap gap-4 px-2">
+            <label class="flex items-center gap-2">
+              <p-radioButton
+                name="winsLoses"
+                value="WINS"
+                [(ngModel)]="selectedWinsLoses"
+                styleClass="w-full"
+              />
+              Wins
+            </label>
+            <label class="flex items-center gap-2">
+              <p-radioButton
+                name="winsLoses"
+                value="LOSES"
+                [(ngModel)]="selectedWinsLoses"
+                styleClass="w-full"
+              />
+              Loses
+            </label>
           </div>
         }
       }

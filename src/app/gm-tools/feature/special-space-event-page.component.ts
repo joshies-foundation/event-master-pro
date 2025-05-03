@@ -206,10 +206,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.WaitingToBegin) {
                 @if (vm.specialSpaceEvent.template) {
-                  <h3 class="mt-8 mb-2">
+                  <h3 class="text-lg font-bold mt-8 mb-2">
                     {{ vm.specialSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-8 pre-wrap">{{
+                  <pre class="mb-8 pre-wrap">{{
                     vm.specialSpaceEvent.template.description
                   }}</pre>
 
@@ -227,10 +227,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.InProgress) {
                 @if (vm.specialSpaceEvent.template) {
-                  <h3 class="mt-8 mb-2">
+                  <h3 class="text-lg font-bold mt-8 mb-2">
                     {{ vm.specialSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mt-0 mb-8 pre-wrap">{{
+                  <pre class="mb-8 pre-wrap">{{
                     vm.specialSpaceEvent.template.description
                   }}</pre>
 
@@ -275,14 +275,14 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 }
               }
               @default {
-                <h3>
+                <h3 class="text-lg font-bold my-4">
                   {{
                     vm.specialSpaceEvent.template?.name ??
                       'Cannot find Special Space Event Template with ID ' +
                         vm.specialSpaceEvent.template_id
                   }}
                 </h3>
-                <h4>Results</h4>
+                <h4 class="font-bold">Results</h4>
                 <p>{{ vm.specialSpaceEvent.results | json }}</p>
               }
             }

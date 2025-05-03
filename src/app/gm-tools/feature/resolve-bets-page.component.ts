@@ -87,9 +87,7 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p
-                  class="italic text-center text-surface-500 dark:text-surface-300 mt-2 mb-6"
-                >
+                <p class="italic text-center text-neutral-500 mt-2 mb-6">
                   No active custom bets
                 </p>
               }
@@ -131,9 +129,7 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p
-                  class="italic text-center text-surface-500 dark:text-surface-300 mt-0 mb-2"
-                >
+                <p class="italic text-center text-neutral-500 mb-2">
                   No active auto-resolve bets
                 </p>
               }
@@ -167,9 +163,7 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p
-                  class="italic text-center text-surface-500 dark:text-surface-300 mt-0 mb-2"
-                >
+                <p class="italic text-center text-neutral-500 mb-2">
                   No bets pending acceptance
                 </p>
               }
@@ -182,11 +176,11 @@ import { CardComponent } from '../../shared/ui/card.component';
 
       @for (i of [1, 2]; track i) {
         <p-skeleton height="9rem" styleClass="mb-2" />
-        <div class="grid grid-cols-12 gap-4">
+        <div class="grid grid-cols-2 grid-rows-1 gap-4">
           <p-skeleton class="col" height="37px" />
           <p-skeleton class="col" height="37px" />
         </div>
-        <div class="grid grid-cols-12 gap-4 mb-4">
+        <div class="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
           <p-skeleton class="col" height="37px" />
           <p-skeleton class="col" height="37px" />
         </div>

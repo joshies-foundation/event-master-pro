@@ -54,7 +54,7 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
     @if (oldBankBalance() !== undefined; as player) {
       <joshies-card padded class="mt-8">
         <!-- Override Type -->
-        <p class="mt-0 mb-4">Override Type</p>
+        <p class="mb-4">Override Type</p>
         <div class="flex flex-col gap-4 mb-8">
           @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
             <label class="ml-2">

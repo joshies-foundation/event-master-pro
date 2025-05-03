@@ -25,10 +25,10 @@ import { TransactionModel } from '../../shared/util/supabase-types';
       >
         <tr>
           <td>
-            <p class="m-0">
+            <p>
               {{ transaction.description }}
             </p>
-            <p class="text-sm m-0 text-surface-400 dark:text-surface-400">
+            <p class="text-sm text-neutral-400">
               {{ transaction.created_at | date: 'short' }}
             </p>
           </td>

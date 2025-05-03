@@ -37,7 +37,7 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
       />
     </joshies-page-header>
 
-    <p class="mt-8">Dice rolls and spaces landed on each turn</p>
+    <p class="mt-8 mb-4">Dice rolls and spaces landed on each turn</p>
 
     @if (rollHistory(); as rollHistory) {
       <p-table
@@ -73,7 +73,7 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>
@@ -86,7 +86,7 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
             ) {
               <td>
                 <div
-                  class="flex items-center justify-center gap-4 text-surface-600 dark:text-surface-200"
+                  class="flex items-center justify-center gap-4 text-neutral-600"
                 >
                   {{ move.distance }}
                   @if (move.gameboard_space.color) {
@@ -101,7 +101,7 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
         </ng-template>
       </p-table>
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

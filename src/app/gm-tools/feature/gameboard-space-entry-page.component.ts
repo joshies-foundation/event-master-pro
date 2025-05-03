@@ -76,7 +76,7 @@ export type GameboardSpaceEntryFormModel = Record<
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <p class="mt-8">
+      <p class="mb-4 mt-8">
         Enter gameboard moves for turn
         <strong>{{ vm.roundNumber }}</strong>
       </p>
@@ -111,7 +111,7 @@ export type GameboardSpaceEntryFormModel = Record<
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>

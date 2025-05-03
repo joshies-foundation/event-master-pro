@@ -74,24 +74,26 @@ import {
       <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
         <ng-template pTemplate="message">
           <div class="block">
-            <p class="m-0">Are you sure you want submit these changes?</p>
+            <p>Are you sure you want submit these changes?</p>
 
             <!-- Before -->
-            <h4 class="mt-6 mb-2">Before</h4>
+            <h4 class="font-bold mt-6 mb-2">Before</h4>
             <div>
-              <h4 class="mt-0 mb-2">{{ originalGameboardSpace.name }} Space</h4>
-              <p class="text-sm text-surface-600 dark:text-surface-200">
+              <h4 class="font-bold mb-2">
+                {{ originalGameboardSpace.name }}
+              </h4>
+              <p class="my-4 text-sm text-neutral-600">
                 {{ originalGameboardSpace.description }}
               </p>
             </div>
 
             <!-- After -->
-            <h4 class="mt-4 mb-2">After</h4>
+            <h4 class="font-bold mb-2">After</h4>
             <div>
-              <h4 class="mt-0 mb-2">
+              <h4 class="font-bold mb-2">
                 {{ specialSpaceEventTemplateName() }}
               </h4>
-              <p class="text-sm text-surface-600 dark:text-surface-200">
+              <p class="my-4 text-sm text-neutral-600">
                 {{ specialSpaceEventTemplateFormValue().description }}
               </p>
             </div>

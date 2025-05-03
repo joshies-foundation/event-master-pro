@@ -96,9 +96,9 @@ import { Textarea } from 'primeng/textarea';
     </joshies-page-header>
 
     @if (loadMessage(); as loadMessage) {
-      <h4>{{ loadMessage }}</h4>
+      <h4 class="font-bold my-4">{{ loadMessage }}</h4>
     } @else {
-      <h4 class="mt-8">Your score: {{ userPlayer()?.score }}</h4>
+      <h4 class="font-bold mt-8 mb-4">Your score: {{ userPlayer()?.score }}</h4>
 
       <div class="flex flex-col gap-4">
         <joshies-card padded styleClass="flex flex-col gap-4">
@@ -117,7 +117,7 @@ import { Textarea } from 'primeng/textarea';
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
-                    styleClass="h-1.5rem w-1.5rem"
+                    styleClass="h-6 w-6"
                   />
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
@@ -127,7 +127,7 @@ import { Textarea } from 'primeng/textarea';
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
-                    styleClass="h-1.5rem w-1.5rem"
+                    styleClass="h-6 w-6"
                   />
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
@@ -270,7 +270,7 @@ import { Textarea } from 'primeng/textarea';
 
         <!-- Submit Button -->
         @if (cannotSubmitMessage(); as cannotSubmitMessage) {
-          <div class="text-sm text-red font-semibold">
+          <div class="text-sm text-danger-foreground font-semibold">
             {{ cannotSubmitMessage }}
           </div>
         }

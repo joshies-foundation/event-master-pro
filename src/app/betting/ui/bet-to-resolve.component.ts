@@ -15,7 +15,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
   template: `
     <joshies-bet [bet]="bet()" />
 
-    <div class="grid grid-cols-12 gap-4 mt-2">
+    <div class="grid grid-rows-2 grid-cols-2 gap-4 mt-4">
       <!-- Requester Wins Button -->
       <p-button
         [label]="bet().requester?.display_name + ' Wins'"
@@ -41,9 +41,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
         [disabled]="submitting()"
         (onClick)="onOpponentWinsButtonClick()"
       />
-    </div>
 
-    <div class="grid grid-cols-12 gap-4">
       <!-- Push Button -->
       <p-button
         label="Push"
@@ -64,6 +62,8 @@ import { BetComponent } from '../../shared/ui/bet.component';
         icon="pi pi-times"
         class="col"
         styleClass="w-full"
+        [class.row-span-2]="bet().status === BetStatus.PendingAcceptance"
+        [class.col-span-2]="bet().status === BetStatus.PendingAcceptance"
         [loading]="submitting() && bet().id === cancelingBetId()"
         [disabled]="submitting()"
         (onClick)="onCancelBetButtonClick()"

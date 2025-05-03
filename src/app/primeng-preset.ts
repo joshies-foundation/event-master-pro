@@ -18,9 +18,6 @@ export const preset = definePreset(Aura, {
           900: '{blue.900}',
           950: '{blue.950}',
         },
-        surface: {
-          ground: '#f3f2f8',
-        },
       },
       dark: {
         primary: {
@@ -35,9 +32,6 @@ export const preset = definePreset(Aura, {
           800: '{yellow.800}',
           900: '{yellow.900}',
           950: '{yellow.950}',
-        },
-        surface: {
-          ground: '#000000',
         },
       },
     },

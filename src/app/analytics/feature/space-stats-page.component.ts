@@ -38,7 +38,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
       />
     </joshies-page-header>
 
-    <p class="mt-8">How many times each player landed on each space</p>
+    <p class="mt-8 mb-4">How many times each player landed on each space</p>
 
     @if (spaceStats(); as spaceStats) {
       <!-- Lifetime Rankings Table -->
@@ -77,7 +77,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>
@@ -88,7 +88,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
                 @if (player.space_stats[space.id]; as numTimesLandedOnSpace) {
                   {{ numTimesLandedOnSpace | number }}
                 } @else {
-                  <span class="text-surface-300 dark:text-surface-500">–</span>
+                  <span class="text-neutral-300">–</span>
                 }
               </td>
             }
@@ -96,7 +96,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
         </ng-template>
       </p-table>
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -69,7 +69,7 @@ import { RouterLink } from '@angular/router';
           </tr>
         } @empty {
           <tr>
-            <td class="italic text-surface-600 dark:text-surface-200">
+            <td class="italic text-neutral-600">
               No {{ spaceType() }} space events for this turn
             </td>
           </tr>

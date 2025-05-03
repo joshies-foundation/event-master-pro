@@ -47,20 +47,20 @@ import {
     <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
       <ng-template pTemplate="message">
         <div class="block">
-          <p class="mt-0 mb-6">
+          <p class="mb-6">
             Are you sure you want to create the Special Space Event
             <strong>{{ specialSpaceEventTemplateName() }}</strong
             >?
           </p>
 
-          <h4 class="mt-0 mb-2">
+          <h4 class="font-bold mb-2">
             {{ specialSpaceEventTemplateName() }}
           </h4>
-          <p class="m-0 text-sm text-surface-600 dark:text-surface-200">
+          <p class="m-0 text-sm text-neutral-600">
             {{ specialSpaceEventTemplateFormValue().description }}
           </p>
 
-          <p class="mt-6 text-primary italic text-sm">
+          <p class="mb-4 mt-6 text-primary italic text-sm">
             (Note: This event will not be available until it is added to a
             Special Space in the
             <strong>Manage Gameboard Space Types</strong> page)

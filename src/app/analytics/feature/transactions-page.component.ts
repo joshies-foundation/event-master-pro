@@ -32,16 +32,12 @@ import { TransactionTableComponent } from '../ui/transaction-table.component';
           class="block mt-8 mb-20"
         />
       } @else {
-        <p
-          class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
-        >
+        <p class="mt-12 pt-12 text-center text-neutral-500 italic">
           No transactions yet
         </p>
       }
     } @else if (transactions() === null) {
-      <p
-        class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
-      >
+      <p class="mt-12 pt-12 text-center text-neutral-500 italic">
         You are not a player in this session
       </p>
     } @else {

@@ -39,7 +39,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
     >
       <ng-template let-node pTemplate="node">
         <div class="flex items-center rotate-180 w-40 h-8">
-          <span class="text-xs text-surface-400 dark:text-surface-400 mr-1">{{
+          <span class="text-xs text-neutral-400 mr-1">{{
             node.data?.seed
           }}</span>
           <p-avatarGroup styleClass="mr-1">
@@ -50,7 +50,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
               <p-avatar [image]="participant.avatar_url" shape="circle" />
             }
           </p-avatarGroup>
-          <span class="text-surface-800 dark:text-surface-50 text-sm">
+          <span class="text-neutral-800text-sm">
             {{ node.data.participants | participantList }}
           </span>
           @if (node.checked) {

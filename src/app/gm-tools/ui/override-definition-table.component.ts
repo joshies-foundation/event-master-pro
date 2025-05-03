@@ -39,7 +39,7 @@ export interface OverrideDefinitionTableModel {
         <tr>
           <td>Before</td>
           <td
-            class="text-right text-surface-400 dark:text-surface-400"
+            class="text-right text-neutral-400"
             [ngClass]="oldScorePaddingClass()"
           >
             <span class="mr-1">{{ model().oldScore | number }}</span>
@@ -108,15 +108,13 @@ export interface OverrideDefinitionTableModel {
     </table>
   `,
   styles: `
-    $tableBorder: 1px solid var(--surface-50);
-
     table {
       width: 100%;
       border-collapse: collapse;
 
       td {
-        border-top: $tableBorder;
-        border-bottom: $tableBorder;
+        border-top: var(--color-neutral-50);
+        border-bottom: var(--color-neutral-50);
         padding: 0.75rem 1rem;
       }
     }

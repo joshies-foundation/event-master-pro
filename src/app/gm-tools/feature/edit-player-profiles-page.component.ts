@@ -64,13 +64,13 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                     [ngSrc]="player.avatar_url"
                     width="32"
                     height="32"
-                    class="rounded-full bg-surface-100 dark:bg-surface-700"
+                    class="size-8 rounded-full bg-neutral-100"
                     alt=""
                   />
                 }
                 <div>
-                  <p class="m-0">{{ player.display_name }}</p>
-                  <p class="m-0 text-surface-500 dark:text-surface-300 text-xs">
+                  <p>{{ player.display_name }}</p>
+                  <p class="m-0 text-neutral-500 text-xs">
                     {{ player.real_name }}
                   </p>
                 </div>

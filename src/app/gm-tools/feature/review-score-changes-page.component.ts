@@ -53,11 +53,9 @@ import { EventService } from '../../shared/data-access/event.service';
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="mt-12">
+      <h4 class="font-bold mt-12 mb-4">
         Session points for round {{ vm.roundNumber }} of {{ vm.numRounds }}
-        <span class="text-surface-500 dark:text-surface-300 italic"
-          >(Draft)</span
-        >
+        <span class="text-neutral-500 italic">(Draft)</span>
       </h4>
 
       <p-table
@@ -90,13 +88,13 @@ import { EventService } from '../../shared/data-access/event.service';
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 {{ player.display_name }}
               </div>
             </td>
             <!-- Before -->
-            <td class="text-right text-surface-400 dark:text-surface-400">
+            <td class="text-right text-neutral-400">
               {{ player.score | number }}
             </td>
             <!-- Change -->

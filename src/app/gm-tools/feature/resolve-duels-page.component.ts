@@ -84,17 +84,13 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
                 <joshies-status-tag [status]="duel.status" />
               </td>
               <td class="px-1">
-                <i
-                  class="pi pi-angle-right text-surface-400 dark:text-surface-400"
-                ></i>
+                <i class="pi pi-angle-right text-neutral-400"></i>
               </td>
             </tr>
           </ng-template>
         </p-table>
       } @else {
-        <p
-          class="my-12 py-12 text-center text-surface-500 dark:text-surface-300 italic"
-        >
+        <p class="my-12 py-12 text-center text-neutral-500 italic">
           No duels for this turn
         </p>
       }

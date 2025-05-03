@@ -79,9 +79,9 @@ enum TeamIds {
 
     @if (!submitting() && eventTeamsWithParticipantInfo(); as teams) {
       <!-- Unassigned players -->
-      <p class="mb-1">Unassigned Players</p>
+      <p class="mt-4 mb-1">Unassigned Players</p>
       <div
-        class="flex flex-wrap border border-surface-200 dark:border-surface-600 rounded-md bg-surface-50 dark:bg-surface-800 relative"
+        class="flex flex-wrap border border-neutral-200 rounded-md bg-neutral-50 relative"
         style="min-height: 3.2rem;"
         [id]="DropListIds.UnassignedTeam"
         cdkDropList
@@ -95,7 +95,7 @@ enum TeamIds {
           let first = $first
         ) {
           <div
-            class="flex rounded-md p-2 m-1 text-color no-underline bg-surface-200 dark:bg-surface-600"
+            class="flex rounded-md p-2 m-1 bg-neutral-200"
             cdkDrag
             [cdkDragData]="participant"
             [cdkDragDisabled]="!userIsGameMaster()"
@@ -105,27 +105,25 @@ enum TeamIds {
               alt=""
               width="24"
               height="24"
-              class="self-center rounded-full bg-surface-100 dark:bg-surface-700 mr-1"
+              class="size-6 self-center rounded-full bg-neutral-100 mr-1"
             />
             <span class="self-center">
               {{ participant.display_name }}
             </span>
             <div
-              class="absolute top-0 left-0 w-full h-full rounded-md bg-surface-300 dark:bg-surface-500"
+              class="absolute top-0 left-0 w-full h-full rounded-md bg-neutral-300"
               *cdkDragPlaceholder
             ></div>
           </div>
         } @empty {
-          <p
-            class="self-center text-surface-400 dark:text-surface-400 ml-2 my-0"
-          >
+          <p class="self-center text-neutral-400 ml-2">
             Drag players here to remove them from a team
           </p>
         }
       </div>
 
       <!-- Event Teams -->
-      <p class="mb-0">Teams</p>
+      <p class="mt-4">Teams</p>
 
       <!-- Drop List for Reordering Teams -->
       <div cdkDropList (cdkDropListDropped)="onEventTeamDrop($event)">
@@ -139,14 +137,14 @@ enum TeamIds {
               @if (userIsGameMaster()) {
                 <div class="flex" cdkDragHandle>
                   <i
-                    class="pi pi-bars text-surface-300 dark:text-surface-500 pl-2 pr-4 self-center"
+                    class="pi pi-bars text-neutral-300 pl-2 pr-4 self-center"
                   ></i>
                 </div>
               }
 
               <!-- Drop List for Adding/Removing Players from Teams -->
               <div
-                class="flex grow border border-surface-200 dark:border-surface-600 rounded-md my-2 bg-surface-50 dark:bg-surface-800 relative"
+                class="flex grow border border-neutral-200 rounded-md my-2 bg-neutral-50 relative"
                 style="min-height: 3.2rem;"
                 [id]="team.id!.toString()"
                 cdkDropList
@@ -154,9 +152,7 @@ enum TeamIds {
                 [cdkDropListData]="team"
                 (cdkDropListDropped)="onEventParticipantDrop($event)"
               >
-                <p
-                  class="self-center text-sm text-surface-400 dark:text-surface-400 px-2 my-0"
-                >
+                <p class="self-center text-sm text-neutral-400 px-2">
                   {{ index }}
                 </p>
                 <div class="flex flex-wrap">
@@ -166,7 +162,7 @@ enum TeamIds {
                     let first = $first
                   ) {
                     <div
-                      class="flex rounded-md p-2 m-1 text-color no-underline bg-surface-200 dark:bg-surface-600"
+                      class="flex rounded-md p-2 m-1 bg-neutral-200"
                       cdkDrag
                       [cdkDragData]="participant"
                     >
@@ -175,32 +171,32 @@ enum TeamIds {
                         alt=""
                         width="24"
                         height="24"
-                        class="rounded-full bg-surface-100 dark:bg-surface-700 mr-1"
+                        class="size-6 rounded-full bg-neutral-100 mr-1"
                       />
                       <span class="self-center">
                         {{ participant.display_name }}
                       </span>
                       <div
-                        class="absolute top-0 left-0 w-full h-full rounded-md bg-surface-300 dark:bg-surface-500"
+                        class="absolute top-0 left-0 w-full h-full rounded-md bg-neutral-300"
                         *cdkDragPlaceholder
                       ></div>
                     </div>
                   } @empty {
-                    <p class="italic text-surface-400 dark:text-surface-400">
+                    <p class="italic text-neutral-400">
                       Oops, I shouldn't be here...
                     </p>
                   }
                 </div>
               </div>
               <div
-                class="bg-surface-200 dark:bg-surface-600 h-12 w-full draggable-event-team"
+                class="bg-neutral-200 h-12 w-full draggable-event-team"
                 *cdkDragPlaceholder
               ></div>
             </div>
           }
         }
         <div
-          class="flex border border-surface-200 dark:border-surface-600 rounded-md bg-surface-50 dark:bg-surface-800 mt-2 relative"
+          class="flex border border-neutral-200 rounded-md bg-neutral-50 mt-2 relative"
           style="min-height: 3.2rem;"
           [id]="DropListIds.NewTeam"
           cdkDropList
@@ -208,17 +204,13 @@ enum TeamIds {
           [cdkDropListData]="teams[teams.length - 1]"
           (cdkDropListDropped)="onEventParticipantDrop($event)"
         >
-          <p
-            class="self-center text-surface-400 dark:text-surface-400 ml-2 my-0"
-          >
+          <p class="self-center text-neutral-400 ml-2">
             Drag players here to create a new team
           </p>
         </div>
       </div>
     } @else if (databaseEventTeams === null) {
-      <p
-        class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
-      >
+      <p class="mt-12 pt-12 text-center text-neutral-500 italic">
         No active session
       </p>
     } @else {

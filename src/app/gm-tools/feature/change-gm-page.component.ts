@@ -48,7 +48,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       />
     </joshies-page-header>
 
-    <p class="mt-8">Who do you want to be the new GM?</p>
+    <p class="mb-4 mt-8">Who do you want to be the new GM?</p>
 
     @if (users(); as users) {
       <p-table
@@ -73,11 +73,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
                   alt=""
                   width="32"
                   height="32"
-                  class="rounded-full bg-surface-100 dark:bg-surface-700"
+                  class="size-8 rounded-full bg-neutral-100"
                 />
                 <div>
-                  <p class="m-0">{{ user.display_name }}</p>
-                  <p class="m-0 text-surface-500 dark:text-surface-300 text-xs">
+                  <p>{{ user.display_name }}</p>
+                  <p class="m-0 text-neutral-500 text-xs">
                     {{ user.real_name }}
                   </p>
                 </div>

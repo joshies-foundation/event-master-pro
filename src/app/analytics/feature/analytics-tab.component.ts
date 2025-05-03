@@ -23,9 +23,9 @@ import { DividerModule } from 'primeng/divider';
 import { RouterLink } from '@angular/router';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 
-const textColor = getCssVariableValue('--color-text-color');
-const textColorSecondary = getCssVariableValue('--color-text-color-secondary');
-const surfaceBorder = getCssVariableValue('--color-surface-border');
+const textColor = getCssVariableValue('--color-foreground');
+const textColorMuted = getCssVariableValue('--color-muted-color');
+const borderColor = getCssVariableValue('--color-standard-border-color');
 
 const numTransactionsToShow = 3;
 
@@ -61,7 +61,9 @@ const numTransactionsToShow = 3;
               height="20rem"
             />
           } @else if (playerRoundScoresResponse().error) {
-            <h4 class="mt-0 text-red">Error Loading Chart:</h4>
+            <h4 class="font-bold text-danger-foreground">
+              Error Loading Chart:
+            </h4>
             <p>{{ playerRoundScoresResponse().error }}</p>
           }
         </joshies-card>
@@ -82,7 +84,7 @@ const numTransactionsToShow = 3;
                   label="All Transactions"
                   icon="pi pi-angle-right"
                   iconPos="right"
-                  class="block border-t border-surface pb-1"
+                  class="block border-t border-standard-border-color pb-1"
                   styleClass="w-full my-2"
                   routerLink="transactions"
                   severity="secondary"
@@ -90,9 +92,7 @@ const numTransactionsToShow = 3;
                 />
               }
             } @else {
-              <p
-                class="pt-4 pb-4 text-center text-surface-500 dark:text-surface-300 italic"
-              >
+              <p class="pt-4 pb-4 text-center text-neutral-500 italic">
                 No transactions yet
               </p>
             }
@@ -207,18 +207,18 @@ export default class AnalyticsTabComponent {
     scales: {
       x: {
         ticks: {
-          color: textColorSecondary,
+          color: textColorMuted,
         },
         grid: {
-          color: surfaceBorder,
+          color: borderColor,
         },
       },
       y: {
         ticks: {
-          color: textColorSecondary,
+          color: textColorMuted,
         },
         grid: {
-          color: surfaceBorder,
+          color: borderColor,
         },
       },
     },

@@ -25,19 +25,17 @@ import { Button } from 'primeng/button';
           alt=""
           height="48"
           width="48"
-          class="rounded-border"
+          class="rounded-border size-12"
         />
 
         <div class="grow">
-          <h4 class="mt-0 mb-1">{{ event().name }}</h4>
-          <p class="m-0 text-surface-500 dark:text-surface-300 text-sm">
+          <h4 class="font-bold mb-1">{{ event().name }}</h4>
+          <p class="m-0 text-neutral-500 text-sm">
             {{ event().description }}
           </p>
         </div>
         @if (!readOnly()) {
-          <i
-            class="pi pi-angle-right ml-2 text-surface-300 dark:text-surface-500 self-center"
-          ></i>
+          <i class="pi pi-angle-right ml-2 text-neutral-300 self-center"></i>
         }
       </div>
 

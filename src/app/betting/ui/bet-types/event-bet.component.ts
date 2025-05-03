@@ -44,33 +44,29 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       </label>
 
       <!-- Subtype Radio Buttons -->
-      <div class="flex flex-wrap gap-4">
-        <div class="flex items-center">
-          <label class="ml-2">
-            <p-radioButton
-              name="eventBetSubtype"
-              [value]="BetSubtype.TeamPosition"
-              [(ngModel)]="selectedEventBetSubtype"
-              styleClass="w-full"
-            />
-            Team Position
-          </label>
-        </div>
+      <div class="flex flex-wrap gap-4 px-2">
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="eventBetSubtype"
+            [value]="BetSubtype.TeamPosition"
+            [(ngModel)]="selectedEventBetSubtype"
+            styleClass="w-full"
+          />
+          Team Position
+        </label>
         @if (
           selectedMainEventSignal()?.format ===
           EventFormat.ScoreBasedSingleRound
         ) {
-          <div class="flex items-center">
-            <label class="ml-2">
-              <p-radioButton
-                name="eventBetSubtype"
-                [value]="BetSubtype.Score"
-                [(ngModel)]="selectedEventBetSubtype"
-                styleClass="w-full"
-              />
-              Score
-            </label>
-          </div>
+          <label class="flex items-center gap-2">
+            <p-radioButton
+              name="eventBetSubtype"
+              [value]="BetSubtype.Score"
+              [(ngModel)]="selectedEventBetSubtype"
+              styleClass="w-full"
+            />
+            Score
+          </label>
         }
       </div>
 

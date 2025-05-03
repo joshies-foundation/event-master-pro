@@ -20,11 +20,11 @@ import { getUserBetData } from '../../shared/util/bet-helpers';
       [showRequestWarning]="true"
     />
     @if (betCannotBeAccepted()) {
-      <p class="text-sm text-red font-semibold">
+      <p class="my-4 text-sm text-danger-foreground font-semibold">
         {{ betCannotBeAcceptedMessage() }}
       </p>
     }
-    <div class="grid grid-cols-12 gap-4 mt-1">
+    <div class="grid grid-rows-1 grid-cols-2 gap-4 mt-4">
       <p-button
         label="Accept"
         icon="pi pi-check"

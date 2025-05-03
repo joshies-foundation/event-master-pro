@@ -44,7 +44,15 @@ export const appConfig: ApplicationConfig = {
 
     // PrimeNG
     providePrimeNG({
-      theme: { preset },
+      theme: {
+        preset,
+        options: {
+          cssLayer: {
+            name: 'primeng',
+            order: 'theme, base, primeng',
+          },
+        },
+      },
     }),
     MessageService,
     ConfirmationService,

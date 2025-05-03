@@ -17,9 +17,9 @@ export interface FooterLinkModel {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a
-      class="flex flex-col justify-center items-center gap-1 no-underline text-surface-600 dark:text-surface-200"
+      class="flex flex-col justify-center items-center gap-1 text-neutral-600 leading-none"
       [routerLink]="model().href"
-      routerLinkActive="text-primary-500"
+      routerLinkActive="text-primary-500!"
       #rla="routerLinkActive"
     >
       @if (model().badgeValue; as badgeValue) {
@@ -27,7 +27,7 @@ export interface FooterLinkModel {
           pBadge
           [value]="badgeValue"
           severity="danger"
-          badgeStyleClass="h-4 w-4 min-w-0 leading-tight"
+          badgeStyleClass="h-4 w-4 min-w-0 leading-tight font-sans"
           [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
         ></i>
       } @else {
@@ -35,7 +35,7 @@ export interface FooterLinkModel {
           [ngClass]="rla.isActive ? model().iconClassFill : model().iconClass"
         ></i>
       }
-      <span class="text-xs">{{ model().text }}</span>
+      <span class="text-xs leading-tight">{{ model().text }}</span>
     </a>
   `,
 })

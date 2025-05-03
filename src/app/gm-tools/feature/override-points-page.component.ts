@@ -63,19 +63,17 @@ import { CheckboxModule } from 'primeng/checkbox';
 
     @if (player(); as player) {
       <!-- Player Header -->
-      <h2 class="flex items-center gap-4 mt-12 mb-8">
+      <h2 class="font-bold flex items-center gap-4 mt-12 mb-8">
         <img
           [ngSrc]="player.avatar_url"
           alt=""
           height="48"
           width="48"
-          class="rounded-full bg-surface-100 dark:bg-surface-700"
+          class="rounded-full bg-neutral-100 size-12"
         />
         <div>
-          <p class="m-0">{{ player.display_name }}</p>
-          <p
-            class="m-0 text-surface-500 dark:text-surface-300 text-base font-normal"
-          >
+          <p>{{ player.display_name }}</p>
+          <p class="m-0 text-neutral-500 text-base font-normal">
             {{ player.real_name }}
           </p>
         </div>
@@ -83,7 +81,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 
       <joshies-card padded>
         <!-- Override Type -->
-        <p class="mt-0 mb-4">Override Type</p>
+        <p class="mb-4">Override Type</p>
         <div class="flex flex-col gap-4 mb-8">
           @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
             <label class="ml-2">

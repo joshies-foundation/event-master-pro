@@ -58,7 +58,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
       <ng-template pTemplate="message">
         <div class="block">
-          <p class="mt-0 mb-6">
+          <p class="mb-6">
             Are you sure you want to create the
             <strong>{{ gameboardSpaceName() }} Space</strong>?
           </p>
@@ -66,9 +66,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
           <div class="flex gap-4">
             <joshies-gameboard-space [model]="gameboardSpaceFormValue()" />
             <div>
-              <h4 class="mt-0 mb-2">{{ gameboardSpaceName() }} Space</h4>
+              <h4 class="font-bold mb-2">{{ gameboardSpaceName() }} Space</h4>
               <div
-                class="text-sm text-surface-600 dark:text-surface-200"
+                class="text-sm text-neutral-600"
                 [innerHtml]="
                   gameboardSpacePreviewData() | gameboardSpaceDescription
                 "

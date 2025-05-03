@@ -44,19 +44,21 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
     @if (playerDuelStatsSortedByAverage(); as playerDuelStats) {
       @for (player of playerDuelStats; track player.user_id) {
         <div
-          class="bg-surface-0 dark:bg-surface-900 rounded-lg px-4 py-6 mt-8"
+          class="bg-neutral-0 rounded-lg px-4 py-6 mt-8"
           [class.bg-highlight]="player.user_id === userId()"
+          [class.border-highlight]="player.user_id === userId()"
+          [class.border-1]="player.user_id === userId()"
         >
           <!-- Player -->
           <div
-            class="flex flex-col items-center justify-center gap-2 mb-4 text-xl font-semibold pb-4 border-surface-200 dark:border-surface-600 border-b"
+            class="flex flex-col items-center justify-center gap-2 mb-4 text-xl font-semibold pb-4 border-neutral-200 border-b"
           >
             <img
               [ngSrc]="player.avatar_url"
               alt=""
               width="48"
               height="48"
-              class="rounded-full bg-surface-100 dark:bg-surface-700"
+              class="size-12 rounded-full bg-neutral-100"
             />
             {{ player.display_name }}
           </div>
@@ -64,16 +66,12 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
           <table class="mx-auto">
             <tbody class="text-right">
               <tr>
-                <td class="pb-1 pr-2 text-surface-600 dark:text-surface-200">
-                  Total Duels:
-                </td>
+                <td class="pb-1 pr-2 text-neutral-600">Total Duels:</td>
                 <td class="pb-1 pr-8 font-semibold">
                   {{ player.num_duels_participated | number }}
                 </td>
 
-                <td class="pb-1 pr-2 text-surface-600 dark:text-surface-200">
-                  Duels Won:
-                </td>
+                <td class="pb-1 pr-2 text-neutral-600">Duels Won:</td>
                 <td
                   class="pb-1 pr-2 font-semibold"
                   [ngClass]="player.num_duels_won | numberSignColorClass"
@@ -83,9 +81,7 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
               </tr>
               <tr></tr>
               <tr>
-                <td class="pt-1 pr-2 text-surface-600 dark:text-surface-200">
-                  Average:
-                </td>
+                <td class="pt-1 pr-2 text-neutral-600">Average:</td>
                 <td class="pt-1 pr-8 font-semibold">
                   {{
                     (player.num_duels_won / player.num_duels_participated
@@ -93,9 +89,7 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
                   }}
                 </td>
 
-                <td class="pt-1 pr-2 text-surface-600 dark:text-surface-200">
-                  Duels Lost:
-                </td>
+                <td class="pt-1 pr-2 text-neutral-600">Duels Lost:</td>
                 <td
                   class="pt-1 pr-2 font-semibold"
                   [ngClass]="
@@ -125,7 +119,7 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
         </div>
       }
     } @else {
-      <p class="text-red700">Error loading data</p>
+      <p class="text-danger-foreground">Error loading data</p>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

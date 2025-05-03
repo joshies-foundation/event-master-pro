@@ -22,11 +22,13 @@ export class PlayerDuelStatsChartDataPipe implements PipeTransform {
           maxBarThickness,
           borderWidth,
           borderRadius,
-          backgroundColor: `${getCssVariableValue('--color-green-500')}40`,
-          borderColor: getCssVariableValue('--color-green-500'),
+          backgroundColor: getCssVariableValue(
+            '--color-success-background-translucent',
+          ),
+          borderColor: getCssVariableValue('--color-success-foreground'),
           datalabels: {
             display: player.total_points_won !== 0,
-            color: getCssVariableValue('--color-text-color'),
+            color: getCssVariableValue('--color-foreground'),
           },
         },
         {
@@ -35,11 +37,13 @@ export class PlayerDuelStatsChartDataPipe implements PipeTransform {
           maxBarThickness,
           borderWidth,
           borderRadius,
-          backgroundColor: `${getCssVariableValue('--color-red-500')}40`,
-          borderColor: getCssVariableValue('--color-red-500'),
+          backgroundColor: getCssVariableValue(
+            '--color-danger-background-translucent',
+          ),
+          borderColor: getCssVariableValue('--color-danger-foreground'),
           datalabels: {
             display: player.total_points_lost !== 0,
-            color: getCssVariableValue('--color-text-color'),
+            color: getCssVariableValue('--color-foreground'),
           },
         },
       ],

@@ -41,7 +41,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
       <ng-template pTemplate="message">
         <div class="block">
-          <p class="mt-0 mb-6">
+          <p class="mb-6">
             Are you sure you want to submit changes for
             {{ originalEvent()?.name ?? 'this event' }}?
           </p>

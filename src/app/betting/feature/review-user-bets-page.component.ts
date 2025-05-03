@@ -39,7 +39,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 
     @if (bets()?.length) {
       @if (bets(); as bets) {
-        <p class="mt-8">Review bets that are open or awaiting approval.</p>
+        <p class="mb-4 mt-8">Review bets that are open or awaiting approval.</p>
         <p-table
           [value]="bets"
           [defaultSortOrder]="-1"
@@ -114,7 +114,7 @@ import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
         </p-table>
       }
     } @else {
-      <p class="text-surface-500 dark:text-surface-300 italic text-center mt-8">
+      <p class="mb-4 text-neutral-500 italic text-center mt-8">
         No open or pending bets
       </p>
     }

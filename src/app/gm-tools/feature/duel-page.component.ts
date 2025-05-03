@@ -86,9 +86,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
           <div>
             <!-- Players -->
             <div class="mt-8 flex items-center justify-center gap-4">
-              <div
-                class="flex flex-col items-center gap-1 text-surface-500 dark:text-surface-300"
-              >
+              <div class="flex flex-col items-center gap-1 text-neutral-500">
                 <p-avatar
                   size="xlarge"
                   shape="circle"
@@ -100,9 +98,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               <span class="mb-6">vs.</span>
 
               @if (vm.duel.opponent; as opponent) {
-                <div
-                  class="flex flex-col items-center gap-1 text-surface-500 dark:text-surface-300"
-                >
+                <div class="flex flex-col items-center gap-1 text-neutral-500">
                   <p-avatar
                     size="xlarge"
                     shape="circle"
@@ -112,7 +108,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 </div>
               } @else {
                 <i
-                  class="pi pi-question-circle text-6xl text-surface-300 dark:text-surface-500 mb-6"
+                  class="pi pi-question-circle text-6xl text-neutral-300 mb-6"
                 ></i>
               }
             </div>
@@ -185,7 +181,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 />
               }
               @case (DuelStatus.GameNotSelected) {
-                <p class="mt-8 text-surface-500 dark:text-surface-300">
+                <p class="mb-4 mt-8 text-neutral-500">
                   Wager:
                   <span class="font-bold">
                     {{ vm.duel.wager_percentage }}%
@@ -216,9 +212,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 }
               }
               @case (DuelStatus.WaitingToBegin) {
-                <h2 class="mt-8 mb-2">{{ vm.duel.game_name }}</h2>
+                <h2 class="font-bold mt-8 mb-2">{{ vm.duel.game_name }}</h2>
 
-                <p class="mt-0 text-surface-500 dark:text-surface-300">
+                <p class="mb-4 text-neutral-500">
                   Wager:
                   <span class="font-bold">
                     {{ vm.duel.wager_percentage }}%
@@ -236,9 +232,9 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 />
               }
               @case (DuelStatus.InProgress) {
-                <h2 class="mt-8 mb-2">{{ vm.duel.game_name }}</h2>
+                <h2 class="font-bold mt-8 mb-2">{{ vm.duel.game_name }}</h2>
 
-                <p class="mt-0 text-surface-500 dark:text-surface-300">
+                <p class="mb-4 text-neutral-500">
                   Wager:
                   <span class="font-bold">
                     {{ vm.duel.wager_percentage }}%
@@ -329,7 +325,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
           }
         </div>
       } @else {
-        <p class="mt-8">
+        <p class="mb-4 mt-8">
           No special space event found with ID
           <strong>{{ vm.duelId }}</strong>
         </p>

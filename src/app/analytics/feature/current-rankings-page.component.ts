@@ -38,9 +38,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
           class="block mt-8 mb-20"
         />
       } @else {
-        <p
-          class="mt-12 pt-12 text-center text-surface-500 dark:text-surface-300 italic"
-        >
+        <p class="mt-12 pt-12 text-center text-neutral-500 italic">
           No active session
         </p>
       }

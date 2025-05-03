@@ -27,7 +27,7 @@ export const confirmOverrideDialogKey = 'confirm-override';
       <ng-template pTemplate="message" let-message>
         <div>
           <!-- Prompt -->
-          <p class="mt-0 mb-6">
+          <p class="mb-6">
             Do you want to submit this override for
             <strong>{{ model().player.display_name }}</strong
             >?
@@ -38,7 +38,7 @@ export const confirmOverrideDialogKey = 'confirm-override';
 
           <!-- Comment -->
           @if (model().comment) {
-            <p class="italic text-surface-500 dark:text-surface-300 mx-4 mb-0">
+            <p class="italic text-neutral-500 mx-4">
               GM Discretion: {{ model().comment }}
             </p>
           }
@@ -47,15 +47,13 @@ export const confirmOverrideDialogKey = 'confirm-override';
     </p-confirmDialog>
   `,
   styles: `
-    $tableBorder: 1px solid var(--surface-50);
-
     table {
       width: 100%;
       border-collapse: collapse;
 
       td {
-        border-top: $tableBorder;
-        border-bottom: $tableBorder;
+        border-top: var(--color-neutral-50);
+        border-bottom: var(--color-neutral-50);
         padding: 0.75rem 1rem;
       }
     }

@@ -18,7 +18,7 @@ export const confirmPlaceBetDialogKey = 'confirm-place-bet';
       <ng-template pTemplate="message" let-message>
         <div>
           <!-- Prompt -->
-          <p class="mt-0 mb-6">Do you want to submit this bet request?</p>
+          <p class="mb-6">Do you want to submit this bet request?</p>
 
           <!-- Bet Preview -->
           <joshies-bet [bet]="bet()" [userPlayerId]="userPlayerId()" />
