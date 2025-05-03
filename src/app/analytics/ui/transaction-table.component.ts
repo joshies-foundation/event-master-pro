@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { trackById } from '../../shared/util/supabase-helpers';
 import { DatePipe } from '@angular/common';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
-import { PrimeTemplate } from 'primeng/api';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { TableModule } from 'primeng/table';
 import { TransactionModel } from '../../shared/util/supabase-types';
@@ -12,7 +11,6 @@ import { TransactionModel } from '../../shared/util/supabase-types';
   imports: [
     DatePipe,
     NumberWithSignAndColorPipe,
-    PrimeTemplate,
     StronglyTypedTableRowDirective,
     TableModule,
   ],
