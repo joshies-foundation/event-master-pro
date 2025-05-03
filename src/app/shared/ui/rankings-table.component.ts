@@ -1,4 +1,4 @@
-import { CommonModule, NgClass } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -10,12 +10,12 @@ import { ImageModule } from 'primeng/image';
 @Component({
   selector: 'joshies-rankings-table',
   imports: [
-    CommonModule,
     TableModule,
     NgClass,
     FormsModule,
     StronglyTypedTableRowDirective,
     ImageModule,
+    DecimalPipe,
   ],
   template: `
     <!-- Rankings Table -->

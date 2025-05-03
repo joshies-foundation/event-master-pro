@@ -5,7 +5,6 @@ import {
   OnInit,
   Renderer2,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { pagePaddingXCssClass } from './shared/util/css-helpers';
@@ -14,7 +13,7 @@ import { SquidwardService } from './shared/data-access/squidward.service';
 
 @Component({
   selector: 'joshies-root',
-  imports: [CommonModule, RouterOutlet, ToastModule],
+  imports: [RouterOutlet, ToastModule],
   template: `
     <router-outlet />
     <p-toast

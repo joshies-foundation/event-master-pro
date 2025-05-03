@@ -1,11 +1,11 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  booleanAttribute,
   computed,
   input,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { FooterLinkComponent, FooterLinkModel } from './footer-link.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { fromEvent, map, merge } from 'rxjs';
@@ -13,7 +13,7 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
 
 @Component({
   selector: 'joshies-footer',
-  imports: [CommonModule, FooterLinkComponent],
+  imports: [FooterLinkComponent, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Spacer -->
