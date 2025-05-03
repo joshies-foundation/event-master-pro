@@ -1,6 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import {
   BetSubtype,
   SpaceEventStatus,
@@ -24,12 +24,12 @@ import {
 
 @Component({
   selector: 'joshies-chaos-space-bet',
-  imports: [DropdownModule, FormsModule, RadioButtonModule, OverUnderComponent],
+  imports: [Select, FormsModule, RadioButtonModule, OverUnderComponent],
   template: `
     <div class="flex flex-col gap-4">
       <label class="flex flex-col gap-2">
         Chaos Space Event
-        <p-dropdown
+        <p-select
           [options]="openChaosEvents()"
           [(ngModel)]="selectedChaosEventId"
           optionLabel="template.name"
@@ -70,7 +70,7 @@ import {
           <!-- Bet Player Dropdown -->
           <label class="flex flex-col gap-2">
             Player
-            <p-dropdown
+            <p-select
               [options]="playerService.players() ?? []"
               [(ngModel)]="selectedChaosPlayer"
               optionLabel="display_name"

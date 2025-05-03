@@ -32,7 +32,7 @@ import {
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
 import { SessionService } from '../../shared/data-access/session.service';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import {
   BetStatus,
@@ -72,7 +72,7 @@ import { Textarea } from 'primeng/textarea';
     ButtonModule,
     CheckboxModule,
     InputNumberModule,
-    DropdownModule,
+    Select,
     RadioButtonModule,
     CardComponent,
     InputSwitchModule,
@@ -105,14 +105,14 @@ import { Textarea } from 'primeng/textarea';
           <!-- Opponent Dropdown -->
           <label class="flex flex-col gap-2">
             Opponent
-            <p-dropdown
+            <p-select
               [options]="staticPlayersWithoutUser"
               [(ngModel)]="staticSelectedOpponent"
               optionLabel="nameAndScore"
               styleClass="flex"
               placeholder="Select an opponent"
             >
-              <ng-template pTemplate="item" let-player>
+              <ng-template #item let-player>
                 <div class="flex gap-2 items-center">
                   <p-avatar
                     [image]="player.avatar_url"
@@ -122,7 +122,7 @@ import { Textarea } from 'primeng/textarea';
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
               </ng-template>
-              <ng-template pTemplate="selectedItem" let-player>
+              <ng-template #selectedItem let-player>
                 <div class="flex gap-2 items-center">
                   <p-avatar
                     [image]="player.avatar_url"
@@ -132,7 +132,7 @@ import { Textarea } from 'primeng/textarea';
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
               </ng-template>
-            </p-dropdown>
+            </p-select>
           </label>
         </joshies-card>
 
@@ -140,7 +140,7 @@ import { Textarea } from 'primeng/textarea';
           <!-- Bet Type Dropdown -->
           <label class="flex flex-col gap-2">
             Bet Type
-            <p-dropdown
+            <p-select
               [options]="betTypes"
               [(ngModel)]="selectedBetType"
               optionLabel="betTypeString"

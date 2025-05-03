@@ -9,7 +9,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import {
   FormControl,
   FormGroup,
@@ -147,7 +147,7 @@ export type FormField = {
 @Component({
   selector: 'joshies-form-field',
   imports: [
-    DropdownModule,
+    Select,
     FormsModule,
     InputTextModule,
     LowerCasePipe,

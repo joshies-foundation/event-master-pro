@@ -34,7 +34,7 @@ import {
 } from '../../shared/util/rxjs-helpers';
 import { JsonPipe, TitleCasePipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import {
   EveryoneGainsPointsBasedOnRankSpecialSpaceEventDetails,
   PlayerGainsPointsBasedOnGameScoreSpecialSpaceEventDetails,
@@ -67,7 +67,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
     RouterLink,
     AvatarModule,
     SkeletonModule,
-    DropdownModule,
+    Select,
     FormsModule,
     ButtonModule,
     PaginatorModule,
@@ -108,7 +108,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 <!-- Select Event -->
                 <label class="mt-8 flex flex-col gap-2">
                   Select Event
-                  <p-dropdown
+                  <p-select
                     [options]="eventOptions()"
                     optionLabel="name"
                     optionValue="id"

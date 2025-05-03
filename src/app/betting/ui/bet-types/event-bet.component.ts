@@ -1,6 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { OverUnderComponent } from '../over-under.component';
 import {
@@ -21,7 +21,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'joshies-event-bet',
   imports: [
-    DropdownModule,
+    Select,
     FormsModule,
     RadioButtonModule,
     OverUnderComponent,
@@ -32,7 +32,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       <!-- Event Dropdown -->
       <label class="flex flex-col gap-2">
         Event
-        <p-dropdown
+        <p-select
           [options]="openMainEvents()"
           [(ngModel)]="selectedMainEventId"
           optionLabel="name"
@@ -75,7 +75,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
           <!-- Bet Team Dropdown -->
           <label class="flex flex-col gap-2">
             Team
-            <p-dropdown
+            <p-select
               [options]="eventTeams()"
               [(ngModel)]="selectedEventTeam"
               optionLabel="participantList"
@@ -95,7 +95,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
           <!-- Bet Team Dropdown -->
           <label class="flex flex-col gap-2">
             Team
-            <p-dropdown
+            <p-select
               [options]="eventTeams()"
               [(ngModel)]="selectedEventTeam"
               optionLabel="participantList"

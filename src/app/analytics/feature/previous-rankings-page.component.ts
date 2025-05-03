@@ -3,13 +3,13 @@ import {
   Component,
   computed,
   inject,
+  input,
   Signal,
   viewChild,
-  input,
 } from '@angular/core';
 import { AnalyticsService } from '../data-access/analytics.service';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { Dropdown, DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import { startWith, switchMap } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { PlayerWithUserAndRankInfo } from '../../shared/data-access/player.service';
@@ -24,7 +24,7 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 @Component({
   selector: 'joshies-previous-rankings-page',
   imports: [
-    DropdownModule,
+    Select,
     RankingsTableComponent,
     FormsModule,
     PageHeaderComponent,
@@ -43,7 +43,7 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
       analyticsPreviousResolvedData().previousSessions;
       as previousSessions
     ) {
-      <p-dropdown
+      <p-select
         [options]="previousSessions"
         [ngModel]="analyticsPreviousResolvedData().mostRecentSessionId"
         optionLabel="name"
@@ -75,15 +75,15 @@ export default class PreviousRankingsPageComponent {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly authService = inject(AuthService);
 
-  private readonly dropdown = viewChild.required(Dropdown);
-  private readonly dropdown$ = toObservable(this.dropdown);
+  private readonly select = viewChild.required(Select);
+  private readonly select$ = toObservable(this.select);
 
   private readonly previousSessionPlayers: Signal<
     PlayerWithUserAndRankInfo[] | null | undefined
   > = toSignal(
-    this.dropdown$.pipe(
-      nullWhenUndefinedElse((dropdown) =>
-        dropdown.onChange.pipe(
+    this.select$.pipe(
+      nullWhenUndefinedElse((select) =>
+        select.onChange.pipe(
           switchMap((event) =>
             this.analyticsService.getAllScoresFromSession(event.value),
           ),

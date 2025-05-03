@@ -27,7 +27,7 @@ import {
   switchMap,
 } from 'rxjs';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { DropdownModule } from 'primeng/dropdown';
+import { Select } from 'primeng/select';
 import {
   DuelModel,
   DuelSpaceEffectData,
@@ -61,7 +61,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
     RouterLink,
     AvatarModule,
     SkeletonModule,
-    DropdownModule,
+    Select,
     FormsModule,
     ButtonModule,
     PaginatorModule,
@@ -118,7 +118,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 <!-- Select Game -->
                 <label class="mt-8 flex flex-col gap-2">
                   Select Opponent
-                  <p-dropdown
+                  <p-select
                     [options]="vm.allPlayersExceptChallenger"
                     optionLabel="display_name"
                     optionValue="player_id"
@@ -192,7 +192,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 <!-- Select Game -->
                 <label class="mt-8 flex flex-col gap-2">
                   Select Game
-                  <p-dropdown
+                  <p-select
                     [options]="gameOptions()"
                     styleClass="w-full"
                     [(ngModel)]="selectedGame"
