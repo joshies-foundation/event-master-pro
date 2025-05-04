@@ -89,7 +89,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
     @if (viewModel(); as vm) {
       @if (vm.specialSpaceEvent) {
-        <div class="grow flex flex-col justify-between">
+        <div class="flex grow flex-col justify-between">
           <div>
             <!-- Player -->
             <div class="mt-8 flex items-center gap-4">
@@ -206,10 +206,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.WaitingToBegin) {
                 @if (vm.specialSpaceEvent.template) {
-                  <h3 class="text-lg font-bold mt-8 mb-2">
+                  <h3 class="mt-8 mb-2 text-lg font-bold">
                     {{ vm.specialSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mb-8 pre-wrap">{{
+                  <pre class="pre-wrap mb-8">{{
                     vm.specialSpaceEvent.template.description
                   }}</pre>
 
@@ -227,10 +227,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.InProgress) {
                 @if (vm.specialSpaceEvent.template) {
-                  <h3 class="text-lg font-bold mt-8 mb-2">
+                  <h3 class="mt-8 mb-2 text-lg font-bold">
                     {{ vm.specialSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mb-8 pre-wrap">{{
+                  <pre class="pre-wrap mb-8">{{
                     vm.specialSpaceEvent.template.description
                   }}</pre>
 
@@ -275,7 +275,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 }
               }
               @default {
-                <h3 class="text-lg font-bold my-4">
+                <h3 class="my-4 text-lg font-bold">
                   {{
                     vm.specialSpaceEvent.template?.name ??
                       'Cannot find Special Space Event Template with ID ' +

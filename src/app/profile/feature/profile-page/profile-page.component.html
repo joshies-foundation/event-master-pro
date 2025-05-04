@@ -3,43 +3,43 @@
   <!-- Refresh Button -->
   <i
     tabindex="0"
-    class="pi pi-refresh text-neutral-700 font-bold text-xl ml-auto"
+    class="pi pi-refresh ml-auto text-xl font-bold text-neutral-700"
     (click)="reloadApp()"
     (keyup.enter)="reloadApp()"
   ></i>
 </joshies-page-header>
 
 @if (viewModel(); as vm) {
-  <div class="flex justify-center my-8 items-baseline">
+  <div class="my-8 flex items-baseline justify-center">
     @if (vm.updatedAvatarLoading) {
       <!-- Updating Avatar Loading Skeleton -->
       <p-skeleton height="10rem" width="10rem" styleClass="rounded-full" />
       <i
         tabindex="0"
-        class="pi pi-camera p-1 -ml-6 -mb-1 text-xl text-neutral-300"
+        class="pi pi-camera -mb-1 -ml-6 p-1 text-xl text-neutral-300"
       ></i>
     } @else {
       <!-- Avatar -->
       <img
         [src]="vm.updatedAvatarLoading ? '' : vm.user.avatar_url"
         alt=""
-        class="w-40 h-40 rounded-full block bg-neutral-100"
+        class="block h-40 w-40 rounded-full bg-neutral-100"
       />
 
       @if (vm.user.can_edit_profile) {
         <!-- Choose Image Button -->
         <i
           tabindex="0"
-          class="pi pi-camera p-1 -ml-6 -mb-1 text-xl text-neutral-700"
+          class="pi pi-camera -mb-1 -ml-6 p-1 text-xl text-neutral-700"
           (click)="avatarFileInput.click()"
           (keyup.enter)="avatarFileInput.click()"
         ></i>
       } @else {
         <i
-          class="pi pi-camera p-1 -ml-6 -mb-1 text-xl text-neutral-400 relative"
+          class="pi pi-camera relative -mb-1 -ml-6 p-1 text-xl text-neutral-400"
         >
           <i
-            class="pi pi-times text-3xl -mt-1 text-danger-foreground-500 absolute left-0"
+            class="pi pi-times text-danger-foreground-500 absolute left-0 -mt-1 text-3xl"
           >
           </i>
         </i>
@@ -64,16 +64,16 @@
       <!-- Edit Button -->
       <i
         tabindex="0"
-        class="pi pi-pencil text-neutral-700 p-2 ml-1"
+        class="pi pi-pencil ml-1 p-2 text-neutral-700"
         (click)="promptChangeDisplayName(vm.user.id, vm.user.display_name)"
         (keyup.enter)="
           promptChangeDisplayName(vm.user.id, vm.user.display_name)
         "
       ></i>
     } @else {
-      <i class="pi pi-pencil p-2 ml-1 text-neutral-400 relative">
+      <i class="pi pi-pencil relative ml-1 p-2 text-neutral-400">
         <i
-          class="pi pi-times text-2xl ml-1 -mt-1 text-danger-foreground-500 absolute left-0"
+          class="pi pi-times text-danger-foreground-500 absolute left-0 -mt-1 ml-1 text-2xl"
         >
         </i>
       </i>
@@ -82,7 +82,7 @@
 
   @if (vm.user.can_toggle_squidward_mode || vm.user.squidward_mode) {
     <!-- Squidward Mode -->
-    <p class="flex items-center my-4">
+    <p class="my-4 flex items-center">
       <strong class="mr-4">Squidward Mode:</strong>
 
       <!-- Toggle Switch -->
@@ -93,7 +93,7 @@
       />
       @if (!vm.user.can_toggle_squidward_mode) {
         <i
-          class="pi pi-times text-4xl -ml-8 -mt-1 text-danger-foreground-500 z-50"
+          class="pi pi-times text-danger-foreground-500 z-50 -mt-1 -ml-8 text-4xl"
         >
         </i>
       }
@@ -133,7 +133,7 @@
 />
 
 <!-- Last Updated -->
-<p class="pt-6 text-neutral-400 text-xs text-center">
+<p class="pt-6 text-center text-xs text-neutral-400">
   <!-- This value is replaced with the current date in the npm "prebuild" script -->
   App last updated: {{ 0 | date: 'medium' }}
 </p>

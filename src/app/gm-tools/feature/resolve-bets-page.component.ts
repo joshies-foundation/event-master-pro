@@ -40,7 +40,7 @@ import { CardComponent } from '../../shared/ui/card.component';
     <joshies-page-header
       headerText="Settle Bets"
       alwaysSmall
-      class="block mb-8"
+      class="mb-8 block"
     >
       <joshies-header-link
         text="GM Tools"
@@ -87,7 +87,7 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p class="italic text-center text-neutral-500 mt-2 mb-6">
+                <p class="mt-2 mb-6 text-center text-neutral-500 italic">
                   No active custom bets
                 </p>
               }
@@ -129,7 +129,7 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p class="italic text-center text-neutral-500 mb-2">
+                <p class="mb-2 text-center text-neutral-500 italic">
                   No active auto-resolve bets
                 </p>
               }
@@ -163,7 +163,7 @@ import { CardComponent } from '../../shared/ui/card.component';
                   <p-divider />
                 }
               } @empty {
-                <p class="italic text-center text-neutral-500 mb-2">
+                <p class="mb-2 text-center text-neutral-500 italic">
                   No bets pending acceptance
                 </p>
               }
@@ -180,7 +180,7 @@ import { CardComponent } from '../../shared/ui/card.component';
           <p-skeleton class="col" height="37px" />
           <p-skeleton class="col" height="37px" />
         </div>
-        <div class="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
+        <div class="mb-4 grid grid-cols-2 grid-rows-1 gap-4">
           <p-skeleton class="col" height="37px" />
           <p-skeleton class="col" height="37px" />
         </div>

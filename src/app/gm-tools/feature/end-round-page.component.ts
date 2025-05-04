@@ -46,7 +46,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="font-bold mt-12 mb-4">
+      <h4 class="mt-12 mb-4 font-bold">
         Assign session points based on {{ vm.event?.name }} results
       </h4>
 
@@ -90,7 +90,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                       />
                     }
                   </p-avatarGroup>
-                  <div class="text-xs text-center">
+                  <div class="text-center text-xs">
                     <p class="mb-1">
                       {{ team.participants | participantList }}
                     </p>

@@ -18,20 +18,20 @@ import { DuelModel } from '../util/supabase-types';
       class="relative"
     >
       @if (duel().status === DuelStatus.ChallengerWon) {
-        <span class="-mt-4 absolute top-0">👑</span>
+        <span class="absolute top-0 -mt-4">👑</span>
       }
     </p-avatar>
 
-    <span class="text-sm text-neutral-600 mb-1">vs.</span>
+    <span class="mb-1 text-sm text-neutral-600">vs.</span>
 
     @if (duel().opponent; as opponent) {
       <p-avatar [image]="opponent.avatar_url" shape="circle" class="relative">
         @if (duel().status === DuelStatus.OpponentWon) {
-          <span class="-mt-4 absolute top-0">👑</span>
+          <span class="absolute top-0 -mt-4">👑</span>
         }
       </p-avatar>
     } @else {
-      <i class="pi pi-question-circle text-4xl -mt-1 text-neutral-300"></i>
+      <i class="pi pi-question-circle -mt-1 text-4xl text-neutral-300"></i>
     }
   `,
   host: {

@@ -210,13 +210,13 @@
               #image
               [alt]="field.altText"
               [ngSrc]="$any(imageUrl)"
-              class="rounded-border mx-auto max-w-full bg-surface-200"
+              class="mx-auto max-w-full rounded-border bg-surface-200"
               [width]="field.previewWidth"
               [height]="field.previewHeight"
             />
           } @else {
             <div
-              class="rounded-border mx-auto max-w-full bg-neutral-100 pi pi-question text-6xl text-center text-neutral-300 flex flex-col justify-center"
+              class="pi pi-question mx-auto flex max-w-full flex-col justify-center rounded-border bg-neutral-100 text-center text-6xl text-neutral-300"
               [style]="{
                 width: field.previewWidth + 'px',
                 height: field.previewHeight + 'px',

@@ -53,7 +53,7 @@ import {
 
     @if (originalSpecialSpaceEventTemplate(); as originalGameboardSpace) {
       <!-- Form -->
-      <joshies-form [form]="form!" class="block mt-8 mb-20" />
+      <joshies-form [form]="form!" class="mt-8 mb-20 block" />
 
       <!-- Delete Button -->
       <p-button
@@ -77,9 +77,9 @@ import {
             <p>Are you sure you want submit these changes?</p>
 
             <!-- Before -->
-            <h4 class="font-bold mt-6 mb-2">Before</h4>
+            <h4 class="mt-6 mb-2 font-bold">Before</h4>
             <div>
-              <h4 class="font-bold mb-2">
+              <h4 class="mb-2 font-bold">
                 {{ originalGameboardSpace.name }}
               </h4>
               <p class="my-4 text-sm text-neutral-600">
@@ -88,9 +88,9 @@ import {
             </div>
 
             <!-- After -->
-            <h4 class="font-bold mb-2">After</h4>
+            <h4 class="mb-2 font-bold">After</h4>
             <div>
-              <h4 class="font-bold mb-2">
+              <h4 class="mb-2 font-bold">
                 {{ specialSpaceEventTemplateName() }}
               </h4>
               <p class="my-4 text-sm text-neutral-600">

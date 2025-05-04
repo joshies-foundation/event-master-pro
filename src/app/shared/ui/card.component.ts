@@ -13,14 +13,14 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
   template: `
     @if (headerText()) {
       @if (readOnly()) {
-        <h2 class="font-bold mb-2">
+        <h2 class="mb-2 font-bold">
           @if (headerIconClass()) {
             <i [ngClass]="headerIconClass()"></i>
           }
           {{ headerText() }}
         </h2>
       } @else {
-        <h3 class="text-lg font-bold mt-6 mb-2">
+        <h3 class="mt-6 mb-2 text-lg font-bold">
           @if (headerIconClass()) {
             <i [ngClass]="headerIconClass()"></i>
           }
@@ -30,7 +30,7 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
     }
 
     <div
-      class="bg-neutral-0 rounded-xl"
+      class="rounded-xl bg-neutral-0"
       [class.padded]="padded()"
       [ngClass]="styleClass()"
     >

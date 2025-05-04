@@ -19,7 +19,7 @@ import { InputTextModule } from 'primeng/inputtext';
     <form
       [formGroup]="form"
       (ngSubmit)="onSubmit()"
-      class="w-full max-w-[30rem] flex flex-col gap-4 px-4"
+      class="flex w-full max-w-[30rem] flex-col gap-4 px-4"
     >
       <input
         pInputText

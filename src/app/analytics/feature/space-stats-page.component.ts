@@ -71,7 +71,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
             }"
           >
             <td pFrozenColumn>
-              <div class="flex items-center gap-2 -py-2">
+              <div class="-py-2 flex items-center gap-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""

@@ -25,23 +25,23 @@ export interface CardLinkModel {
       [routerLink]="model().routerLink"
     >
       <i
-        class="size-8 shrink-0 text-lg text-white mx-4 my-2 flex! justify-center items-center self-center rounded-md"
+        class="mx-4 my-2 flex! size-8 shrink-0 items-center justify-center self-center rounded-md text-lg text-white"
         [ngClass]="model().iconClass"
       ></i>
       <div
-        class="flex items-center w-full justify-between pl-0 p-2 border-standard-border-color"
+        class="flex w-full items-center justify-between border-standard-border-color p-2 pl-0"
         [class.border-b]="!last()"
       >
         @if (model().subtext || model().pretext) {
           <div>
             @if (model().pretext) {
-              <p class="m-0 text-neutral-400 text-sm">
+              <p class="m-0 text-sm text-neutral-400">
                 {{ model().pretext }}
               </p>
             }
             <p>{{ model().text }}</p>
             @if (model().subtext) {
-              <p class="m-0 text-neutral-400 text-sm">
+              <p class="m-0 text-sm text-neutral-400">
                 {{ model().subtext }}
               </p>
             }
@@ -49,7 +49,7 @@ export interface CardLinkModel {
         } @else {
           {{ model().text }}
         }
-        <i class="pi pi-angle-right text-neutral-300 ml-4"></i>
+        <i class="pi pi-angle-right ml-4 text-neutral-300"></i>
       </div>
     </a>
   `,

@@ -22,13 +22,13 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
     <!-- Disabled Cover -->
     @if (disabled()) {
       <div
-        class="bg-app-background-color/70 w-full h-20 fixed z-60 bottom-0 left-0"
+        class="fixed bottom-0 left-0 z-60 h-20 w-full bg-app-background-color/70"
       ></div>
     }
 
     <!-- Footer -->
     <nav
-      class="w-full h-20 border-t grid auto-cols-fr grid-rows-1 grid-flow-col fixed z-50 bottom-0 left-0 pb-6 text-center"
+      class="fixed bottom-0 left-0 z-50 grid h-20 w-full auto-cols-fr grid-flow-col grid-rows-1 border-t pb-6 text-center"
       [ngClass]="dynamicClasses()"
     >
       @for (footerLink of footerLinks(); track footerLink.href) {

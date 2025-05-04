@@ -79,7 +79,7 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
                     duel.points_gained_by_winner | numberWithSignAndColor
                   "
                 ></div>
-                <div class="text-sm text-neutral-500 mt-1">
+                <div class="mt-1 text-sm text-neutral-500">
                   ({{ duel.wager_percentage }}%)
                 </div>
               </td>

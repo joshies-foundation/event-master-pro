@@ -5,9 +5,9 @@ import { Countdown } from '../data-access/session.service';
   selector: 'joshies-countdown-timer',
   imports: [],
   template: `
-    <div class="h-full flex flex-col justify-center">
+    <div class="flex h-full flex-col justify-center">
       <h1
-        class="grid grid-rows-1 grid-cols-4 gap-4 text-center font-semibold"
+        class="grid grid-cols-4 grid-rows-1 gap-4 text-center font-semibold"
         style="font-size: 12vw"
       >
         <span>{{ countdown().days }}</span>
@@ -16,7 +16,7 @@ import { Countdown } from '../data-access/session.service';
         <span>{{ countdown().seconds }}</span>
       </h1>
       <p
-        class="grid grid-rows-1 grid-cols-4 gap-4 text-center text-sm lg:text-2xl lg:font-semibold text-primary"
+        class="grid grid-cols-4 grid-rows-1 gap-4 text-center text-sm text-primary lg:text-2xl lg:font-semibold"
       >
         <span>Days</span>
         <span>Hours</span>

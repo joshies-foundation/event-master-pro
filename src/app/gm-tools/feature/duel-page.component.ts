@@ -82,7 +82,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
     @if (viewModel(); as vm) {
       @if (vm.duel) {
-        <div class="grow flex flex-col justify-between">
+        <div class="flex grow flex-col justify-between">
           <div>
             <!-- Players -->
             <div class="mt-8 flex items-center justify-center gap-4">
@@ -108,7 +108,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 </div>
               } @else {
                 <i
-                  class="pi pi-question-circle text-6xl text-neutral-300 mb-6"
+                  class="pi pi-question-circle mb-6 text-6xl text-neutral-300"
                 ></i>
               }
             </div>
@@ -181,7 +181,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 />
               }
               @case (DuelStatus.GameNotSelected) {
-                <p class="mb-4 mt-8 text-neutral-500">
+                <p class="mt-8 mb-4 text-neutral-500">
                   Wager:
                   <span class="font-bold">
                     {{ vm.duel.wager_percentage }}%
@@ -212,7 +212,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 }
               }
               @case (DuelStatus.WaitingToBegin) {
-                <h2 class="font-bold mt-8 mb-2">{{ vm.duel.game_name }}</h2>
+                <h2 class="mt-8 mb-2 font-bold">{{ vm.duel.game_name }}</h2>
 
                 <p class="mb-4 text-neutral-500">
                   Wager:
@@ -232,7 +232,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 />
               }
               @case (DuelStatus.InProgress) {
-                <h2 class="font-bold mt-8 mb-2">{{ vm.duel.game_name }}</h2>
+                <h2 class="mt-8 mb-2 font-bold">{{ vm.duel.game_name }}</h2>
 
                 <p class="mb-4 text-neutral-500">
                   Wager:
@@ -242,7 +242,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   of the loser's points
                 </p>
 
-                <label class="flex items-center gap-4 mt-8 mb-6">
+                <label class="mt-8 mb-6 flex items-center gap-4">
                   Winner:
                   <p-selectButton
                     [options]="winnerOptions()"
@@ -325,7 +325,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
           }
         </div>
       } @else {
-        <p class="mb-4 mt-8">
+        <p class="mt-8 mb-4">
           No special space event found with ID
           <strong>{{ vm.duelId }}</strong>
         </p>

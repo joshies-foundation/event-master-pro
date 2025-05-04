@@ -62,7 +62,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
     @if (originalGameboardSpace(); as originalGameboardSpace) {
       <!-- Visual Preview -->
-      <div class="flex gap-4 mt-8 mb-4 items-center justify-center w-full">
+      <div class="mt-8 mb-4 flex w-full items-center justify-center gap-4">
         <joshies-gameboard-space [model]="originalGameboardSpace" />
         <i class="pi pi-arrow-right text-neutral-400"></i>
         <joshies-gameboard-space [model]="updatedGameboardSpaceFormValue()" />
@@ -90,11 +90,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
             <p>Are you sure you want submit these changes?</p>
 
             <!-- Before -->
-            <h4 class="font-bold mt-6 mb-2">Before</h4>
+            <h4 class="mt-6 mb-2 font-bold">Before</h4>
             <div class="flex gap-4">
               <joshies-gameboard-space [model]="originalGameboardSpace" />
               <div>
-                <h4 class="font-bold mb-2">
+                <h4 class="mb-2 font-bold">
                   {{ originalGameboardSpace.name }} Space
                 </h4>
                 <div
@@ -107,13 +107,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
             </div>
 
             <!-- After -->
-            <h4 class="font-bold mt-4 mb-2">After</h4>
+            <h4 class="mt-4 mb-2 font-bold">After</h4>
             <div class="flex gap-4">
               <joshies-gameboard-space
                 [model]="updatedGameboardSpaceFormValue()"
               />
               <div>
-                <h4 class="font-bold mb-2">
+                <h4 class="mb-2 font-bold">
                   {{ updatedGameboardSpaceName() }} Space
                 </h4>
                 <div
@@ -130,7 +130,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </p-confirmDialog>
     } @else {
       <!-- Data Not Found Message -->
-      <p class="mb-4 mt-12">
+      <p class="mt-12 mb-4">
         No gameboard space found in this session with ID
         <span class="font-bold">{{ gameboardSpaceId() }}</span>
       </p>

@@ -17,12 +17,12 @@ import { fromEvent, map } from 'rxjs';
   template: `
     <!-- Small Header Container -->
     <div
-      class="h-23 mt-0 flex justify-between items-center fixed top-0 left-0 mb-0 pt-12 w-full z-40 border-b"
+      class="fixed top-0 left-0 z-40 mt-0 mb-0 flex h-23 w-full items-center justify-between border-b pt-12"
       [ngClass]="[pagePaddingXCssClass, smallHeaderContainerDynamicClasses()]"
     >
       <!-- Small Header -->
       <p
-        class="duration-200 text-center w-full absolute left-0 font-semibold"
+        class="absolute left-0 w-full text-center font-semibold duration-200"
         [ngClass]="smallHeaderDynamicClasses()"
       >
         {{ headerText() }}
@@ -40,7 +40,7 @@ import { fromEvent, map } from 'rxjs';
     @if (!alwaysSmall()) {
       <!-- Large Header -->
       <h1
-        class="mb-5 flex justify-between items-start w-full text-[2rem] font-bold"
+        class="mb-5 flex w-full items-start justify-between text-[2rem] font-bold"
         [ngClass]="largeHeaderDynamicClasses()"
       >
         {{ headerText() }}

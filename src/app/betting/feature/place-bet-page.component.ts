@@ -96,9 +96,9 @@ import { Textarea } from 'primeng/textarea';
     </joshies-page-header>
 
     @if (loadMessage(); as loadMessage) {
-      <h4 class="font-bold my-4">{{ loadMessage }}</h4>
+      <h4 class="my-4 font-bold">{{ loadMessage }}</h4>
     } @else {
-      <h4 class="font-bold mt-8 mb-4">Your score: {{ userPlayer()?.score }}</h4>
+      <h4 class="mt-8 mb-4 font-bold">Your score: {{ userPlayer()?.score }}</h4>
 
       <div class="flex flex-col gap-4">
         <joshies-card padded styleClass="flex flex-col gap-4">
@@ -113,7 +113,7 @@ import { Textarea } from 'primeng/textarea';
               placeholder="Select an opponent"
             >
               <ng-template #item let-player>
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
@@ -123,7 +123,7 @@ import { Textarea } from 'primeng/textarea';
                 </div>
               </ng-template>
               <ng-template #selectedItem let-player>
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
@@ -270,7 +270,7 @@ import { Textarea } from 'primeng/textarea';
 
         <!-- Submit Button -->
         @if (cannotSubmitMessage(); as cannotSubmitMessage) {
-          <div class="text-sm text-danger-foreground font-semibold">
+          <div class="text-sm font-semibold text-danger-foreground">
             {{ cannotSubmitMessage }}
           </div>
         }

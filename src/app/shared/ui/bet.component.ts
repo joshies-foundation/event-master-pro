@@ -32,7 +32,7 @@ import { TagModule } from 'primeng/tag';
       <tbody>
         <tr>
           <!-- Avatars -->
-          <td class="align-top w-4">
+          <td class="w-4 align-top">
             <p-avatarGroup styleClass="mr-2">
               @for (
                 avatarUrl of mainAvatarUrls();
@@ -51,19 +51,19 @@ import { TagModule } from 'primeng/tag';
 
           <!-- Title & Description -->
           <td>
-            <h4 class="font-bold mb-2 text-lg">{{ titleText() }}</h4>
+            <h4 class="mb-2 text-lg font-bold">{{ titleText() }}</h4>
             <p class="mb-2">{{ bet().description }}</p>
             @if (showRequestWarning()) {
-              <p class="mb-2 text-danger-foreground font-bold">
+              <p class="mb-2 font-bold text-danger-foreground">
                 [YOU BELIEVE THIS TO BE FALSE]
               </p>
             }
           </td>
 
           @if (resultAmount() !== null) {
-            <td class="align-top text-right text-xl pl-2">
+            <td class="pl-2 text-right align-top text-xl">
               <div
-                class="ml-auto text-center flex flex-col w-max px-2 py-1 rounded-border"
+                class="ml-auto flex w-max flex-col rounded-border px-2 py-1 text-center"
                 [ngClass]="{
                   'bg-neutral-100 text-neutral-600': resultAmount()! === 0,
                   'bg-danger-background text-danger-foreground':

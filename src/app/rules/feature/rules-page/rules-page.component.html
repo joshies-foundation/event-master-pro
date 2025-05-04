@@ -15,7 +15,7 @@
         <!-- Edit Button -->
         <i
           tabindex="0"
-          class="pi pi-pencil text-neutral-700 p-2 ml-auto cursor"
+          class="pi pi-pencil cursor ml-auto p-2 text-neutral-700"
           (click)="enterEditMode()"
           (keyup.enter)="enterEditMode()"
         ></i>
@@ -33,16 +33,16 @@
       <!-- Intro -->
       <div
         [innerHTML]="vm.rules.intro"
-        class="content bg-neutral-0 rounded-xl p-4"
+        class="content rounded-xl bg-neutral-0 p-4"
       ></div>
 
       <!-- Event Rules -->
-      <h2 class="font-bold mt-8 mb-4">Events</h2>
+      <h2 class="mt-8 mb-4 font-bold">Events</h2>
 
       @if (vm.rules.events) {
         <div
           [innerHTML]="vm.rules.events"
-          class="content bg-neutral-0 rounded-xl p-4 mb-4"
+          class="content mb-4 rounded-xl bg-neutral-0 p-4"
         ></div>
       }
 
@@ -65,7 +65,7 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="text-lg font-bold flex items-center gap-4 mb-4 rounded-border"
+            class="mb-4 flex items-center gap-4 rounded-border text-lg font-bold"
           >
             <p-image
               [src]="event.image_url || '/assets/icons/icon-96x96.png'"
@@ -81,7 +81,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-neutral-700 p-2 ml-auto self-start cursor"
+                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
                 [routerLink]="['/gm-tools/events/edit', event.id]"
                 (click)="$event.stopPropagation()"
               ></i>
@@ -106,7 +106,7 @@
             matrixParams: 'ignored',
             queryParams: 'ignored',
           }"
-          class="font-bold mt-8 mb-4 rounded-border"
+          class="mt-8 mb-4 rounded-border font-bold"
         >
           Gameboard
         </h2>
@@ -115,7 +115,7 @@
       @if (vm.rules.gameboard) {
         <div
           [innerHTML]="vm.rules.gameboard"
-          class="content bg-neutral-0 rounded-xl p-4 mb-4"
+          class="content mb-4 rounded-xl bg-neutral-0 p-4"
         ></div>
       }
 
@@ -138,7 +138,7 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="text-lg font-bold flex items-center gap-4 mb-4 rounded-border"
+            class="mb-4 flex items-center gap-4 rounded-border text-lg font-bold"
           >
             <joshies-gameboard-space [model]="space" />
             {{ space.name }} Space
@@ -147,7 +147,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-neutral-700 p-2 ml-auto self-start cursor"
+                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
                 [routerLink]="['/gm-tools/space-types', space.id]"
                 (click)="$event.stopPropagation()"
               ></i>
@@ -161,12 +161,12 @@
       }
 
       <!-- Special Space Event Rules -->
-      <h2 class="font-bold mt-8 mb-4">Special Space Events</h2>
+      <h2 class="mt-8 mb-4 font-bold">Special Space Events</h2>
 
       @if (vm.rules.special_space_events) {
         <div
           [innerHTML]="vm.rules.special_space_events"
-          class="content bg-neutral-0 rounded-xl p-4 mb-4"
+          class="content mb-4 rounded-xl bg-neutral-0 p-4"
         ></div>
       }
 
@@ -192,7 +192,7 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="text-lg font-bold flex items-center gap-4 rounded-border mb-2"
+            class="mb-2 flex items-center gap-4 rounded-border text-lg font-bold"
           >
             {{ specialSpaceEvent.name }}
 
@@ -200,7 +200,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-neutral-700 p-2 ml-auto self-start cursor"
+                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
                 [routerLink]="[
                   '/gm-tools/special-space-event-templates',
                   specialSpaceEvent.id,
@@ -214,12 +214,12 @@
       }
 
       <!-- Chaos Space Event Rules -->
-      <h2 class="font-bold mt-8 mb-4">Chaos Space Events</h2>
+      <h2 class="mt-8 mb-4 font-bold">Chaos Space Events</h2>
 
       @if (vm.rules.chaos_space_events) {
         <div
           [innerHTML]="vm.rules.chaos_space_events"
-          class="content bg-neutral-0 rounded-xl p-4 mb-4"
+          class="content mb-4 rounded-xl bg-neutral-0 p-4"
         ></div>
       }
 
@@ -242,7 +242,7 @@
               matrixParams: 'ignored',
               queryParams: 'ignored',
             }"
-            class="text-lg font-bold flex items-center gap-4 rounded-border mb-2"
+            class="mb-2 flex items-center gap-4 rounded-border text-lg font-bold"
           >
             {{ chaosSpaceEvent.name }}
 
@@ -250,7 +250,7 @@
               <!-- Edit Button -->
               <i
                 tabindex="0"
-                class="pi pi-pencil text-neutral-700 p-2 ml-auto self-start cursor"
+                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
                 [routerLink]="[
                   '/gm-tools/chaos-space-event-templates',
                   chaosSpaceEvent.id,

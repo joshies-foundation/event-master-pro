@@ -16,7 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   ],
   template: `
     <joshies-page-header headerText="Special Space Events" alwaysSmall>
-      <div class="w-full flex justify-between">
+      <div class="flex w-full justify-between">
         <joshies-header-link
           text="GM Tools"
           routerLink=".."
@@ -35,12 +35,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
         let first = $first
       ) {
         <a
-          class="w-full flex items-center border-b border-neutral-100 p-4 no-underline"
+          class="flex w-full items-center border-b border-neutral-100 p-4 no-underline"
           [class.mt-5]="first"
           [routerLink]="[eventTemplate.id]"
         >
           <div class="grow">
-            <h4 class="font-bold mb-2">{{ eventTemplate.name }}</h4>
+            <h4 class="mb-2 font-bold">{{ eventTemplate.name }}</h4>
             <p class="m-0 text-sm text-neutral-600">
               {{ eventTemplate.description }}
             </p>
@@ -48,13 +48,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
           <i class="pi pi-angle-right ml-2 text-neutral-300"></i>
         </a>
       } @empty {
-        <p class="mb-4 mt-12 pt-12 text-center text-neutral-500 italic">
+        <p class="mt-12 mb-4 pt-12 text-center text-neutral-500 italic">
           Tap <span class="font-bold text-primary">+</span> to add a Special
           Space event
         </p>
       }
     } @else if (specialSpaceEventTemplates() === null) {
-      <p class="mb-4 mt-12 pt-12 text-center text-neutral-500 italic">
+      <p class="mt-12 mb-4 pt-12 text-center text-neutral-500 italic">
         No active session
       </p>
     } @else {

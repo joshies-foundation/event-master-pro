@@ -17,7 +17,7 @@ export interface FooterLinkModel {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a
-      class="flex flex-col justify-center items-center gap-1 text-neutral-600 leading-none"
+      class="flex flex-col items-center justify-center gap-1 leading-none text-neutral-600"
       [routerLink]="model().href"
       routerLinkActive="text-primary-500!"
       #rla="routerLinkActive"

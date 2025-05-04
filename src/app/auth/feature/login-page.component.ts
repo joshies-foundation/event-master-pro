@@ -8,14 +8,14 @@ import { AuthService } from '../data-access/auth.service';
   selector: 'joshies-login-page',
   imports: [InputTextModule, ButtonModule, FormsModule],
   template: `
-    <div class="flex-1 w-full text-5xl pr-12 pb-12 bounce-1">
+    <div class="bounce-1 w-full flex-1 pr-12 pb-12 text-5xl">
       <span>🍄</span>
     </div>
 
     <form
       #form="ngForm"
       (ngSubmit)="signIn(form.value.username, form.value.password)"
-      class="w-full max-w-[30rem] flex flex-col gap-4 px-4"
+      class="flex w-full max-w-[30rem] flex-col gap-4 px-4"
     >
       <!-- Username -->
       <input
@@ -46,7 +46,7 @@ import { AuthService } from '../data-access/auth.service';
       />
     </form>
 
-    <div class="flex-1 w-full text-5xl pr-12 pb-12 bounce-2">
+    <div class="bounce-2 w-full flex-1 pr-12 pb-12 text-5xl">
       <span>🦷</span>
     </div>
   `,

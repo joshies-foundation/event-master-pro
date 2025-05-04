@@ -35,7 +35,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
       />
     </joshies-page-header>
 
-    <p class="mb-4 mt-8">
+    <p class="mt-8 mb-4">
       Enter event scores for each team.
       {{
         eventForThisRound()?.lower_scores_are_better

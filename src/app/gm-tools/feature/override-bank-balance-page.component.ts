@@ -55,7 +55,7 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
       <joshies-card padded class="mt-8">
         <!-- Override Type -->
         <p class="mb-4">Override Type</p>
-        <div class="flex flex-col gap-4 mb-8">
+        <div class="mb-8 flex flex-col gap-4">
           @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
             <label class="ml-2">
               <p-radioButton

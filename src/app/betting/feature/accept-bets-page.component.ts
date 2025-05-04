@@ -39,7 +39,7 @@ import { BetModel } from '../../shared/util/supabase-types';
 
     @if (displayBets()?.length) {
       @if (displayBets(); as bets) {
-        <p class="mb-4 mt-8">Review bets that are awaiting your approval.</p>
+        <p class="mt-8 mb-4">Review bets that are awaiting your approval.</p>
         <p-table [value]="bets" [scrollable]="true">
           <ng-template #header>
             <tr>
@@ -69,7 +69,7 @@ import { BetModel } from '../../shared/util/supabase-types';
               <!-- Accept/Reject Buttons -->
               <td>
                 <div
-                  class="text-right flex gap-2 flex-col md:flex-row justify-end"
+                  class="flex flex-col justify-end gap-2 text-right md:flex-row"
                 >
                   <p-button
                     label="Accept Bet"
@@ -98,7 +98,7 @@ import { BetModel } from '../../shared/util/supabase-types';
         </p-table>
       }
     } @else {
-      <p class="my-4 text-neutral-500 italic text-center mt-8">
+      <p class="my-4 mt-8 text-center text-neutral-500 italic">
         No pending bets
       </p>
     }

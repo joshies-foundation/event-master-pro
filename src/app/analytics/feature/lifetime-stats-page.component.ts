@@ -71,7 +71,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
             }"
           >
             <td pFrozenColumn>
-              <div class="flex items-center gap-2 -py-2">
+              <div class="-py-2 flex items-center gap-2">
                 <img
                   [ngSrc]="row.avatar_url!"
                   alt=""

@@ -48,7 +48,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     <!-- Visual Preview -->
     <joshies-gameboard-space
       [model]="gameboardSpaceFormValue()"
-      class="mt-8 mb-4 mx-auto"
+      class="mx-auto mt-8 mb-4"
     />
 
     <!-- Form -->
@@ -66,7 +66,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
           <div class="flex gap-4">
             <joshies-gameboard-space [model]="gameboardSpaceFormValue()" />
             <div>
-              <h4 class="font-bold mb-2">{{ gameboardSpaceName() }} Space</h4>
+              <h4 class="mb-2 font-bold">{{ gameboardSpaceName() }} Space</h4>
               <div
                 class="text-sm text-neutral-600"
                 [innerHtml]="

@@ -36,7 +36,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
       (onClick)="confirmStartSessionEarly()"
       [label]="'Start ' + sessionName() + ' Right Now'"
       styleClass="w-full"
-      class="block mt-12 pt-12"
+      class="mt-12 block pt-12"
       [loading]="startingSession()"
     />
   `,

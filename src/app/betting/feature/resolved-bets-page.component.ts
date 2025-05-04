@@ -29,7 +29,7 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
     <joshies-page-header
       headerText="Settled Bets"
       alwaysSmall
-      class="block mb-8"
+      class="mb-8 block"
     >
       <joshies-header-link
         text="Betting"

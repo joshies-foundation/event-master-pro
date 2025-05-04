@@ -76,7 +76,7 @@ export type GameboardSpaceEntryFormModel = Record<
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <p class="mb-4 mt-8">
+      <p class="mt-8 mb-4">
         Enter gameboard moves for turn
         <strong>{{ vm.roundNumber }}</strong>
       </p>
@@ -105,7 +105,7 @@ export type GameboardSpaceEntryFormModel = Record<
           <tr [formGroupName]="player.player_id">
             <!-- Player -->
             <td>
-              <div class="flex items-center gap-2 -py-2">
+              <div class="-py-2 flex items-center gap-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
@@ -117,7 +117,7 @@ export type GameboardSpaceEntryFormModel = Record<
               </div>
             </td>
             <!-- Distance -->
-            <td class="text-right overflow-hidden">
+            <td class="overflow-hidden text-right">
               <p-inputNumber
                 formControlName="distanceTraveled"
                 [showButtons]="true"
@@ -130,7 +130,7 @@ export type GameboardSpaceEntryFormModel = Record<
               />
 
               <!-- Space -->
-              <div class="overflow-x-auto mt-2 text-nowrap">
+              <div class="mt-2 overflow-x-auto text-nowrap">
                 <p-selectButton
                   [options]="vm.gameboardSpaces"
                   optionLabel="icon_class"

@@ -48,7 +48,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         <ng-template #body [joshiesStronglyTypedTableRow]="players" let-player>
           <tr>
             <td>
-              <div class="flex items-center gap-2 -py-2">
+              <div class="-py-2 flex items-center gap-2">
                 @if (updatingAvatarForUserId() === player.user_id) {
                   <p-skeleton
                     width="2rem"
@@ -66,13 +66,13 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
                 }
                 <div>
                   <p>{{ player.display_name }}</p>
-                  <p class="m-0 text-neutral-500 text-xs">
+                  <p class="m-0 text-xs text-neutral-500">
                     {{ player.real_name }}
                   </p>
                 </div>
               </div>
             </td>
-            <td class="text-right flex gap-2 flex-col md:flex-row justify-end">
+            <td class="flex flex-col justify-end gap-2 text-right md:flex-row">
               <p-button
                 label="Change Avatar"
                 icon="pi pi-camera"

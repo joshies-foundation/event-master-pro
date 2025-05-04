@@ -63,7 +63,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
             <tr>
               <th class="pr-0">Players</th>
               <th>Game</th>
-              <th class="text-right px-0">Status</th>
+              <th class="px-0 text-right">Status</th>
               <th class="px-0"></th>
             </tr>
           </ng-template>
@@ -76,7 +76,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
               <td class="text-sm">
                 {{ duel.game_name }}
               </td>
-              <td class="text-right px-0">
+              <td class="px-0 text-right">
                 <joshies-status-tag [status]="duel.status" />
               </td>
               <td class="px-1">

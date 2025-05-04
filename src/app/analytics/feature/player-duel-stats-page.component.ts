@@ -44,14 +44,14 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
     @if (playerDuelStatsSortedByAverage(); as playerDuelStats) {
       @for (player of playerDuelStats; track player.user_id) {
         <div
-          class="bg-neutral-0 rounded-lg px-4 py-6 mt-8"
+          class="mt-8 rounded-lg bg-neutral-0 px-4 py-6"
           [class.bg-highlight]="player.user_id === userId()"
           [class.border-highlight]="player.user_id === userId()"
           [class.border-1]="player.user_id === userId()"
         >
           <!-- Player -->
           <div
-            class="flex flex-col items-center justify-center gap-2 mb-4 text-xl font-semibold pb-4 border-neutral-200 border-b"
+            class="mb-4 flex flex-col items-center justify-center gap-2 border-b border-neutral-200 pb-4 text-xl font-semibold"
           >
             <img
               [ngSrc]="player.avatar_url"
@@ -66,14 +66,14 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
           <table class="mx-auto">
             <tbody class="text-right">
               <tr>
-                <td class="pb-1 pr-2 text-neutral-600">Total Duels:</td>
-                <td class="pb-1 pr-8 font-semibold">
+                <td class="pr-2 pb-1 text-neutral-600">Total Duels:</td>
+                <td class="pr-8 pb-1 font-semibold">
                   {{ player.num_duels_participated | number }}
                 </td>
 
-                <td class="pb-1 pr-2 text-neutral-600">Duels Won:</td>
+                <td class="pr-2 pb-1 text-neutral-600">Duels Won:</td>
                 <td
-                  class="pb-1 pr-2 font-semibold"
+                  class="pr-2 pb-1 font-semibold"
                   [ngClass]="player.num_duels_won | numberSignColorClass"
                 >
                   {{ player.num_duels_won | number }}
@@ -113,7 +113,7 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
               [options]="chartOptions()"
               height="32"
               [plugins]="[ChartDataLabels]"
-              class="block mt-4"
+              class="mt-4 block"
             />
           }
         </div>

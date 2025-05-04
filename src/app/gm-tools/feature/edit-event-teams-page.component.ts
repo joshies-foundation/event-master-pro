@@ -50,7 +50,7 @@ enum TeamIds {
   selector: 'joshies-edit-event-teams-page',
   template: `
     <joshies-page-header [headerText]="headerText()" alwaysSmall>
-      <div class="w-full flex justify-between items-center">
+      <div class="flex w-full items-center justify-between">
         <joshies-header-link
           text="Events"
           routerLink="../.."
@@ -81,7 +81,7 @@ enum TeamIds {
       <!-- Unassigned players -->
       <p class="mt-4 mb-1">Unassigned Players</p>
       <div
-        class="flex flex-wrap border border-neutral-200 rounded-md bg-neutral-50 relative"
+        class="relative flex flex-wrap rounded-md border border-neutral-200 bg-neutral-50"
         style="min-height: 3.2rem;"
         [id]="DropListIds.UnassignedTeam"
         cdkDropList
@@ -95,7 +95,7 @@ enum TeamIds {
           let first = $first
         ) {
           <div
-            class="flex rounded-md p-2 m-1 bg-neutral-200"
+            class="m-1 flex rounded-md bg-neutral-200 p-2"
             cdkDrag
             [cdkDragData]="participant"
             [cdkDragDisabled]="!userIsGameMaster()"
@@ -105,18 +105,18 @@ enum TeamIds {
               alt=""
               width="24"
               height="24"
-              class="size-6 self-center rounded-full bg-neutral-100 mr-1"
+              class="mr-1 size-6 self-center rounded-full bg-neutral-100"
             />
             <span class="self-center">
               {{ participant.display_name }}
             </span>
             <div
-              class="absolute top-0 left-0 w-full h-full rounded-md bg-neutral-300"
+              class="absolute top-0 left-0 h-full w-full rounded-md bg-neutral-300"
               *cdkDragPlaceholder
             ></div>
           </div>
         } @empty {
-          <p class="self-center text-neutral-400 ml-2">
+          <p class="ml-2 self-center text-neutral-400">
             Drag players here to remove them from a team
           </p>
         }
@@ -133,18 +133,18 @@ enum TeamIds {
           let index = $index, first = $first, last = $last
         ) {
           @if (!(first || last)) {
-            <div class="flex draggable-event-team" cdkDrag>
+            <div class="draggable-event-team flex" cdkDrag>
               @if (userIsGameMaster()) {
                 <div class="flex" cdkDragHandle>
                   <i
-                    class="pi pi-bars text-neutral-300 pl-2 pr-4 self-center"
+                    class="pi pi-bars self-center pr-4 pl-2 text-neutral-300"
                   ></i>
                 </div>
               }
 
               <!-- Drop List for Adding/Removing Players from Teams -->
               <div
-                class="flex grow border border-neutral-200 rounded-md my-2 bg-neutral-50 relative"
+                class="relative my-2 flex grow rounded-md border border-neutral-200 bg-neutral-50"
                 style="min-height: 3.2rem;"
                 [id]="team.id!.toString()"
                 cdkDropList
@@ -152,7 +152,7 @@ enum TeamIds {
                 [cdkDropListData]="team"
                 (cdkDropListDropped)="onEventParticipantDrop($event)"
               >
-                <p class="self-center text-sm text-neutral-400 px-2">
+                <p class="self-center px-2 text-sm text-neutral-400">
                   {{ index }}
                 </p>
                 <div class="flex flex-wrap">
@@ -162,7 +162,7 @@ enum TeamIds {
                     let first = $first
                   ) {
                     <div
-                      class="flex rounded-md p-2 m-1 bg-neutral-200"
+                      class="m-1 flex rounded-md bg-neutral-200 p-2"
                       cdkDrag
                       [cdkDragData]="participant"
                     >
@@ -171,32 +171,32 @@ enum TeamIds {
                         alt=""
                         width="24"
                         height="24"
-                        class="size-6 rounded-full bg-neutral-100 mr-1"
+                        class="mr-1 size-6 rounded-full bg-neutral-100"
                       />
                       <span class="self-center">
                         {{ participant.display_name }}
                       </span>
                       <div
-                        class="absolute top-0 left-0 w-full h-full rounded-md bg-neutral-300"
+                        class="absolute top-0 left-0 h-full w-full rounded-md bg-neutral-300"
                         *cdkDragPlaceholder
                       ></div>
                     </div>
                   } @empty {
-                    <p class="italic text-neutral-400">
+                    <p class="text-neutral-400 italic">
                       Oops, I shouldn't be here...
                     </p>
                   }
                 </div>
               </div>
               <div
-                class="bg-neutral-200 h-12 w-full draggable-event-team"
+                class="draggable-event-team h-12 w-full bg-neutral-200"
                 *cdkDragPlaceholder
               ></div>
             </div>
           }
         }
         <div
-          class="flex border border-neutral-200 rounded-md bg-neutral-50 mt-2 relative"
+          class="relative mt-2 flex rounded-md border border-neutral-200 bg-neutral-50"
           style="min-height: 3.2rem;"
           [id]="DropListIds.NewTeam"
           cdkDropList
@@ -204,7 +204,7 @@ enum TeamIds {
           [cdkDropListData]="teams[teams.length - 1]"
           (cdkDropListDropped)="onEventParticipantDrop($event)"
         >
-          <p class="self-center text-neutral-400 ml-2">
+          <p class="ml-2 self-center text-neutral-400">
             Drag players here to create a new team
           </p>
         </div>

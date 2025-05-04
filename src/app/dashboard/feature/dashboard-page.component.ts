@@ -57,17 +57,17 @@ import { BetComponent } from '../../shared/ui/bet.component';
       @if (vm.countdown) {
         <joshies-countdown-timer [countdown]="vm.countdown" />
       } @else {
-        <div class="flex flex-col justify-between m-6 h-full">
+        <div class="m-6 flex h-full flex-col justify-between">
           <div class="shrink">
-            <h1 class="text-6xl font-semibold mb-6">
+            <h1 class="mb-6 text-6xl font-semibold">
               {{ vm.session.name }}
             </h1>
             <div class="grid grid-cols-12 gap-4">
               @if (vm.showRankingsTable) {
                 <!-- Rankings Table -->
                 <div class="col-span-3">
-                  <h2 class="font-bold mb-2">
-                    <i class="pi pi-trophy text-primary mr-2"></i>
+                  <h2 class="mb-2 font-bold">
+                    <i class="pi pi-trophy mr-2 text-primary"></i>
                     {{ vm.rankingsTableHeader }}
                   </h2>
                   <joshies-rankings-table
@@ -135,7 +135,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                               </tr>
                             } @empty {
                               <tr>
-                                <td class="italic text-neutral-600">
+                                <td class="text-neutral-600 italic">
                                   No duels for this turn
                                 </td>
                               </tr>
@@ -156,7 +156,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-danger-foreground font-semibold">
+                          <span class="font-semibold text-danger-foreground">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -191,7 +191,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-danger-foreground font-semibold">
+                          <span class="font-semibold text-danger-foreground">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -204,7 +204,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-danger-foreground font-semibold">
+                          <span class="font-semibold text-danger-foreground">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -218,7 +218,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-danger-foreground font-semibold">
+                          <span class="font-semibold text-danger-foreground">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -228,7 +228,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         @if (vm.eventForThisRound; as event) {
                           <joshies-event-info [event]="event" readOnly />
                         } @else {
-                          <span class="text-danger-foreground font-semibold">
+                          <span class="font-semibold text-danger-foreground">
                             There's no event scheduled for this turn 😳 Tell the
                             GM to get on it 😤
                           </span>
@@ -248,7 +248,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                           @if (vm.eventForNextRound; as event) {
                             <joshies-event-info [event]="event" readOnly />
                           } @else {
-                            <span class="text-danger-foreground font-semibold">
+                            <span class="font-semibold text-danger-foreground">
                               There's no event scheduled for this turn 😳 Tell
                               the GM to get on it 😤
                             </span>
@@ -271,7 +271,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                           @if (vm.eventForNextRound; as event) {
                             <joshies-event-info [event]="event" readOnly />
                           } @else {
-                            <span class="text-danger-foreground font-semibold">
+                            <span class="font-semibold text-danger-foreground">
                               There's no event scheduled for this turn 😳 Tell
                               the GM to get on it 😤
                             </span>
@@ -331,7 +331,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                                   ></joshies-duel-table-avatars>
                                 </td>
                                 <td class="pl-4">
-                                  <h4 class="font-bold text-lg mt-4">
+                                  <h4 class="mt-4 text-lg font-bold">
                                     {{ duel.winner?.display_name }} beat
                                     {{ duel.loser?.display_name }} at
                                     {{ duel.game_name }}
@@ -354,12 +354,9 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         </p-carousel>
                       } @else {
                         <!-- Fixes the issue of carousel going blank when container size decreases to equal numVisible -->
-                        <div class="w-full flex flex-col h-[28rem]">
+                        <div class="flex h-[28rem] w-full flex-col">
                           @for (duel of vm.latestDuels; track duel.id) {
-                            <div
-                              class="
-                              flex-1"
-                            >
+                            <div class="flex-1">
                               <table>
                                 <tr>
                                   <td>
@@ -368,7 +365,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                                     ></joshies-duel-table-avatars>
                                   </td>
                                   <td class="pl-4">
-                                    <h4 class="font-bold text-lg mt-4">
+                                    <h4 class="mt-4 text-lg font-bold">
                                       {{ duel.winner?.display_name }} beat
                                       {{ duel.loser?.display_name }} at
                                       {{ duel.game_name }}
@@ -392,7 +389,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                         </div>
                       }
                     } @else {
-                      <div class="italic h-[28rem]">
+                      <div class="h-[28rem] italic">
                         Well this is boring, there are no recent duels.
                       </div>
                     }
@@ -432,7 +429,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                   </p-carousel>
                 } @else {
                   <!-- Fixes the issue of carousel going blank when container size decreases to equal numVisible -->
-                  <div class="w-full flex flex-row ">
+                  <div class="flex w-full flex-row">
                     @for (bet of vm.activeBets; track bet.id) {
                       <joshies-bet class="flex-1" [bet]="bet"></joshies-bet>
                     }

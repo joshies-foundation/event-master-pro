@@ -53,7 +53,7 @@ import { EventService } from '../../shared/data-access/event.service';
     </joshies-page-header>
 
     @if (viewModel(); as vm) {
-      <h4 class="font-bold mt-12 mb-4">
+      <h4 class="mt-12 mb-4 font-bold">
         Session points for round {{ vm.roundNumber }} of {{ vm.numRounds }}
         <span class="text-neutral-500 italic">(Draft)</span>
       </h4>
@@ -82,7 +82,7 @@ import { EventService } from '../../shared/data-access/event.service';
           <tr>
             <!-- Player -->
             <td pFrozenColumn>
-              <div class="flex items-center gap-2 -py-2">
+              <div class="-py-2 flex items-center gap-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""

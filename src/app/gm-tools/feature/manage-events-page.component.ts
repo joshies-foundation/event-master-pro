@@ -44,7 +44,7 @@ import { EventModel } from '../../shared/util/supabase-types';
   template: `
     <!-- Header -->
     <joshies-page-header headerText="Events" alwaysSmall>
-      <div class="w-full flex justify-between items-center">
+      <div class="flex w-full items-center justify-between">
         <!-- TODO: Add a save confirmation when leaving page if edits have been made -->
         <joshies-header-link
           text="GM Tools"
@@ -84,7 +84,7 @@ import { EventModel } from '../../shared/util/supabase-types';
           let index = $index
         ) {
           <div
-            class="w-full h-24 flex border-b border-neutral-100 pt-4 pb-4 pr-4 bg-neutral-0"
+            class="flex h-24 w-full border-b border-neutral-100 bg-neutral-0 pt-4 pr-4 pb-4"
             [class.mt-2]="first"
             cdkDrag
             [cdkDragDisabled]="
@@ -92,12 +92,12 @@ import { EventModel } from '../../shared/util/supabase-types';
             "
           >
             <div
-              class="flex flex-col items-center justify-center text-sm text-center"
+              class="flex flex-col items-center justify-center text-center text-sm"
             >
               {{ index + 1 }}
               @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
                 <i
-                  class="pi pi-bars text-neutral-300 self-center pl-2 pr-4"
+                  class="pi pi-bars self-center pr-4 pl-2 text-neutral-300"
                   cdkDragHandle
                 ></i>
               }
@@ -109,15 +109,15 @@ import { EventModel } from '../../shared/util/supabase-types';
               alt=""
               width="48"
               height="48"
-              class="size-12 rounded-border mr-4"
+              class="mr-4 size-12 rounded-border"
             />
             <div class="grow">
               <!-- Event Name -->
-              <h4 class="font-bold mb-1">{{ event.name }}</h4>
+              <h4 class="mb-1 font-bold">{{ event.name }}</h4>
 
               <!-- Event Description -->
               <p
-                class="mt-2 w-44 whitespace-nowrap overflow-hidden text-ellipsis"
+                class="mt-2 w-44 overflow-hidden text-ellipsis whitespace-nowrap"
               >
                 {{ event.description }}
               </p>
@@ -127,27 +127,27 @@ import { EventModel } from '../../shared/util/supabase-types';
             @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
               <div class="flex flex-col">
                 <a
-                  class="text-center px-2 py-1 mb-2 bg-primary text-primary-contrast rounded-md"
+                  class="mb-2 rounded-md bg-primary px-2 py-1 text-center text-primary-contrast"
                   [routerLink]="'edit/' + [event.id]"
                 >
                   <i class="pi pi-pencil"></i>
                 </a>
                 <a
-                  class="text-center px-2 py-1 bg-primary text-primary-contrast rounded-md"
+                  class="rounded-md bg-primary px-2 py-1 text-center text-primary-contrast"
                   [routerLink]="'teams/' + [event.id]"
                 >
                   <i class="pi pi-users"></i>
                 </a>
               </div>
-              <div class="bg-neutral-200 h-24 w-full" *cdkDragPlaceholder></div>
+              <div class="h-24 w-full bg-neutral-200" *cdkDragPlaceholder></div>
             }
           </div>
         } @empty {
-          <p class="mb-4 mt-8 text-center italic text-neutral-400">No events</p>
+          <p class="mt-8 mb-4 text-center text-neutral-400 italic">No events</p>
         }
       </div>
     } @else if (databaseEvents === null) {
-      <p class="mb-4 mt-12 pt-12 text-center text-neutral-500 italic">
+      <p class="mt-12 mb-4 pt-12 text-center text-neutral-500 italic">
         No active session
       </p>
     } @else {

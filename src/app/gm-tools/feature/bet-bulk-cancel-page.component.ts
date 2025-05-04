@@ -40,7 +40,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       />
     </joshies-page-header>
 
-    <p class="mb-4 mt-8">
+    <p class="mt-8 mb-4">
       Cancel all bets where the given user is the requester. Can choose to
       cancel just pending bets or all bets that are pending (P) or open (O).
     </p>
@@ -68,7 +68,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
           <tr>
             <!-- Player -->
             <td pFrozenColumn>
-              <div class="flex items-center gap-2 -py-2">
+              <div class="-py-2 flex items-center gap-2">
                 <img
                   [ngSrc]="displayPlayer.player.avatar_url"
                   alt=""
@@ -89,7 +89,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
             <!-- Edit Score Button -->
             <td>
               <div
-                class="text-right flex gap-2 flex-col md:flex-row justify-end"
+                class="flex flex-col justify-end gap-2 text-right md:flex-row"
               >
                 <p-button
                   label="Cancel Pend."

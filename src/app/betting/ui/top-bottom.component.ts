@@ -12,7 +12,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
   selector: 'joshies-top-bottom',
   template: `
     <!-- Over/Under Radio Buttons -->
-    <div class="flex flex-wrap gap-4 mt-2 px-2">
+    <div class="mt-2 flex flex-wrap gap-4 px-2">
       <label class="flex items-center gap-2">
         <p-radioButton
           name="topBottom"
@@ -36,7 +36,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     </div>
 
     <!-- Over/Under Value -->
-    <label class="flex flex-col gap-2 mt-4">
+    <label class="mt-4 flex flex-col gap-2">
       <p-inputNumber
         #numTeamsInput
         [(ngModel)]="selectedNumberOfTeams"

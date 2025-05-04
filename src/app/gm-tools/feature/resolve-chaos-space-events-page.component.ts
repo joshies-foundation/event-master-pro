@@ -61,7 +61,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
             <tr>
               <th class="pr-0">Player</th>
               <th>Event</th>
-              <th class="text-right px-0">Status</th>
+              <th class="px-0 text-right">Status</th>
               <th class="px-0"></th>
             </tr>
           </ng-template>
@@ -85,7 +85,7 @@ import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
               <td class="text-sm">
                 {{ chaosSpaceEvent.template?.name ?? '?' }}
               </td>
-              <td class="text-right px-0">
+              <td class="px-0 text-right">
                 <joshies-status-tag [status]="chaosSpaceEvent.status" />
               </td>
               <td class="px-1">

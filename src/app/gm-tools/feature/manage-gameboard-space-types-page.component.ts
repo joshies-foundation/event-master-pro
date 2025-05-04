@@ -20,7 +20,7 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
   ],
   template: `
     <joshies-page-header headerText="Space Types" alwaysSmall>
-      <div class="w-full flex justify-between">
+      <div class="flex w-full justify-between">
         <joshies-header-link
           text="GM Tools"
           routerLink=".."
@@ -39,13 +39,13 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
         let first = $first
       ) {
         <a
-          class="w-full flex items-center border-b border-neutral-100 p-4 no-underline"
+          class="flex w-full items-center border-b border-neutral-100 p-4 no-underline"
           [class.mt-5]="first"
           [routerLink]="[gameboardSpace.id]"
         >
           <joshies-gameboard-space class="mr-4" [model]="gameboardSpace" />
           <div class="grow">
-            <h4 class="font-bold mb-2">{{ gameboardSpace.name }} Space</h4>
+            <h4 class="mb-2 font-bold">{{ gameboardSpace.name }} Space</h4>
             <div
               class="text-sm text-neutral-600"
               [innerHTML]="gameboardSpace | gameboardSpaceDescription"

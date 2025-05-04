@@ -37,7 +37,7 @@
                 </p>
                 <p class="m-0">Let's get rolling!</p>
               </div>
-              <i class="pi pi-angle-right text-neutral-300 self-center"></i>
+              <i class="pi pi-angle-right self-center text-neutral-300"></i>
             </div>
             <p-button
               label="Place Bet for space someone lands on"
@@ -110,7 +110,7 @@
                   </tr>
                 } @empty {
                   <tr>
-                    <td class="italic text-neutral-600">
+                    <td class="text-neutral-600 italic">
                       No duels for this turn
                     </td>
                   </tr>
@@ -196,7 +196,7 @@
                 />
               }
             } @else {
-              <span class="text-danger-foreground font-semibold">
+              <span class="font-semibold text-danger-foreground">
                 There's no event scheduled for this turn 😳 Tell the GM to get
                 on it 😤
               </span>
@@ -241,12 +241,12 @@
             <p class="mt-0 mb-1">
               Special Space events, duels, and Chaos Space events.
             </p>
-            <p class="mb-4 mt-0">Then, our next main event:</p>
+            <p class="mt-0 mb-4">Then, our next main event:</p>
 
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
             } @else {
-              <span class="text-danger-foreground font-semibold">
+              <span class="font-semibold text-danger-foreground">
                 There's no event scheduled for this turn 😳 Tell the GM to get
                 on it 😤
               </span>
@@ -254,26 +254,26 @@
           }
           @case (RoundPhase.SpecialSpaceEvents) {
             <p class="mt-0 mb-1">Duels and Chaos Space events.</p>
-            <p class="mb-4 mt-0">Then, our next main event:</p>
+            <p class="mt-0 mb-4">Then, our next main event:</p>
 
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
             } @else {
-              <span class="text-danger-foreground font-semibold">
+              <span class="font-semibold text-danger-foreground">
                 There's no event scheduled for this turn 😳 Tell the GM to get
                 on it 😤
               </span>
             }
           }
           @case (RoundPhase.Duels) {
-            <p class="mb-4 mt-0">
+            <p class="mt-0 mb-4">
               Chaos Space events, and then our next main event:
             </p>
 
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
             } @else {
-              <span class="text-danger-foreground font-semibold">
+              <span class="font-semibold text-danger-foreground">
                 There's no event scheduled for this turn 😳 Tell the GM to get
                 on it 😤
               </span>
@@ -283,7 +283,7 @@
             @if (vm.eventForThisRound; as event) {
               <joshies-event-info [event]="event" />
             } @else {
-              <span class="text-danger-foreground font-semibold">
+              <span class="font-semibold text-danger-foreground">
                 There's no event scheduled for this turn 😳 Tell the GM to get
                 on it 😤
               </span>
@@ -298,12 +298,12 @@
                 >.
               </p>
 
-              <p class="mb-4 mt-0">Then, our next main event:</p>
+              <p class="mt-0 mb-4">Then, our next main event:</p>
 
               @if (vm.eventForNextRound; as event) {
                 <joshies-event-info [event]="event" />
               } @else {
-                <span class="text-danger-foreground font-semibold">
+                <span class="font-semibold text-danger-foreground">
                   There's no event scheduled for this turn 😳 Tell the GM to get
                   on it 😤
                 </span>
@@ -321,12 +321,12 @@
                 >.
               </p>
 
-              <p class="mb-4 mt-0">Then, our next main event:</p>
+              <p class="mt-0 mb-4">Then, our next main event:</p>
 
               @if (vm.eventForNextRound; as event) {
                 <joshies-event-info [event]="event" />
               } @else {
-                <span class="text-danger-foreground font-semibold">
+                <span class="font-semibold text-danger-foreground">
                   There's no event scheduled for this turn 😳 Tell the GM to get
                   on it 😤
                 </span>
@@ -348,7 +348,7 @@
           (onClick)="startSession()"
         />
       } @else {
-        <p class="mb-4 mt-20 text-center text-neutral-500 italic">
+        <p class="mt-20 mb-4 text-center text-neutral-500 italic">
           is about to begin...
         </p>
       }
@@ -368,8 +368,8 @@
       </joshies-card>
 
       <!-- Rankings Table -->
-      <h3 class="text-lg font-bold mt-6 mb-2">
-        <i class="pi pi-trophy text-primary mr-2"></i>
+      <h3 class="mt-6 mb-2 text-lg font-bold">
+        <i class="pi pi-trophy mr-2 text-primary"></i>
         {{ vm.rankingsTableHeader }}
       </h3>
       <joshies-rankings-table [players]="vm.players" [userId]="vm.userId" />

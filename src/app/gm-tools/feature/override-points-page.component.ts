@@ -63,17 +63,17 @@ import { CheckboxModule } from 'primeng/checkbox';
 
     @if (player(); as player) {
       <!-- Player Header -->
-      <h2 class="font-bold flex items-center gap-4 mt-12 mb-8">
+      <h2 class="mt-12 mb-8 flex items-center gap-4 font-bold">
         <img
           [ngSrc]="player.avatar_url"
           alt=""
           height="48"
           width="48"
-          class="rounded-full bg-neutral-100 size-12"
+          class="size-12 rounded-full bg-neutral-100"
         />
         <div>
           <p>{{ player.display_name }}</p>
-          <p class="m-0 text-neutral-500 text-base font-normal">
+          <p class="m-0 text-base font-normal text-neutral-500">
             {{ player.real_name }}
           </p>
         </div>
@@ -82,7 +82,7 @@ import { CheckboxModule } from 'primeng/checkbox';
       <joshies-card padded>
         <!-- Override Type -->
         <p class="mb-4">Override Type</p>
-        <div class="flex flex-col gap-4 mb-8">
+        <div class="mb-8 flex flex-col gap-4">
           @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
             <label class="ml-2">
               <p-radioButton
@@ -105,7 +105,7 @@ import { CheckboxModule } from 'primeng/checkbox';
         />
 
         @if (changeValue() < 0) {
-          <label class="flex items-center gap-2 mt-6">
+          <label class="mt-6 flex items-center gap-2">
             <p-checkbox
               [binary]="true"
               [(ngModel)]="addLostPointsToBankBalance"
@@ -115,7 +115,7 @@ import { CheckboxModule } from 'primeng/checkbox';
         }
 
         <!-- Comment -->
-        <label class="flex flex-col gap-2 mt-6">
+        <label class="mt-6 flex flex-col gap-2">
           Reason for Override (Optional)
           <input pInputText [(ngModel)]="comment" />
         </label>

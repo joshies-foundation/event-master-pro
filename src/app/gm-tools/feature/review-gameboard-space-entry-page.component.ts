@@ -44,7 +44,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
       />
     </joshies-page-header>
     @if (viewModel(); as vm) {
-      <p class="mb-4 mt-8">
+      <p class="mt-8 mb-4">
         Gameboard moves for turn {{ vm.roundNumber }}
         <span class="text-neutral-500 italic">(Draft)</span>
       </p>
@@ -72,7 +72,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
           <tr>
             <!-- Player -->
             <td>
-              <div class="flex items-center gap-2 -py-2">
+              <div class="-py-2 flex items-center gap-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
@@ -97,7 +97,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
                 player.gameboardSpace!.effect ===
                 GameboardSpaceEffect.GainPointsOrDoActivity
               ) {
-                <p class="text-sm text-neutral-500 mt-1">
+                <p class="mt-1 text-sm text-neutral-500">
                   {{
                     player.decision === 'points'
                       ? ($any(player.gameboardSpace!.effect_data)

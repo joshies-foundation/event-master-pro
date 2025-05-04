@@ -98,7 +98,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
     @if (viewModel(); as vm) {
       @if (vm.chaosSpaceEvent) {
-        <div class="grow flex flex-col justify-between">
+        <div class="flex grow flex-col justify-between">
           <div>
             <!-- Player -->
             <div class="mt-8 flex items-center gap-4">
@@ -364,10 +364,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.WaitingToBegin) {
                 @if (vm.chaosSpaceEvent.template) {
-                  <h3 class="text-lg font-bold mt-8 mb-2">
+                  <h3 class="mt-8 mb-2 text-lg font-bold">
                     {{ vm.chaosSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mb-8 pre-wrap">{{
+                  <pre class="pre-wrap mb-8">{{
                     vm.chaosSpaceEvent.template.description
                   }}</pre>
 
@@ -385,10 +385,10 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
               }
               @case (SpaceEventStatus.InProgress) {
                 @if (vm.chaosSpaceEvent.template) {
-                  <h3 class="text-lg font-bold mt-8 mb-2">
+                  <h3 class="mt-8 mb-2 text-lg font-bold">
                     {{ vm.chaosSpaceEvent.template.name }}
                   </h3>
-                  <pre class="mb-8 pre-wrap">{{
+                  <pre class="pre-wrap mb-8">{{
                     vm.chaosSpaceEvent.template.description
                   }}</pre>
 
@@ -412,8 +412,8 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       <ng-template #header>
                         <tr>
                           <th>Player</th>
-                          <th class="text-right pl-0">Current Score</th>
-                          <th class="text-right pl-0">Change</th>
+                          <th class="pl-0 text-right">Current Score</th>
+                          <th class="pl-0 text-right">Change</th>
                         </tr>
                       </ng-template>
                       <ng-template
@@ -434,11 +434,11 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                               {{ player.display_name }}
                             </div>
                           </td>
-                          <td class="text-right pl-0">
+                          <td class="pl-0 text-right">
                             {{ player.score | number }}
                           </td>
                           <td
-                            class="text-right pl-0"
+                            class="pl-0 text-right"
                             [innerHTML]="
                               player.scoreChange | numberWithSignAndColor
                             "

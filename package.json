@@ -17,7 +17,11 @@
   },
   "private": true,
   "prettier": {
-    "singleQuote": true
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ],
+    "singleQuote": true,
+    "tailwindStylesheet": "./src/styles.css"
   },
   "pre-commit": [
     "lint-staged"
@@ -76,6 +80,7 @@
     "lint-staged": "^15.5.1",
     "pre-commit": "^1.2.2",
     "prettier": "3.5.3",
+    "prettier-plugin-tailwindcss": "0.6.11",
     "supabase": "^2.22.6",
     "typescript": "~5.8.3"
   },

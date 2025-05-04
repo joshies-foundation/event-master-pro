@@ -38,7 +38,7 @@ export const confirmOverrideDialogKey = 'confirm-override';
 
           <!-- Comment -->
           @if (model().comment) {
-            <p class="italic text-neutral-500 mx-4">
+            <p class="mx-4 text-neutral-500 italic">
               GM Discretion: {{ model().comment }}
             </p>
           }

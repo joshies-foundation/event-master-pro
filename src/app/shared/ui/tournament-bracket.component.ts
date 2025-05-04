@@ -35,11 +35,11 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       [(selection)]="selectedNodes"
       propagateSelectionUp="false"
       propagateSelectionDown="false"
-      class="block mt-4"
+      class="mt-4 block"
     >
       <ng-template let-node pTemplate="node">
-        <div class="flex items-center rotate-180 w-40 h-8">
-          <span class="text-xs text-neutral-400 mr-1">{{
+        <div class="flex h-8 w-40 rotate-180 items-center">
+          <span class="mr-1 text-xs text-neutral-400">{{
             node.data?.seed
           }}</span>
           <p-avatarGroup styleClass="mr-1">
@@ -55,7 +55,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
           </span>
           @if (node.checked) {
             <i
-              class="pi pi-check text-white bg-green-500 p-1 text-xs font-bold rounded-full block ml-auto mr-1"
+              class="pi pi-check mr-1 ml-auto block rounded-full bg-green-500 p-1 text-xs font-bold text-white"
             ></i>
           }
         </div>

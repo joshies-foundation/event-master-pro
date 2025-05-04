@@ -41,7 +41,7 @@ import {
     </joshies-page-header>
 
     <!-- Form -->
-    <joshies-form [form]="form" class="block mt-8 mb-20" />
+    <joshies-form [form]="form" class="mt-8 mb-20 block" />
 
     <!-- Confirm Dialog -->
     <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
@@ -53,14 +53,14 @@ import {
             >?
           </p>
 
-          <h4 class="font-bold mb-2">
+          <h4 class="mb-2 font-bold">
             {{ specialSpaceEventTemplateName() }}
           </h4>
           <p class="m-0 text-sm text-neutral-600">
             {{ specialSpaceEventTemplateFormValue().description }}
           </p>
 
-          <p class="mb-4 mt-6 text-primary italic text-sm">
+          <p class="mt-6 mb-4 text-sm text-primary italic">
             (Note: This event will not be available until it is added to a
             Special Space in the
             <strong>Manage Gameboard Space Types</strong> page)

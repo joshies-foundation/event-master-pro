@@ -35,7 +35,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
         <joshies-rankings-table
           [players]="players"
           [userId]="vm.userId"
-          class="block mt-8 mb-20"
+          class="mt-8 mb-20 block"
         />
       } @else {
         <p class="mt-12 pt-12 text-center text-neutral-500 italic">

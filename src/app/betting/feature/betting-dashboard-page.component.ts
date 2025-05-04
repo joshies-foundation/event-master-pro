@@ -60,16 +60,16 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
 
     @if (pageLoaded()) {
       <!-- Stats -->
-      <div class="grid grid-rows-1 grid-cols-3 gap-4 mb-4">
+      <div class="mb-4 grid grid-cols-3 grid-rows-1 gap-4">
         @if (stats(); as stats) {
           <!-- Resolved Bets -->
-          <div class="bg-neutral-0 p-2 rounded-border text-center">
+          <div class="rounded-border bg-neutral-0 p-2 text-center">
             <p class="text-sm">Settled Bets</p>
             @if (stats.numResolvedBets === null) {
-              <p class="text-2xl my-1">—</p>
+              <p class="my-1 text-2xl">—</p>
             } @else {
               <p
-                class="text-2xl my-1 font-semibold"
+                class="my-1 text-2xl font-semibold"
                 [ngClass]="stats.numResolvedBets | numberSignColorClass"
               >
                 {{ stats.numResolvedBets | number }}
@@ -78,26 +78,26 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
           </div>
 
           <!-- Total Profit -->
-          <div class="bg-neutral-0 p-2 rounded-border text-center">
+          <div class="rounded-border bg-neutral-0 p-2 text-center">
             <p class="text-sm">Total Profit</p>
             @if (stats.totalProfit === null) {
-              <p class="text-2xl my-1">—</p>
+              <p class="my-1 text-2xl">—</p>
             } @else {
               <p
-                class="text-2xl my-1"
+                class="my-1 text-2xl"
                 [innerHTML]="stats.totalProfit | numberWithSignAndColor"
               ></p>
             }
           </div>
 
           <!-- Overall Win % -->
-          <div class="bg-neutral-0 p-2 rounded-border text-center">
+          <div class="rounded-border bg-neutral-0 p-2 text-center">
             <p class="text-sm">Overall Win %</p>
             @if (stats.totalProfit === null) {
-              <p class="text-2xl my-1">—</p>
+              <p class="my-1 text-2xl">—</p>
             } @else {
               <p
-                class="text-2xl my-1 font-semibold"
+                class="my-1 text-2xl font-semibold"
                 [ngClass]="
                   stats.overallWinPercentage ?? 0 | numberSignColorClass
                 "
@@ -110,7 +110,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
       </div>
 
       <!-- Chart -->
-      <div class="bg-neutral-0 rounded-border p-2 pb-0 mb-4">
+      <div class="mb-4 rounded-border bg-neutral-0 p-2 pb-0">
         <p-chart
           type="bar"
           [options]="chartOptions"
@@ -156,7 +156,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
                       ) {
                         @if (!first) {
                           <joshies-bet-request
-                            class="block mt-4"
+                            class="mt-4 block"
                             [class.-mb-4]="!last"
                             [bet]="bet"
                             [userPlayerId]="userPlayerId"
@@ -182,10 +182,10 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
 
         @if (sessionIsInProgress()) {
           <!-- Pace Bet -->
-          <h3 class="text-lg font-bold my-2">
-            <i class="pi pi-plus text-primary mr-2"></i> Place Bet For
+          <h3 class="my-2 text-lg font-bold">
+            <i class="pi pi-plus mr-2 text-primary"></i> Place Bet For
           </h3>
-          <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4">
+          <div class="hide-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
             @for (
               betTypeButtonModel of betTypeButtonModels;
               track betTypeButtonModel.label
@@ -193,7 +193,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
               <a
                 [routerLink]="betTypeButtonModel.routerLink"
                 [queryParams]="betTypeButtonModel.queryParams"
-                class="flex flex-col shrink-0 gap-1 text-xs h-16 w-24 p-2 justify-center text-center items-center p-button p-button-outlined"
+                class="p-button p-button-outlined flex h-16 w-24 shrink-0 flex-col items-center justify-center gap-1 p-2 text-center text-xs"
                 pRipple
               >
                 <i [class]="betTypeButtonModel.iconClass"></i>
@@ -240,7 +240,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
                       ) {
                         @if (!first) {
                           <joshies-bet-awaiting-acceptance
-                            class="block mt-4"
+                            class="mt-4 block"
                             [class.-mb-4]="!last"
                             [bet]="bet"
                             [userPlayerId]="userPlayerId"
@@ -277,7 +277,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
                 [userPlayerId]="userPlayerId"
               />
             } @else {
-              <p class="m-0 italic text-neutral-600">No open bets</p>
+              <p class="m-0 text-neutral-600 italic">No open bets</p>
             }
           }
 
@@ -297,7 +297,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
                   ) {
                     @if (!first) {
                       <joshies-bet
-                        class="block mt-4"
+                        class="mt-4 block"
                         [class.-mb-4]="!last"
                         [bet]="bet"
                         [userPlayerId]="userPlayerId"
@@ -327,7 +327,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
               <p-divider />
             }
           } @empty {
-            <p class="m-0 italic text-neutral-600">No settled bets</p>
+            <p class="m-0 text-neutral-600 italic">No settled bets</p>
           }
 
           @if (showViewAllResolvedBetsLink()) {
@@ -346,7 +346,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
       }
     } @else {
       <!-- Stats -->
-      <div class="grid grid-rows-1 grid-cols-3 gap-4 mb-4">
+      <div class="mb-4 grid grid-cols-3 grid-rows-1 gap-4">
         <p-skeleton height="4.75rem" />
         <p-skeleton height="4.75rem" />
         <p-skeleton height="4.75rem" />
@@ -356,7 +356,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
       <p-skeleton height="10.5rem" />
 
       <!-- Pace Bet -->
-      <div class="flex gap-2 mt-4 mb-2">
+      <div class="mt-4 mb-2 flex gap-2">
         <p-skeleton
           height="1.25rem"
           width="1.25rem"
@@ -364,7 +364,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
         />
         <p-skeleton height="1.25rem" width="7rem" />
       </div>
-      <div class="flex gap-2 overflow-x-hidden -mx-4 px-4">
+      <div class="-mx-4 flex gap-2 overflow-x-hidden px-4">
         @for (
           betTypeButtonModel of betTypeButtonModels;
           track betTypeButtonModel.label
@@ -374,7 +374,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
       </div>
 
       <!-- Open Bets -->
-      <div class="flex gap-2 mt-6 mb-2">
+      <div class="mt-6 mb-2 flex gap-2">
         <p-skeleton
           height="1.25rem"
           width="1.25rem"
