@@ -167,7 +167,7 @@ export type FormField = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent implements AfterViewInit {
-  private readonly defaultImage = '/assets/icons/icon-96x96.png';
+  private readonly defaultImage = '/icons/icon-96x96.png';
 
   field = input.required<FormField>();
   field$ = toObservable(this.field);

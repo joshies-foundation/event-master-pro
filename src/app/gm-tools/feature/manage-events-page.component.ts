@@ -105,7 +105,7 @@ import { EventModel } from '../../shared/util/supabase-types';
 
             <!-- Event Image -->
             <img
-              [ngSrc]="event.image_url || '/assets/icons/icon-96x96.png'"
+              [ngSrc]="event.image_url || '/icons/icon-96x96.png'"
               alt=""
               width="48"
               height="48"

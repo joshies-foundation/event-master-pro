@@ -10,11 +10,11 @@ import { PlayerService } from '../../shared/data-access/player.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
-  SessionStatus,
-  RoundPhase,
-  GameboardSpaceEffect,
   BetStatus,
   DuelStatus,
+  GameboardSpaceEffect,
+  RoundPhase,
+  SessionStatus,
 } from '../../shared/util/supabase-helpers';
 import { RankingsTableComponent } from '../../shared/ui/rankings-table.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
@@ -90,7 +90,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
                       @case (RoundPhase.GameboardMoves) {
                         <div class="flex gap-4">
                           <img
-                            ngSrc="/assets/dice-roll.gif"
+                            ngSrc="/images/dice-roll.gif"
                             alt=""
                             width="48"
                             height="48"

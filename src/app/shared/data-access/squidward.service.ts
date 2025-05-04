@@ -18,12 +18,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class SquidwardService {
   private readonly userService = inject(UserService);
 
-  private readonly touchStartSound = new Sound(
-    '/assets/audio/squidward-walk-1.wav',
-  );
-  private readonly touchEndSound = new Sound(
-    '/assets/audio/squidward-walk-2.wav',
-  );
+  private readonly touchStartSound = new Sound('/audio/squidward-walk-1.wav');
+  private readonly touchEndSound = new Sound('/audio/squidward-walk-2.wav');
 
   readonly squidwardMode$ = this.userService.user$.pipe(
     map((user) => user?.squidward_mode ?? false),

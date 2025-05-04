@@ -1,7 +1,7 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  booleanAttribute,
   input,
 } from '@angular/core';
 import { EventModel } from '../util/supabase-types';
@@ -21,7 +21,7 @@ import { Button } from 'primeng/button';
         class="flex gap-4"
       >
         <img
-          [ngSrc]="event().image_url || '/assets/icons/icon-96x96.png'"
+          [ngSrc]="event().image_url || '/icons/icon-96x96.png'"
           alt=""
           height="48"
           width="48"
