@@ -1,7 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { map, shareReplay, startWith } from 'rxjs';
-import { environment } from 'environment';
 import { MessageService } from 'primeng/api';
 import { showErrorMessage } from '../util/message-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -36,7 +35,7 @@ export class NotificationsService {
   async enablePushNotifications(userId: string): Promise<void> {
     try {
       const subscription = await this.swPush.requestSubscription({
-        serverPublicKey: environment.vapidPublicKey,
+        serverPublicKey: import.meta.env.NG_APP_VAPID_PUBLIC_KEY,
       });
       await this.saveUserNotificationsSubscription(userId, subscription);
     } catch (err) {
