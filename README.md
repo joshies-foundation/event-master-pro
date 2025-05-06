@@ -2,17 +2,6 @@
 
 <p align="center">Supercharge dynamic, multi-day competitions with realtime brackets, betting, analytics, and more</p>
 
-[//]: # '<div align="center">'
-[//]: # '  <a href="https://github.com/c-o-l-i-n/joshies/actions/workflows/build-and-deploy.yml">'
-[//]: # '    <img alt="Github Build and Deployment Status" src="https://img.shields.io/github/actions/workflow/status/c-o-l-i-n/joshies/build-and-deploy.yml?branch=main&logo=github&logoWidth=12">'
-[//]: # '  </a>'
-[//]: # '  <a href="https://joshies.app">'
-[//]: # '    <img alt="Website Monitoring Status" src="https://img.shields.io/website?url=https%3A%2F%2Fjoshies.app">'
-[//]: # '  </a>'
-[//]: # '</div>'
-[//]: # '<br />'
-[//]: # '<br />'
-
 <p align="center">
   <img alt="EventMaster Pro Logo" height="200" width="100%" src="https://colinaw.com/assets/images/logos/emp.svg" />
 </p>
@@ -32,14 +21,22 @@ Forget the admin, and focus on the games. EventMaster Pro saves you hours of man
 ### Prerequisites
 
 - [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/) v20
+- [Node.js](https://nodejs.org/) v22
 
 ### Install
 
 ```sh
-git clone https://github.com/c-o-l-i-n/joshies.git
-cd joshies
+git clone https://github.com/joshies-foundation/event-master-pro.git
+cd event-master-pro
 npm install
+```
+
+### Add environment variables
+
+Create a `.env` file, and fill in the variables.
+
+```shell
+cp .env.example .env
 ```
 
 ### Run
