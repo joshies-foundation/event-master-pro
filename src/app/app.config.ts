@@ -37,7 +37,10 @@ export const appConfig: ApplicationConfig = {
     ),
 
     // supabase
-    provideSupabase(),
+    provideSupabase({
+      supabaseProjectId: import.meta.env.NG_APP_SUPABASE_PROJECT_ID,
+      supabaseAnonKey: import.meta.env.NG_APP_SUPABASE_ANON_KEY,
+    }),
 
     // animations
     provideAnimationsAsync(),
