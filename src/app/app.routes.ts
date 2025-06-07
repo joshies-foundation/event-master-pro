@@ -13,6 +13,12 @@ export const routes: Routes = [
     canActivate: [redirectUnauthorizedToLoginPage],
   },
   {
+    path: 'dashboard/randomizer',
+    loadComponent: () =>
+      import('./dashboard/feature/randomizer-page.component'),
+    canActivate: [redirectUnauthorizedToLoginPage],
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./shell/feature/logged-in-app-shell.component'),
