@@ -34,6 +34,7 @@ import { ButtonModule } from 'primeng/button';
 import { CarouselModule } from 'primeng/carousel';
 import { BetService } from '../../shared/data-access/bet.service';
 import { BetComponent } from '../../shared/ui/bet.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'joshies-dashboard-page',
@@ -51,6 +52,7 @@ import { BetComponent } from '../../shared/ui/bet.component';
     ButtonModule,
     CarouselModule,
     BetComponent,
+    RouterLink,
   ],
   template: `
     @if (viewModel(); as vm) {
@@ -59,9 +61,17 @@ import { BetComponent } from '../../shared/ui/bet.component';
       } @else {
         <div class="m-6 flex h-full flex-col justify-between">
           <div class="shrink">
-            <h1 class="mb-6 text-6xl font-semibold">
-              {{ vm.session.name }}
-            </h1>
+            <div class="mb-6 flex w-full flex-row">
+              <h1 class="grow text-6xl font-semibold">
+                {{ vm.session.name }}
+              </h1>
+              <p-button
+                icon="pi pi-box"
+                rounded
+                label="Randomizer"
+                routerLink="./randomizer"
+              />
+            </div>
             <div class="grid grid-cols-12 gap-4">
               @if (vm.showRankingsTable) {
                 <!-- Rankings Table -->

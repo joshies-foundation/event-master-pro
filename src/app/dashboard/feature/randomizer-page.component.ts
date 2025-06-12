@@ -12,52 +12,65 @@ import { FormsModule } from '@angular/forms';
 import RandomizerComponent from '../ui/randomizer.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { PlayerService } from '../../shared/data-access/player.service';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 
 @Component({
   selector: 'joshies-randomizer-page',
   template: `
     <div class="randomizer-container">
       <div class="mb-auto flex flex-col gap-2">
-        <label class="flex items-center gap-2">
-          <p-radioButton name="type" value="Special" [(ngModel)]="type" />
-          <span class="w-[180px]">Special Space Events</span>
-          <p-select
-            placeholder="Special Spaces"
-            [options]="specialSpaces()"
-            optionLabel="name"
-            [(ngModel)]="selectedSpecialSpace"
-            class="w-xs"
-            [class.hidden]="specialSpaces().length < 2"
+        <joshies-page-header headerText="Randomizer" alwaysSmall class="mb-3">
+          <joshies-header-link
+            text="Dashboard"
+            routerLink=".."
+            chevronDirection="left"
           />
-        </label>
-        <label class="flex items-center gap-2">
-          <p-radioButton name="type" value="Duel" [(ngModel)]="type" />
-          <span class="w-[180px]">Duel Space Games</span>
-          <p-select
-            placeholder="Duel Spaces"
-            [options]="duelSpaces()"
-            optionLabel="name"
-            [(ngModel)]="selectedDuelSpace"
-            class="w-xs"
-            [class.hidden]="duelSpaces().length < 2"
-          />
-        </label>
-        <label class="flex items-center gap-2">
-          <p-radioButton name="type" value="Chaos" [(ngModel)]="type" />
-          <span class="w-[180px]">Chaos Space Events</span>
-          <p-select
-            placeholder="Chaos Spaces"
-            [options]="chaosSpaces()"
-            optionLabel="name"
-            [(ngModel)]="selectedChaosSpace"
-            class="w-xs"
-            [class.hidden]="chaosSpaces().length < 2"
-          />
-        </label>
-        <label class="flex items-center gap-2">
-          <p-radioButton name="type" value="Player" [(ngModel)]="type" />
-          <span class="w-[180px]">Players</span>
-        </label>
+        </joshies-page-header>
+        <div class="flex flex-row gap-2">
+          <label class="flex items-center gap-2">
+            <p-radioButton name="type" value="Special" [(ngModel)]="type" />
+            <span class="w-[180px]">Special Space Events</span>
+            <p-select
+              placeholder="Special Spaces"
+              [options]="specialSpaces()"
+              optionLabel="name"
+              [(ngModel)]="selectedSpecialSpace"
+              class="w-xs"
+              [class.hidden]="specialSpaces().length < 2"
+            />
+          </label>
+          <label class="flex items-center gap-2">
+            <p-radioButton name="type" value="Duel" [(ngModel)]="type" />
+            <span class="w-[180px]">Duel Space Games</span>
+            <p-select
+              placeholder="Duel Spaces"
+              [options]="duelSpaces()"
+              optionLabel="name"
+              [(ngModel)]="selectedDuelSpace"
+              class="w-xs"
+              [class.hidden]="duelSpaces().length < 2"
+            />
+          </label>
+        </div>
+        <div class="flex flex-row gap-2">
+          <label class="flex items-center gap-2">
+            <p-radioButton name="type" value="Chaos" [(ngModel)]="type" />
+            <span class="w-[180px]">Chaos Space Events</span>
+            <p-select
+              placeholder="Chaos Spaces"
+              [options]="chaosSpaces()"
+              optionLabel="name"
+              [(ngModel)]="selectedChaosSpace"
+              class="w-xs"
+              [class.hidden]="chaosSpaces().length < 2"
+            />
+          </label>
+          <label class="flex items-center gap-2">
+            <p-radioButton name="type" value="Player" [(ngModel)]="type" />
+            <span class="w-[180px]">Players</span>
+          </label>
+        </div>
       </div>
       <joshies-randomizer class="w-full" [items]="options()" />
     </div>
@@ -74,7 +87,14 @@ import { PlayerService } from '../../shared/data-access/player.service';
       }
     `,
   ],
-  imports: [Select, FormsModule, RandomizerComponent, RadioButtonModule],
+  imports: [
+    Select,
+    FormsModule,
+    RandomizerComponent,
+    RadioButtonModule,
+    PageHeaderComponent,
+    HeaderLinkComponent,
+  ],
 })
 export default class RandomizerPageComponent {
   private readonly gameboardService = inject(GameboardService);

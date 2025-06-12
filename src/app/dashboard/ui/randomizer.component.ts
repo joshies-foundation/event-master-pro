@@ -5,9 +5,11 @@ import {
   HostListener,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { CardComponent } from '../../shared/ui/card.component';
 import { Button } from 'primeng/button';
+import { Sound } from '../../shared/util/sound';
 
 @Component({
   selector: 'joshies-randomizer',
@@ -16,22 +18,26 @@ import { Button } from 'primeng/button';
       <joshies-card readOnly padded class="w-4/5">
         <div class="pb-2" style="grid-row-start: 2">
           @for (item of displayItems(); track $index; let i = $index) {
-            <div class="p-2" [class.bg-highlight]="i === highlightedIndex">
+            <div class="p-2" [class.bg-highlight]="i === highlightedIndex()">
               {{ item }}
             </div>
           }
         </div>
 
-        <p-button class="p-2" (click)="startSelection()" [disabled]="isRunning">
-          {{ isRunning ? 'Selecting...' : 'Start Selection' }}
+        <p-button
+          class="p-2"
+          (click)="startSelection()"
+          [disabled]="isRunning()"
+        >
+          {{ isRunning() ? 'Selecting...' : 'Start Selection' }}
         </p-button>
       </joshies-card>
     </div>
 
-    @if (selectedItem) {
+    @if (selectedItem()) {
       <div class="randomizer-overlay">
         <div class="randomizer-overlay-content">
-          <h2 class="mb-4 text-2xl font-bold">{{ selectedItem }}</h2>
+          <h2 class="mb-4 text-2xl font-bold">{{ selectedItem() }}</h2>
           <p-button label="Close" (click)="closeOverlay()" />
         </div>
       </div>
@@ -65,57 +71,81 @@ import { Button } from 'primeng/button';
 export default class RandomizerComponent {
   @HostListener('document:keyup.space', ['$event'])
   onSpaceKeyUp() {
-    if (this.selectedItem) {
+    if (this.selectedItem()) {
       this.closeOverlay();
-    } else if (!this.isRunning) {
+    } else if (!this.isRunning()) {
       this.startSelection();
     }
   }
 
-  private cd = inject(ChangeDetectorRef);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly squidSound = new Sound('/audio/squidward-walk-1.wav');
 
-  items = input<string[]>([]); // This will be populated by the event options
+  //Tada Fanfare F by plasterbrain -- https://freesound.org/s/397354/ -- License: Creative Commons 0
+  private readonly fanfareSound = new Sound('/audio/tada-fanfare-f.wav');
+
+  readonly items = input<string[]>([]);
+  lockedItems: string[] = [];
   displayItems = computed(() => {
     const items = this.items();
-    return items && items.length > 0 ? items : ['No items available'];
+    const isRunning = this.isRunning();
+
+    const itemsToDisplay = isRunning ? this.lockedItems : items;
+
+    return itemsToDisplay && itemsToDisplay.length > 0
+      ? itemsToDisplay
+      : ['No items available'];
   });
 
-  highlightedIndex = -1;
-  isRunning = false;
-  selectedItem: string | null = null;
+  readonly highlightedIndex = signal<number>(-1);
+  readonly isRunning = signal<boolean>(false);
+  readonly selectedItem = signal<string | null>(null);
 
   startSelection() {
-    const items = this.displayItems();
-    this.isRunning = true;
-    this.highlightedIndex = 0;
+    const displayItems = this.displayItems();
+    this.lockedItems = this.items();
+    this.isRunning.set(true);
+    this.highlightedIndex.set(0);
 
-    let targetIndex = Math.floor(Math.random() * items.length);
+    const selectedIndex = Math.floor(Math.random() * displayItems.length);
+    let targetIndex = selectedIndex;
+    const fudgeFactor = Math.random();
+    if (fudgeFactor < 0.2) {
+      targetIndex =
+        (targetIndex - 1 + displayItems.length) % displayItems.length;
+    } else if (fudgeFactor < 0.6) {
+      targetIndex = (targetIndex + 1) % displayItems.length;
+    } else if (fudgeFactor < 0.7) {
+      targetIndex = Math.floor(Math.random() * displayItems.length);
+    }
+
     let cycles = 0;
+    // Loop through the list 3-5 times before landing on the target index
     const totalCycles =
-      (Math.floor(Math.random() * 2) + 3) * items.length + targetIndex; // Loop through the list 3-5 times before landing on the target index
+      (Math.floor(Math.random() * 2) + 3) * displayItems.length + targetIndex;
     let interval = 800 / (totalCycles + 1);
+
+    const finalize = () => {
+      this.selectedItem.set(displayItems[selectedIndex]);
+      this.fanfareSound.play(0.8);
+    };
 
     const cycle = () => {
       if (cycles++ >= totalCycles) {
-        const rand = Math.random();
-
-        if (rand < 0.2) {
-          targetIndex = (targetIndex - 1 + items.length) % items.length;
-        } else if (rand < 0.6) {
-          targetIndex = (targetIndex + 1) % items.length;
-        } else if (rand < 0.7) {
-          targetIndex = Math.floor(Math.random() * items.length);
+        if (targetIndex !== selectedIndex) {
+          this.squidSound.play();
+          this.highlightedIndex.set(selectedIndex);
         }
-        this.isRunning = false;
-        this.highlightedIndex = targetIndex;
-        this.selectedItem = items[targetIndex];
-        this.cd.detectChanges();
+
+        setTimeout(finalize, 200);
         return;
       }
 
-      this.highlightedIndex = (this.highlightedIndex! + 1) % items.length;
-      this.cd.detectChanges();
-      interval = 800 / (totalCycles - cycles + 1); // Adjust interval based on remaining cycles
+      this.highlightedIndex.set(
+        (this.highlightedIndex()! + 1) % displayItems.length,
+      );
+      this.squidSound.play();
+      interval = 800 / (totalCycles - cycles + 1);
       setTimeout(cycle, interval);
     };
 
@@ -123,7 +153,13 @@ export default class RandomizerComponent {
   }
 
   closeOverlay() {
-    this.selectedItem = null;
-    this.highlightedIndex = -1;
+    this.isRunning.set(false);
+    this.selectedItem.set(null);
+    this.highlightedIndex.set(-1);
+  }
+
+  constructor() {
+    this.squidSound.load();
+    this.fanfareSound.load();
   }
 }
