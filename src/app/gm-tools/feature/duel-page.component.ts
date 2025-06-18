@@ -628,7 +628,7 @@ export default class DuelPageComponent {
   ): void {
     confirmBackendAction({
       action: async () => this.duelService.cancelDuel(duelId),
-      confirmationMessageText: `Are you sure you cancel ${displayName}'s duel? This cannot be undone.`,
+      confirmationMessageText: `Are you sure you want to cancel ${displayName}'s duel? This cannot be undone.`,
       successMessageText: 'Duel canceled',
       submittingSignal: this.cancelingDuel,
       confirmationService: this.confirmationService,

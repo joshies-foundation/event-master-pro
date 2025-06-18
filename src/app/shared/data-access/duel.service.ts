@@ -8,10 +8,12 @@ import {
   DuelStatus,
   Function,
   realtimeUpdatesFromTable,
+  RoundPhase,
   Table,
 } from '../util/supabase-helpers';
 import { PlayerService } from './player.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { LocalErrorResponse } from '../util/dialog-helpers';
 
 @Injectable({
   providedIn: 'root',
@@ -170,5 +172,36 @@ export class DuelService {
         status: DuelStatus.Canceled,
       })
       .eq('id', duelId);
+  }
+
+  async createDuel(
+    challengerPlayerId: PlayerModel['id'],
+    duelSpaceId: DuelModel['duel_space_id'],
+    opponentPlayerId?: PlayerModel['id'],
+  ): Promise<PostgrestSingleResponse<null> | LocalErrorResponse> {
+    const sessionId = this.gameStateService.sessionId();
+    const roundNumber = this.gameStateService.roundNumber();
+    const pastDuelPhase = this.gameStateService.phaseIsOver(RoundPhase.Duels);
+
+    if (!sessionId || !roundNumber || pastDuelPhase === null) {
+      return {
+        error: {
+          message: 'Session ID, round number, or round phase is not defined.',
+        },
+      };
+    }
+
+    const duel = {
+      session_id: sessionId,
+      round_number: pastDuelPhase ? roundNumber + 1 : roundNumber,
+      challenger_player_id: challengerPlayerId,
+      opponent_player_id: opponentPlayerId,
+      duel_space_id: duelSpaceId,
+      status: opponentPlayerId
+        ? DuelStatus.WagerNotSelected
+        : DuelStatus.OpponentNotSelected,
+    };
+
+    return this.supabase.from(Table.Duel).insert(duel);
   }
 }

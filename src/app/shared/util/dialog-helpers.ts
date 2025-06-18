@@ -6,9 +6,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { FunctionsResponse } from '@supabase/functions-js';
 
+export type LocalErrorResponse = {
+  error: {
+    message: string;
+  };
+};
+
 export type ConfirmBackendActionConfig = {
   action: () => Promise<
-    PostgrestSingleResponse<unknown> | FunctionsResponse<unknown>
+    | PostgrestSingleResponse<unknown>
+    | FunctionsResponse<unknown>
+    | LocalErrorResponse
   >;
   confirmationHeaderText?: string;
   confirmationMessageText?: string;

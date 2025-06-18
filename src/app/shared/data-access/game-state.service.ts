@@ -124,6 +124,34 @@ export class GameStateService {
       .update(partialGameState)
       .eq('id', 1);
   }
+
+  roundPhaseOrderIndex(roundPhase: RoundPhase): number {
+    switch (roundPhase) {
+      case RoundPhase.GameboardMoves:
+        return 0;
+      case RoundPhase.SpecialSpaceEvents:
+        return 1;
+      case RoundPhase.Duels:
+        return 2;
+      case RoundPhase.ChaosSpaceEvents:
+        return 3;
+      case RoundPhase.Event:
+        return 4;
+      case RoundPhase.WaitingForNextRound:
+        return 5;
+    }
+  }
+
+  phaseIsOver(roundPhase: RoundPhase): boolean | null {
+    const currentRoundPhase = this.roundPhase();
+    if (!currentRoundPhase) {
+      return null;
+    }
+    return (
+      this.roundPhaseOrderIndex(currentRoundPhase) >
+      this.roundPhaseOrderIndex(roundPhase)
+    );
+  }
 }
 
 function createSelector<

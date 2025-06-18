@@ -172,6 +172,11 @@ export default class GmToolsPageComponent {
       iconClass: 'pi pi-flag bg-purple-500',
       routerLink: './events',
     },
+    {
+      text: 'Manage Duels',
+      iconClass: 'pi pi-star bg-pink-500',
+      routerLink: './manage-duels',
+    },
   ];
 
   readonly gameboardLinks: CardLinkModel[] = [
