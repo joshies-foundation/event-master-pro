@@ -102,11 +102,16 @@ export default class RandomizerComponent {
   readonly selectedItem = signal<string | null>(null);
 
   startSelection() {
+    const BASE_CYCLE_TIME = 900;
+    const MIN_CYCLE_TIME = 50;
+
     const displayItems = this.displayItems();
     this.lockedItems = this.items();
     this.isRunning.set(true);
     this.highlightedIndex.set(0);
 
+    // Randomly select an item
+    // Then, randomly decide whether to "fake" selecting a different item
     const selectedIndex = Math.floor(Math.random() * displayItems.length);
     let targetIndex = selectedIndex;
     const fudgeFactor = Math.random();
@@ -119,11 +124,19 @@ export default class RandomizerComponent {
       targetIndex = Math.floor(Math.random() * displayItems.length);
     }
 
-    let cycles = 0;
+    let cyclesSoFar = 0;
     // Loop through the list 3-5 times before landing on the target index
     const totalCycles =
       (Math.floor(Math.random() * 2) + 3) * displayItems.length + targetIndex;
-    let interval = 800 / (totalCycles + 1);
+
+    const delayMs = (totalCycles: number, cyclesSoFar: number) => {
+      return Math.max(
+        BASE_CYCLE_TIME / (totalCycles - cyclesSoFar + 1),
+        MIN_CYCLE_TIME,
+      );
+    };
+
+    let interval = delayMs(totalCycles, 0);
 
     const finalize = () => {
       this.selectedItem.set(displayItems[selectedIndex]);
@@ -131,7 +144,7 @@ export default class RandomizerComponent {
     };
 
     const cycle = () => {
-      if (cycles++ >= totalCycles) {
+      if (cyclesSoFar++ >= totalCycles) {
         if (targetIndex !== selectedIndex) {
           this.squidSound.play();
           this.highlightedIndex.set(selectedIndex);
@@ -145,7 +158,7 @@ export default class RandomizerComponent {
         (this.highlightedIndex()! + 1) % displayItems.length,
       );
       this.squidSound.play();
-      interval = 800 / (totalCycles - cycles + 1);
+      interval = delayMs(totalCycles, cyclesSoFar);
       setTimeout(cycle, interval);
     };
 
