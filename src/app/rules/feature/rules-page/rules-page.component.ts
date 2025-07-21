@@ -177,14 +177,17 @@ export default class RulesPageComponent {
 
   private async confirmSaveRules(): Promise<void> {
     confirmBackendAction({
-      action: async () => {
-        this.exitEditMode();
-
-        return this.rulesService.updateRules(
-          this.sessionService.session()!.id,
-          this.formGroup().getRawValue(),
-        );
-      },
+      action: async () =>
+        this.rulesService
+          .updateRules(
+            this.sessionService.session()!.id,
+            this.formGroup().getRawValue(),
+          )
+          // we must exit edit mode after saving for the changes to take effect
+          .then((res) => {
+            this.exitEditMode();
+            return res;
+          }),
       confirmationMessageText: 'Are you sure you want to save these rules?',
       successMessageText: 'Rules saved',
       submittingSignal: this.savingRules,
