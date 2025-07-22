@@ -1,10 +1,9 @@
 import {
   Component,
   computed,
-  effect,
   inject,
   input,
-  OnInit,
+  linkedSignal,
   output,
   signal,
 } from '@angular/core';
@@ -120,7 +119,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     Button,
   ],
 })
-export default class NewDuelComponent implements OnInit {
+export default class NewDuelComponent {
   private readonly gameboardService = inject(GameboardService);
   private readonly playerService = inject(PlayerService);
   private readonly duelService = inject(DuelService);
@@ -135,10 +134,20 @@ export default class NewDuelComponent implements OnInit {
   readonly submitted = output<void>();
 
   readonly players = this.playerService.players;
-  readonly selectedChallenger = signal<PlayerWithUserAndRankInfo | null>(null);
   readonly selectedOpponent = signal<PlayerWithUserAndRankInfo | null>(null);
-  readonly selectedDuelSpace = signal<GameboardSpaceModel | null>(null);
   readonly submitting = signal(false);
+
+  readonly selectedChallenger = linkedSignal<PlayerWithUserAndRankInfo | null>(
+    () => {
+      const challenger = this.challenger();
+      return challenger ? challenger : null;
+    },
+  );
+
+  readonly selectedDuelSpace = linkedSignal<GameboardSpaceModel | null>(() => {
+    const duelSpaces = this.duelSpaces();
+    return duelSpaces.length > 0 ? duelSpaces[0] : null;
+  });
 
   readonly submitButtonDisabled = computed(() => {
     const challenger = this.selectedChallenger();
@@ -189,22 +198,6 @@ export default class NewDuelComponent implements OnInit {
       successNavigation: inline ? '' : '..',
       activatedRoute: this.activatedRoute,
       router: this.router,
-    });
-  }
-
-  ngOnInit(): void {
-    const challenger = this.challenger();
-    if (challenger) {
-      this.selectedChallenger.set(challenger);
-    }
-  }
-
-  constructor() {
-    effect(() => {
-      const duelSpaces = this.duelSpaces();
-      if (duelSpaces && duelSpaces.length > 0) {
-        this.selectedDuelSpace.set(duelSpaces[0]);
-      }
     });
   }
 }

@@ -7,11 +7,12 @@ import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { AvatarModule } from 'primeng/avatar';
 import { DuelModel } from '../../shared/util/supabase-types';
-import { DuelStatus, trackById } from '../../shared/util/supabase-helpers';
+import { trackById } from '../../shared/util/supabase-helpers';
 import { ButtonModule } from 'primeng/button';
 import { DuelService } from '../../shared/data-access/duel.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import { CanCancelDuelPipe } from './can-cancel-duel.pipe';
 
 @Component({
   selector: 'joshies-duels-table',
@@ -47,7 +48,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
               icon="pi pi-times"
               severity="danger"
               label="Cancel"
-              [disabled]="!duelCancelable(duel)"
+              [disabled]="!(duel | canCancelDuel)"
               (click)="confirmCancelDuel(duel)"
               [loading]="cancelingDuel()"
             />
@@ -70,6 +71,7 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
     RouterLink,
     DuelTableAvatarsComponent,
     ButtonModule,
+    CanCancelDuelPipe,
   ],
 })
 export class DuelsTableComponent {
@@ -84,14 +86,6 @@ export class DuelsTableComponent {
   readonly trackById = trackById;
   readonly cancelingDuel = signal<boolean>(false);
 
-  duelCancelable(duel: DuelModel): boolean {
-    return (
-      duel.status === DuelStatus.OpponentNotSelected ||
-      duel.status === DuelStatus.WagerNotSelected ||
-      duel.status === DuelStatus.GameNotSelected ||
-      duel.status === DuelStatus.WaitingToBegin
-    );
-  }
   confirmCancelDuel(duel: DuelModel): void {
     const confirmationMessage = duel.opponent
       ? `Are you sure you want to cancel this duel between ${duel.challenger?.display_name} and ${duel.opponent.display_name}? This cannot be undone.`
