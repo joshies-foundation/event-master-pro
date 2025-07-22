@@ -14,6 +14,14 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
+
+enum RandomizerOption {
+  Special = 'Special',
+  Chaos = 'Chaos',
+  Duel = 'Duel',
+  Player = 'Player',
+}
 
 @Component({
   selector: 'joshies-randomizer-page',
@@ -29,7 +37,11 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
         </joshies-page-header>
         <div class="flex flex-row gap-2">
           <label class="flex items-center gap-2">
-            <p-radioButton name="type" value="Special" [(ngModel)]="type" />
+            <p-radioButton
+              name="type"
+              [value]="RandomizerOptions.Special"
+              [(ngModel)]="type"
+            />
             <span class="w-[180px]">Special Space Events</span>
             <p-select
               placeholder="Special Spaces"
@@ -41,7 +53,11 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
             />
           </label>
           <label class="flex items-center gap-2">
-            <p-radioButton name="type" value="Duel" [(ngModel)]="type" />
+            <p-radioButton
+              name="type"
+              [value]="RandomizerOptions.Duel"
+              [(ngModel)]="type"
+            />
             <span class="w-[180px]">Duel Space Games</span>
             <p-select
               placeholder="Duel Spaces"
@@ -55,7 +71,11 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
         </div>
         <div class="flex flex-row gap-2">
           <label class="flex items-center gap-2">
-            <p-radioButton name="type" value="Chaos" [(ngModel)]="type" />
+            <p-radioButton
+              name="type"
+              [value]="RandomizerOptions.Chaos"
+              [(ngModel)]="type"
+            />
             <span class="w-[180px]">Chaos Space Events</span>
             <p-select
               placeholder="Chaos Spaces"
@@ -67,7 +87,11 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
             />
           </label>
           <label class="flex items-center gap-2">
-            <p-radioButton name="type" value="Player" [(ngModel)]="type" />
+            <p-radioButton
+              name="type"
+              [value]="RandomizerOptions.Player"
+              [(ngModel)]="type"
+            />
             <span class="w-[180px]">Players</span>
           </label>
         </div>
@@ -109,24 +133,35 @@ export default class RandomizerPageComponent {
     this.gameboardService.chaosSpaceEventTemplates$,
   );
 
-  readonly type = signal<'Special' | 'Chaos' | 'Duel'>('Special'); // TODO: Add Chaos and Duel types
+  readonly RandomizerOptions = RandomizerOption;
+  readonly type = signal<RandomizerOption>(RandomizerOption.Special);
   readonly selectedSpecialSpace = signal<GameboardSpaceModel | null>(null);
   readonly selectedDuelSpace = signal<GameboardSpaceModel | null>(null);
   readonly selectedChaosSpace = signal<GameboardSpaceModel | null>(null);
 
   readonly specialSpaces = computed(() => {
     const spaces = this.gameboardSpaces();
-    return spaces?.filter((space) => space.effect === 'special') || [];
+    return (
+      spaces?.filter(
+        (space) => space.effect === GameboardSpaceEffect.Special,
+      ) || []
+    );
   });
 
   readonly duelSpaces = computed(() => {
     const spaces = this.gameboardSpaces();
-    return spaces?.filter((space) => space.effect === 'duel') || [];
+    return (
+      spaces?.filter((space) => space.effect === GameboardSpaceEffect.Duel) ||
+      []
+    );
   });
 
   readonly chaosSpaces = computed(() => {
     const spaces = this.gameboardSpaces();
-    return spaces?.filter((space) => space.effect === 'chaos') || [];
+    return (
+      spaces?.filter((space) => space.effect === GameboardSpaceEffect.Chaos) ||
+      []
+    );
   });
 
   readonly players = computed(() => {
@@ -176,20 +211,20 @@ export default class RandomizerPageComponent {
   readonly options = computed(() => {
     const type = this.type();
     const specialSpaceEvents = this.specialSpaceEvents();
-    if (type === 'Special') {
-      return specialSpaceEvents;
-    }
-    if (type === 'Duel') {
-      return this.duelGames();
-    }
-    if (type === 'Chaos') {
-      return this.chaosEvents();
-    }
-    if (type === 'Player') {
-      return this.players();
-    }
+    const duelGames = this.duelGames();
+    const chaosEvents = this.chaosEvents();
+    const players = this.players();
 
-    return [];
+    switch (type) {
+      case RandomizerOption.Special:
+        return specialSpaceEvents;
+      case RandomizerOption.Chaos:
+        return chaosEvents;
+      case RandomizerOption.Duel:
+        return duelGames;
+      case RandomizerOption.Player:
+        return players;
+    }
   });
 
   constructor() {
