@@ -1,4 +1,10 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import {
@@ -131,9 +137,32 @@ export default class RandomizerPageComponent {
 
   readonly RandomizerOptions = RandomizerOption;
   readonly type = signal<RandomizerOption>(RandomizerOption.Special);
-  readonly selectedSpecialSpace = signal<GameboardSpaceModel | null>(null);
-  readonly selectedDuelSpace = signal<GameboardSpaceModel | null>(null);
-  readonly selectedChaosSpace = signal<GameboardSpaceModel | null>(null);
+
+  readonly selectedSpecialSpace = linkedSignal<GameboardSpaceModel | null>(
+    () => {
+      const specialSpaces = this.specialSpaces();
+      if (specialSpaces && specialSpaces.length > 0) {
+        return specialSpaces[0];
+      }
+      return null;
+    },
+  );
+
+  readonly selectedDuelSpace = linkedSignal<GameboardSpaceModel | null>(() => {
+    const duelSpaces = this.duelSpaces();
+    if (duelSpaces && duelSpaces.length > 0) {
+      return duelSpaces[0];
+    }
+    return null;
+  });
+
+  readonly selectedChaosSpace = linkedSignal<GameboardSpaceModel | null>(() => {
+    const chaosSpaces = this.chaosSpaces();
+    if (chaosSpaces && chaosSpaces.length > 0) {
+      return chaosSpaces[0];
+    }
+    return null;
+  });
 
   readonly specialSpaces = computed(() => {
     const spaces = this.gameboardSpaces();
@@ -222,25 +251,4 @@ export default class RandomizerPageComponent {
         return players;
     }
   });
-
-  constructor() {
-    effect(() => {
-      const specialSpaces = this.specialSpaces();
-      if (specialSpaces && specialSpaces.length > 0) {
-        this.selectedSpecialSpace.set(specialSpaces[0]);
-      }
-    });
-    effect(() => {
-      const duelSpaces = this.duelSpaces();
-      if (duelSpaces && duelSpaces.length > 0) {
-        this.selectedDuelSpace.set(duelSpaces[0]);
-      }
-    });
-    effect(() => {
-      const chaosSpaces = this.chaosSpaces();
-      if (chaosSpaces && chaosSpaces.length > 0) {
-        this.selectedChaosSpace.set(chaosSpaces[0]);
-      }
-    });
-  }
 }
