@@ -34,38 +34,18 @@ import { Sound } from '../../shared/util/sound';
       </joshies-card>
     </div>
 
+    <!-- Overlay after selecting -->
     @if (selectedItem()) {
-      <div class="randomizer-overlay">
-        <div class="randomizer-overlay-content">
+      <div
+        class="fixed top-0 left-0 flex size-full items-center justify-center bg-black/50"
+      >
+        <div class="rounded-lg bg-black p-5 text-center shadow-md">
           <h2 class="mb-4 text-2xl font-bold">{{ selectedItem() }}</h2>
           <p-button label="Close" (click)="closeOverlay()" />
         </div>
       </div>
     }
   `,
-  styles: [
-    `
-      .randomizer-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .randomizer-overlay-content {
-        background-color: black;
-        padding: 20px;
-        border-radius: 8px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-    `,
-  ],
   imports: [CardComponent, Button],
 })
 export default class RandomizerComponent {

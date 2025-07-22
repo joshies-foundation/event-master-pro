@@ -26,91 +26,87 @@ enum RandomizerOption {
 @Component({
   selector: 'joshies-randomizer-page',
   template: `
-    <div class="randomizer-container">
-      <div class="mb-auto flex flex-col gap-2">
-        <joshies-page-header headerText="Randomizer" alwaysSmall class="mb-3">
-          <joshies-header-link
-            text="Dashboard"
-            routerLink=".."
-            chevronDirection="left"
+    <div class="mb-auto flex flex-col gap-2">
+      <joshies-page-header headerText="Randomizer" alwaysSmall class="mb-3">
+        <joshies-header-link
+          text="Dashboard"
+          routerLink=".."
+          chevronDirection="left"
+        />
+      </joshies-page-header>
+
+      <!-- Randomizer Options -->
+      <!-- If there's multiple flavors for an option, include a dropdown -->
+
+      <!-- First row of options -->
+      <div class="flex flex-row gap-2">
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="type"
+            [value]="RandomizerOptions.Special"
+            [(ngModel)]="type"
           />
-        </joshies-page-header>
-        <div class="flex flex-row gap-2">
-          <label class="flex items-center gap-2">
-            <p-radioButton
-              name="type"
-              [value]="RandomizerOptions.Special"
-              [(ngModel)]="type"
-            />
-            <span class="w-[180px]">Special Space Events</span>
-            <p-select
-              placeholder="Special Spaces"
-              [options]="specialSpaces()"
-              optionLabel="name"
-              [(ngModel)]="selectedSpecialSpace"
-              class="w-xs"
-              [class.hidden]="specialSpaces().length < 2"
-            />
-          </label>
-          <label class="flex items-center gap-2">
-            <p-radioButton
-              name="type"
-              [value]="RandomizerOptions.Duel"
-              [(ngModel)]="type"
-            />
-            <span class="w-[180px]">Duel Space Games</span>
-            <p-select
-              placeholder="Duel Spaces"
-              [options]="duelSpaces()"
-              optionLabel="name"
-              [(ngModel)]="selectedDuelSpace"
-              class="w-xs"
-              [class.hidden]="duelSpaces().length < 2"
-            />
-          </label>
-        </div>
-        <div class="flex flex-row gap-2">
-          <label class="flex items-center gap-2">
-            <p-radioButton
-              name="type"
-              [value]="RandomizerOptions.Chaos"
-              [(ngModel)]="type"
-            />
-            <span class="w-[180px]">Chaos Space Events</span>
-            <p-select
-              placeholder="Chaos Spaces"
-              [options]="chaosSpaces()"
-              optionLabel="name"
-              [(ngModel)]="selectedChaosSpace"
-              class="w-xs"
-              [class.hidden]="chaosSpaces().length < 2"
-            />
-          </label>
-          <label class="flex items-center gap-2">
-            <p-radioButton
-              name="type"
-              [value]="RandomizerOptions.Player"
-              [(ngModel)]="type"
-            />
-            <span class="w-[180px]">Players</span>
-          </label>
-        </div>
+          <span class="w-[180px]">Special Space Events</span>
+          <p-select
+            placeholder="Special Spaces"
+            [options]="specialSpaces()"
+            optionLabel="name"
+            [(ngModel)]="selectedSpecialSpace"
+            class="w-xs"
+            [class.hidden]="specialSpaces().length < 2"
+          />
+        </label>
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="type"
+            [value]="RandomizerOptions.Duel"
+            [(ngModel)]="type"
+          />
+          <span class="w-[180px]">Duel Space Games</span>
+          <p-select
+            placeholder="Duel Spaces"
+            [options]="duelSpaces()"
+            optionLabel="name"
+            [(ngModel)]="selectedDuelSpace"
+            class="w-xs"
+            [class.hidden]="duelSpaces().length < 2"
+          />
+        </label>
       </div>
-      <joshies-randomizer class="w-full" [items]="options()" />
+
+      <!-- Second row of options -->
+      <div class="flex flex-row gap-2">
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="type"
+            [value]="RandomizerOptions.Chaos"
+            [(ngModel)]="type"
+          />
+          <span class="w-[180px]">Chaos Space Events</span>
+          <p-select
+            placeholder="Chaos Spaces"
+            [options]="chaosSpaces()"
+            optionLabel="name"
+            [(ngModel)]="selectedChaosSpace"
+            class="w-xs"
+            [class.hidden]="chaosSpaces().length < 2"
+          />
+        </label>
+        <label class="flex items-center gap-2">
+          <p-radioButton
+            name="type"
+            [value]="RandomizerOptions.Player"
+            [(ngModel)]="type"
+          />
+          <span class="w-[180px]">Players</span>
+        </label>
+      </div>
     </div>
+    <joshies-randomizer class="w-full" [items]="options()" />
   `,
-  styles: [
-    `
-      .randomizer-container {
-        display: grid;
-        grid-template-rows: 1fr auto 1fr;
-        grid-row-gap: 5px;
-        justify-items: center;
-        height: 100%;
-        width: 100%;
-      }
-    `,
-  ],
+  host: {
+    class: 'grid grid-rows-[1fr_auto_1fr] gap-1 justify-items-center size-full',
+  },
   imports: [
     Select,
     FormsModule,
