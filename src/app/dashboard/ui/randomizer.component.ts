@@ -14,21 +14,20 @@ import { Sound } from '../../shared/util/sound';
 @Component({
   selector: 'joshies-randomizer',
   template: `
-    <div class="flex w-full flex-row justify-center">
-      <joshies-card readOnly padded class="w-4/5">
-        <div class="pb-2" style="grid-row-start: 2">
-          @for (item of displayItems(); track $index; let i = $index) {
-            <div class="p-2" [class.bg-highlight]="i === highlightedIndex()">
-              {{ item }}
-            </div>
-          }
-        </div>
+    <div class="flex w-full justify-center">
+      <joshies-card
+        readOnly
+        padded
+        class="w-4/5"
+        styleClass="flex flex-col gap-4"
+      >
+        @for (item of displayItems(); track $index; let i = $index) {
+          <div [class.bg-highlight]="i === highlightedIndex()">
+            {{ item }}
+          </div>
+        }
 
-        <p-button
-          class="p-2"
-          (click)="startSelection()"
-          [disabled]="isRunning()"
-        >
+        <p-button (click)="startSelection()" [disabled]="isRunning()">
           {{ isRunning() ? 'Selecting...' : 'Start Selection' }}
         </p-button>
       </joshies-card>
