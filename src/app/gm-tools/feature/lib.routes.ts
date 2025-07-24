@@ -77,7 +77,11 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./duel-page.component'),
     data: { pageAnimationLayer: 3 },
   },
-
+  {
+    path: 'manage-duels',
+    loadComponent: () => import('./manage-duels-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
   {
     path: 'resolve-chaos-space-events',
     loadComponent: () => import('./resolve-chaos-space-events-page.component'),

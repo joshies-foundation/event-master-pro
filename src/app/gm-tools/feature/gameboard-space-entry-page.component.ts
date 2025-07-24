@@ -8,13 +8,15 @@ import {
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { PlayerService } from '../../shared/data-access/player.service';
+import {
+  PlayerService,
+  PlayerWithUserAndRankInfo,
+} from '../../shared/data-access/player.service';
 import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SessionService } from '../../shared/data-access/session.service';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
@@ -53,11 +55,15 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { ReturnSpaceWithIdIfItsEffectIsPipe } from '../../shared/ui/return-space-with-id-if-its-effect-is.pipe';
 import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 import { GameboardSpaceModel } from '../../shared/util/supabase-types';
+import { CheckboxModule } from 'primeng/checkbox';
+import NewDuelComponent from '../ui/new-duel.component';
 
 interface GameboardSpaceEntryFormKeys {
   distanceTraveled: number;
   gameboardSpaceId: number;
   decision?: 'points' | 'activity';
+  triggersDuel: boolean;
+  triggeredDuelCreated: boolean;
 }
 export type GameboardSpaceEntryFormModel = Record<
   string,
@@ -118,22 +124,45 @@ export type GameboardSpaceEntryFormModel = Record<
             </td>
             <!-- Distance -->
             <td class="overflow-hidden text-right">
-              <p-inputNumber
-                formControlName="distanceTraveled"
-                [showButtons]="true"
-                buttonLayout="horizontal"
-                [step]="1"
-                incrementButtonIcon="pi pi-plus"
-                decrementButtonIcon="pi pi-minus"
-                inputStyleClass="w-full font-semibold text-center"
-                placeholder="Dice Roll"
-              />
+              <div class="flex flex-row items-center justify-end gap-2">
+                <p-inputNumber
+                  formControlName="distanceTraveled"
+                  [showButtons]="true"
+                  buttonLayout="horizontal"
+                  [step]="1"
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                  inputStyleClass="w-full font-semibold text-center"
+                  placeholder="Dice Roll"
+                />
+                <label>
+                  Duel?
+                  <p-checkbox
+                    binary
+                    formControlName="triggersDuel"
+                    [readonly]="
+                      vm.formValue[player.player_id].triggeredDuelCreated
+                    "
+                  />
+                </label>
+              </div>
+
+              @if (
+                vm.formValue[player.player_id].triggersDuel &&
+                !vm.formValue[player.player_id].triggeredDuelCreated
+              ) {
+                <joshies-new-duel
+                  [challenger]="player"
+                  [inline]="true"
+                  (submitted)="duelCreated(player.player_id)"
+                />
+              }
 
               <!-- Space -->
               <div class="mt-2 overflow-x-auto text-nowrap">
                 <p-selectButton
                   [options]="vm.gameboardSpaces"
-                  optionLabel="icon_class"
+                  optionLabel="id"
                   optionValue="id"
                   formControlName="gameboardSpaceId"
                   [allowEmpty]="false"
@@ -206,12 +235,13 @@ export type GameboardSpaceEntryFormModel = Record<
     LoseOrGainPipe,
     TitleCasePipe,
     ReturnSpaceWithIdIfItsEffectIsPipe,
+    CheckboxModule,
+    NewDuelComponent,
   ],
 })
 export default class GameboardSpaceEntryPageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
-  private readonly sessionService = inject(SessionService);
   private readonly gameboardService = inject(GameboardService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -249,6 +279,14 @@ export default class GameboardSpaceEntryPageComponent {
                   this.initialFormValue?.[player.player_id]?.decision ??
                     'points',
                   Validators.required,
+                ],
+                triggersDuel: [
+                  this.initialFormValue?.[player.player_id]?.triggersDuel ??
+                    false,
+                ],
+                triggeredDuelCreated: [
+                  this.initialFormValue?.[player.player_id]
+                    ?.triggeredDuelCreated ?? false,
                 ],
               }),
             }),
@@ -315,6 +353,15 @@ export default class GameboardSpaceEntryPageComponent {
     this.router.navigate(['review'], {
       relativeTo: this.activatedRoute,
     });
+  }
+
+  duelCreated(playerId: PlayerWithUserAndRankInfo['player_id']): void {
+    const formGroup = this.formGroup();
+    if (!formGroup) return;
+    const playerGroup = formGroup.get(String(playerId));
+    if (playerGroup) {
+      playerGroup.patchValue({ triggeredDuelCreated: true });
+    }
   }
 
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;

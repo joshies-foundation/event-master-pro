@@ -13,21 +13,15 @@ import {
   RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
-import { AvatarModule } from 'primeng/avatar';
 import { SkeletonModule } from 'primeng/skeleton';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { StatusTagComponent } from '../ui/status-tag.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DuelService } from '../../shared/data-access/duel.service';
 import { DuelModel } from '../../shared/util/supabase-types';
-import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.component';
+import { DuelsTableComponent } from '../ui/duels-table.component';
 
 @Component({
   selector: 'joshies-resolve-duels-page',
@@ -35,15 +29,9 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
     HeaderLinkComponent,
     PageHeaderComponent,
     ButtonModule,
-    AvatarModule,
     SkeletonModule,
-    SelectButtonModule,
-    FormsModule,
-    TableModule,
-    StronglyTypedTableRowDirective,
-    StatusTagComponent,
     RouterLink,
-    DuelTableAvatarsComponent,
+    DuelsTableComponent,
   ],
   template: `
     <joshies-page-header headerText="Duels" alwaysSmall>
@@ -58,33 +46,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
       <p class="mt-8">Duels for turn {{ roundNumber() }}</p>
 
       @if (duels.length) {
-        <p-table [value]="duels" [rowTrackBy]="trackById">
-          <ng-template #header>
-            <tr>
-              <th class="pr-0">Players</th>
-              <th>Game</th>
-              <th class="px-0 text-right">Status</th>
-              <th class="px-0"></th>
-            </tr>
-          </ng-template>
-
-          <ng-template #body let-duel [joshiesStronglyTypedTableRow]="duels">
-            <tr [routerLink]="[duel.id]">
-              <td class="pr-0">
-                <joshies-duel-table-avatars [duel]="duel" />
-              </td>
-              <td class="text-sm">
-                {{ duel.game_name }}
-              </td>
-              <td class="px-0 text-right">
-                <joshies-status-tag [status]="duel.status" />
-              </td>
-              <td class="px-1">
-                <i class="pi pi-angle-right text-neutral-400"></i>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <joshies-duels-table [duels]="duels" [editable]="true" />
       } @else {
         <p class="my-12 py-12 text-center text-neutral-500 italic">
           No duels for this turn
@@ -96,6 +58,7 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
           label="Proceed to Chaos Space Event Phase"
           styleClass="w-full mt-4"
           (onClick)="proceedToChaosSpaceEventPhase()"
+          [loading]="proceedingToNextPhase()"
         />
       }
     } @else {
@@ -122,7 +85,7 @@ export default class ResolveDuelsPageComponent {
 
   readonly roundNumber = this.gameStateService.roundNumber;
 
-  proceedingToNextPhase = signal(false);
+  readonly proceedingToNextPhase = signal(false);
 
   proceedToChaosSpaceEventPhase(): void {
     confirmBackendAction({
