@@ -27,7 +27,7 @@ import { Sound } from '../../shared/util/sound';
           </div>
         }
 
-        <p-button (click)="startSelection()" [disabled]="isRunning()">
+        <p-button (onClick)="startSelection()" [disabled]="isRunning()">
           {{ isRunning() ? 'Selecting...' : 'Start Selection' }}
         </p-button>
       </joshies-card>
@@ -40,7 +40,7 @@ import { Sound } from '../../shared/util/sound';
       >
         <div class="rounded-lg bg-black p-5 text-center shadow-md">
           <h2 class="mb-4 text-2xl font-bold">{{ selectedItem() }}</h2>
-          <p-button label="Close" (click)="closeOverlay()" />
+          <p-button label="Close" (onClick)="closeOverlay()" />
         </div>
       </div>
     }
