@@ -9,21 +9,21 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     <!-- Over/Under Radio Buttons -->
     <div class="mt-2 flex flex-wrap gap-4 px-2">
       <label class="flex items-center gap-2">
-        <p-radioButton
+        <p-radio-button
           name="overUnder"
           value="OVER"
           [(ngModel)]="selectedOuOption"
-          styleClass="w-full"
+          class="w-full"
         />
         Over
       </label>
       <div class="flex items-center">
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="overUnder"
             value="UNDER"
             [(ngModel)]="selectedOuOption"
-            styleClass="w-full"
+            class="w-full"
           />
           Under
         </label>
@@ -33,18 +33,18 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     <!-- Over/Under Value -->
     <label class="mt-4 flex flex-col gap-2">
       Over/Under Value
-      <p-inputNumber
+      <p-input-number
         #ouInput
         [(ngModel)]="ouValue"
         [showButtons]="true"
         buttonLayout="horizontal"
         [step]="0.5"
-        min="0.5"
+        [min]="0.5"
         required
         incrementButtonIcon="pi pi-plus"
         decrementButtonIcon="pi pi-minus"
         inputStyleClass="w-full font-semibold text-center"
-        styleClass="w-full"
+        class="w-full"
         (onFocus)="ouInput.input.nativeElement.selectionStart = 100"
       />
     </label>

@@ -7,7 +7,7 @@ import {
   RealtimePostgresChangesPayload,
   SupabaseClient,
 } from '@supabase/supabase-js';
-import { GenericSchema } from '@supabase/postgrest-js/src/types';
+import type { GenericSchema } from '@supabase/supabase-js/src/lib/types';
 
 type ID = string | number;
 
@@ -144,9 +144,12 @@ export function liveTable<
               .from(table)
               .select('*')
               .filter(filterColumn, filterOperator, filterValue)
-              .returns<Row[]>();
+              .overrideTypes<Row[], { merge: false }>();
           } else {
-            snapshot = supabase.from(table).select('*').returns<Row[]>();
+            snapshot = supabase
+              .from(table)
+              .select('*')
+              .overrideTypes<Row[], { merge: false }>();
           }
 
           snapshot.then(({ error, data }) => {

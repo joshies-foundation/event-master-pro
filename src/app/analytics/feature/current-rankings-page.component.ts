@@ -44,7 +44,7 @@ import { AuthService } from '../../auth/data-access/auth.service';
       }
     } @else {
       <!-- Loading Skeleton -->
-      <p-skeleton height="25rem" styleClass="mt-8" />
+      <p-skeleton height="25rem" class="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

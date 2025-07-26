@@ -58,10 +58,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
         No active session
       </p>
     } @else {
-      <p-skeleton height="5rem" styleClass="mt-8 mb-2" />
-      <p-skeleton height="5rem" styleClass="mb-2" />
-      <p-skeleton height="5rem" styleClass="mb-2" />
-      <p-skeleton height="5rem" styleClass="mb-2" />
+      <p-skeleton height="5rem" class="mt-8 mb-2" />
+      <p-skeleton height="5rem" class="mb-2" />
+      <p-skeleton height="5rem" class="mb-2" />
+      <p-skeleton height="5rem" class="mb-2" />
       <p-skeleton height="5rem" />
     }
   `,

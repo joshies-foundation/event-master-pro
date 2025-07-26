@@ -38,7 +38,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     <joshies-form [form]="form" class="mt-8 mb-20 block" />
 
     <!-- Confirm Dialog -->
-    <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
+    <p-confirm-dialog styleClass="mx-4" [key]="confirmDialogKey">
       <ng-template #message>
         <div class="block">
           <p class="mb-6">
@@ -47,7 +47,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
           </p>
         </div>
       </ng-template>
-    </p-confirmDialog>
+    </p-confirm-dialog>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

@@ -14,7 +14,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { NotificationsService } from '../../../shared/data-access/notifications.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { UserModel } from '../../../shared/util/supabase-types';
-import { InputSwitchModule } from 'primeng/inputswitch';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { SquidwardService } from '../../../shared/data-access/squidward.service';
 
@@ -27,7 +27,7 @@ import { SquidwardService } from '../../../shared/data-access/squidward.service'
     DatePipe,
     SkeletonModule,
     PageHeaderComponent,
-    InputSwitchModule,
+    ToggleSwitch,
     FormsModule,
   ],
 })

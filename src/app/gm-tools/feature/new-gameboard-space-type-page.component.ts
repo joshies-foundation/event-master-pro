@@ -55,7 +55,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     <joshies-form [form]="form" />
 
     <!-- Confirm Dialog -->
-    <p-confirmDialog styleClass="mx-4" [key]="confirmDialogKey">
+    <p-confirm-dialog styleClass="mx-4" [key]="confirmDialogKey">
       <ng-template #message>
         <div class="block">
           <p class="mb-6">
@@ -77,7 +77,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
           </div>
         </div>
       </ng-template>
-    </p-confirmDialog>
+    </p-confirm-dialog>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

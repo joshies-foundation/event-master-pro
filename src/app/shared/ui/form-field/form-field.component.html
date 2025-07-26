@@ -25,8 +25,8 @@
         />
       }
       @case (FormFieldType.Number) {
-        <p-inputNumber
-          [id]="field.name | lowercase"
+        <p-input-number
+          [inputId]="field.name | lowercase"
           [name]="field.name | lowercase"
           [required]="field.required ?? false"
           [placeholder]="field.placeholder"
@@ -35,14 +35,14 @@
           [step]="field.step ?? 1"
           [incrementButtonIcon]="field.incrementButtonIcon ?? 'pi pi-plus'"
           [decrementButtonIcon]="field.decrementButtonIcon ?? 'pi pi-minus'"
-          [min]="field.min"
-          [max]="field.max"
+          [min]="$any(field.min)"
+          [max]="$any(field.max)"
           [suffix]="field.suffix"
           [mode]="field.mode ?? 'decimal'"
           [minFractionDigits]="0"
           [maxFractionDigits]="field.allowDecimals ? 3 : 0"
           [formControl]="field.control"
-          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [class]="'w-full ' + (field.styleClass ?? '')"
           [inputStyleClass]="'text-center ' + field.inputStyleClass"
         />
       }
@@ -57,12 +57,12 @@
           [optionLabel]="field.optionLabel ?? 'label'"
           [optionValue]="field.optionValue ?? 'value'"
           [optionDisabled]="field.optionDisabled ?? 'disabled'"
-          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [class]="'w-full ' + (field.styleClass ?? '')"
           [overlayOptions]="{ styleClass: 'max-w-full' }"
         />
       }
       @case (FormFieldType.MultiSelect) {
-        <p-multiSelect
+        <p-multi-select
           [inputId]="field.name"
           [name]="field.name"
           [required]="field.required ?? false"
@@ -73,7 +73,7 @@
           [optionValue]="field.optionValue ?? 'value'"
           [optionDisabled]="field.optionDisabled ?? 'disabled'"
           [display]="field.useChips ? 'chip' : 'comma'"
-          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [class]="'w-full ' + (field.styleClass ?? '')"
         />
       }
       @case (FormFieldType.Editor) {
@@ -138,7 +138,7 @@
         </p-editor>
       }
       @case (FormFieldType.Calendar) {
-        <p-calendar
+        <p-date-picker
           [inputId]="field.name"
           [name]="field.name"
           [required]="field.required ?? false"
@@ -152,7 +152,7 @@
           [showTime]="field.showTime ?? false"
           [timeOnly]="field.timeOnly ?? false"
           hourFormat="12"
-          [styleClass]="'w-full ' + (field.styleClass ?? '')"
+          [class]="'w-full ' + (field.styleClass ?? '')"
         />
       }
       @case (FormFieldType.Submit) {
@@ -188,7 +188,7 @@
       }
       @case (FormFieldType.Checkbox) {
         <p-checkbox
-          [id]="field.name | lowercase"
+          [inputId]="field.name | lowercase"
           [name]="field.name | lowercase"
           [required]="field.required ?? false"
           [formControl]="field.control"
@@ -199,8 +199,7 @@
       @case (FormFieldType.Image) {
         @if (uploading()) {
           <p-skeleton
-            styleClass="rounded-border"
-            class="mx-auto"
+            class="mx-auto rounded-border"
             [width]="field.previewWidth + 'px'"
             [height]="field.previewHeight + 'px'"
           />

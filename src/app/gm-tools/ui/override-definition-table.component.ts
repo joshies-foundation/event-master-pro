@@ -57,7 +57,7 @@ export interface OverrideDefinitionTableModel {
             "
           >
             @if (showChangeInput()) {
-              <p-inputNumber
+              <p-input-number
                 [(ngModel)]="userDefinedChangeValue"
                 [showButtons]="true"
                 buttonLayout="horizontal"
@@ -69,7 +69,7 @@ export interface OverrideDefinitionTableModel {
                   (model().changeValue | numberSignColorClass)
                 "
                 [prefix]="model().changeValue | numberSign"
-                styleClass="w-full"
+                class="w-full"
                 [disabled]="model().inputDisabled ?? false"
               />
             } @else {
@@ -88,7 +88,7 @@ export interface OverrideDefinitionTableModel {
             [ngClass]="newScorePaddingClass()"
           >
             @if (showReplaceInput()) {
-              <p-inputNumber
+              <p-input-number
                 [(ngModel)]="userDefinedReplacementValue"
                 [showButtons]="true"
                 buttonLayout="horizontal"
@@ -96,7 +96,7 @@ export interface OverrideDefinitionTableModel {
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
                 inputStyleClass="w-full font-semibold text-right"
-                styleClass="w-full"
+                class="w-full"
                 [disabled]="model().inputDisabled ?? false"
               />
             } @else {

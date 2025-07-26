@@ -19,7 +19,11 @@ import { ImageModule } from 'primeng/image';
   ],
   template: `
     <!-- Rankings Table -->
-    <p-table [value]="players()" [rowTrackBy]="trackByUserId">
+    <p-table
+      [value]="players()"
+      [rowTrackBy]="trackByUserId"
+      tableStyleClass="overflow-hidden"
+    >
       <ng-template #header>
         <tr>
           <th>Rank</th>
@@ -47,7 +51,7 @@ import { ImageModule } from 'primeng/image';
                 alt=""
                 width="32"
                 height="32"
-                styleClass="bg-neutral-100 rounded-full overflow-hidden"
+                class="overflow-hidden rounded-full bg-neutral-100"
                 [preview]="true"
               />
               {{ player.display_name }}

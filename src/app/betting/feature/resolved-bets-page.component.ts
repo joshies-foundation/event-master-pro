@@ -53,8 +53,8 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
         <p>Bruh, you're not even a player.</p>
       }
     } @else {
-      <p-skeleton height="9.5rem" styleClass="mt-8 mb-2" />
-      <p-skeleton height="9.5rem" styleClass="mb-2" />
+      <p-skeleton height="9.5rem" class="mt-8 mb-2" />
+      <p-skeleton height="9.5rem" class="mb-2" />
       <p-skeleton height="9.5rem" />
     }
   `,

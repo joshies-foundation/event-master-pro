@@ -13,7 +13,7 @@
   <div class="my-8 flex items-baseline justify-center">
     @if (vm.updatedAvatarLoading) {
       <!-- Updating Avatar Loading Skeleton -->
-      <p-skeleton height="10rem" width="10rem" styleClass="rounded-full" />
+      <p-skeleton height="10rem" width="10rem" class="rounded-full" />
       <i
         tabindex="0"
         class="pi pi-camera -mb-1 -ml-6 p-1 text-xl text-neutral-300"
@@ -86,7 +86,7 @@
       <strong class="mr-4">Squidward Mode:</strong>
 
       <!-- Toggle Switch -->
-      <p-inputSwitch
+      <p-toggle-switch
         [ngModel]="vm.squidwardMode"
         (ngModelChange)="setSquidwardMode(vm.user.id, $event)"
         [disabled]="!vm.user.can_toggle_squidward_mode"
@@ -118,9 +118,9 @@
   <p-skeleton
     width="10rem"
     height="10.2rem"
-    styleClass="rounded-full mx-auto my-8"
+    class="mx-auto my-8 rounded-full"
   />
-  <p-skeleton width="100%" height="4rem" styleClass="mb-12" />
+  <p-skeleton width="100%" height="4rem" class="mb-12" />
 }
 
 <!-- Sign Out Button -->

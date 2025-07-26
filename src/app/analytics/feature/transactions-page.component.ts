@@ -43,10 +43,7 @@ import { TransactionTableComponent } from '../ui/transaction-table.component';
     } @else {
       <!-- Loading Skeleton -->
       @for (i of [1, 2, 3, 4, 5, 6]; track i; let first = $first) {
-        <p-skeleton
-          height="3.5rem"
-          [styleClass]="'mb-2' + (first ? ' mt-5' : '')"
-        />
+        <p-skeleton height="3.5rem" [class]="'mb-2' + (first ? ' mt-5' : '')" />
       }
     }
   `,

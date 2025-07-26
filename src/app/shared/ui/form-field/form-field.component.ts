@@ -24,7 +24,7 @@ import {
   toObservable,
   toSignal,
 } from '@angular/core/rxjs-interop';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePicker } from 'primeng/datepicker';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { EditorModule } from 'primeng/editor';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -154,7 +154,7 @@ export type FormField = {
     ReactiveFormsModule,
     ButtonModule,
     NgClass,
-    CalendarModule,
+    DatePicker,
     MultiSelectModule,
     EditorModule,
     InputNumberModule,

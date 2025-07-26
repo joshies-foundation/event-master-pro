@@ -1,7 +1,7 @@
 import {
   ApplicationConfig,
   isDevMode,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import {
   provideRouter,
@@ -24,7 +24,7 @@ import { preset } from './primeng-preset';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
 
     // router
     provideRouter(
@@ -47,6 +47,7 @@ export const appConfig: ApplicationConfig = {
 
     // PrimeNG
     providePrimeNG({
+      ripple: true,
       theme: {
         preset,
         options: {

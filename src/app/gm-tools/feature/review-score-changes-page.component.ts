@@ -120,7 +120,7 @@ import { EventService } from '../../shared/data-access/event.service';
         [loading]="submittingInProgress()"
       />
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-12" />
+      <p-skeleton height="30rem" class="mt-12" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

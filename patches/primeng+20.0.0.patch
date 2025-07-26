@@ -1,17 +1,17 @@
 diff --git a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
-index 0a5b7c8..16de069 100644
+index 1fde390..b8f6f85 100644
 --- a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
 +++ b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
-@@ -10,6 +10,7 @@ import { BaseComponent } from 'primeng/basecomponent';
- import { TimesIcon, AngleUpIcon, AngleDownIcon } from 'primeng/icons';
+@@ -11,6 +11,7 @@ import { TimesIcon, AngleUpIcon, AngleDownIcon } from 'primeng/icons';
  import { InputText } from 'primeng/inputtext';
+ import { style } from '@primeuix/styles/inputnumber';
  import { BaseStyle } from 'primeng/base';
 +import { DomHandler } from 'primeng/dom';
  
- const theme = ({ dt }) => `
- .p-inputnumber {
-@@ -798,7 +799,7 @@ class InputNumber extends BaseComponent {
-         if (this.maxlength && this.maxlength < this.formatValue(newValue).length) {
+ const theme = /*css*/ `
+     ${style}
+@@ -548,7 +549,7 @@ class InputNumber extends BaseInput {
+         if (this.maxlength() && this.maxlength() < this.formatValue(newValue).length) {
              return;
          }
 -        this.updateInput(newValue, null, 'spin', null);
@@ -19,21 +19,19 @@ index 0a5b7c8..16de069 100644
          this.updateModel(event, newValue);
          this.handleOnInput(event, currentValue, newValue);
      }
-@@ -813,7 +814,7 @@ class InputNumber extends BaseComponent {
+@@ -563,7 +564,6 @@ class InputNumber extends BaseInput {
              return;
          }
-         if (!this.disabled) {
+         if (!this.$disabled()) {
 -            this.input?.nativeElement.focus();
-+            this.autofocus && this.input?.nativeElement.focus();
              this.repeat(event, null, 1);
              event.preventDefault();
          }
-@@ -844,7 +845,7 @@ class InputNumber extends BaseComponent {
+@@ -594,7 +594,6 @@ class InputNumber extends BaseInput {
              return;
          }
-         if (!this.disabled) {
+         if (!this.$disabled()) {
 -            this.input?.nativeElement.focus();
-+            this.autofocus && this.input?.nativeElement.focus();
              this.repeat(event, null, -1);
              event.preventDefault();
          }

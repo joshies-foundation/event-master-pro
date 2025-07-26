@@ -71,7 +71,7 @@ import {
       />
 
       <!-- Confirm Submit Changes Dialog -->
-      <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
+      <p-confirm-dialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
         <ng-template #message>
           <div class="block">
             <p>Are you sure you want submit these changes?</p>
@@ -99,7 +99,7 @@ import {
             </div>
           </div>
         </ng-template>
-      </p-confirmDialog>
+      </p-confirm-dialog>
     } @else {
       <!-- Data Not Found Message -->
       <p class="mt-12">

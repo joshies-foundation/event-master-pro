@@ -47,7 +47,7 @@ enum RandomizerOption {
       <!-- First row of options -->
       <div class="flex flex-row gap-2">
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="type"
             [value]="RandomizerOptions.Special"
             [(ngModel)]="type"
@@ -63,7 +63,7 @@ enum RandomizerOption {
           />
         </label>
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="type"
             [value]="RandomizerOptions.Duel"
             [(ngModel)]="type"
@@ -83,7 +83,7 @@ enum RandomizerOption {
       <!-- Second row of options -->
       <div class="flex flex-row gap-2">
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="type"
             [value]="RandomizerOptions.Chaos"
             [(ngModel)]="type"
@@ -99,7 +99,7 @@ enum RandomizerOption {
           />
         </label>
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="type"
             [value]="RandomizerOptions.Player"
             [(ngModel)]="type"

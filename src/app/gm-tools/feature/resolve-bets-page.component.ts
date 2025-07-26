@@ -172,10 +172,10 @@ import { CardComponent } from '../../shared/ui/card.component';
         </p-accordion>
       </joshies-card>
     } @else {
-      <p-skeleton height="2rem" styleClass="mt-12 mb-4" />
+      <p-skeleton height="2rem" class="mt-12 mb-4" />
 
       @for (i of [1, 2]; track i) {
-        <p-skeleton height="9rem" styleClass="mb-2" />
+        <p-skeleton height="9rem" class="mb-2" />
         <div class="grid grid-cols-2 grid-rows-1 gap-4">
           <p-skeleton class="col" height="37px" />
           <p-skeleton class="col" height="37px" />

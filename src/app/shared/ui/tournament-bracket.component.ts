@@ -29,7 +29,7 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
     <p-tree
       [value]="bracket()"
       layout="horizontal"
-      [styleClass]="bracket().length ? 'rotate-180' : ''"
+      [class]="bracket().length ? 'rotate-180' : ''"
       [selectionMode]="'checkbox'"
       (onNodeSelect)="setMatchWinnerEvent($event, bracket(), selectedNodes)"
       [(selection)]="selectedNodes"
@@ -42,14 +42,14 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
           <span class="mr-1 text-xs text-neutral-400">{{
             node.data?.seed
           }}</span>
-          <p-avatarGroup styleClass="mr-1">
+          <p-avatar-group styleClass="mr-1">
             @for (
               participant of node.data.participants;
               track participant.participant_id
             ) {
               <p-avatar [image]="participant.avatar_url" shape="circle" />
             }
-          </p-avatarGroup>
+          </p-avatar-group>
           <span class="text-neutral-800text-sm">
             {{ node.data.participants | participantList }}
           </span>

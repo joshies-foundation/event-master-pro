@@ -93,7 +93,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
         </ng-template>
       </p-table>
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-8" />
+      <p-skeleton height="30rem" class="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

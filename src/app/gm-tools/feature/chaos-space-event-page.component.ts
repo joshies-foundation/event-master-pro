@@ -121,7 +121,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                     [options]="eventOptions()"
                     optionLabel="name"
                     optionValue="id"
-                    styleClass="w-full"
+                    class="w-full"
                     [(ngModel)]="selectedEventTemplateId"
                     [disabled]="backendActionInProgress()"
                   />
@@ -509,7 +509,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
         </p>
       }
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-8" />
+      <p-skeleton height="30rem" class="mt-8" />
     }
   `,
   host: {

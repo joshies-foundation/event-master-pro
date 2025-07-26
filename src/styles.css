@@ -247,7 +247,7 @@ p-editor {
   white-space: pre-wrap;
 }
 
-.p-datatable {
+.p-datatable-table {
   border-radius: 0.75rem;
   overflow: hidden;
   background-color: var(--color-neutral-0);

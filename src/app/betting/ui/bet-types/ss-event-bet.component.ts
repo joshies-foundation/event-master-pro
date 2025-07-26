@@ -23,7 +23,7 @@ import { SpaceEventStatus } from '../../../shared/util/supabase-helpers';
           [(ngModel)]="selectedSsEventId"
           optionLabel="ssEventName"
           optionValue="ssEvent.id"
-          styleClass="w-full"
+          class="w-full"
           emptyMessage="No open special space events"
           placeholder="Select a special space event"
         />

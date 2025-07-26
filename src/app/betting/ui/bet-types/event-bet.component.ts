@@ -37,7 +37,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
           [(ngModel)]="selectedMainEventId"
           optionLabel="name"
           optionValue="id"
-          styleClass="w-full"
+          class="w-full"
           emptyMessage="No open events"
           placeholder="Select an event"
         />
@@ -46,11 +46,11 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
       <!-- Subtype Radio Buttons -->
       <div class="flex flex-wrap gap-4 px-2">
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="eventBetSubtype"
             [value]="BetSubtype.TeamPosition"
             [(ngModel)]="selectedEventBetSubtype"
-            styleClass="w-full"
+            class="w-full"
           />
           Team Position
         </label>
@@ -59,11 +59,11 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
           EventFormat.ScoreBasedSingleRound
         ) {
           <label class="flex items-center gap-2">
-            <p-radioButton
+            <p-radio-button
               name="eventBetSubtype"
               [value]="BetSubtype.Score"
               [(ngModel)]="selectedEventBetSubtype"
-              styleClass="w-full"
+              class="w-full"
             />
             Score
           </label>
@@ -79,7 +79,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
               [options]="eventTeams()"
               [(ngModel)]="selectedEventTeam"
               optionLabel="participantList"
-              styleClass="flex"
+              class="flex"
               placeholder="Select a team"
             />
           </label>
@@ -99,7 +99,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
               [options]="eventTeams()"
               [(ngModel)]="selectedEventTeam"
               optionLabel="participantList"
-              styleClass="flex"
+              class="flex"
               placeholder="Select a team"
             />
           </label>

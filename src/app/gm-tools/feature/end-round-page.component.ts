@@ -79,7 +79,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
             <tr>
               <td>
                 <div class="flex flex-col items-center gap-2">
-                  <p-avatarGroup>
+                  <p-avatar-group>
                     @for (
                       participant of team.participants;
                       track participant.participant_id
@@ -89,7 +89,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                         shape="circle"
                       />
                     }
-                  </p-avatarGroup>
+                  </p-avatar-group>
                   <div class="text-center text-xs">
                     <p class="mb-1">
                       {{ team.participants | participantList }}
@@ -104,7 +104,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                 {{ team.position }}
               </td>
               <td style="min-width: 10rem">
-                <p-inputNumber
+                <p-input-number
                   #input
                   [formControlName]="team.id"
                   [showButtons]="true"
@@ -133,7 +133,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
         />
       </joshies-card>
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-12" />
+      <p-skeleton height="30rem" class="mt-12" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

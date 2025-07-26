@@ -62,7 +62,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
             <td>
               <div class="flex flex-col items-center gap-2">
                 <div class="flex flex-row items-center gap-2">
-                  <p-avatarGroup styleClass="mr-2">
+                  <p-avatar-group styleClass="mr-2">
                     @for (
                       participant of team.participants;
                       track participant.participant_id
@@ -72,7 +72,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                         shape="circle"
                       />
                     }
-                  </p-avatarGroup>
+                  </p-avatar-group>
                 </div>
                 <div class="text-xs">
                   {{ team.participants | participantList }}
@@ -80,7 +80,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
               </div>
             </td>
             <td>
-              <p-inputNumber
+              <p-input-number
                 [formControlName]="team.id"
                 [showButtons]="true"
                 buttonLayout="horizontal"
@@ -90,8 +90,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
                 decrementButtonIcon="pi pi-minus"
                 inputStyleClass="w-full font-semibold text-center"
                 class="w-full"
-                styleClass="w-full"
-                chan
                 (ngModelChange)="calculatePositions()"
               />
             </td>

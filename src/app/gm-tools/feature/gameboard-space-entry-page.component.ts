@@ -125,7 +125,7 @@ export type GameboardSpaceEntryFormModel = Record<
             <!-- Distance -->
             <td class="overflow-hidden text-right">
               <div class="flex flex-row items-center justify-end gap-2">
-                <p-inputNumber
+                <p-input-number
                   formControlName="distanceTraveled"
                   [showButtons]="true"
                   buttonLayout="horizontal"
@@ -160,7 +160,7 @@ export type GameboardSpaceEntryFormModel = Record<
 
               <!-- Space -->
               <div class="mt-2 overflow-x-auto text-nowrap">
-                <p-selectButton
+                <p-select-button
                   [options]="vm.gameboardSpaces"
                   optionLabel="id"
                   optionValue="id"
@@ -170,7 +170,7 @@ export type GameboardSpaceEntryFormModel = Record<
                   <ng-template #item let-gameboardSpace>
                     <joshies-gameboard-space [model]="gameboardSpace" />
                   </ng-template>
-                </p-selectButton>
+                </p-select-button>
               </div>
 
               <!-- If player must choose between gaining/losing points and doing an activity, show the options here-->
@@ -181,7 +181,7 @@ export type GameboardSpaceEntryFormModel = Record<
                     : GameboardSpaceEffect.GainPointsOrDoActivity;
                 as space
               ) {
-                <p-selectButton
+                <p-select-button
                   [options]="[
                     {
                       label:

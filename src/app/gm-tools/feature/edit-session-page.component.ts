@@ -47,7 +47,7 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
     } @else {
       <!-- Loading Skeleton -->
       <div class="h-16"></div>
-      <p-skeleton height="2.25rem" styleClass="mb-6" />
+      <p-skeleton height="2.25rem" class="mb-6" />
       <p-skeleton width="100%" height="19rem" />
     }
   `,

@@ -19,7 +19,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
           [(ngModel)]="selectedDuelId"
           optionLabel="duelName"
           optionValue="id"
-          styleClass="w-full"
+          class="w-full"
           emptyMessage="No open duels"
           placeholder="Select a duel"
         />
@@ -32,7 +32,7 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
           [options]="competitors()"
           [(ngModel)]="selectedWinner"
           optionLabel="display_name"
-          styleClass="w-full"
+          class="w-full"
           placeholder="Select a winner"
         />
       </label>

@@ -8,7 +8,6 @@ import {
 import { TableModule } from 'primeng/table';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { NgOptimizedImage } from '@angular/common';
-import { InputSwitchModule } from 'primeng/inputswitch';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -28,7 +27,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
     HeaderLinkComponent,
     TableModule,
     NgOptimizedImage,
-    InputSwitchModule,
     SkeletonModule,
     ButtonModule,
     PageHeaderComponent,
@@ -129,7 +127,7 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
         </ng-template>
       </p-table>
     } @else {
-      <p-skeleton width="100%" height="30rem" styleClass="mt-6" />
+      <p-skeleton width="100%" height="30rem" class="mt-6" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

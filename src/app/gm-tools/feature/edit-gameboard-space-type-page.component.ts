@@ -84,7 +84,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       />
 
       <!-- Confirm Submit Changes Dialog -->
-      <p-confirmDialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
+      <p-confirm-dialog styleClass="mx-4" [key]="confirmSubmitChangesDialogKey">
         <ng-template #message>
           <div class="block">
             <p>Are you sure you want submit these changes?</p>
@@ -127,7 +127,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
             </div>
           </div>
         </ng-template>
-      </p-confirmDialog>
+      </p-confirm-dialog>
     } @else {
       <!-- Data Not Found Message -->
       <p class="mt-12 mb-4">

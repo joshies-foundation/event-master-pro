@@ -20,7 +20,7 @@ import { GameboardService } from '../../../shared/data-access/gameboard.service'
           [options]="playerService.players() ?? []"
           [(ngModel)]="selectedGameboardPlayer"
           optionLabel="display_name"
-          styleClass="flex"
+          class="flex"
           placeholder="Select a player"
         />
       </label>
@@ -32,7 +32,7 @@ import { GameboardService } from '../../../shared/data-access/gameboard.service'
           [options]="gameboardService.gameboardSpaces() ?? []"
           [(ngModel)]="selectedGameboardSpace"
           optionLabel="name"
-          styleClass="flex"
+          class="flex"
           placeholder="Select a space type"
         />
       </label>

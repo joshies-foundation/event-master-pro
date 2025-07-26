@@ -112,7 +112,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                     [options]="eventOptions()"
                     optionLabel="name"
                     optionValue="id"
-                    styleClass="w-full"
+                    class="w-full"
                     [(ngModel)]="selectedEventTemplateId"
                     [disabled]="backendActionInProgress()"
                   />
@@ -239,7 +239,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       $any(vm.specialSpaceEvent.template.details)
                         ?.pointsLabelPlural ?? 'points' | titlecase
                     }}
-                    <p-inputNumber
+                    <p-input-number
                       [(ngModel)]="score"
                       [showButtons]="true"
                       buttonLayout="horizontal"
@@ -247,7 +247,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                       incrementButtonIcon="pi pi-plus"
                       decrementButtonIcon="pi pi-minus"
                       inputStyleClass="w-full font-semibold text-right"
-                      styleClass="w-full"
+                      class="w-full"
                       [disabled]="backendActionInProgress()"
                     />
                   </label>
@@ -312,7 +312,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
         </p>
       }
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-8" />
+      <p-skeleton height="30rem" class="mt-8" />
     }
   `,
   host: {

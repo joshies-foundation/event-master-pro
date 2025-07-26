@@ -13,7 +13,7 @@ export const confirmPlaceBetDialogKey = 'confirm-place-bet';
   selector: 'joshies-confirm-place-bet-dialog',
   imports: [ConfirmDialogModule, BetComponent],
   template: `
-    <p-confirmDialog styleClass="mx-4" [key]="confirmPlaceBetDialogKey">
+    <p-confirm-dialog styleClass="mx-4" [key]="confirmPlaceBetDialogKey">
       <ng-template #message let-message>
         <div>
           <!-- Prompt -->
@@ -23,7 +23,7 @@ export const confirmPlaceBetDialogKey = 'confirm-place-bet';
           <joshies-bet [bet]="bet()" [userPlayerId]="userPlayerId()" />
         </div>
       </ng-template>
-    </p-confirmDialog>
+    </p-confirm-dialog>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

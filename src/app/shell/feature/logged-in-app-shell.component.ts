@@ -35,7 +35,7 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
       />
     }
 
-    <p-confirmDialog styleClass="mx-4" />
+    <p-confirm-dialog styleClass="mx-4" />
   `,
   animations: [layerPages],
   host: {

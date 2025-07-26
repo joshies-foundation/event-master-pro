@@ -21,7 +21,7 @@ export const confirmOverrideDialogKey = 'confirm-override';
   selector: 'joshies-confirm-bank-balance-override-dialog',
   imports: [ConfirmDialogModule, OverrideDefinitionTableComponent],
   template: `
-    <p-confirmDialog styleClass="mx-4" [key]="confirmOverrideDialogKey">
+    <p-confirm-dialog styleClass="mx-4" [key]="confirmOverrideDialogKey">
       <ng-template #message let-message>
         <div>
           <!-- Prompt -->
@@ -33,7 +33,7 @@ export const confirmOverrideDialogKey = 'confirm-override';
           <joshies-override-definition-table [model]="tableModel()" />
         </div>
       </ng-template>
-    </p-confirmDialog>
+    </p-confirm-dialog>
   `,
   styles: `
     table {

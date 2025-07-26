@@ -48,7 +48,7 @@ import {
 } from '../util/place-bet-helpers';
 import { Tables } from '../../shared/util/schema';
 import { CardComponent } from '../../shared/ui/card.component';
-import { InputSwitchModule } from 'primeng/inputswitch';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { EventTeamWithParticipantInfo } from '../../shared/data-access/event.service';
 import {
   ConfirmPlaceBetDialogComponent,
@@ -75,7 +75,7 @@ import { Textarea } from 'primeng/textarea';
     Select,
     RadioButtonModule,
     CardComponent,
-    InputSwitchModule,
+    ToggleSwitch,
     ConfirmPlaceBetDialogComponent,
     DecimalPipe,
     AvatarModule,
@@ -109,7 +109,7 @@ import { Textarea } from 'primeng/textarea';
               [options]="staticPlayersWithoutUser"
               [(ngModel)]="staticSelectedOpponent"
               optionLabel="nameAndScore"
-              styleClass="flex"
+              class="flex"
               placeholder="Select an opponent"
             >
               <ng-template #item let-player>
@@ -117,7 +117,7 @@ import { Textarea } from 'primeng/textarea';
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
-                    styleClass="h-6 w-6"
+                    class="h-6 w-6"
                   />
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
@@ -127,7 +127,7 @@ import { Textarea } from 'primeng/textarea';
                   <p-avatar
                     [image]="player.avatar_url"
                     shape="circle"
-                    styleClass="h-6 w-6"
+                    class="h-6 w-6"
                   />
                   {{ player.display_name }} ({{ player.score | number }} points)
                 </div>
@@ -145,7 +145,7 @@ import { Textarea } from 'primeng/textarea';
               [(ngModel)]="selectedBetType"
               optionLabel="betTypeString"
               optionValue="betType"
-              styleClass="w-full"
+              class="w-full"
             />
           </label>
 
@@ -213,7 +213,7 @@ import { Textarea } from 'primeng/textarea';
           <!-- Even Odds Checkbox -->
           <div class="flex items-center justify-end gap-4">
             <label for="even-odds"> Even Odds </label>
-            <p-inputSwitch
+            <p-toggle-switch
               inputId="event-odds"
               [(ngModel)]="evenOdds"
               (ngModelChange)="checkEvenOdds()"
@@ -227,17 +227,17 @@ import { Textarea } from 'primeng/textarea';
                 ? 'Both Wager'
                 : (userPlayer()?.display_name ?? 'Bettor') + ' Wagers'
             }}
-            <p-inputNumber
+            <p-input-number
               #inputRequesterBet
               [(ngModel)]="requesterBet"
               [showButtons]="true"
               buttonLayout="horizontal"
               [step]="1"
-              min="1"
+              [min]="1"
               incrementButtonIcon="pi pi-plus"
               decrementButtonIcon="pi pi-minus"
               inputStyleClass="w-full font-semibold text-center"
-              styleClass="w-full"
+              class="w-full"
               (ngModelChange)="checkEvenOdds()"
               (onFocus)="
                 inputRequesterBet.input.nativeElement.selectionStart = 100
@@ -249,17 +249,17 @@ import { Textarea } from 'primeng/textarea';
             <!-- Opponent bet -->
             <label class="flex flex-col gap-2">
               {{ selectedOpponent()?.display_name ?? 'Opponent' }} Wagers
-              <p-inputNumber
+              <p-input-number
                 #inputOpponentBet
                 [(ngModel)]="opponentBet"
                 [showButtons]="true"
                 buttonLayout="horizontal"
                 [step]="1"
-                min="1"
+                [min]="1"
                 incrementButtonIcon="pi pi-plus"
                 decrementButtonIcon="pi pi-minus"
                 inputStyleClass="w-full font-semibold text-center"
-                styleClass="w-full"
+                class="w-full"
                 (onFocus)="
                   inputRequesterBet.input.nativeElement.selectionStart = 100
                 "

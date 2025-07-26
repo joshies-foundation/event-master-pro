@@ -6,7 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { Tables } from '../../shared/util/schema';
-import { View, trackByUserId } from '../../shared/util/supabase-helpers';
+import { trackByUserId, View } from '../../shared/util/supabase-helpers';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SharedModule } from 'primeng/api';

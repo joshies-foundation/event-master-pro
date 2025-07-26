@@ -32,6 +32,7 @@ import { RouterLink } from '@angular/router';
 import { BetType } from '../../shared/util/supabase-helpers';
 import { BetToResolveComponent } from '../ui/bet-awaiting-acceptance.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
+import { Ripple } from 'primeng/ripple';
 
 const textColorMuted = getCssVariableValue('--color-muted-color');
 const borderColor = getCssVariableValue('--color-standard-border-color');
@@ -54,6 +55,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
     AccordionModule,
     RouterLink,
     BetToResolveComponent,
+    Ripple,
   ],
   template: `
     <joshies-page-header headerText="Betting" />
@@ -152,12 +154,13 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
                         bet of betRequests;
                         track bet.id;
                         let first = $first;
-                        let last = $last
+                        let last = $last;
+                        let index = $index
                       ) {
                         @if (!first) {
                           <joshies-bet-request
-                            class="mt-4 block"
-                            [class.-mb-4]="!last"
+                            [class.pt-4]="index === 1"
+                            class="block"
                             [bet]="bet"
                             [userPlayerId]="userPlayerId"
                             [submitting]="submitting()"
@@ -236,12 +239,13 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
                         bet of betsAwaitingAcceptance;
                         track bet.id;
                         let first = $first;
-                        let last = $last
+                        let last = $last;
+                        let index = $index
                       ) {
                         @if (!first) {
                           <joshies-bet-awaiting-acceptance
-                            class="mt-4 block"
-                            [class.-mb-4]="!last"
+                            [class.pt-4]="index === 1"
+                            class="block"
                             [bet]="bet"
                             [userPlayerId]="userPlayerId"
                             [submitting]="submitting()"
@@ -293,12 +297,13 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
                     bet of activeBets();
                     track bet.id;
                     let first = $first;
-                    let last = $last
+                    let last = $last;
+                    let index = $index
                   ) {
                     @if (!first) {
                       <joshies-bet
-                        class="mt-4 block"
-                        [class.-mb-4]="!last"
+                        [class.pt-4]="index === 1"
+                        class="block"
                         [bet]="bet"
                         [userPlayerId]="userPlayerId"
                       />
@@ -331,7 +336,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
           }
 
           @if (showViewAllResolvedBetsLink()) {
-            <p-divider styleClass="mb-2" />
+            <p-divider class="mb-2" />
             <p-button
               label="All Settled Bets"
               icon="pi pi-angle-right"
@@ -357,11 +362,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
 
       <!-- Pace Bet -->
       <div class="mt-4 mb-2 flex gap-2">
-        <p-skeleton
-          height="1.25rem"
-          width="1.25rem"
-          styleClass="rounded-full"
-        />
+        <p-skeleton height="1.25rem" width="1.25rem" class="rounded-full" />
         <p-skeleton height="1.25rem" width="7rem" />
       </div>
       <div class="-mx-4 flex gap-2 overflow-x-hidden px-4">
@@ -375,11 +376,7 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
 
       <!-- Open Bets -->
       <div class="mt-6 mb-2 flex gap-2">
-        <p-skeleton
-          height="1.25rem"
-          width="1.25rem"
-          styleClass="rounded-full"
-        />
+        <p-skeleton height="1.25rem" width="1.25rem" class="rounded-full" />
         <p-skeleton height="1.25rem" width="7.5rem" />
       </div>
       <p-skeleton height="9.5rem" />

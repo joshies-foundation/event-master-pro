@@ -122,7 +122,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                     [options]="vm.allPlayersExceptChallenger"
                     optionLabel="display_name"
                     optionValue="player_id"
-                    styleClass="w-full"
+                    class="w-full"
                     [(ngModel)]="selectedOpponentPlayerId"
                     [disabled]="backendActionInProgress()"
                   />
@@ -150,14 +150,14 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                 <label class="mt-8 flex flex-col gap-2">
                   Select Wager
 
-                  <p-inputNumber
+                  <p-input-number
                     [showButtons]="true"
                     buttonLayout="horizontal"
                     [step]="5"
                     incrementButtonIcon="pi pi-plus"
                     decrementButtonIcon="pi pi-minus"
                     inputStyleClass="w-full text-center"
-                    styleClass="w-full"
+                    class="w-full"
                     suffix="%"
                     [min]="1"
                     [max]="100"
@@ -194,7 +194,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
                   Select Game
                   <p-select
                     [options]="gameOptions()"
-                    styleClass="w-full"
+                    class="w-full"
                     [(ngModel)]="selectedGame"
                     [disabled]="backendActionInProgress()"
                   />
@@ -244,7 +244,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
 
                 <label class="mt-8 mb-6 flex items-center gap-4">
                   Winner:
-                  <p-selectButton
+                  <p-select-button
                     [options]="winnerOptions()"
                     optionLabel="name"
                     optionValue="challengerWon"
@@ -331,7 +331,7 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
         </p>
       }
     } @else {
-      <p-skeleton height="30rem" styleClass="mt-8" />
+      <p-skeleton height="30rem" class="mt-8" />
     }
   `,
   host: {

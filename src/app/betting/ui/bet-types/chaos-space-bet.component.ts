@@ -34,27 +34,27 @@ import {
           [(ngModel)]="selectedChaosEventId"
           optionLabel="template.name"
           optionValue="id"
-          styleClass="w-full"
+          class="w-full"
           emptyMessage="No open chaos space events"
           placeholder="Select a chaos space event"
         />
       </label>
       <div class="flex flex-wrap gap-4 px-2">
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="chaosBetSubtype"
             [value]="BetSubtype.NumberOfLosers"
             [(ngModel)]="selectedChaosBetSubtype"
-            styleClass="w-full"
+            class="w-full"
           />
           Number of Losers
         </label>
         <label class="flex items-center gap-2">
-          <p-radioButton
+          <p-radio-button
             name="chaosBetSubtype"
             [value]="BetSubtype.PlayerLoses"
             [(ngModel)]="selectedChaosBetSubtype"
-            styleClass="w-full"
+            class="w-full"
           />
           Selected Player's Result
         </label>
@@ -74,7 +74,7 @@ import {
               [options]="playerService.players() ?? []"
               [(ngModel)]="selectedChaosPlayer"
               optionLabel="display_name"
-              styleClass="flex"
+              class="flex"
               placeholder="Select a player"
             />
           </label>
@@ -82,20 +82,20 @@ import {
           <!-- Wins/Loses Radio Buttons -->
           <div class="flex flex-wrap gap-4 px-2">
             <label class="flex items-center gap-2">
-              <p-radioButton
+              <p-radio-button
                 name="winsLoses"
                 value="WINS"
                 [(ngModel)]="selectedWinsLoses"
-                styleClass="w-full"
+                class="w-full"
               />
               Wins
             </label>
             <label class="flex items-center gap-2">
-              <p-radioButton
+              <p-radio-button
                 name="winsLoses"
                 value="LOSES"
                 [(ngModel)]="selectedWinsLoses"
-                styleClass="w-full"
+                class="w-full"
               />
               Loses
             </label>

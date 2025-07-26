@@ -33,7 +33,7 @@ import { TagModule } from 'primeng/tag';
         <tr>
           <!-- Avatars -->
           <td class="w-4 align-top">
-            <p-avatarGroup styleClass="mr-2">
+            <p-avatar-group styleClass="mr-2">
               @for (
                 avatarUrl of mainAvatarUrls();
                 track index;
@@ -43,10 +43,10 @@ import { TagModule } from 'primeng/tag';
                   [image]="avatarUrl"
                   size="large"
                   shape="circle"
-                  [styleClass]="'mb-2 ' + avatarBorderColorClass()"
+                  [class]="'mb-2 ' + avatarBorderColorClass()"
                 />
               }
-            </p-avatarGroup>
+            </p-avatar-group>
           </td>
 
           <!-- Title & Description -->
@@ -93,18 +93,18 @@ import { TagModule } from 'primeng/tag';
           <!-- Both Wager -->
           <tr>
             <td>
-              <p-avatarGroup styleClass="justify-end mr-1">
+              <p-avatar-group styleClass="justify-end mr-1">
                 <p-avatar
                   [image]="bet().requester?.avatar_url"
-                  [styleClass]="'h-7 w-7 ' + avatarBorderColorClass()"
+                  [class]="'h-7 w-7 ' + avatarBorderColorClass()"
                   shape="circle"
                 />
                 <p-avatar
                   [image]="bet().opponent?.avatar_url"
-                  [styleClass]="'h-7 w-7 ' + avatarBorderColorClass()"
+                  [class]="'h-7 w-7 ' + avatarBorderColorClass()"
                   shape="circle"
                 />
-              </p-avatarGroup>
+              </p-avatar-group>
             </td>
             <td>
               Both {{ youOrBothWagerWord() }}
@@ -120,9 +120,7 @@ import { TagModule } from 'primeng/tag';
             <td class="text-right">
               <p-avatar
                 [image]="bet().requester?.avatar_url"
-                [styleClass]="
-                  'h-7 w-7 border-2 mr-1 ' + avatarBorderColorClass()
-                "
+                [class]="'mr-1 h-7 w-7 border-2 ' + avatarBorderColorClass()"
                 shape="circle"
               />
             </td>
@@ -145,9 +143,7 @@ import { TagModule } from 'primeng/tag';
             <td class="text-right">
               <p-avatar
                 [image]="bet().opponent?.avatar_url"
-                [styleClass]="
-                  'h-7 w-7 border-2 mr-1 ' + avatarBorderColorClass()
-                "
+                [class]="'mr-1 h-7 w-7 border-2 ' + avatarBorderColorClass()"
                 shape="circle"
               />
             </td>

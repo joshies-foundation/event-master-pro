@@ -85,11 +85,11 @@ import { CheckboxModule } from 'primeng/checkbox';
         <div class="mb-8 flex flex-col gap-4">
           @for (option of overrideTypeOptions; track option.addOrSubtractMode) {
             <label class="ml-2">
-              <p-radioButton
+              <p-radio-button
                 name="category"
                 [value]="option.addOrSubtractMode"
                 [(ngModel)]="inAddOrSubtractMode"
-                styleClass="mr-1"
+                class="mr-1"
                 [disabled]="submitting()"
               />
               {{ option.label }}
@@ -138,7 +138,7 @@ import { CheckboxModule } from 'primeng/checkbox';
         <span class="font-bold">{{ playerId() }}</span>
       </p>
     } @else {
-      <p-skeleton height="35rem" styleClass="mt-8" />
+      <p-skeleton height="35rem" class="mt-8" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
