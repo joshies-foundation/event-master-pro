@@ -75,7 +75,12 @@ export class AnalyticsService {
         query = query.order('id', { ascending: false });
 
         return from(query).pipe(
-          map((response) => (response.data ? response.data : [])),
+          map((response) =>
+            response.data
+              ? // TODO: Actually remove the test session from the db instead of hardcoding its removal here...
+                response.data.filter((session) => session.id !== 1)
+              : [],
+          ),
         );
       }),
     );

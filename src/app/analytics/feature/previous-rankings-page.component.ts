@@ -75,7 +75,7 @@ export default class PreviousRankingsPageComponent {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly authService = inject(AuthService);
 
-  private readonly select = viewChild.required(Select);
+  private readonly select = viewChild(Select);
   private readonly select$ = toObservable(this.select);
 
   private readonly previousSessionPlayers: Signal<

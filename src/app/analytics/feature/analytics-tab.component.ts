@@ -119,12 +119,11 @@ const numTransactionsToShow = 3;
     }
 
     <!-- Previous Session -->
-    <!-- Previous session data is not available yet -->
-    <!--    <joshies-card-->
-    <!--      headerText="Previous Sessions"-->
-    <!--      headerIconClass="pi pi-history text-primary mr-2"-->
-    <!--      [links]="previousSessionsLinks"-->
-    <!--    />-->
+    <joshies-card
+      headerText="Previous Sessions"
+      headerIconClass="pi pi-history text-primary mr-2"
+      [links]="previousSessionsLinks"
+    />
   `,
   host: {
     class: 'block pb-12',
@@ -171,11 +170,12 @@ export default class AnalyticsTabComponent {
       text: 'Previous Session Rankings',
       routerLink: './previous-rankings',
     },
-    {
-      iconClass: 'pi pi-table bg-purple-500',
-      text: 'Lifetime Score Statistics',
-      routerLink: './lifetime-stats',
-    },
+    // TODO: Add this back in after removing the test session from the db
+    // {
+    //   iconClass: 'pi pi-table bg-purple-500',
+    //   text: 'Lifetime Score Statistics',
+    //   routerLink: './lifetime-stats',
+    // },
   ];
 
   readonly playerRoundScoresResponse =
