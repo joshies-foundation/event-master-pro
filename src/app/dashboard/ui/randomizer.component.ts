@@ -2,7 +2,6 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
-  HostListener,
   inject,
   input,
   signal,
@@ -46,9 +45,11 @@ import { Sound } from '../../shared/util/sound';
     }
   `,
   imports: [CardComponent, Button],
+  host: {
+    '(document:keyup.space)': 'onSpaceKeyUp()',
+  },
 })
 export default class RandomizerComponent {
-  @HostListener('document:keyup.space', ['$event'])
   onSpaceKeyUp() {
     if (this.selectedItem()) {
       this.closeOverlay();

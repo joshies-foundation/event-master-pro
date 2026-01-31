@@ -7,7 +7,7 @@ import {
   RealtimePostgresChangesPayload,
   SupabaseClient,
 } from '@supabase/supabase-js';
-import type { GenericSchema } from '@supabase/supabase-js/src/lib/types';
+import type { GenericSchema } from '@supabase/supabase-js';
 
 type ID = string | number;
 

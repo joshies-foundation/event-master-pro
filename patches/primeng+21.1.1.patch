@@ -1,17 +1,17 @@
 diff --git a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
-index 1fde390..b8f6f85 100644
+index 04756cf..4c896d2 100644
 --- a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
 +++ b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
-@@ -11,6 +11,7 @@ import { TimesIcon, AngleUpIcon, AngleDownIcon } from 'primeng/icons';
+@@ -14,6 +14,7 @@ import { TimesIcon, AngleUpIcon, AngleDownIcon } from 'primeng/icons';
  import { InputText } from 'primeng/inputtext';
- import { style } from '@primeuix/styles/inputnumber';
+ import { style as style$1 } from '@primeuix/styles/inputnumber';
  import { BaseStyle } from 'primeng/base';
 +import { DomHandler } from 'primeng/dom';
+ export * from 'primeng/types/inputnumber';
  
- const theme = /*css*/ `
-     ${style}
-@@ -548,7 +549,7 @@ class InputNumber extends BaseInput {
-         if (this.maxlength() && this.maxlength() < this.formatValue(newValue).length) {
+ const style = /*css*/ `
+@@ -573,7 +574,7 @@ class InputNumber extends BaseInput {
+         if (max && max < this.formatValue(newValue).length) {
              return;
          }
 -        this.updateInput(newValue, null, 'spin', null);
@@ -19,7 +19,7 @@ index 1fde390..b8f6f85 100644
          this.updateModel(event, newValue);
          this.handleOnInput(event, currentValue, newValue);
      }
-@@ -563,7 +564,6 @@ class InputNumber extends BaseInput {
+@@ -588,7 +589,6 @@ class InputNumber extends BaseInput {
              return;
          }
          if (!this.$disabled()) {
@@ -27,7 +27,7 @@ index 1fde390..b8f6f85 100644
              this.repeat(event, null, 1);
              event.preventDefault();
          }
-@@ -594,7 +594,6 @@ class InputNumber extends BaseInput {
+@@ -619,7 +619,6 @@ class InputNumber extends BaseInput {
              return;
          }
          if (!this.$disabled()) {

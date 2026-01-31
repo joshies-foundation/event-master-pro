@@ -1,0 +1,11 @@
+diff --git a/node_modules/@supabase/supabase-js/dist/index.d.mts b/node_modules/@supabase/supabase-js/dist/index.d.mts
+index 12989d1..01dbec0 100644
+--- a/node_modules/@supabase/supabase-js/dist/index.d.mts
++++ b/node_modules/@supabase/supabase-js/dist/index.d.mts
+@@ -368,5 +368,5 @@ declare const createClient: <Database = any, SchemaNameOrClientOptions extends (
+   PostgrestVersion: string;
+ } = ("public" extends keyof Omit<Database, "__InternalSupabase"> ? "public" : string & keyof Omit<Database, "__InternalSupabase">), SchemaName extends string & keyof Omit<Database, "__InternalSupabase"> = (SchemaNameOrClientOptions extends string & keyof Omit<Database, "__InternalSupabase"> ? SchemaNameOrClientOptions : "public" extends keyof Omit<Database, "__InternalSupabase"> ? "public" : string & keyof Omit<Omit<Database, "__InternalSupabase">, "__InternalSupabase">)>(supabaseUrl: string, supabaseKey: string, options?: SupabaseClientOptions<SchemaName>) => SupabaseClient<Database, SchemaNameOrClientOptions, SchemaName>;
+ //#endregion
+-export { type AuthSession, type AuthUser, type DatabaseWithoutInternals, type FunctionInvokeOptions, FunctionRegion, FunctionsError, FunctionsFetchError, FunctionsHttpError, FunctionsRelayError, PostgrestError, type PostgrestMaybeSingleResponse, type PostgrestResponse, type PostgrestSingleResponse, type QueryData, type QueryError, type QueryResult, SupabaseClient, type SupabaseClientOptions, createClient };
++export { type AuthSession, type AuthUser, type DatabaseWithoutInternals, type FunctionInvokeOptions, FunctionRegion, FunctionsError, FunctionsFetchError, FunctionsHttpError, FunctionsRelayError, PostgrestError, type PostgrestMaybeSingleResponse, type PostgrestResponse, type PostgrestSingleResponse, type QueryData, type QueryError, type QueryResult, SupabaseClient, type SupabaseClientOptions, createClient, type GenericSchema };
+ //# sourceMappingURL=index.d.mts.map
