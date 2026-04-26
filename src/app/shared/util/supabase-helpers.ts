@@ -89,6 +89,7 @@ export enum GameboardSpaceEffect {
   Duel = 'duel',
   Chaos = 'chaos',
   Bank = 'bank',
+  ChancePoints = 'chance_points',
 }
 
 export enum SpaceEventStatus {
@@ -238,7 +239,7 @@ export async function showMessageOnError<T>(
           (await (error.context.body as ReadableStream).getReader().read())
             .value,
         ) as string;
-      } catch (e) {
+      } catch {
         // empty
       }
     }

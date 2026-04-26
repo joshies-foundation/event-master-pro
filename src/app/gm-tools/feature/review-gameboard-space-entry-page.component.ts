@@ -109,6 +109,17 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
                   }}
                 </p>
               }
+              @if (
+                player.gameboardSpace!.effect ===
+                GameboardSpaceEffect.ChancePoints
+              ) {
+                <p class="mt-1 text-sm text-neutral-500">
+                  {{
+                    (player.chancePointsAmount | loseOrGain | titlecase) +
+                      ' points'
+                  }}
+                </p>
+              }
             </td>
           </tr>
         </ng-template>
@@ -139,6 +150,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
   ],
 })
 export default class ReviewGameboardSpaceEntryPageComponent {
+  readonly JSON = JSON;
   private readonly router = inject(Router);
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
@@ -169,6 +181,8 @@ export default class ReviewGameboardSpaceEntryPageComponent {
             this.playerSpaceChanges[player.player_id].gameboardSpaceId,
         ),
       decision: this.playerSpaceChanges[player.player_id].decision,
+      chancePointsAmount:
+        this.playerSpaceChanges[player.player_id].chancePointsAmount,
     })),
   );
 

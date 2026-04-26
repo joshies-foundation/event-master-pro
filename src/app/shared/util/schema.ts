@@ -1289,7 +1289,8 @@ export type Database = {
         | 'special'
         | 'duel'
         | 'chaos'
-        | 'bank';
+        | 'bank'
+        | 'chance_points';
       round_phase:
         | 'gameboard_moves'
         | 'special_space_events'

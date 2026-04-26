@@ -172,7 +172,7 @@ export function gameboardSpaceFormFactory(
       {
         type: FormFieldType.Text,
         name: 'icon-class',
-        label: 'Icon Class',
+        label: 'Icon Class (https://primeng.org/icons#list)',
         placeholder: 'Eg: pi pi-bolt',
         control: gameboardSpaceFormGroup.controls.icon_class,
       },
@@ -361,6 +361,12 @@ function getGameboardSpaceEffectWithData(
       };
 
     case GameboardSpaceEffect.Bank:
+      return {
+        effect,
+        effect_data: null,
+      };
+
+    case GameboardSpaceEffect.ChancePoints:
       return {
         effect,
         effect_data: null,

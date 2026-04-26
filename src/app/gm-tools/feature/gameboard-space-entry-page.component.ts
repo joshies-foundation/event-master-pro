@@ -57,6 +57,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 import { GameboardSpaceModel } from '../../shared/util/supabase-types';
 import { CheckboxModule } from 'primeng/checkbox';
 import NewDuelComponent from '../ui/new-duel.component';
+import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 
 interface GameboardSpaceEntryFormKeys {
   distanceTraveled: number;
@@ -64,6 +65,7 @@ interface GameboardSpaceEntryFormKeys {
   decision?: 'points' | 'activity';
   triggersDuel: boolean;
   triggeredDuelCreated: boolean;
+  chancePointsAmount: number;
 }
 export type GameboardSpaceEntryFormModel = Record<
   string,
@@ -201,6 +203,30 @@ export type GameboardSpaceEntryFormModel = Record<
                   styleClass="mt-2"
                 />
               }
+
+              @if (
+                vm.gameboardSpaces
+                  | returnSpaceWithIdIfItsEffectIs
+                    : vm.formValue[player.player_id].gameboardSpaceId
+                    : GameboardSpaceEffect.ChancePoints
+              ) {
+                <p-input-number
+                  formControlName="chancePointsAmount"
+                  [showButtons]="true"
+                  buttonLayout="horizontal"
+                  [step]="1"
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                  [inputStyleClass]="
+                    'w-full font-semibold text-center ' +
+                    (vm.formValue[player.player_id].chancePointsAmount
+                      | numberSignColorClass)
+                  "
+                  class="mt-2"
+                  placeholder="Chance points"
+                  suffix=" points"
+                />
+              }
             </td>
           </tr>
         </ng-template>
@@ -237,6 +263,7 @@ export type GameboardSpaceEntryFormModel = Record<
     ReturnSpaceWithIdIfItsEffectIsPipe,
     CheckboxModule,
     NewDuelComponent,
+    NumberSignColorClassPipe,
   ],
 })
 export default class GameboardSpaceEntryPageComponent {
@@ -287,6 +314,10 @@ export default class GameboardSpaceEntryPageComponent {
                 triggeredDuelCreated: [
                   this.initialFormValue?.[player.player_id]
                     ?.triggeredDuelCreated ?? false,
+                ],
+                chancePointsAmount: [
+                  this.initialFormValue?.[player.player_id]
+                    ?.chancePointsAmount ?? 0,
                 ],
               }),
             }),
