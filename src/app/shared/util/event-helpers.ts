@@ -1,4 +1,8 @@
-import { EventParticipantWithPlayerInfo } from '../data-access/event.service';
+import {
+  EventParticipantWithPlayerInfo,
+  EventTeamWithParticipantInfo,
+} from '../data-access/event.service';
+import { EventTeamModel } from './supabase-types';
 
 export function getFormattedParticipantList(
   participants: EventParticipantWithPlayerInfo[] | undefined | null,
@@ -13,4 +17,17 @@ export function getFormattedParticipantList(
 
   const lastParticipantName = participantNames.pop();
   return `${participantNames.toString()} &${lastParticipantName}`.substring(1); // remove 1st space;
+}
+
+export function teamsWithParticipantInfo(
+  allTeams: EventTeamModel[],
+  allParticipants: EventParticipantWithPlayerInfo[],
+): EventTeamWithParticipantInfo[] {
+  return allTeams.map((team) => ({
+    ...team,
+    participants:
+      allParticipants?.filter(
+        (participant) => participant.team_id === team.id,
+      ) ?? [],
+  }));
 }

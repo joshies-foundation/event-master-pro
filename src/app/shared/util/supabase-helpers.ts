@@ -1,8 +1,8 @@
-import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
-import { Observable, switchMap } from 'rxjs';
 import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from 'primeng/api';
+import { Observable, switchMap } from 'rxjs';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 import { RealtimeFilter, liveTable } from './supabase-live-table';
@@ -64,6 +64,8 @@ export enum Function {
   SubmitBetOpponentWon = 'submit_bet_opponent_won',
   SubmitBetCanceledByGm = 'submit_bet_canceled_by_gm',
   UpdateEventTeams = 'update_event_teams',
+  UpdateEventTeamSeeds = 'update_event_team_seeds',
+  DeleteEventTeamAndUpdateSeeds = 'delete_event_team_and_update_seeds',
   SubmitEventScores = 'submit_event_scores',
 }
 
@@ -238,7 +240,7 @@ export async function showMessageOnError<T>(
           (await (error.context.body as ReadableStream).getReader().read())
             .value,
         ) as string;
-      } catch (e) {
+      } catch {
         // empty
       }
     }
