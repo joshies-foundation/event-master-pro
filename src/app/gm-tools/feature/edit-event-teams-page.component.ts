@@ -17,8 +17,12 @@ import {
   linkedSignal,
   signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { InputNumber } from 'primeng/inputnumber';
+import { Message } from 'primeng/message';
 import {
   EventParticipantWithPlayerInfo,
   EventService,
@@ -49,14 +53,27 @@ const unassignedPlayerDropListId = `${dropListIdPrefix}unassigned`;
     CdkDragHandle,
     CdkDragPlaceholder,
     CdkDropListGroup,
+    Dialog,
+    InputNumber,
+    FormsModule,
+    Message,
   ],
   template: `
     <joshies-page-header [headerText]="headerText()" alwaysSmall>
-      <joshies-header-link
-        text="Events"
-        routerLink="/gm-tools/events"
-        chevronDirection="left"
-      />
+      <div class="flex w-full items-center justify-between">
+        <joshies-header-link
+          text="Events"
+          routerLink="/gm-tools/events"
+          chevronDirection="left"
+        />
+
+        <button
+          pButton
+          text
+          icon="ci ci-dice text-2xl !p-0"
+          (click)="randomizerDialogVisible.set(true)"
+        ></button>
+      </div>
     </joshies-page-header>
 
     <div class="mt-5 flex flex-col gap-5">
@@ -226,6 +243,53 @@ const unassignedPlayerDropListId = `${dropListIdPrefix}unassigned`;
         }
       </div>
     </div>
+
+    <p-dialog
+      styleClass="max-w-[20rem]"
+      header="Randomize Teams"
+      [closable]="pendingRequests() <= 0"
+      [(visible)]="randomizerDialogVisible"
+      [dismissableMask]="pendingRequests() <= 0"
+      [modal]="true"
+    >
+      <div class="flex flex-col gap-5">
+        <div class="min-h-[4rem]">
+          @let warning = this.unevenParticipantCountWarning();
+          <p-message
+            class="mt-[0.25rem]"
+            [severity]="warning ? 'warn' : 'secondary'"
+            [icon]="warning ? 'pi pi-exclamation-triangle' : 'pi pi-face-smile'"
+            [class.text-neutral-400]="!warning"
+          >
+            {{ warning || 'Teams will be even.' }}
+          </p-message>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="random-team-count-input">Number of teams</label>
+          <p-inputNumber
+            class="w-full"
+            inputStyleClass="w-full"
+            inputId="random-team-count-input"
+            [(ngModel)]="randomTeamCount"
+            showButtons
+            buttonLayout="horizontal"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            [min]="1"
+            [max]="playerCount()"
+            [disabled]="pendingRequests() > 0"
+          ></p-inputNumber>
+        </div>
+
+        <button
+          pButton
+          icon="ci ci-dice"
+          label="Create teams"
+          [loading]="pendingRequests() > 0"
+          (click)="onRandomizeTeamsButtonClick()"
+        ></button>
+      </div>
+    </p-dialog>
   `,
   styles: `
     /* Avoid layout shift issues in default drag/drop */
@@ -234,9 +298,14 @@ const unassignedPlayerDropListId = `${dropListIdPrefix}unassigned`;
     }
 
     /* Elevate the drag preview with a shadow so it floats above the list */
-    ::ng-deep .cdk-drag-preview {
+    :host ::ng-deep .cdk-drag-preview {
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       border-radius: 6px;
+    }
+
+    :host ::ng-deep .p-dialog-title {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -280,6 +349,27 @@ export default class EditEventTeamsPageComponent {
     unassignedPlayerDropListId,
     ...Object.values(this.dropListIdByTeamId()),
   ]);
+  readonly playerCount = computed(() => this.players()?.length ?? 1);
+  readonly unevenParticipantCountWarning = computed(() => {
+    const playerCount = this.playerCount();
+    const teamCount = this.randomTeamCount();
+
+    const playerSurplus = playerCount % teamCount;
+
+    if (playerSurplus === 0) {
+      return null;
+    }
+
+    const playerDefecit = teamCount - playerSurplus;
+
+    if (playerSurplus <= playerDefecit) {
+      const teamOrTeams = playerSurplus > 1 ? 'teams' : 'team';
+      return `${playerSurplus} ${teamOrTeams} will have an extra player.`;
+    }
+
+    const teamOrTeams = playerDefecit > 1 ? 'teams' : 'team';
+    return `${playerDefecit} ${teamOrTeams} will be down a player.`;
+  });
 
   // *** Writable Signals ***
   readonly teams = linkedSignal(() => {
@@ -301,6 +391,8 @@ export default class EditEventTeamsPageComponent {
   );
   readonly pendingRequests = signal(0);
   readonly nextTempId = signal(-1);
+  readonly randomizerDialogVisible = signal(false);
+  readonly randomTeamCount = signal(1);
 
   // *** Event Handlers ***
   onTeamDrop(ev: CdkDragDrop<EventTeamWithParticipantInfo[]>): void {
@@ -516,6 +608,18 @@ export default class EditEventTeamsPageComponent {
           }),
       );
     }
+  }
+
+  async onRandomizeTeamsButtonClick(): Promise<void> {
+    this.pendingRequests.update((requests) => requests + 1);
+
+    await this.eventService.randomizeEventTeams(
+      this.event().id,
+      this.randomTeamCount(),
+    );
+
+    this.pendingRequests.update((requests) => requests - 1);
+    this.randomizerDialogVisible.set(false);
   }
 
   // *** Helper Methods ***

@@ -1,13 +1,9 @@
 @font-face {
   font-family: 'customicons';
   src:
-    url('/icons/customicons/Fonts/customicons.eot?1t4fp5'),
-    url('/icons/customicons/Fonts/customicons.eot?1t4fp5#iefix')
-      format('embedded-opentype'),
-    url('/icons/customicons/Fonts/customicons.ttf?1t4fp5') format('truetype'),
-    url('/icons/customicons/Fonts/customicons.woff?1t4fp5') format('woff'),
-    url('/icons/customicons/Fonts/customicons.svg?1t4fp5#customicons')
-      format('svg');
+    url('/icons/customicons/Fonts/customicons.woff2?2t4fp5') format('woff2'),
+    url('/icons/customicons/Fonts/customicons.ttf?2t4fp5') format('truetype'),
+    url('/icons/customicons/Fonts/customicons.woff?2t4fp5') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -53,4 +49,7 @@
 }
 .ci-wrench-fill:before {
   content: '\e907';
+}
+.ci-dice:before {
+  content: '\f000';
 }

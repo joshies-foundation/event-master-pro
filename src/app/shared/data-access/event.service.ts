@@ -284,6 +284,16 @@ export class EventService {
     });
   }
 
+  async randomizeEventTeams(
+    eventId: EventModel['id'],
+    teamCount: number,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.RandomizeEventTeams, {
+      p_event_id: eventId,
+      p_team_count: teamCount,
+    });
+  }
+
   async batchUpdateEventTeamSeeds(
     updates: Pick<EventTeamModel, 'id' | 'seed'>[],
   ): Promise<PostgrestSingleResponse<undefined>> {
