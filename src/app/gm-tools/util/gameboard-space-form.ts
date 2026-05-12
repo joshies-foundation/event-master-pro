@@ -172,7 +172,8 @@ export function gameboardSpaceFormFactory(
       {
         type: FormFieldType.Text,
         name: 'icon-class',
-        label: 'Icon Class (https://primeng.org/icons#list)',
+        label:
+          'Icon Class (<a href="https://primeng.org/icons#list" target="_blank" class="text-blue-500 underline">List of possible icons</a>)',
         placeholder: 'Eg: pi pi-bolt',
         control: gameboardSpaceFormGroup.controls.icon_class,
       },

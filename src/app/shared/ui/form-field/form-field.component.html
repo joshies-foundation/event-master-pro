@@ -1,4 +1,6 @@
 @if (field(); as field) {
+  @let fieldId = field.name | lowercase;
+
   <div
     class="flex gap-1"
     [ngClass]="
@@ -8,14 +10,14 @@
     "
   >
     @if (field.type !== FormFieldType.Submit) {
-      <label [for]="field.name | lowercase">{{ field.label }}</label>
+      <label [for]="fieldId" [innerHTML]="field.label"></label>
     }
 
     @switch (field.type) {
       @case (FormFieldType.Text) {
         <input
-          [id]="field.name | lowercase"
-          [name]="field.name | lowercase"
+          [id]="fieldId"
+          [name]="fieldId"
           [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           type="text"
@@ -26,8 +28,8 @@
       }
       @case (FormFieldType.Number) {
         <p-input-number
-          [inputId]="field.name | lowercase"
-          [name]="field.name | lowercase"
+          [inputId]="fieldId"
+          [name]="fieldId"
           [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           [showButtons]="field.showButtons ?? true"
@@ -78,7 +80,7 @@
       }
       @case (FormFieldType.Editor) {
         <p-editor
-          [id]="field.name | lowercase"
+          [id]="fieldId"
           [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           [formControl]="field.control"
@@ -175,8 +177,8 @@
       }
       @case (FormFieldType.TextArea) {
         <textarea
-          [id]="field.name | lowercase"
-          [name]="field.name | lowercase"
+          [id]="fieldId"
+          [name]="fieldId"
           [required]="field.required ?? false"
           [placeholder]="field.placeholder"
           type="text"
@@ -188,8 +190,8 @@
       }
       @case (FormFieldType.Checkbox) {
         <p-checkbox
-          [inputId]="field.name | lowercase"
-          [name]="field.name | lowercase"
+          [inputId]="fieldId"
+          [name]="fieldId"
           [required]="field.required ?? false"
           [formControl]="field.control"
           [ngClass]="field.styleClass"
