@@ -11,7 +11,6 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { SessionService } from '../../shared/data-access/session.service';
 import { TableModule } from 'primeng/table';
 import {
   GameboardSpaceEffect,
@@ -109,6 +108,17 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
                   }}
                 </p>
               }
+              @if (
+                player.gameboardSpace!.effect ===
+                GameboardSpaceEffect.ChancePoints
+              ) {
+                <p class="mt-1 text-sm text-neutral-500">
+                  {{
+                    (player.chancePointsAmount | loseOrGain | titlecase) +
+                      ' points'
+                  }}
+                </p>
+              }
             </td>
           </tr>
         </ng-template>
@@ -142,7 +152,6 @@ export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly router = inject(Router);
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
-  private readonly sessionService = inject(SessionService);
   private readonly gameboardService = inject(GameboardService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
@@ -169,6 +178,8 @@ export default class ReviewGameboardSpaceEntryPageComponent {
             this.playerSpaceChanges[player.player_id].gameboardSpaceId,
         ),
       decision: this.playerSpaceChanges[player.player_id].decision,
+      chancePointsAmount:
+        this.playerSpaceChanges[player.player_id].chancePointsAmount,
     })),
   );
 

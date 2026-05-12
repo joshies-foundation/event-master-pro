@@ -89,6 +89,9 @@ export class GameboardSpaceDescriptionPipe implements PipeTransform {
       case GameboardSpaceEffect.Bank:
         return `<p >Get all the points in the Bank</p>`;
 
+      case GameboardSpaceEffect.ChancePoints:
+        return `<p >Gain or lose a random number of points</p>`;
+
       default:
         return `Unknown gameboard_space_effect: "${(gameboardSpace as { effect: string }).effect}"`;
     }
