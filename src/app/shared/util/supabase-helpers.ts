@@ -67,6 +67,7 @@ export enum Function {
   UpdateEventTeamSeeds = 'update_event_team_seeds',
   DeleteEventTeamAndUpdateSeeds = 'delete_event_team_and_update_seeds',
   SubmitEventScores = 'submit_event_scores',
+  RandomizeEventTeams = 'randomize_event_teams',
 }
 
 export enum EdgeFunction {

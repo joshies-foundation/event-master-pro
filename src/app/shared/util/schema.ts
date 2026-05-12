@@ -1270,6 +1270,10 @@ export type Database = {
         Args: { add_lost_points_to_bank_balance: boolean; data: Json };
         Returns: undefined;
       };
+      randomize_event_teams: {
+        Args: { p_event_id: number; p_team_count: number };
+        Returns: undefined;
+      };
       reorder_events: {
         Args: { events_with_new_round_number: Json };
         Returns: undefined;
