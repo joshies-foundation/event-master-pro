@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
-import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
 import { editChaosSpaceEventTemplateResolver } from '../data-access/edit-chaos-space-event-template.resolver';
 import { editEventResolver } from '../data-access/edit-event.resolver';
-import { editSessionResolver } from '../data-access/edit-session.resolver';
 import { editGameStateResolver } from '../data-access/edit-game-state.resolver';
+import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
+import { editSessionResolver } from '../data-access/edit-session.resolver';
+import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
 
 const gmToolsRoutes: Routes = [
   {
@@ -234,7 +234,7 @@ const gmToolsRoutes: Routes = [
     path: 'events/teams/:eventId',
     loadComponent: () => import('./edit-event-teams-page.component'),
     data: { pageAnimationLayer: 2 },
-    resolve: { originalEvent: editEventResolver },
+    resolve: { event: editEventResolver },
   },
   {
     path: 'override-bank-balance',

@@ -7,6 +7,11 @@ export type Json =
   | Json[];
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: '12.2.3 (519615d)';
+  };
   public: {
     Tables: {
       bet: {
@@ -102,9 +107,16 @@ export type Database = {
           {
             foreignKeyName: 'bracket_event_id_fkey';
             columns: ['event_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'event';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bracket_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: true;
+            referencedRelation: 'event_team_with_player_info';
+            referencedColumns: ['event_id'];
           },
         ];
       };
@@ -408,6 +420,13 @@ export type Database = {
             referencedRelation: 'event_team';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'event_participant_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team_with_player_info';
+            referencedColumns: ['team_id'];
+          },
         ];
       };
       event_team: {
@@ -443,6 +462,13 @@ export type Database = {
             referencedRelation: 'event';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'event_team_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team_with_player_info';
+            referencedColumns: ['event_id'];
+          },
         ];
       };
       event_team_round_score: {
@@ -477,6 +503,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'event_team';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'event_team_round_score_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team_with_player_info';
+            referencedColumns: ['team_id'];
           },
         ];
       };
@@ -883,6 +916,105 @@ export type Database = {
           },
         ];
       };
+      tournament_match: {
+        Row: {
+          created_at: string;
+          event_id: number;
+          id: number;
+          predecessor_match1_id: number | null;
+          predecessor_match2_id: number | null;
+          team1_id: number | null;
+          team2_id: number | null;
+          updated_at: string;
+          use_match1_winner: boolean;
+          use_match2_winner: boolean;
+          winning_team_id: number | null;
+        };
+        Insert: {
+          created_at: string;
+          event_id: number;
+          id?: number;
+          predecessor_match1_id?: number | null;
+          predecessor_match2_id?: number | null;
+          team1_id?: number | null;
+          team2_id?: number | null;
+          updated_at: string;
+          use_match1_winner: boolean;
+          use_match2_winner: boolean;
+          winning_team_id?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: number;
+          id?: number;
+          predecessor_match1_id?: number | null;
+          predecessor_match2_id?: number | null;
+          team1_id?: number | null;
+          team2_id?: number | null;
+          updated_at?: string;
+          use_match1_winner?: boolean;
+          use_match2_winner?: boolean;
+          winning_team_id?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'tournament_match_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'event';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tournament_match_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team_with_player_info';
+            referencedColumns: ['event_id'];
+          },
+          {
+            foreignKeyName: 'tournament_match_predecessor_match1_id_fkey';
+            columns: ['predecessor_match1_id'];
+            isOneToOne: false;
+            referencedRelation: 'tournament_match';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tournament_match_predecessor_match2_id_fkey';
+            columns: ['predecessor_match2_id'];
+            isOneToOne: false;
+            referencedRelation: 'tournament_match';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tournament_match_team1_id_fkey';
+            columns: ['team1_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tournament_match_team1_id_fkey';
+            columns: ['team1_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team_with_player_info';
+            referencedColumns: ['team_id'];
+          },
+          {
+            foreignKeyName: 'tournament_match_team2_id_fkey';
+            columns: ['team2_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tournament_match_team2_id_fkey';
+            columns: ['team2_id'];
+            isOneToOne: false;
+            referencedRelation: 'event_team_with_player_info';
+            referencedColumns: ['team_id'];
+          },
+        ];
+      };
       transaction: {
         Row: {
           created_at: string;
@@ -955,15 +1087,7 @@ export type Database = {
           squidward_mode?: boolean;
           updated_at?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: 'user_id_fkey';
-            columns: ['id'];
-            isOneToOne: true;
-            referencedRelation: 'users';
-            referencedColumns: ['id'];
-          },
-        ];
+        Relationships: [];
       };
       user_notifications_subscription: {
         Row: {
@@ -999,6 +1123,16 @@ export type Database = {
       };
     };
     Views: {
+      event_team_with_player_info: {
+        Row: {
+          avatar_url: string | null;
+          display_name: string | null;
+          event_id: number | null;
+          seed: number | null;
+          team_id: number | null;
+        };
+        Relationships: [];
+      };
       lifetime_user_stats: {
         Row: {
           avatar_url: string | null;
@@ -1072,174 +1206,113 @@ export type Database = {
     };
     Functions: {
       bulk_cancel_bets: {
-        Args: {
-          player_id: number;
-          includeactive: boolean;
-        };
+        Args: { includeactive: boolean; player_id: number };
         Returns: undefined;
       };
       create_session: {
         Args: {
-          session_name: string;
-          session_start_date: string;
-          session_end_date: string;
           num_rounds: number;
           player_user_ids: string[];
+          session_end_date: string;
+          session_name: string;
+          session_start_date: string;
         };
+        Returns: undefined;
+      };
+      delete_event_team_and_update_seeds: {
+        Args: { seed_updates: Json; team_id: number };
         Returns: undefined;
       };
       delete_gameboard_space: {
-        Args: {
-          v_gameboard_space_id: number;
-        };
+        Args: { v_gameboard_space_id: number };
         Returns: undefined;
       };
       end_round: {
-        Args: {
-          _round_number: number;
-          team_score_changes: Json;
-        };
+        Args: { _round_number: number; team_score_changes: Json };
         Returns: undefined;
       };
       get_all_scores_from_session: {
-        Args: {
-          sessionid: number;
-        };
+        Args: { sessionid: number };
         Returns: Record<string, unknown>[];
       };
       get_duel_history_for_session: {
-        Args: {
-          sessionid: number;
-        };
+        Args: { sessionid: number };
         Returns: Json[];
       };
       get_player_duel_stats_for_session: {
-        Args: {
-          sessionid: number;
-        };
+        Args: { sessionid: number };
         Returns: Json[];
       };
       get_player_round_scores_from_session: {
-        Args: {
-          sessionid: number;
-        };
+        Args: { sessionid: number };
         Returns: {
-          player_id: number;
-          display_name: string;
           avatar_url: string;
+          display_name: string;
+          player_id: number;
           scores: number[];
         }[];
       };
       get_roll_history_for_session: {
-        Args: {
-          sessionid: number;
-        };
+        Args: { sessionid: number };
         Returns: Json[];
       };
       get_space_stats_for_session: {
-        Args: {
-          sessionid: number;
-        };
+        Args: { sessionid: number };
         Returns: Record<string, unknown>[];
       };
+      hello_world: { Args: never; Returns: string };
       log_round_moves: {
-        Args: {
-          playermoves: Json;
-          roundnumber: number;
-        };
+        Args: { playermoves: Json; roundnumber: number };
         Returns: undefined;
       };
-      override_bank_balance: {
-        Args: {
-          data: Json;
-        };
-        Returns: undefined;
-      };
+      override_bank_balance: { Args: { data: Json }; Returns: undefined };
       override_points: {
-        Args: {
-          data: Json;
-          add_lost_points_to_bank_balance: boolean;
-        };
+        Args: { add_lost_points_to_bank_balance: boolean; data: Json };
         Returns: undefined;
       };
       reorder_events: {
-        Args: {
-          events_with_new_round_number: Json;
-        };
+        Args: { events_with_new_round_number: Json };
         Returns: undefined;
       };
-      start_session_early: {
-        Args: {
-          now: string;
-        };
-        Returns: undefined;
-      };
-      submit_bet_accepted: {
-        Args: {
-          bet_id: number;
-        };
-        Returns: undefined;
-      };
+      start_session_early: { Args: { now: string }; Returns: undefined };
+      submit_bet_accepted: { Args: { bet_id: number }; Returns: undefined };
       submit_bet_canceled_by_gm: {
-        Args: {
-          bet_id: number;
-        };
+        Args: { bet_id: number };
         Returns: undefined;
       };
-      submit_bet_opponent_won: {
-        Args: {
-          bet_id: number;
-        };
-        Returns: undefined;
-      };
-      submit_bet_push: {
-        Args: {
-          bet_id: number;
-        };
-        Returns: undefined;
-      };
+      submit_bet_opponent_won: { Args: { bet_id: number }; Returns: undefined };
+      submit_bet_push: { Args: { bet_id: number }; Returns: undefined };
       submit_bet_requester_won: {
-        Args: {
-          bet_id: number;
-        };
+        Args: { bet_id: number };
         Returns: undefined;
       };
       submit_duel_results: {
         Args: {
-          duel_id: number;
           challenger_won: boolean;
+          duel_id: number;
           player_score_changes: Json;
         };
         Returns: undefined;
       };
-      submit_event_scores: {
-        Args: {
-          team_scores: Json;
-        };
-        Returns: undefined;
-      };
+      submit_event_scores: { Args: { team_scores: Json }; Returns: undefined };
       submit_space_event_player_score_changes: {
         Args: {
-          space_event_id: number;
-          space_event_template_id: number;
-          player_score_changes: Json;
+          add_lost_points_to_bank_balance?: boolean;
           event_description: string;
           is_chaos_space_event: boolean;
-          add_lost_points_to_bank_balance?: boolean;
+          player_score_changes: Json;
+          space_event_id: number;
+          space_event_template_id: number;
         };
         Returns: undefined;
       };
       submit_special_space_event_score: {
-        Args: {
-          special_space_event_id: number;
-          score: number;
-        };
+        Args: { score: number; special_space_event_id: number };
         Returns: undefined;
       };
+      update_event_team_seeds: { Args: { updates: Json }; Returns: undefined };
       update_event_teams: {
-        Args: {
-          event_team_updates: Json;
-        };
+        Args: { event_team_updates: Json };
         Returns: undefined;
       };
     };
@@ -1315,27 +1388,36 @@ export type Database = {
   };
 };
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>];
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+  keyof Database,
+  'public'
+>];
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-        Database[PublicTableNameOrOptions['schema']]['Views'])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R;
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
-        PublicSchema['Views'])
-    ? (PublicSchema['Tables'] &
-        PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -1343,20 +1425,24 @@ export type Tables<
     : never;
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I;
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I;
       }
       ? I
@@ -1364,20 +1450,24 @@ export type TablesInsert<
     : never;
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U;
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U;
       }
       ? U
@@ -1385,14 +1475,116 @@ export type TablesUpdate<
     : never;
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema['Enums']
-    | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema['Enums']
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never;
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema['CompositeTypes']
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+    : never;
+
+export const Constants = {
+  public: {
+    Enums: {
+      bet_status: [
+        'pending_acceptance',
+        'canceled_by_requester',
+        'canceled_by_gm',
+        'rejected',
+        'active',
+        'requester_won',
+        'opponent_won',
+        'push',
+      ],
+      bet_subtype: [
+        'player_loses',
+        'number_of_losers',
+        'team_position',
+        'score',
+      ],
+      bet_type: [
+        'duel',
+        'special_space_event',
+        'chaos_space_event',
+        'custom',
+        'main_event',
+        'gameboard_move',
+      ],
+      chaos_space_event_type: [
+        'everyone_gains_points_based_on_rank',
+        'everyone_loses_percentage_of_their_points',
+        'everyone_loses_percentage_of_their_points_based_on_task_failure',
+        'point_swap',
+      ],
+      duel_status: [
+        'opponent_not_selected',
+        'wager_not_selected',
+        'game_not_selected',
+        'waiting_to_begin',
+        'in_progress',
+        'challenger_won',
+        'opponent_won',
+        'canceled',
+      ],
+      event_format: [
+        'single_elimination_tournament',
+        'double_elimination_tournament',
+        'score_based_single_round',
+      ],
+      gameboard_space_effect: [
+        'gain_points',
+        'gain_points_or_do_activity',
+        'special',
+        'duel',
+        'chaos',
+        'bank',
+        'chance_points',
+      ],
+      round_phase: [
+        'gameboard_moves',
+        'special_space_events',
+        'duels',
+        'chaos_space_events',
+        'event',
+        'waiting_for_next_round',
+      ],
+      session_status: ['not_started', 'in_progress', 'finished'],
+      space_event_status: [
+        'event_not_selected',
+        'waiting_to_begin',
+        'in_progress',
+        'finished',
+        'canceled',
+      ],
+      special_space_event_type: [
+        'player_gains_points_based_on_game_score',
+        'everyone_gains_points_based_on_rank',
+      ],
+    },
+  },
+} as const;

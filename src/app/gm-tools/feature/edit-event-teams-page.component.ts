@@ -1,604 +1,555 @@
 import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  numberAttribute,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { EventModel, EventTeamModel } from '../../shared/util/supabase-types';
-import {
-  EventParticipantWithPlayerInfo,
-  EventService,
-  EventTeamUpdateModel,
-  EventTeamWithParticipantInfo,
-} from '../../shared/data-access/event.service';
-import { SkeletonModule } from 'primeng/skeleton';
-import { PlayerService } from '../../shared/data-access/player.service';
-import {
   CdkDrag,
   CdkDragDrop,
   CdkDragHandle,
   CdkDragPlaceholder,
   CdkDropList,
+  CdkDropListGroup,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { AvatarModule } from 'primeng/avatar';
-import { AvatarGroupModule } from 'primeng/avatargroup';
 import { NgOptimizedImage } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { confirmBackendAction } from '../../shared/util/dialog-helpers';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import {
+  EventParticipantWithPlayerInfo,
+  EventService,
+  EventTeamWithParticipantInfo,
+} from '../../shared/data-access/event.service';
+import { PlayerService } from '../../shared/data-access/player.service';
+import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import {
+  confirmBackendAction,
+  LocalErrorResponse,
+} from '../../shared/util/dialog-helpers';
+import { teamsWithParticipantInfo } from '../../shared/util/event-helpers';
+import { EventModel, EventTeamModel } from '../../shared/util/supabase-types';
 
-enum DropListIds {
-  UnassignedTeam = 'unassigned-team',
-  NewTeam = 'new-team',
-}
-
-enum TeamIds {
-  UnassignedTeam = -1,
-  NewTeam = -2,
-}
+const dropListIdPrefix = 'drop-list-';
+const unassignedPlayerDropListId = `${dropListIdPrefix}unassigned`;
 
 @Component({
   selector: 'joshies-edit-event-teams-page',
-  template: `
-    <joshies-page-header [headerText]="headerText()" alwaysSmall>
-      <div class="flex w-full items-center justify-between">
-        <joshies-header-link
-          text="Events"
-          routerLink="../.."
-          chevronDirection="left"
-        />
-
-        <!-- Save Changes Button-->
-        @if (unsavedChangesExist()) {
-          <p-button
-            [text]="true"
-            (onClick)="
-              saveChanges(
-                this.localSortedEventTeams(),
-                this.databaseEventTeams(),
-                this.localEventParticipants(),
-                this.databaseEventParticipants(),
-                this.eventId()
-              )
-            "
-          >
-            <i class="pi pi-save text-xl text-primary"></i>
-          </p-button>
-        }
-      </div>
-    </joshies-page-header>
-
-    @if (!submitting() && eventTeamsWithParticipantInfo(); as teams) {
-      <!-- Unassigned players -->
-      <p class="mt-4 mb-1">Unassigned Players</p>
-      <div
-        class="relative flex flex-wrap rounded-md border border-neutral-200 bg-neutral-50"
-        style="min-height: 3.2rem;"
-        [id]="DropListIds.UnassignedTeam"
-        cdkDropList
-        [cdkDropListConnectedTo]="dropListIds()"
-        [cdkDropListData]="teams[0]"
-        (cdkDropListDropped)="onEventParticipantDrop($event)"
-      >
-        @for (
-          participant of teams[0].participants;
-          track participant.participant_id;
-          let first = $first
-        ) {
-          <div
-            class="m-1 flex rounded-md bg-neutral-200 p-2"
-            cdkDrag
-            [cdkDragData]="participant"
-            [cdkDragDisabled]="!userIsGameMaster()"
-          >
-            <img
-              [ngSrc]="participant.avatar_url"
-              alt=""
-              width="24"
-              height="24"
-              class="mr-1 size-6 self-center rounded-full bg-neutral-100"
-            />
-            <span class="self-center">
-              {{ participant.display_name }}
-            </span>
-            <div
-              class="absolute top-0 left-0 h-full w-full rounded-md bg-neutral-300"
-              *cdkDragPlaceholder
-            ></div>
-          </div>
-        } @empty {
-          <p class="ml-2 self-center text-neutral-400">
-            Drag players here to remove them from a team
-          </p>
-        }
-      </div>
-
-      <!-- Event Teams -->
-      <p class="mt-4">Teams</p>
-
-      <!-- Drop List for Reordering Teams -->
-      <div cdkDropList (cdkDropListDropped)="onEventTeamDrop($event)">
-        @for (
-          team of teams;
-          track team.id;
-          let index = $index, first = $first, last = $last
-        ) {
-          @if (!(first || last)) {
-            <div class="draggable-event-team flex" cdkDrag>
-              @if (userIsGameMaster()) {
-                <div class="flex" cdkDragHandle>
-                  <i
-                    class="pi pi-bars self-center pr-4 pl-2 text-neutral-300"
-                  ></i>
-                </div>
-              }
-
-              <!-- Drop List for Adding/Removing Players from Teams -->
-              <div
-                class="relative my-2 flex grow rounded-md border border-neutral-200 bg-neutral-50"
-                style="min-height: 3.2rem;"
-                [id]="team.id!.toString()"
-                cdkDropList
-                [cdkDropListConnectedTo]="dropListIds()"
-                [cdkDropListData]="team"
-                (cdkDropListDropped)="onEventParticipantDrop($event)"
-              >
-                <p class="self-center px-2 text-sm text-neutral-400">
-                  {{ index }}
-                </p>
-                <div class="flex flex-wrap">
-                  @for (
-                    participant of team.participants;
-                    track participant.participant_id;
-                    let first = $first
-                  ) {
-                    <div
-                      class="m-1 flex rounded-md bg-neutral-200 p-2"
-                      cdkDrag
-                      [cdkDragData]="participant"
-                    >
-                      <img
-                        [ngSrc]="participant.avatar_url"
-                        alt=""
-                        width="24"
-                        height="24"
-                        class="mr-1 size-6 rounded-full bg-neutral-100"
-                      />
-                      <span class="self-center">
-                        {{ participant.display_name }}
-                      </span>
-                      <div
-                        class="absolute top-0 left-0 h-full w-full rounded-md bg-neutral-300"
-                        *cdkDragPlaceholder
-                      ></div>
-                    </div>
-                  } @empty {
-                    <p class="text-neutral-400 italic">
-                      Oops, I shouldn't be here...
-                    </p>
-                  }
-                </div>
-              </div>
-              <div
-                class="draggable-event-team h-12 w-full bg-neutral-200"
-                *cdkDragPlaceholder
-              ></div>
-            </div>
-          }
-        }
-        <div
-          class="relative mt-2 flex rounded-md border border-neutral-200 bg-neutral-50"
-          style="min-height: 3.2rem;"
-          [id]="DropListIds.NewTeam"
-          cdkDropList
-          [cdkDropListConnectedTo]="dropListIds()"
-          [cdkDropListData]="teams[teams.length - 1]"
-          (cdkDropListDropped)="onEventParticipantDrop($event)"
-        >
-          <p class="ml-2 self-center text-neutral-400">
-            Drag players here to create a new team
-          </p>
-        </div>
-      </div>
-    } @else if (databaseEventTeams === null) {
-      <p class="mt-12 pt-12 text-center text-neutral-500 italic">
-        No active session
-      </p>
-    } @else {
-      <p-skeleton height="5rem" class="mt-8 mb-2" />
-      <p-skeleton height="5rem" class="mb-2" />
-      <p-skeleton height="5rem" class="mb-2" />
-      <p-skeleton height="5rem" class="mb-2" />
-      <p-skeleton height="5rem" />
-    }
-  `,
-  styles: `
-    .cdk-drag:not(.cdk-drag-preview, .draggable-event-team) {
-      transform: none !important;
-    }
-
-    .cdk-drag-placeholder:not(.draggable-event-team) {
-      transform: none !important;
-      opacity: 0.5;
-    }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
-    SkeletonModule,
+    ButtonModule,
+    NgOptimizedImage,
     CdkDropList,
     CdkDrag,
     CdkDragHandle,
     CdkDragPlaceholder,
-    AvatarModule,
-    AvatarGroupModule,
-    NgOptimizedImage,
-    ButtonModule,
+    CdkDropListGroup,
   ],
+  template: `
+    <joshies-page-header [headerText]="headerText()" alwaysSmall>
+      <joshies-header-link
+        text="Events"
+        routerLink="/gm-tools/events"
+        chevronDirection="left"
+      />
+    </joshies-page-header>
+
+    <div class="mt-5 flex flex-col gap-5">
+      <!-- Unassigned players -->
+      <div class="flex flex-col gap-2">
+        <h2>Unassigned Players</h2>
+
+        <div
+          cdkDropList
+          [cdkDropListConnectedTo]="dropListIds()"
+          [id]="unassignedPlayerDropListId"
+          [cdkDropListData]="undefined"
+          class="relative flex min-h-[3.2rem] flex-wrap rounded-md border border-neutral-200 bg-neutral-50"
+          (cdkDropListDropped)="onParticipantDrop($event)"
+        >
+          @if (unassignedPlayers().length) {
+            @for (player of unassignedPlayers(); track player.player_id) {
+              <div
+                cdkDrag
+                [cdkDragData]="player"
+                [cdkDragDisabled]="pendingRequests() > 0"
+                class="transform-none-unless-preview m-1 flex items-center rounded-md bg-neutral-200 p-2"
+              >
+                <img
+                  [ngSrc]="player.avatar_url"
+                  alt=""
+                  width="24"
+                  height="24"
+                  class="mr-1 size-6 rounded-full bg-neutral-100"
+                />
+                <span>{{ player.display_name }}</span>
+                <div
+                  class="absolute top-0 left-0 h-full w-full !transform-none rounded-md bg-neutral-300 opacity-50"
+                  *cdkDragPlaceholder
+                ></div>
+              </div>
+            }
+          } @else {
+            <p class="self-center px-2 text-sm text-neutral-400 italic">
+              Drop players here to remove from a team
+            </p>
+          }
+        </div>
+      </div>
+
+      <!-- Event Teams -->
+      <div
+        cdkDropList
+        class="flex flex-col gap-2"
+        (cdkDropListDropped)="onTeamDrop($event)"
+      >
+        <div class="flex items-end justify-between">
+          <h2>Teams</h2>
+          @if (userIsGameMaster()) {
+            <button
+              pButton
+              outlined
+              icon="pi pi-plus"
+              [disabled]="pendingRequests() > 0"
+              (click)="onAddTeamButtonClick()"
+            >
+              Add Team
+            </button>
+          }
+        </div>
+
+        @for (team of teamsWithParticipantInfo(); track team.id) {
+          <div
+            cdkDrag
+            cdkDropListGroup
+            [cdkDragDisabled]="!userIsGameMaster() || pendingRequests() > 0"
+            class="flex gap-2"
+          >
+            <!-- Team drag handle -->
+            @if (userIsGameMaster()) {
+              <i
+                cdkDragHandle
+                class="pi pi-bars flex-none self-center p-2 text-neutral-400"
+              ></i>
+            }
+
+            <!-- Team drop list -->
+            <div
+              cdkDropList
+              [cdkDropListConnectedTo]="dropListIds()"
+              [cdkDropListData]="team"
+              [id]="dropListIdByTeamId()[team.id]"
+              class="relative flex min-h-[3.2rem] grow rounded-md border border-neutral-200 bg-neutral-50"
+              (cdkDropListDropped)="onParticipantDrop($event)"
+            >
+              <p class="self-center px-2 text-sm text-neutral-400">
+                {{ team.seed ?? '[?]' }}
+              </p>
+              <div class="flex flex-wrap gap-1 p-1">
+                @for (
+                  participant of team.participants;
+                  track participant.participant_id
+                ) {
+                  <div
+                    cdkDrag
+                    [cdkDragData]="participant"
+                    [cdkDragDisabled]="
+                      !userIsGameMaster() || pendingRequests() > 0
+                    "
+                    class="transform-none-unless-preview flex items-center gap-2 rounded-md bg-neutral-200 p-2"
+                  >
+                    <img
+                      [ngSrc]="participant.avatar_url"
+                      alt=""
+                      width="24"
+                      height="24"
+                      class="size-6 rounded-full"
+                    />
+                    <span>{{ participant.display_name }}</span>
+                    @if (userIsGameMaster()) {
+                      <button
+                        pButton
+                        class="size-6 w-auto p-0 text-neutral-500"
+                        text
+                        icon="pi pi-times-circle"
+                        (click)="onDeleteParticipantButtonClick(participant)"
+                      ></button>
+                    }
+                    <div
+                      class="absolute top-0 left-0 h-full w-full !transform-none rounded-md bg-neutral-300 opacity-50"
+                      *cdkDragPlaceholder
+                    ></div>
+                  </div>
+                } @empty {
+                  <p class="self-center px-2 text-sm text-neutral-400 italic">
+                    Drop players here to add to this team
+                  </p>
+                }
+              </div>
+            </div>
+
+            <!-- Delete team button -->
+            @if (userIsGameMaster()) {
+              <button
+                pButton
+                class="flex-none"
+                icon="pi pi-trash"
+                text
+                [disabled]="pendingRequests() > 0"
+                (click)="onDeleteTeamButtonClick(team.id)"
+              ></button>
+            }
+
+            <div *cdkDragPlaceholder class="h-[3.2rem] bg-neutral-50"></div>
+          </div>
+        } @empty {
+          <p class="px-4 py-4 text-center text-neutral-400 italic">
+            Click
+            <button
+              pButton
+              outlined
+              severity="secondary"
+              class="mx-1 mb-1 border-neutral-400 p-[0.4rem]"
+              icon="pi pi-plus"
+              [disabled]="pendingRequests() > 0"
+              (click)="onAddTeamButtonClick()"
+            >
+              Add Team
+            </button>
+            to add your first team.
+          </p>
+        }
+      </div>
+    </div>
+  `,
+  styles: `
+    /* Avoid layout shift issues in default drag/drop */
+    .transform-none-unless-preview:not(.cdk-drag-preview) {
+      transform: none !important;
+    }
+
+    /* Elevate the drag preview with a shadow so it floats above the list */
+    ::ng-deep .cdk-drag-preview {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+    }
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EditEventTeamsPageComponent {
-  private readonly eventService = inject(EventService);
+  // *** Injected Dependencies ***
   private readonly playerService = inject(PlayerService);
-  private readonly messageService = inject(MessageService);
+  private readonly eventService = inject(EventService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly messageService = inject(MessageService);
 
-  private readonly players = this.playerService.players;
+  // *** State ***
   readonly userIsGameMaster = this.playerService.userIsGameMaster;
+  readonly players = this.playerService.players;
 
-  readonly eventId: Signal<number> = input(0, {
-    transform: numberAttribute,
-  }); // route param
+  // *** Inputs ***
+  readonly event = input.required<EventModel>(); // from route resolver
 
-  readonly originalEvent: Signal<EventModel | null> = input.required(); // route resolve data
-
-  // make the DropListIds enum available in component template
-  readonly DropListIds = DropListIds;
-
-  readonly headerText = computed(
-    () => `Edit ${this.originalEvent()?.name ?? ''} Teams`,
+  // *** Computed Signals ***
+  readonly headerText = computed(() => `Edit ${this.event().name} Teams`);
+  readonly teamsWithParticipantInfo = computed(() =>
+    teamsWithParticipantInfo(this.teams(), this.participants()),
   );
-
-  readonly submitting = signal(false);
-
-  private readonly newTeamTemplate = computed(() => ({
-    created_at: '',
-    event_id: this.eventId(),
-    name: '',
-    updated_at: '',
-  }));
-
-  readonly databaseEventTeams: Signal<EventTeamModel[] | undefined> = computed(
+  readonly assignedPlayerIdSet = computed(
     () =>
+      new Set(this.participants().map((participant) => participant.player_id)),
+  );
+  readonly unassignedPlayers = computed(
+    () =>
+      this.players()?.filter(
+        (player) => !this.assignedPlayerIdSet().has(player.player_id),
+      ) ?? [],
+  );
+  readonly dropListIdByTeamId = computed(() =>
+    this.teams().reduce(
+      (prev, team) => ({ ...prev, [team.id]: `${dropListIdPrefix}${team.id}` }),
+      {} as Record<EventTeamModel['id'], string>,
+    ),
+  );
+  readonly dropListIds = computed(() => [
+    unassignedPlayerDropListId,
+    ...Object.values(this.dropListIdByTeamId()),
+  ]);
+
+  // *** Writable Signals ***
+  readonly teams = linkedSignal(() => {
+    const unsortedTeams =
       this.eventService
         .eventTeams()
-        ?.filter((eventTeam) => eventTeam.event_id === this.eventId())
-        ?.sort((a, b) => (a.seed ?? 0) - (b.seed ?? 0)),
-  );
-
-  readonly localSortedEventTeams: WritableSignal<EventTeamModel[] | undefined> =
-    signal(structuredClone(this.databaseEventTeams()));
-
-  readonly databaseEventParticipants: Signal<
-    EventParticipantWithPlayerInfo[] | undefined
-  > = computed(() =>
-    this.eventService
-      .eventParticipantsWithPlayerInfo()
-      ?.filter((eventParticipant) =>
-        this.databaseEventTeams()
-          ?.map((eventTeam) => eventTeam.id)
-          .includes(eventParticipant.team_id),
-      ),
-  );
-
-  readonly localEventParticipants: WritableSignal<
-    EventParticipantWithPlayerInfo[] | undefined
-  > = signal([
-    ...(this.players()
-      ?.filter(
-        (player) =>
-          !this.databaseEventParticipants()
-            ?.map((eventParticipant) => eventParticipant.player_id)
-            .includes(player.player_id),
-      )
-      .map(
-        (player) =>
-          ({
-            participant_id: -player.player_id,
-            team_id: TeamIds.UnassignedTeam,
-            player_id: player.player_id,
-            display_name: player.display_name,
-            avatar_url: player.avatar_url,
-          }) as EventParticipantWithPlayerInfo,
-      ) ?? ([] as EventParticipantWithPlayerInfo[])),
-    ...(structuredClone(this.databaseEventParticipants()) ??
-      ([] as EventParticipantWithPlayerInfo[])),
-  ]);
-
-  readonly eventTeamsWithParticipantInfo = computed(() => [
-    // include a "team" for unassigned players so the container type matches for drag/drop
-    {
-      ...this.newTeamTemplate(),
-      id: TeamIds.UnassignedTeam,
-      participants: this.localEventParticipants()?.filter(
-        (eventParticipant) =>
-          eventParticipant.team_id === TeamIds.UnassignedTeam,
-      ),
-    } as EventTeamWithParticipantInfo,
-
-    ...(this.localSortedEventTeams()?.map((eventTeam) => ({
-      ...eventTeam,
-      participants: this.localEventParticipants()?.filter(
-        (eventParticipant) => eventParticipant.team_id === eventTeam.id,
-      ),
-    })) ?? []),
-
-    // include a "new team" so the container type matches for drag/drop
-    {
-      ...this.newTeamTemplate(),
-      id: TeamIds.NewTeam,
-    } as EventTeamWithParticipantInfo,
-  ]);
-
-  readonly dropListIds = computed(() => [
-    ...Object.values(this.DropListIds),
-    ...(this.eventTeamsWithParticipantInfo()
-      ?.filter((eventTeam) => eventTeam.id > 0)
-      .map((eventTeam) => eventTeam.id.toString()) ?? []),
-  ]);
-
-  private readonly updateLocalEventTeamsArrayOnDatabaseUpdates = effect(() =>
-    this.localSortedEventTeams.set(structuredClone(this.databaseEventTeams())),
-  );
-
-  private readonly updateLocalEventParticipantsArrayOnDatabaseUpdates = effect(
-    () =>
-      this.localEventParticipants.set([
-        ...(this.players()
-          ?.filter(
-            (player) =>
-              !structuredClone(this.databaseEventParticipants())
-                ?.map((eventParticipant) => eventParticipant.player_id)
-                .includes(player.player_id),
-          )
-          .map(
-            (player) =>
-              ({
-                participant_id: -player.player_id,
-                team_id: TeamIds.UnassignedTeam,
-                player_id: player.player_id,
-                display_name: player.display_name,
-                avatar_url: player.avatar_url,
-              }) as EventParticipantWithPlayerInfo,
-          ) ?? ([] as EventParticipantWithPlayerInfo[])),
-        ...(structuredClone(this.databaseEventParticipants()) ??
-          ([] as EventParticipantWithPlayerInfo[])),
-      ]),
-  );
-
-  readonly unsavedChangesExist = computed(() => {
-    const eventParticipantsWithoutUnassigned =
-      this.localEventParticipants()?.filter(
-        (localEventParticipant) =>
-          localEventParticipant.team_id !== TeamIds.UnassignedTeam,
-      );
-
-    if (
-      eventParticipantsWithoutUnassigned?.length !==
-        this.databaseEventParticipants()?.length ||
-      eventParticipantsWithoutUnassigned?.some(
-        (localEventParticipant) =>
-          localEventParticipant.team_id !==
-          this.databaseEventParticipants()?.find(
-            (dbEventParticipant) =>
-              dbEventParticipant.participant_id ===
-              localEventParticipant?.participant_id,
-          )?.team_id,
-      )
-    ) {
-      return true;
-    }
-
-    if (
-      this.localSortedEventTeams()?.length !==
-        this.databaseEventTeams()?.length ||
-      this.localSortedEventTeams()?.some(
-        (localEventTeam, index) => localEventTeam.seed !== index + 1,
-      )
-    ) {
-      return true;
-    }
-
-    return false;
+        ?.filter((team) => team.event_id === this.event().id) ?? [];
+    return unsortedTeams.sort(
+      (team1, team2) => (team1.seed ?? 0) - (team2.seed ?? 0),
+    );
   });
-
-  private readonly nextAvailableTeamId = computed(() =>
-    this.localSortedEventTeams()?.length
-      ? Math.max(
-          ...this.localSortedEventTeams()!.map((eventTeam) => eventTeam.id),
-        ) + 1
-      : 1,
+  readonly participants = linkedSignal(
+    () =>
+      this.eventService
+        .eventParticipantsWithPlayerInfo()
+        ?.filter((participant) =>
+          this.teams().some((team) => team.id === participant.team_id),
+        ) ?? [],
   );
+  readonly pendingRequests = signal(0);
+  readonly nextTempId = signal(-1);
 
-  onEventTeamDrop(
-    drop: CdkDragDrop<EventTeamWithParticipantInfo[] | undefined>,
-  ): void {
-    this.localSortedEventTeams.update((eventTeams) => {
-      moveItemInArray(eventTeams!, drop.previousIndex, drop.currentIndex);
-      return [...eventTeams!];
+  // *** Event Handlers ***
+  onTeamDrop(ev: CdkDragDrop<EventTeamWithParticipantInfo[]>): void {
+    if (ev.previousIndex === ev.currentIndex) return;
+
+    const previousTeams = this.teams();
+
+    this.teams.update((teams) => {
+      const reordered = [...teams];
+      moveItemInArray(reordered, ev.previousIndex, ev.currentIndex);
+      return reordered.map((team, index) => ({ ...team, seed: index + 1 }));
     });
+
+    this.trackRequest(() =>
+      this.eventService
+        .batchUpdateEventTeamSeeds(
+          this.teams().map((team) => ({ id: team.id, seed: team.seed! })),
+        )
+        .then(({ error }) => {
+          if (error) {
+            this.teams.set(previousTeams);
+          }
+        }),
+    );
   }
 
-  onEventParticipantDrop(
-    drop: CdkDragDrop<EventTeamWithParticipantInfo>,
-  ): void {
-    if (drop.previousContainer.data.id === drop.container.data.id) {
-      return;
-    }
+  onAddTeamButtonClick(): void {
+    const tempId = this.consumeTempId();
 
-    let newTeamId = drop.container.data.id;
-
-    this.localSortedEventTeams.update((eventTeams) => {
-      if (newTeamId === TeamIds.NewTeam) {
-        newTeamId = this.nextAvailableTeamId();
-        eventTeams!.push({
-          ...this.newTeamTemplate(),
-          seed: 0,
-          id: newTeamId,
-        });
-      }
-
-      const previousTeamParticipantCount =
-        this.localEventParticipants()?.filter(
-          (eventParticipant) =>
-            eventParticipant.team_id === drop.previousContainer.data.id,
-        ).length;
-
-      if (
-        previousTeamParticipantCount! <= 1 &&
-        drop.previousContainer.data.id !== TeamIds.UnassignedTeam
-      ) {
-        const previousTeamIndex = eventTeams?.findIndex(
-          (eventTeam) => eventTeam.id === drop.previousContainer.data.id,
-        );
-        eventTeams?.splice(previousTeamIndex!, 1);
-      }
-
-      return [...eventTeams!];
-    });
-
-    this.localEventParticipants.update((eventParticipants) => {
-      const droppedEventParticipant = eventParticipants!.find(
-        (eventParticipant) =>
-          eventParticipant.participant_id === drop.item.data.participant_id,
-      );
-
-      droppedEventParticipant!.team_id = newTeamId;
-
-      return [...eventParticipants!];
-    });
-  }
-
-  saveChanges(
-    localSortedEventTeams: EventTeamModel[] | undefined,
-    databaseEventTeams: EventTeamModel[] | undefined,
-    localEventParticipants: EventParticipantWithPlayerInfo[] | undefined,
-    databaseEventParticipants: EventParticipantWithPlayerInfo[] | undefined,
-    eventId: number,
-  ) {
-    const newEventTeams = localSortedEventTeams?.filter(
-      (localEventTeam) =>
-        !databaseEventTeams?.some(
-          (dbEventTeam) => dbEventTeam.id === localEventTeam.id,
-        ),
-    );
-
-    const newEventParticipants = localEventParticipants?.filter(
-      (localParticipant) =>
-        !databaseEventParticipants?.some(
-          (dbParticipant) =>
-            dbParticipant.participant_id === localParticipant.participant_id,
-        ) && localParticipant.team_id !== TeamIds.UnassignedTeam,
-    );
-
-    const eventTeamUpdates: EventTeamUpdateModel = {
-      newEventTeams: newEventTeams?.map((newEventTeam) => ({
-        id: newEventTeam.id,
-        event_id: eventId,
-        seed:
-          localSortedEventTeams!.findIndex(
-            (localEventTeam) => localEventTeam.id === newEventTeam.id,
-          ) + 1,
-      })),
-
-      updatedTeams: localSortedEventTeams
-        ?.map((eventTeam, index) => ({
-          id: eventTeam.id,
-          seed: index + 1,
-        }))
-        .filter(
-          (localEventTeam) =>
-            localEventTeam.seed !==
-              databaseEventTeams?.find(
-                (dbEventTeam) => dbEventTeam.id === localEventTeam.id,
-              )?.seed &&
-            !newEventTeams?.some(
-              (newEventTeam) => newEventTeam.id === localEventTeam.id,
-            ),
-        ),
-
-      removedTeams: databaseEventTeams
-        ?.filter(
-          (dbEventTeam) =>
-            !localSortedEventTeams?.some(
-              (localEventTeam) => localEventTeam.id === dbEventTeam.id,
-            ),
-        )
-        .map((eventTeam) => ({ id: eventTeam.id })),
-
-      newParticipants: newEventParticipants?.map((eventParticipant) => ({
-        team_id: eventParticipant.team_id,
-        player_id: eventParticipant.player_id,
-      })),
-
-      updatedParticipants: localEventParticipants
-        ?.filter(
-          (localEventParticipant) =>
-            localEventParticipant.team_id !==
-              databaseEventParticipants?.find(
-                (dbEventParticipant) =>
-                  dbEventParticipant.participant_id ===
-                  localEventParticipant.participant_id,
-              )?.team_id &&
-            !newEventParticipants?.some(
-              (newEventParticipant) =>
-                newEventParticipant.participant_id ===
-                localEventParticipant.participant_id,
-            ) &&
-            localEventParticipant.team_id !== TeamIds.UnassignedTeam,
-        )
-        .map((eventParticipant) => ({
-          id: eventParticipant.participant_id,
-          team_id: eventParticipant.team_id,
-        })),
-
-      removedParticipants: databaseEventParticipants
-        ?.filter(
-          (dbEventParticipant) =>
-            !localEventParticipants
-              ?.filter(
-                (localEventParticipant) =>
-                  localEventParticipant.team_id !== TeamIds.UnassignedTeam,
-              )
-              .some(
-                (localEventParticipant) =>
-                  localEventParticipant.participant_id ===
-                  dbEventParticipant.participant_id,
-              ),
-        )
-        .map((eventParticipant) => ({ id: eventParticipant.participant_id })),
+    const newTeamParams = {
+      event_id: this.event().id,
+      name: null,
+      seed: this.teams().length + 1,
     };
 
+    this.teams.update((teams) => [
+      ...teams,
+      {
+        ...newTeamParams,
+        id: tempId,
+        created_at: '',
+        updated_at: '',
+      },
+    ]);
+
+    this.trackRequest(() =>
+      this.eventService
+        .createEventTeam(newTeamParams)
+        .then(({ data, error }) => {
+          if (error) {
+            this.teams.update((teams) =>
+              teams.filter((team) => team.id !== tempId),
+            );
+          } else {
+            this.teams.update((teams) => [
+              ...teams.slice(0, teams.length - 1),
+              data[0],
+            ]);
+          }
+        }),
+    );
+  }
+
+  onDeleteTeamButtonClick(deletedTeamId: EventTeamModel['id']): void {
     confirmBackendAction({
-      confirmationMessageText: `Save changes to ${this.originalEvent()?.name ?? 'event'} teams?`,
-      successMessageText: `${this.originalEvent()?.name ?? 'Event'} teams updated successfully`,
-      action: async () =>
-        this.eventService.updateEventTeams(
-          JSON.parse(JSON.stringify(eventTeamUpdates)),
-        ),
+      action: () => {
+        const deletedTeam = this.teams().find(
+          (team) => team.id === deletedTeamId,
+        );
+
+        if (!deletedTeam) {
+          return Promise.resolve({
+            error: { message: 'Unable to find a team to delete.' },
+          }) as Promise<LocalErrorResponse>;
+        }
+
+        const previousParticipants = this.participants();
+
+        this.teams.update((teams) =>
+          teams
+            .filter((team) => team.id !== deletedTeamId)
+            .map((team, index) => ({ ...team, seed: index + 1 })),
+        );
+
+        this.participants.update((participants) =>
+          participants.filter((p) => p.team_id !== deletedTeamId),
+        );
+
+        return this.trackRequest(() =>
+          this.eventService
+            .deleteEventTeamAndUpdateSeeds(
+              deletedTeamId,
+              this.teams().map((team) => ({ id: team.id, seed: team.seed! })),
+            )
+            .then((res) => {
+              if (res.error) {
+                this.teams.update((teams) => {
+                  const revertedTeams = [...teams, deletedTeam];
+                  revertedTeams.sort((a, b) => (a.seed ?? 0) - (b.seed ?? 0));
+                  return revertedTeams.map((team, index) => ({
+                    ...team,
+                    seed: index + 1,
+                  }));
+                });
+                this.participants.set(previousParticipants);
+              }
+              return res;
+            }),
+        );
+      },
+      confirmationMessageText: 'Delete this team and unassign all its players?',
+      submittingSignal: null,
+      successMessageText: null, // messages clutter screen if there are multiple deletes in a row
       messageService: this.messageService,
       confirmationService: this.confirmationService,
-      submittingSignal: this.submitting,
       successNavigation: null,
     });
   }
+
+  onDeleteParticipantButtonClick(
+    participant: EventParticipantWithPlayerInfo,
+  ): void {
+    this.deleteParticipant(participant);
+  }
+
+  onParticipantDrop(
+    ev:
+      | CdkDragDrop<
+          EventTeamWithParticipantInfo,
+          EventTeamWithParticipantInfo,
+          EventParticipantWithPlayerInfo
+        >
+      | CdkDragDrop<
+          undefined,
+          EventTeamWithParticipantInfo,
+          EventParticipantWithPlayerInfo
+        >
+      | CdkDragDrop<
+          EventTeamWithParticipantInfo,
+          undefined,
+          EventParticipantWithPlayerInfo
+        >,
+  ): void {
+    const newTeamId: number | null = ev.container.data?.id ?? null;
+    const oldTeamId: number | null = ev.previousContainer.data?.id ?? null;
+
+    if (newTeamId === oldTeamId) return;
+
+    const previousParticipants = this.participants();
+    const draggedItem = ev.item.data;
+
+    const isFromUnassigned = oldTeamId === null;
+    const isToUnassigned = newTeamId === null;
+
+    if (isFromUnassigned) {
+      const player = draggedItem;
+      const tempId = this.consumeTempId();
+
+      this.participants.update((participants) => [
+        ...participants,
+        {
+          participant_id: tempId,
+          player_id: player.player_id,
+          team_id: newTeamId!,
+          avatar_url: player.avatar_url,
+          display_name: player.display_name,
+        } as EventParticipantWithPlayerInfo,
+      ]);
+
+      this.trackRequest(() =>
+        this.eventService
+          .createEventParticipant({
+            player_id: player.player_id,
+            team_id: newTeamId!,
+          })
+          .then(({ data, error }) => {
+            if (error) {
+              this.participants.set(previousParticipants);
+            } else {
+              this.participants.update((participants) =>
+                participants.map((p) =>
+                  p.participant_id === tempId
+                    ? { ...p, participant_id: data[0].id }
+                    : p,
+                ),
+              );
+            }
+          }),
+      );
+    } else if (isToUnassigned) {
+      this.deleteParticipant(draggedItem);
+    } else {
+      const participant = draggedItem;
+
+      this.participants.update((participants) =>
+        participants.map((p) =>
+          p.participant_id === participant.participant_id
+            ? { ...p, team_id: newTeamId! }
+            : p,
+        ),
+      );
+
+      this.trackRequest(() =>
+        this.eventService
+          .updateEventParticipant(participant.participant_id, {
+            team_id: newTeamId!,
+            player_id: participant.player_id,
+          })
+          .then(({ error }) => {
+            if (error) {
+              this.participants.set(previousParticipants);
+            }
+          }),
+      );
+    }
+  }
+
+  // *** Helper Methods ***
+  private trackRequest<T>(request: () => Promise<T>): Promise<T> {
+    this.pendingRequests.update((n) => n + 1);
+    return request().finally(() => this.pendingRequests.update((n) => n - 1));
+  }
+
+  private consumeTempId(): number {
+    const id = this.nextTempId();
+    this.nextTempId.update((id) => id - 1);
+    return id;
+  }
+
+  private deleteParticipant(participant: EventParticipantWithPlayerInfo): void {
+    const previousParticipants = this.participants();
+
+    this.participants.update((participants) =>
+      participants.filter(
+        (p) => p.participant_id !== participant.participant_id,
+      ),
+    );
+
+    this.trackRequest(() =>
+      this.eventService
+        .deleteEventParticipant(participant.participant_id)
+        .then(({ error }) => {
+          if (error) {
+            this.participants.set(previousParticipants);
+          }
+        }),
+    );
+  }
+
+  // *** Constants ***
+  protected readonly unassignedPlayerDropListId = unassignedPlayerDropListId;
 }

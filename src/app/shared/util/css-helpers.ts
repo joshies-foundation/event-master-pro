@@ -1,4 +1,5 @@
-export const pagePaddingXCssClass = 'px-4';
+// without "!", PrimeNG confirm dialogs remove this padding
+export const pagePaddingXCssClass = '!px-4';
 export const pagePaddingXCssAmount = '1rem';
 
 export const pagePaddingYCssClass = 'py-6';
