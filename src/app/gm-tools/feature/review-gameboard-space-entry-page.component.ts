@@ -11,7 +11,6 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { SessionService } from '../../shared/data-access/session.service';
 import { TableModule } from 'primeng/table';
 import {
   GameboardSpaceEffect,
@@ -150,11 +149,9 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
   ],
 })
 export default class ReviewGameboardSpaceEntryPageComponent {
-  readonly JSON = JSON;
   private readonly router = inject(Router);
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
-  private readonly sessionService = inject(SessionService);
   private readonly gameboardService = inject(GameboardService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
