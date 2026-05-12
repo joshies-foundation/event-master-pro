@@ -261,12 +261,12 @@ const unassignedPlayerDropListId = `${dropListIdPrefix}unassigned`;
             [icon]="warning ? 'pi pi-exclamation-triangle' : 'pi pi-face-smile'"
             [class.text-neutral-400]="!warning"
           >
-            {{ warning || 'Teams will be even.' }}
+            {{ warning || 'Teams will have an even number of players.' }}
           </p-message>
         </div>
         <div class="flex flex-col gap-1">
           <label for="random-team-count-input">Number of teams</label>
-          <p-inputNumber
+          <p-input-number
             class="w-full"
             inputStyleClass="w-full"
             inputId="random-team-count-input"
@@ -278,13 +278,14 @@ const unassignedPlayerDropListId = `${dropListIdPrefix}unassigned`;
             [min]="1"
             [max]="playerCount()"
             [disabled]="pendingRequests() > 0"
-          ></p-inputNumber>
+          ></p-input-number>
         </div>
 
         <button
           pButton
           icon="ci ci-dice"
           label="Create teams"
+          [disabled]="randomTeamCount() <= 0"
           [loading]="pendingRequests() > 0"
           (click)="onRandomizeTeamsButtonClick()"
         ></button>
