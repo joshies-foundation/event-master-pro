@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   Signal,
+  signal,
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -18,6 +19,8 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
+import OverridePointsCardComponent from '../ui/override-points-card.component';
+import { DialogModule } from 'primeng/dialog';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
@@ -113,7 +116,7 @@ export type GameboardSpaceEntryFormModel = Record<
           <tr [formGroupName]="player.player_id">
             <!-- Player -->
             <td>
-              <div class="-py-2 flex items-center gap-2">
+              <div class="-py-2 flex flex-row items-center gap-2">
                 <img
                   [ngSrc]="player.avatar_url"
                   alt=""
@@ -127,6 +130,12 @@ export type GameboardSpaceEntryFormModel = Record<
             <!-- Distance -->
             <td class="overflow-hidden text-right">
               <div class="flex flex-row items-center justify-end gap-2">
+                <p-button
+                  label="Override Points"
+                  icon="pi pi-wallet"
+                  styleClass="p-button-text"
+                  (onClick)="openOverridePointsDialog(player.player_id)"
+                />
                 <p-input-number
                   formControlName="distanceTraveled"
                   [showButtons]="true"
@@ -232,6 +241,23 @@ export type GameboardSpaceEntryFormModel = Record<
         </ng-template>
       </p-table>
 
+      @if (overridePointsDialogVisible()) {
+        <p-dialog
+          header="Override Player Points"
+          [visible]="overridePointsDialogVisible()"
+          [modal]="true"
+          [style]="{ width: '40rem' }"
+          (onHide)="closeOverridePointsDialog()"
+        >
+          @if (overridePointsDialogPlayerId()) {
+            <joshies-override-points-card
+              [playerId]="overridePointsDialogPlayerId()"
+              (complete)="closeOverridePointsDialog()"
+            />
+          }
+        </p-dialog>
+      }
+
       <p-button
         label="Review Moves"
         styleClass="mt-6 w-full"
@@ -262,8 +288,10 @@ export type GameboardSpaceEntryFormModel = Record<
     TitleCasePipe,
     ReturnSpaceWithIdIfItsEffectIsPipe,
     CheckboxModule,
+    DialogModule,
     NewDuelComponent,
     NumberSignColorClassPipe,
+    OverridePointsCardComponent,
   ],
 })
 export default class GameboardSpaceEntryPageComponent {
@@ -278,6 +306,9 @@ export default class GameboardSpaceEntryPageComponent {
     this.gameStateService.roundNumber;
 
   protected readonly trackByPlayerId = trackByPlayerId;
+
+  protected readonly overridePointsDialogVisible = signal(false);
+  protected readonly overridePointsDialogPlayerId = signal<number | null>(null);
 
   private readonly initialFormValue: Partial<GameboardSpaceEntryFormModel> =
     getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
@@ -393,6 +424,15 @@ export default class GameboardSpaceEntryPageComponent {
     if (playerGroup) {
       playerGroup.patchValue({ triggeredDuelCreated: true });
     }
+  }
+
+  openOverridePointsDialog(playerId: number): void {
+    this.overridePointsDialogPlayerId.set(playerId);
+    this.overridePointsDialogVisible.set(true);
+  }
+
+  closeOverridePointsDialog(): void {
+    this.overridePointsDialogVisible.set(false);
   }
 
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;
