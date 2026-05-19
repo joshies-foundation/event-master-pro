@@ -3,6 +3,11 @@
 @import 'primeicons/primeicons.css';
 @import './customicons.css';
 
+@source inline('animate-spin');
+@source inline('animate-ping');
+@source inline('animate-pulse');
+@source inline('animate-bounce');
+
 @theme {
   --color-app-background-color: light-dark(
     #f3f2f8,
