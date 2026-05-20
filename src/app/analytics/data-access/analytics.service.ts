@@ -31,6 +31,8 @@ import {
   PlayerSpaceStats,
   PlayerDuelStats,
   DuelHistoryRecord,
+  PrizeModel,
+  UserPrizeModel,
 } from '../../shared/util/supabase-types';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { addRankingInfoToPlayers } from '../../shared/util/ranking-helpers';
@@ -38,6 +40,13 @@ import { addRankingInfoToPlayers } from '../../shared/util/ranking-helpers';
 export interface IdAndName {
   id: number;
   name: string;
+}
+
+export interface PastSessionPrizes {
+  session_id: number;
+  session_name: string;
+  session_end_date: string;
+  prizes: PrizeModel[];
 }
 
 @Injectable({
@@ -173,4 +182,62 @@ export class AnalyticsService {
       }),
     ) as Observable<PostgrestResponse<PlayerDuelStats>>;
   }
+
+  getUserPrizesFromPastSessions(
+    userId: string,
+    currentSessionId: number | undefined,
+  ): Observable<PastSessionPrizes[]> {
+    let query = this.supabase
+      .from(View.UserPrize)
+      .select('*')
+      .eq('user_id', userId)
+      .order('won_at', { ascending: false });
+
+    if (currentSessionId !== undefined) {
+      query = query.neq('session_id', currentSessionId);
+    }
+
+    return from(query).pipe(
+      map((response) => groupPrizesBySession(response.data)),
+    );
+  }
+}
+
+function groupPrizesBySession(
+  rows: UserPrizeModel[] | null,
+): PastSessionPrizes[] {
+  const grouped = new Map<number, PastSessionPrizes>();
+
+  for (const row of rows ?? []) {
+    if (
+      row.session_id === null ||
+      row.session_name === null ||
+      row.session_end_date === null
+    ) {
+      continue;
+    }
+
+    if (!grouped.has(row.session_id)) {
+      grouped.set(row.session_id, {
+        session_id: row.session_id,
+        session_name: row.session_name,
+        session_end_date: row.session_end_date,
+        prizes: [],
+      });
+    }
+
+    grouped.get(row.session_id)!.prizes.push({
+      id: row.id!,
+      session_id: row.session_id,
+      image_url: row.image_url!,
+      won_at: row.won_at,
+      won_by_player_id: row.won_by_player_id,
+      created_at: row.created_at!,
+      updated_at: row.updated_at!,
+    });
+  }
+
+  return Array.from(grouped.values()).sort((a, b) =>
+    b.session_end_date.localeCompare(a.session_end_date),
+  );
 }

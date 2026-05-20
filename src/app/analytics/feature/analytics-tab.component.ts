@@ -53,7 +53,7 @@ const numTransactionsToShow = 3;
           headerText="Points Over Time"
           headerIconClass="pi pi-chart-line text-primary mr-2"
         >
-          @if (playerRoundScoresResponse().data; as playerRoundScores) {
+          @if (playerRoundScoresResponse().data) {
             <p-chart
               type="line"
               [data]="pointsOverTimeChartData()"
@@ -169,6 +169,11 @@ export default class AnalyticsTabComponent {
       iconClass: 'pi pi-trophy bg-yellow-500',
       text: 'Previous Session Rankings',
       routerLink: './previous-rankings',
+    },
+    {
+      iconClass: 'pi pi-gift bg-pink-500',
+      text: 'Past Prizes',
+      routerLink: './prizes',
     },
     // TODO: Add this back in after removing the test session from the db
     // {

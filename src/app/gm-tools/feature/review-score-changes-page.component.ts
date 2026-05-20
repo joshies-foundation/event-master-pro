@@ -23,9 +23,11 @@ import {
 import { MessageService } from 'primeng/api';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
+  EdgeFunction,
   showMessageOnError,
   trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { EventService } from '../../shared/data-access/event.service';
@@ -131,6 +133,7 @@ export default class ReviewScoreChangesPageComponent {
   private readonly sessionService = inject(SessionService);
   private readonly messageService = inject(MessageService);
   private readonly eventService = inject(EventService);
+  private readonly supabase = inject(SupabaseClient);
 
   protected readonly trackByPlayerId = trackByPlayerId;
 
@@ -178,7 +181,7 @@ export default class ReviewScoreChangesPageComponent {
   ): Promise<void> {
     this.submittingInProgress.set(true);
 
-    const { error } = await showMessageOnError(
+    const { error, data } = await showMessageOnError(
       this.sessionService.submitSessionPointsForEvent(
         roundNumber,
         teamScoreChanges,
@@ -189,6 +192,13 @@ export default class ReviewScoreChangesPageComponent {
     if (error) {
       this.submittingInProgress.set(false);
       return;
+    }
+
+    const tokenRecipientUserIds = data?.token_recipient_user_ids ?? [];
+    if (tokenRecipientUserIds.length) {
+      this.supabase.functions.invoke(`${EdgeFunction.Push}/prize-token`, {
+        body: { recipientUserIds: tokenRecipientUserIds },
+      });
     }
 
     removeRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);

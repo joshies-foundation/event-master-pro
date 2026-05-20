@@ -223,6 +223,34 @@ app.post('/override', async (c) => {
   return c.body(null, 201, corsHeaders);
 });
 
+interface PrizeTokenPayload {
+  // Either one of these may be provided
+  recipientUserIds?: string[];
+  recipientUserId?: string;
+}
+
+app.post('/prize-token', async (c) => {
+  const payload = (await c.req.json()) as PrizeTokenPayload;
+  console.log('Received Prize Token payload:', payload);
+
+  const recipientUserIds =
+    payload.recipientUserIds ??
+    (payload.recipientUserId ? [payload.recipientUserId] : []);
+
+  if (!recipientUserIds.length) {
+    return c.body(null, 204, corsHeaders);
+  }
+
+  await sendPushNotificationToUsers(
+    recipientUserIds,
+    '🎁 You got a Prize Token!',
+    'Tap to spend it at the Prize Machine.',
+    '/prizes',
+  );
+
+  return c.body(null, 201, corsHeaders);
+});
+
 // handle errors
 app.onError((err, c) => {
   if (err instanceof HTTPException) {

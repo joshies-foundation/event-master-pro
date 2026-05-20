@@ -34,6 +34,8 @@ import { EventService } from '../../shared/data-access/event.service';
 
     <joshies-card headerText="Gameboard" [links]="gameboardLinks" />
 
+    <joshies-card headerText="Prizes" [links]="prizesLinks" />
+
     <joshies-card headerText="Session" [links]="sessionLinks()" />
   `,
   host: {
@@ -194,6 +196,19 @@ export default class GmToolsPageComponent {
       text: 'Manage Chaos Space Events',
       iconClass: 'pi pi-exclamation-circle bg-black',
       routerLink: './chaos-space-event-templates',
+    },
+  ];
+
+  readonly prizesLinks: CardLinkModel[] = [
+    {
+      text: 'Manage Prize Pool',
+      iconClass: 'pi pi-gift bg-pink-500',
+      routerLink: './manage-prize-pool',
+    },
+    {
+      text: 'Adjust Prize Tokens',
+      iconClass: 'pi pi-ticket bg-yellow-500',
+      routerLink: './adjust-prize-tokens',
     },
   ];
 

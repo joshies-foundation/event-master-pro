@@ -277,10 +277,12 @@ export type EventTeamModel = Tables<Table.EventTeam>;
 export type EventTeamRoundScoreModel = Tables<Table.EventTeamRoundScore>;
 export type GameboardMoveModel = Tables<Table.GameboardMove>;
 export type BracketModel = Tables<Table.Bracket>;
+export type PrizeModel = Tables<Table.Prize>;
 
 // views
 export type LifetimeUserStatsModel = Tables<View.LifetimeUserStats>;
 export type MovesForCurrentRoundModel = Tables<View.MovesForCurrentRound>;
+export type UserPrizeModel = Tables<View.UserPrize>;
 
 // functions
 export type GetPlayerRoundScoreFunctionReturnType =

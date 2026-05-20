@@ -17,6 +17,7 @@ import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-he
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BetService } from '../../shared/data-access/bet.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
+import { PrizeService } from '../../shared/data-access/prize.service';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
@@ -47,6 +48,7 @@ export default class LoggedInAppShellComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly betService = inject(BetService);
+  private readonly prizeService = inject(PrizeService);
   private readonly footerService = inject(FooterService);
   private readonly router = inject(Router);
 
@@ -89,6 +91,17 @@ export default class LoggedInAppShellComponent {
             badgeValue: this.betService.numBetRequests(),
             iconClass: 'pi pi-money-bill',
             iconClassFill: 'ci-money-bill-fill',
+          },
+        ]
+      : []),
+    ...(this.prizeService.userHasPrizesOrTokens()
+      ? [
+          {
+            text: 'Prizes',
+            href: '/prizes',
+            badgeValue: this.prizeService.userPrizeTokens(),
+            iconClass: 'pi pi-gift',
+            iconClassFill: 'pi pi-gift',
           },
         ]
       : []),

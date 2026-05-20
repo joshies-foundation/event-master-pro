@@ -38,6 +38,10 @@ export const routes: Routes = [
         loadChildren: () => import('./betting/feature/lib.routes'),
       },
       {
+        path: 'prizes',
+        loadChildren: () => import('./prizes/feature/lib.routes'),
+      },
+      {
         path: 'gm-tools',
         loadChildren: () => import('./gm-tools/feature/lib.routes'),
         canActivate: [canAccessGmTools],

@@ -241,6 +241,18 @@ const gmToolsRoutes: Routes = [
     loadComponent: () => import('./override-bank-balance-page.component'),
     data: { pageAnimationLayer: 1 },
   },
+
+  // prizes
+  {
+    path: 'manage-prize-pool',
+    loadComponent: () => import('./manage-prize-pool-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'adjust-prize-tokens',
+    loadComponent: () => import('./adjust-prize-tokens-page.component'),
+    data: { pageAnimationLayer: 1 },
+  },
 ];
 
 export default gmToolsRoutes;
