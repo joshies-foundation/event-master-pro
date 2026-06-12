@@ -29,6 +29,7 @@ export interface PlayerWithUserInfo {
   user_id: string;
   score: number;
   enabled: boolean;
+  prize_tokens: number;
   display_name: string;
   real_name: string;
   avatar_url: string;
@@ -94,6 +95,7 @@ export class PlayerService {
               user_id: user.id,
               score: player.score,
               enabled: player.enabled,
+              prize_tokens: player.prize_tokens,
               display_name: user.display_name,
               real_name: user.real_name,
               avatar_url: user.avatar_url,

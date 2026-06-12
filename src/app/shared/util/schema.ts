@@ -655,6 +655,7 @@ export type Database = {
           created_at: string;
           enabled: boolean;
           id: number;
+          prize_tokens: number;
           score: number;
           session_id: number;
           updated_at: string;
@@ -664,6 +665,7 @@ export type Database = {
           created_at?: string;
           enabled?: boolean;
           id?: number;
+          prize_tokens?: number;
           score?: number;
           session_id: number;
           updated_at?: string;
@@ -673,6 +675,7 @@ export type Database = {
           created_at?: string;
           enabled?: boolean;
           id?: number;
+          prize_tokens?: number;
           score?: number;
           session_id?: number;
           updated_at?: string;
@@ -724,6 +727,51 @@ export type Database = {
           {
             foreignKeyName: 'public_player_round_score_player_id_fkey';
             columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      prize: {
+        Row: {
+          created_at: string;
+          id: number;
+          image_url: string;
+          session_id: number;
+          updated_at: string;
+          won_at: string | null;
+          won_by_player_id: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          image_url: string;
+          session_id: number;
+          updated_at?: string;
+          won_at?: string | null;
+          won_by_player_id?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          image_url?: string;
+          session_id?: number;
+          updated_at?: string;
+          won_at?: string | null;
+          won_by_player_id?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'prize_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prize_won_by_player_id_fkey';
+            columns: ['won_by_player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
             referencedColumns: ['id'];
@@ -782,6 +830,7 @@ export type Database = {
           id: number;
           name: string;
           num_rounds: number;
+          prize_token_on_event_win: boolean;
           start_date: string;
           updated_at: string;
         };
@@ -792,6 +841,7 @@ export type Database = {
           id?: number;
           name?: string;
           num_rounds: number;
+          prize_token_on_event_win?: boolean;
           start_date?: string;
           updated_at?: string;
         };
@@ -802,6 +852,7 @@ export type Database = {
           id?: number;
           name?: string;
           num_rounds?: number;
+          prize_token_on_event_win?: boolean;
           start_date?: string;
           updated_at?: string;
         };
@@ -1203,6 +1254,36 @@ export type Database = {
           },
         ];
       };
+      user_prize: {
+        Row: {
+          created_at: string | null;
+          id: number | null;
+          image_url: string | null;
+          session_end_date: string | null;
+          session_id: number | null;
+          session_name: string | null;
+          updated_at: string | null;
+          user_id: string | null;
+          won_at: string | null;
+          won_by_player_id: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'prize_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prize_won_by_player_id_fkey';
+            columns: ['won_by_player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Functions: {
       bulk_cancel_bets: {
@@ -1229,7 +1310,7 @@ export type Database = {
       };
       end_round: {
         Args: { _round_number: number; team_score_changes: Json };
-        Returns: undefined;
+        Returns: Json;
       };
       get_all_scores_from_session: {
         Args: { sessionid: number };
@@ -1277,6 +1358,18 @@ export type Database = {
       reorder_events: {
         Args: { events_with_new_round_number: Json };
         Returns: undefined;
+      };
+      spin_prize_machine: {
+        Args: { _player_id: number };
+        Returns: {
+          created_at: string;
+          id: number;
+          image_url: string;
+          session_id: number;
+          updated_at: string;
+          won_at: string | null;
+          won_by_player_id: number | null;
+        };
       };
       start_session_early: { Args: { now: string }; Returns: undefined };
       submit_bet_accepted: { Args: { bet_id: number }; Returns: undefined };

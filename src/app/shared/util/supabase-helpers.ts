@@ -31,12 +31,14 @@ export enum Table {
   Duel = 'duel',
   Bet = 'bet',
   Bracket = 'bracket',
+  Prize = 'prize',
 }
 
 export enum View {
   LifetimeUserStats = 'lifetime_user_stats',
   MovesForCurrentRound = 'moves_for_current_round',
   SpecialSpaceEventsForCurrentRound = 'special_space_events_for_current_round',
+  UserPrize = 'user_prize',
 }
 
 export enum Function {
@@ -68,6 +70,7 @@ export enum Function {
   DeleteEventTeamAndUpdateSeeds = 'delete_event_team_and_update_seeds',
   SubmitEventScores = 'submit_event_scores',
   RandomizeEventTeams = 'randomize_event_teams',
+  SpinPrizeMachine = 'spin_prize_machine',
 }
 
 export enum EdgeFunction {
@@ -77,6 +80,7 @@ export enum EdgeFunction {
 export enum StorageBucket {
   Avatars = 'avatars',
   EventImages = 'event-images',
+  PrizeImages = 'prize-images',
 }
 
 export enum SessionStatus {

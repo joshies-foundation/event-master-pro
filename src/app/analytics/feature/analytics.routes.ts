@@ -6,6 +6,7 @@ import { rollHistoryResolver } from '../data-access/roll-history.resolver';
 import { spaceStatsResolver } from '../data-access/space-stats.resolver';
 import { playerDuelStatsResolver } from '../data-access/player-duel-stats.resolver';
 import { duelHistoryResolver } from '../data-access/duel-history.resolver';
+import { previousPrizesResolver } from '../data-access/previous-prizes.resolver';
 
 const analyticsRoutes: Routes = [
   {
@@ -71,6 +72,14 @@ const analyticsRoutes: Routes = [
     loadComponent: () => import('./player-duel-stats-page.component'),
     resolve: {
       playerDuelStatsQueryResult: playerDuelStatsResolver,
+    },
+    data: { pageAnimationLayer: 1 },
+  },
+  {
+    path: 'prizes',
+    loadComponent: () => import('./previous-prizes-page.component'),
+    resolve: {
+      sessions: previousPrizesResolver,
     },
     data: { pageAnimationLayer: 1 },
   },

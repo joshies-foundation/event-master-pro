@@ -138,11 +138,13 @@ export class SessionService {
   async submitSessionPointsForEvent(
     roundNumber: number,
     teamScoreChanges: Record<string, number>,
-  ): Promise<PostgrestSingleResponse<undefined>> {
+  ): Promise<PostgrestSingleResponse<{ token_recipient_user_ids?: string[] }>> {
     return this.supabase.rpc(Function.EndRound, {
       _round_number: roundNumber,
       team_score_changes: teamScoreChanges,
-    });
+    }) as unknown as Promise<
+      PostgrestSingleResponse<{ token_recipient_user_ids?: string[] }>
+    >;
   }
 
   async overrideBankBalanceAdd(

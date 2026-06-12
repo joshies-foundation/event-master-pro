@@ -25,6 +25,7 @@ export function addRankingInfoToPlayers(
       display_name: player.display_name,
       real_name: player.real_name,
       score: player.score,
+      prize_tokens: player.prize_tokens,
       avatar_url: player.avatar_url,
       rank: currentRank,
       rankEmoji:

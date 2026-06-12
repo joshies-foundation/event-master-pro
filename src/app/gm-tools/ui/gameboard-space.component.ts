@@ -11,7 +11,7 @@ interface GameboardSpaceVisualizationModel {
   template: '',
   host: {
     '[class]':
-      "model().icon_class + ' size-8 self-start shrink-0 rounded-full border-2 border-gray-300 text-lg text-gray-300 flex! justify-center items-center'",
+      "model().icon_class + ' size-8 self-start shrink-0 rounded-full border-2 border-gray-300 text-lg text-neutral-300 flex! justify-center items-center'",
     '[style.background]': 'model().color',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
