@@ -22,7 +22,7 @@ Forget the admin, and focus on the games. EventMaster Pro saves you hours of man
 
 - [Git](https://git-scm.com/)
 - [Node.js](https://nodejs.org/) v24
-- [Docker](https://docs.docker.com/get-docker/), running. The local Supabase stack runs in containers.
+- [Docker](https://docs.docker.com/get-docker/), running. The local Supabase project runs in containers.
 
 ### Install
 
@@ -32,13 +32,15 @@ cd event-master-pro
 npm install
 ```
 
-### Start the local Supabase stack
+### Start the local Supabase project
 
 ```sh
 npm run start-supabase
 ```
 
-The first start downloads the Supabase images and takes a few minutes. The stack applies every migration in `supabase/migrations` and loads `supabase/seed.sql`. It uses ports 55320 to 55329, so it can run next to another project's Supabase stack on the default ports. Supabase Studio is at http://127.0.0.1:55323.
+The first start downloads the Supabase images and takes a few minutes. It creates a local Supabase project, applies every migration in `supabase/migrations`, and loads `supabase/seed.sql`. `supabase/supabase.lock` pins the image versions.
+
+Each checkout and git branch gets its own project, with its own database, on ports that the CLI picks and keeps across restarts. Two worktrees never share a database, and switching branches switches to another project, so run `npm run start-supabase` again after you switch. `npx supabase status` prints the URLs, including Supabase Studio. Postgres starts right away. The other services start on their first request.
 
 ### Run the app
 
@@ -48,20 +50,22 @@ npm start
 
 Open http://localhost:4200 and log in as `colin` with the password `password`. Colin is the Game Master of the seeded in-progress session "Test Jaybies". Every seeded user has the password `password`, so you can also log in as a regular player such as `leo`.
 
-To try the app on a phone, connect it to the same Wi-Fi network and open `http://<your computer's LAN IP>:4200`. The dev server (`npm start`, which runs `ng serve`) builds an app that talks to the Supabase stack on the same host at port 55321, so the phone reaches your local stack without extra setup. The dev server ignores the Supabase values in `.env`.
+To try the app on a phone, connect it to the same Wi-Fi network and open `http://<your computer's LAN IP>:4200`. The dev server (`npm start`, which runs `ng serve`) forwards the Supabase API paths to this checkout's local project, so the phone reaches it through port 4200 without extra setup. The dev server reads the project's address when it starts, so start the project first. It ignores the Supabase values in `.env`.
 
 Dev builds do not register the service worker, and the seed has no push subscriptions. Actions that send push notifications run the local `push` edge function, which logs what it would send and sends nothing.
 
 ### Database tasks
 
-| Command                           | What it does                                                                                 |
-| --------------------------------- | -------------------------------------------------------------------------------------------- |
-| `npm run reset-supabase`          | Rebuilds the local database from the migrations and `supabase/seed.sql`. Ends every login.   |
-| `npm run create-migration <name>` | Writes the difference between the local database and the migrations to a new migration file. |
-| `npm run generate-db-types`       | Regenerates `src/app/shared/util/schema.ts` from the local database.                         |
-| `npm run save-seed`               | Overwrites `supabase/seed.sql` with the data now in the local database.                      |
-| `npm run serve-edge-functions`    | Runs the edge functions in the foreground and prints their logs.                             |
-| `npm run stop-supabase`           | Stops the local stack. The data stays until the next reset.                                  |
+| Command                            | What it does                                                                                 |
+| ---------------------------------- | -------------------------------------------------------------------------------------------- |
+| `npm run reset-supabase`           | Rebuilds the local database from the migrations and `supabase/seed.sql`. Ends every login.   |
+| `npm run create-migration <name>`  | Writes the difference between the local database and the migrations to a new migration file. |
+| `npm run generate-db-types`        | Regenerates `src/app/shared/util/schema.ts` from the local database.                         |
+| `npm run save-seed`                | Overwrites `supabase/seed.sql` with the data now in the local database.                      |
+| `npm run edge-function-logs`       | Prints the edge function logs and follows new lines.                                         |
+| `npm run stop-supabase`            | Stops the local project. The data stays until the next reset.                                |
+| `npx supabase stack destroy --yes` | Deletes the local project of this checkout and branch, with its data.                        |
+| `npx supabase stack list`          | Lists every local project on this computer.                                                  |
 
 To change the schema, make the change in the local database (in Studio or with SQL), run `npm run create-migration <name>`, then run `npm run reset-supabase` to check that the migrations rebuild it. Run `npm run generate-db-types` after any schema change.
 
@@ -72,9 +76,9 @@ npx playwright install webkit chromium   # once per machine
 npm run e2e
 ```
 
-The tests in `e2e/` drive the app the way players and the GM use it, on an emulated iPhone 16 Pro (WebKit) and Pixel 8 (Chromium). CI runs only the iPhone project. Playwright starts its own `ng serve` on port 4380 and never reuses a dev server you already have running. The local Supabase stack must be up.
+The tests in `e2e/` drive the app the way players and the GM use it, on an emulated iPhone 16 Pro (WebKit) and Pixel 8 (Chromium). CI runs only the iPhone project. Playwright starts its own `ng serve` on a free port and never reuses a dev server you already have running. The local Supabase project of this checkout must be up.
 
-Each test starts by putting the local database back to `supabase/seed.sql`, which takes under a second. That wipes whatever you changed in the local database, including logins. Tests run one at a time because they share that database. A test fails if the page logs a console error that the test did not expect.
+Each test starts by putting the local database back to `supabase/seed.sql`, which takes under a second. That wipes whatever you changed in the local database, including logins. Tests run one at a time because they share that database. Runs in two worktrees use two databases, so they can overlap. `E2E_PORT` and `E2E_DB_URL` override the port and the database. A test fails if the page logs a console error that the test did not expect.
 
 Useful variations:
 
@@ -87,7 +91,7 @@ Useful variations:
 
 ### Builds
 
-Every `ng build` talks to the hosted Supabase project named in `.env`, in both the production and development configurations. That includes `npm run build`, both deploy scripts below, and `ng serve --configuration production`. Only `ng serve` in its default configuration swaps in the local stack. Create `.env` and fill in the variables:
+Every `ng build` talks to the hosted Supabase project named in `.env`, in both the production and development configurations. That includes `npm run build`, both deploy scripts below, and `ng serve --configuration production`. Only `ng serve` in its default configuration swaps in the local project. Create `.env` and fill in the variables:
 
 ```shell
 cp .env.example .env

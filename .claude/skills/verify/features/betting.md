@@ -30,6 +30,6 @@ Preconditions:
 
 ## Gotchas
 
-- Submitting, accepting, rejecting, or settling a bet changes the shared local database, so `reset` afterwards. Each insert or update on `bet` fires a trigger that calls the local `push` function. The seed has no push subscriptions, so the edge runtime log shows `No notifications subscriptions found` and nothing is sent.
+- Submitting, accepting, rejecting, or settling a bet changes the local database of this checkout, so `reset` afterwards. Each insert or update on `bet` fires a trigger that calls the local `push` function. The seed has no push subscriptions, so the edge runtime log shows `No notifications subscriptions found` and nothing is sent.
 - The Betting tab is missing for users who are not players in the session. That is not a bug.
 - Bet type, opponent, and wager inputs are Optimus UI widgets. Use `--role combobox`, `--role option`, `--role switch`, and `--role spinbutton` rather than CSS classes.

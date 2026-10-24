@@ -6,7 +6,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 - A run is up: `$V up`, `$V browser start`, `$V login`, where `V=.claude/skills/verify/bin/emp-verify` and `RUN_ID` is exported.
 - `$V doctor` prints only `ok` lines, the device line names a phone, and the session is `colin@joshies.app`.
-- `doctor` reports `ok the app calls only http://127.0.0.1:55321`, the local Supabase stack.
+- `doctor` reports `ok the app calls only http://127.0.0.1:<dev server port>, which proxies to ...`, so every Supabase call goes through the dev server to this checkout's local project.
 - The seeded session "Test Jaybies" is `in_progress`, and `colin` is its GM and a player. If the home page shows something else, an earlier run changed the database. Run `$V reset` and `$V login` to get the seeded state back.
 - Never drive a run you did not start.
 
