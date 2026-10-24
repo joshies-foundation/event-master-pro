@@ -1,3 +1,3 @@
--- The key is the service_role key that every local Supabase stack shares.
+-- The key is the secret API key that every local Supabase stack shares.
 select vault.create_secret('http://kong:8000/functions/v1/push', 'push_function_url');
-select vault.create_secret('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU', 'push_function_key');
+select vault.create_secret('sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz', 'push_function_key');

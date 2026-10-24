@@ -145,6 +145,8 @@ VAPID_PRIVATE_KEY = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg0Xg8dPToeUy
 
 [functions.push]
 import_map = "./functions/import_map.json"
+# Callers send secret API keys, which are not JWTs; push/index.ts checks each route's caller.
+verify_jwt = false
 
 [analytics]
 enabled = false
