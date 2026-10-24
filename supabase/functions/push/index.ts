@@ -73,6 +73,11 @@ app.post('/', requireSecretKey, async (c) => {
   console.log('Received Bet webhook payload:', payload);
   const { type, record: bet, old_record: oldBet } = payload;
 
+  // only continue if the bet is new or its status changed
+  if (type === 'UPDATE' && oldBet?.status === bet.status) {
+    return c.body(null, 204, corsHeaders);
+  }
+
   const requester = await getPlayerDisplayName(bet.requester_player_id);
   const opponent = await getPlayerDisplayName(bet.opponent_player_id);
 
@@ -91,11 +96,6 @@ app.post('/', requireSecretKey, async (c) => {
 
     return c.body(null, 201, corsHeaders);
   }
-
-  const betStatusChanged = oldBet?.status !== bet.status;
-
-  // only continue if the bet status changed
-  if (!betStatusChanged) return;
 
   // send notifications based on new bet status
   switch (bet.status) {
