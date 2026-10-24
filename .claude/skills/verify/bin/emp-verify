@@ -22,25 +22,26 @@ need_run() {
 
 supabase() { (cd "$REPO" && npx supabase "$@" </dev/null); }
 
+# start-supabase is idempotent and also points the bet push trigger at this project.
 ensure_stack() {
-  local env
-  if ! env="$(supabase status -o env 2>/dev/null)" || ! grep -q '^API_URL=' <<<"$env"; then
-    echo "starting the local Supabase stack (npm run start-supabase)"
-    supabase start >"$STATE/supabase-start.log" 2>&1 || { tail -20 "$STATE/supabase-start.log" >&2; die "supabase start failed"; }
-    env="$(supabase status -o env 2>/dev/null)"
-  fi
-  grep -E '^(API_URL|PUBLISHABLE_KEY)=' <<<"$env" | tr -d '"' >"$STATE/supabase.env"
-  echo "local Supabase: $(sed -n 's/^API_URL=//p' "$STATE/supabase.env")"
+  (cd "$REPO" && npm run start-supabase) >"$STATE/supabase-start.log" 2>&1 </dev/null ||
+    { tail -20 "$STATE/supabase-start.log" >&2; die "npm run start-supabase failed"; }
+  supabase status --env --output-format text 2>/dev/null |
+    grep -E '^(API_URL|DB_URL|PUBLISHABLE_KEY)=' | tr -d "'" >"$STATE/supabase.env"
+  echo "local Supabase: $(stack_var API_URL)"
 }
 
 unload_app() { cmd_browser goto /manifest.webmanifest >/dev/null; }
 
 stack_var() { sed -n "s/^$1=//p" "$STATE/supabase.env" 2>/dev/null; }
 
+# Each checkout has its own local Supabase project, so only runs from this
+# checkout share a database.
 other_live_runs() {
   local d
   for d in "$RUN_ROOT"/*/; do
     [[ -d "$d" && "$(basename "$d")" != "$RUN_ID" ]] || continue
+    [[ "$(cat "$d/repo" 2>/dev/null)" == "$REPO" ]] || continue
     alive "$d/ng.pid" || alive "$d/browser.pid" && basename "$d"
   done
   return 0
@@ -85,6 +86,7 @@ cmd_setup() {
 cmd_up() {
   need_run
   mkdir -p "$STATE" "$EVIDENCE"
+  echo "$REPO" >"$STATE/repo"
   ensure_stack
   if alive "$STATE/ng.pid"; then echo "dev server already up: $(cat "$STATE/url")"; return 0; fi
   [[ -d "$REPO/node_modules" ]] || die "node_modules missing; run npm install in $REPO"
@@ -154,7 +156,8 @@ cmd_reset() {
     unload_app
   fi
   echo "resetting the local database to supabase/seed.sql"
-  supabase db reset >"$STATE/reset.log" 2>&1 || { tail -20 "$STATE/reset.log" >&2; die "supabase db reset failed"; }
+  (cd "$REPO" && npm run reset-supabase) >"$STATE/reset.log" 2>&1 </dev/null ||
+    { tail -20 "$STATE/reset.log" >&2; die "npm run reset-supabase failed"; }
   echo "reset done; run login again if a browser is up"
 }
 
@@ -166,13 +169,13 @@ cmd_doctor() {
     echo "ok    local Supabase answers at $api"
   else echo "FAIL  local Supabase is not answering (run: emp-verify up)"; ok=0; fi
 
-  local project functions applied local_migrations
-  project="$(sed -n 's/^project_id = "\(.*\)"/\1/p' "$REPO/supabase/config.toml")"
-  functions="$(docker inspect -f '{{range .Mounts}}{{.Destination}}{{"\n"}}{{end}}' "supabase_edge_runtime_$project" 2>/dev/null | grep '/supabase/functions$' || true)"
-  if [[ "$functions" == "$REPO/supabase/functions" ]]; then echo "ok    the stack serves this checkout's edge functions"
-  elif [[ -z "$functions" ]]; then echo "FAIL  the edge runtime is not running (run: npm run stop-supabase, then emp-verify up)"; ok=0
-  else echo "FAIL  the stack was started from ${functions%/supabase/functions} (run npm run stop-supabase there, then emp-verify up here)"; ok=0; fi
-  applied="$(docker exec "supabase_db_$project" psql -U postgres -At -c 'select version from supabase_migrations.schema_migrations order by 1' 2>/dev/null || true)"
+  local applied local_migrations
+  applied="$(cd "$REPO" && DB_URL="$(stack_var DB_URL)" node --input-type=module -e '
+    import postgres from "postgres";
+    const sql = postgres(process.env.DB_URL, { max: 1 });
+    const rows = await sql`select version from supabase_migrations.schema_migrations order by 1`;
+    console.log(rows.map((r) => r.version).join("\n"));
+    await sql.end();' 2>/dev/null || true)"
   local_migrations="$(ls "$REPO/supabase/migrations" | sed 's/_.*//' | sort)"
   if [[ "$applied" == "$local_migrations" ]]; then echo "ok    the database has exactly this checkout's migrations"
   else echo "FAIL  the database migrations differ from this checkout's (run: emp-verify reset)"; ok=0; fi
@@ -185,14 +188,16 @@ cmd_doctor() {
     else echo "FAIL  port $port is not owned by this run's dev server"; ok=0; fi
     if curl -fsS "$url/" | grep -q "<title>EventMaster Pro</title>"; then echo "ok    $url serves EventMaster Pro"
     else echo "FAIL  $url does not serve EventMaster Pro"; ok=0; fi
+    if curl -fsS -o /dev/null "$url/auth/v1/health" -H "apikey: $(stack_var PUBLISHABLE_KEY)"; then echo "ok    $url proxies Supabase to $api"
+    else echo "FAIL  $url does not proxy Supabase (restart it: emp-verify down, then emp-verify up)"; ok=0; fi
   else echo "FAIL  no dev server for RUN_ID=$RUN_ID (run: emp-verify up)"; ok=0; fi
 
   if alive "$STATE/browser.pid" && [[ -s "$STATE/browser_port" ]]; then
     echo "ok    browser server pgid $(cat "$STATE/browser.pid")"
-    local origins; origins="$(cmd_browser api)"
+    local origins app; origins="$(cmd_browser api)"; app="$(cat "$STATE/url")"
     if [[ -z "$origins" ]]; then echo "INFO  the app has not called Supabase yet (run: emp-verify login)"
-    elif [[ "$origins" == "$api" ]]; then echo "ok    the app calls only $api"
-    else echo "FAIL  the app called $(tr '\n' ' ' <<<"$origins")instead of only $api"; ok=0; fi
+    elif [[ "$origins" == "$app" ]]; then echo "ok    the app calls only $app, which proxies to $api"
+    else echo "FAIL  the app called $(tr '\n' ' ' <<<"$origins")instead of only $app"; ok=0; fi
     cmd_browser whoami | sed 's/^/      /'
   else echo "INFO  no browser yet (run: emp-verify browser start)"; fi
   local others; others="$(other_live_runs)"
@@ -207,9 +212,10 @@ cmd_status() {
   for d in "$root"/*/; do
     [[ -d "$d" ]] || continue
     local id; id="$(basename "$d")"; found=1
-    printf '%s  ng:%s browser:%s  %s\n' "$id" \
+    printf '%s  ng:%s browser:%s  %s  %s\n' "$id" \
       "$(alive "$d/ng.pid" && echo up || echo down)" \
-      "$(alive "$d/browser.pid" && echo up || echo down)" "$(cat "$d/url" 2>/dev/null)"
+      "$(alive "$d/browser.pid" && echo up || echo down)" "$(cat "$d/url" 2>/dev/null)" \
+      "$(cat "$d/repo" 2>/dev/null)"
   done
   [[ $found == 1 ]] || echo "no runs"
 }
