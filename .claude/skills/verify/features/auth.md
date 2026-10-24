@@ -19,9 +19,9 @@ A player logs in with a username and password (the app appends `@joshies.app`), 
 Preconditions:
 
 - A run is up with `browser start` done. `login` is not required, because this feature covers it.
-- `.claude/skills/verify/.env.local` holds the TEST username and password.
+- Every seeded account has the password `password`. `colin` is the GM, and `leo` is a player who is not.
 
-- **Login.** Run `$V login`. It runs `goto /auth/login`, fills `--placeholder Username` and `--placeholder Password`, taps `--role button --name "Log In"`, and waits for `/home`. `$V browser whoami` prints `session colin@joshies.app`.
+- **Login.** Run `$V login`. It clears the stored session, runs `goto /auth/login`, fills `--placeholder Username` and `--placeholder Password`, taps `--role button --name "Log In"`, and waits for `/home`. `$V browser whoami` prints `session colin@joshies.app`.
 - **Sign out.** Run `$V browser tap --role link --name Profile --within nav`, then `$V browser tap --role button --name "Sign Out"`, then `$V browser wait --url /auth/login`. The tap output shows `dialog.confirm Are you sure you want to sign out? -> accept`, and `whoami` prints `session none`.
 - **Guard.** While signed out, run `$V browser goto /gm-tools`, then `$V browser eval "location.pathname"`. The result is `"/auth/login"`.
 - **Bad password.** Fill `Username` with `colin` and `Password` with `wrong-password`, then tap `Log In`. `$V browser snapshot` shows an `alert` containing `Error Invalid login credentials`, and the URL stays `/auth/login`.

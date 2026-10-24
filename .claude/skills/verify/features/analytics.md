@@ -29,4 +29,4 @@ Preconditions:
 
 - The chart is a canvas. ARIA snapshots show only `img`, so verify chart changes visually from the screenshot.
 - Transactions are per user. Another player's transactions are not visible here.
-- Analytics read the shared TEST history. Counts change when other developers play TEST rounds.
+- Analytics read the seeded history plus whatever runs on this machine changed since the last `reset`.

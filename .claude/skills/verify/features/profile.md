@@ -25,7 +25,7 @@ Preconditions:
 - **Rename.** Arm the prompt with `$V browser dialog --value "Colin VRF"`, then tap the pencil with `$V browser tap --css "i.pi-pencil"`. The output shows `dialog.prompt Change display name -> accept Colin VRF`, and `$V browser wait --text "Colin VRF"` succeeds.
 - **Second view.** Run `$V browser rest "/user?select=display_name&id=eq.be62a737-ed9f-4e88-8e74-ee8310131818" --path profile/after-rename.json`. It returns `[{"display_name": "Colin VRF"}]`. Then run `$V browser tap --role link --name Home --within nav`, `$V browser wait --role row --name "Colin VRF"`, and `$V browser snapshot --path profile/home-rankings.aria.txt`.
 - **Too long.** Run `$V browser dialog --value "ThisNameIsWayTooLong"`, then tap the pencil. The output shows a `dialog.alert Oh really, your name is 20 characters long? ...`, and the name does not change.
-- **Restore.** Run `$V browser dialog --value "Colin"`, tap the pencil, and confirm with `rest` that `display_name` is `Colin` again.
+- **Restore.** Run `$V reset`, or run `$V browser dialog --value "Colin"`, tap the pencil, and confirm with `rest` that `display_name` is `Colin` again.
 - **Squidward Mode.** `$V browser tap --role switch` flips it. Confirm with `rest "/user?select=squidward_mode&id=eq.be62a737-ed9f-4e88-8e74-ee8310131818"`, then tap again to restore `false`.
 - **Proof.** Save `snapshot` and `screenshot` under `profile/` after the rename and after the restore.
 
@@ -33,7 +33,7 @@ Preconditions:
 
 - The pencil is an icon without an accessible name. `--css "i.pi-pencil"` is the stable handle. When editing is not allowed, the pencil is grey with a red ✕ and does nothing.
 - The prompt is native. If you forget `dialog --value`, the default answer accepts the current name, which the app ignores as unchanged.
-- Other developers looking at TEST see the temporary name. Restore it in the same run.
+- Other runs on this machine see the temporary name until you restore it.
 - `Enable Push Notifications` needs a service worker, and dev builds do not register one. It cannot be verified with this harness.
 - `App last updated: Dec 31, 1969` is normal in dev builds. The date is stamped only by `npm run build`.
 - Avatar upload opens a native file picker, which `emp-verify` does not drive. Report it as unverified rather than faking the upload.

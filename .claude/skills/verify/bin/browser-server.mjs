@@ -6,7 +6,7 @@ import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http';
 import { dirname, isAbsolute, join } from 'node:path';
 
-const { STATE, EVIDENCE, PW_HOME, REPO } = process.env;
+const { STATE, EVIDENCE, PW_HOME } = process.env;
 const deviceName = process.env.EMP_VERIFY_DEVICE || 'iPhone 16 Pro';
 const pw = createRequire(join(PW_HOME, 'node_modules') + '/')('playwright');
 const device = pw.devices[deviceName];
@@ -14,6 +14,12 @@ if (!device) throw new Error(`unknown device "${deviceName}"`);
 const engine = process.env.EMP_VERIFY_ENGINE || device.defaultBrowserType;
 const baseUrl = readFileSync(join(STATE, 'url'), 'utf8').trim();
 const consoleLog = join(STATE, 'console.log');
+const stack = Object.fromEntries(
+  readFileSync(join(STATE, 'supabase.env'), 'utf8')
+    .trim()
+    .split('\n')
+    .map((l) => l.split(/=(.*)/s).slice(0, 2)),
+);
 
 const browser = await pw[engine].launch({ headless: true });
 const context = await browser.newContext({
@@ -37,6 +43,15 @@ page.on('dialog', async (d) => {
   log(`dialog.${d.type()} ${d.message()} -> ${answer.accept ? `accept ${answer.value ?? ''}` : 'dismiss'}`);
   if (answer.accept) await d.accept(answer.value);
   else await d.dismiss();
+});
+const apiOrigins = new Set();
+page.on('request', (r) => {
+  const u = new URL(r.url());
+  if (/^\/(rest|auth|functions|realtime|storage)\/v1\//.test(u.pathname) && r.resourceType() !== 'image') apiOrigins.add(u.origin);
+});
+page.on('websocket', (ws) => {
+  const u = new URL(ws.url().replace(/^ws/, 'http'));
+  if (u.pathname.startsWith('/realtime/v1/')) apiOrigins.add(u.origin);
 });
 page.on('framenavigated', (f) => f === page.mainFrame() && log(`navigated ${f.url()}`));
 
@@ -143,14 +158,13 @@ const commands = {
   },
   // Read-only PostgREST GET as the logged-in user (RLS applies), for side-effect checks.
   async rest(o, [path]) {
-    const env = readFileSync(join(REPO, '.env'), 'utf8');
-    const get = (k) => env.match(new RegExp(`^${k}=(.*)$`, 'm'))?.[1].trim();
-    const ref = get('NG_APP_SUPABASE_PROJECT_ID');
-    const anon = get('NG_APP_SUPABASE_ANON_KEY');
-    const token = await page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null')?.access_token, `sb-${ref}-auth-token`);
+    const token = await page.evaluate(() => {
+      const key = Object.keys(localStorage).find((k) => /^sb-.*-auth-token$/.test(k));
+      return key ? JSON.parse(localStorage.getItem(key))?.access_token : null;
+    });
     if (!token) throw new Error('not logged in; run emp-verify login');
-    const res = await fetch(`https://${ref}.supabase.co/rest/v1${path.startsWith('/') ? path : `/${path}`}`, {
-      headers: { apikey: anon, authorization: `Bearer ${token}` },
+    const res = await fetch(`${stack.API_URL}/rest/v1${path.startsWith('/') ? path : `/${path}`}`, {
+      headers: { apikey: stack.ANON_KEY, authorization: `Bearer ${token}` },
     });
     const body = await res.text();
     if (!res.ok) throw new Error(`HTTP ${res.status} ${body}`);
@@ -160,6 +174,9 @@ const commands = {
       return `saved ${evidencePath(o.path)}\n${out}`;
     }
     return out;
+  },
+  async api() {
+    return [...apiOrigins].join('\n');
   },
   async whoami() {
     const session = await page
@@ -174,6 +191,7 @@ const commands = {
     return [
       `device ${deviceName} on ${engine} ${browser.version()}, viewport ${vp.width}x${vp.height}, touch ${device.hasTouch}`,
       `url ${page.url()}`,
+      `supabase ${[...apiOrigins].join(', ') || 'not called yet'}`,
       session
         ? `session ${session.email} (${session.key}, expires ${new Date(session.expiresAt * 1000).toISOString()})`
         : 'session none (not logged in, or page is not on the app origin)',

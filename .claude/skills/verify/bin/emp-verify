@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 # Lifecycle for one EventMaster Pro verification run.
-# Usage: emp-verify <setup|up|doctor|browser|login|down|status> [args]
+# Usage: emp-verify <setup|up|reset|doctor|browser|login|down|status> [args]
 # Every command except setup needs RUN_ID set. See ../SKILL.md.
 set -euo pipefail
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO="$(cd "$SKILL_DIR/../../.." && pwd)"
 PW_HOME="${EMP_VERIFY_PW_HOME:-$HOME/.cache/emp-verify/node}"
-TEST_REF="jdwvtjrhfsciqttiueud"
-PROD_REF="bbptbpmmfformxfzkdgl"
 TMP_BASE="${TMPDIR:-/tmp}"
 RUN_ROOT="${TMP_BASE%/}/emp-verify"
+SEED_PASSWORD="password"
 
 die() { echo "emp-verify: $*" >&2; exit 1; }
 
@@ -21,13 +20,30 @@ need_run() {
   EVIDENCE="$REPO/tmp/verify/$RUN_ID"
 }
 
-project_ref() { sed -n 's/^NG_APP_SUPABASE_PROJECT_ID=//p' "$REPO/.env" | tr -d '"'"'"' \r'; }
+supabase() { (cd "$REPO" && npx supabase "$@" </dev/null); }
 
-guard_test_project() {
-  [[ -f "$REPO/.env" ]] || die "$REPO/.env missing; copy .env.example and fill in the TEST project values"
-  local ref; ref="$(project_ref)"
-  [[ "$ref" != "$PROD_REF" ]] || die ".env points at the PROD Supabase project ($PROD_REF). Refusing to drive production."
-  [[ "$ref" == "$TEST_REF" ]] || echo "emp-verify: warning: .env project $ref is not the known TEST project $TEST_REF" >&2
+ensure_stack() {
+  local env
+  if ! env="$(supabase status -o env 2>/dev/null)" || ! grep -q '^API_URL=' <<<"$env"; then
+    echo "starting the local Supabase stack (npm run start-supabase)"
+    supabase start >"$STATE/supabase-start.log" 2>&1 || { tail -20 "$STATE/supabase-start.log" >&2; die "supabase start failed"; }
+    env="$(supabase status -o env 2>/dev/null)"
+  fi
+  grep -E '^(API_URL|ANON_KEY)=' <<<"$env" | tr -d '"' >"$STATE/supabase.env"
+  echo "local Supabase: $(sed -n 's/^API_URL=//p' "$STATE/supabase.env")"
+}
+
+unload_app() { cmd_browser goto /manifest.webmanifest >/dev/null; }
+
+stack_var() { sed -n "s/^$1=//p" "$STATE/supabase.env" 2>/dev/null; }
+
+other_live_runs() {
+  local d
+  for d in "$RUN_ROOT"/*/; do
+    [[ -d "$d" && "$(basename "$d")" != "$RUN_ID" ]] || continue
+    alive "$d/ng.pid" || alive "$d/browser.pid" && basename "$d"
+  done
+  return 0
 }
 
 # Start a command in its own session so `down` can kill the whole process group.
@@ -67,8 +83,9 @@ cmd_setup() {
 }
 
 cmd_up() {
-  need_run; guard_test_project
+  need_run
   mkdir -p "$STATE" "$EVIDENCE"
+  ensure_stack
   if alive "$STATE/ng.pid"; then echo "dev server already up: $(cat "$STATE/url")"; return 0; fi
   [[ -d "$REPO/node_modules" ]] || die "node_modules missing; run npm install in $REPO"
   local port; port="$(free_port "${EMP_VERIFY_PORT:-4310}")"
@@ -99,7 +116,7 @@ cmd_browser() {
     [[ -f "$STATE/url" ]] || die "no dev server for RUN_ID=$RUN_ID; run '$0 up' first"
     if alive "$STATE/browser.pid"; then echo "browser already up"; return 0; fi
     rm -f "$STATE/browser_port"
-    STATE="$STATE" EVIDENCE="$EVIDENCE" PW_HOME="$PW_HOME" REPO="$REPO" \
+    STATE="$STATE" EVIDENCE="$EVIDENCE" PW_HOME="$PW_HOME" \
       spawn "$STATE/browser.log" node "$SKILL_DIR/bin/browser-server.mjs" >"$STATE/browser.pid"
     for _ in $(seq 1 60); do
       [[ -s "$STATE/browser_port" ]] && { cat "$STATE/browser.log"; return 0; }
@@ -114,25 +131,51 @@ cmd_browser() {
 
 cmd_login() {
   need_run
-  local creds="$SKILL_DIR/.env.local"
-  [[ -f "$creds" ]] && set -a && source "$creds" && set +a
-  [[ -n "${EMP_VERIFY_USERNAME:-}" && -n "${EMP_VERIFY_PASSWORD:-}" ]] ||
-    die "set EMP_VERIFY_USERNAME and EMP_VERIFY_PASSWORD (or write them to $creds)"
+  local user="${1:-colin}"
+  unload_app
+  cmd_browser eval "localStorage.clear(); sessionStorage.clear()" >/dev/null
   cmd_browser goto /auth/login
-  cmd_browser fill --placeholder Username --value "$EMP_VERIFY_USERNAME"
-  cmd_browser fill --placeholder Password --value "$EMP_VERIFY_PASSWORD"
+  cmd_browser fill --placeholder Username --value "$user"
+  cmd_browser fill --placeholder Password --value "$SEED_PASSWORD"
   cmd_browser tap --role button --name "Log In"
   cmd_browser wait --url '/home'
-  echo "logged in as $EMP_VERIFY_USERNAME"
+  echo "logged in as $user"
+}
+
+cmd_reset() {
+  need_run
+  local others
+  others="$(other_live_runs)"
+  if [[ -n "$others" && "${1:-}" != "--force" ]]; then
+    die "other runs share this database and are still up: $others. Wait for them, or pass --force."
+  fi
+  mkdir -p "$STATE"
+  if alive "$STATE/browser.pid" && [[ -s "$STATE/browser_port" ]]; then
+    unload_app
+  fi
+  echo "resetting the local database to supabase/seed.sql"
+  supabase db reset >"$STATE/reset.log" 2>&1 || { tail -20 "$STATE/reset.log" >&2; die "supabase db reset failed"; }
+  echo "reset done; run login again if a browser is up"
 }
 
 cmd_doctor() {
   need_run
-  local ok=1 ref url
-  ref="$(project_ref)"
-  if [[ "$ref" == "$PROD_REF" ]]; then echo "FAIL  .env targets PROD ($PROD_REF)"; ok=0
-  elif [[ "$ref" == "$TEST_REF" ]]; then echo "ok    .env targets TEST project $TEST_REF"
-  else echo "WARN  .env targets unknown project $ref"; fi
+  local ok=1 url api
+  api="$(stack_var API_URL)"
+  if [[ -n "$api" ]] && curl -fsS -o /dev/null "$api/auth/v1/health" -H "apikey: $(stack_var ANON_KEY)"; then
+    echo "ok    local Supabase answers at $api"
+  else echo "FAIL  local Supabase is not answering (run: emp-verify up)"; ok=0; fi
+
+  local project functions applied local_migrations
+  project="$(sed -n 's/^project_id = "\(.*\)"/\1/p' "$REPO/supabase/config.toml")"
+  functions="$(docker inspect -f '{{range .Mounts}}{{.Destination}}{{"\n"}}{{end}}' "supabase_edge_runtime_$project" 2>/dev/null | grep '/supabase/functions$' || true)"
+  if [[ "$functions" == "$REPO/supabase/functions" ]]; then echo "ok    the stack serves this checkout's edge functions"
+  elif [[ -z "$functions" ]]; then echo "FAIL  the edge runtime is not running (run: npm run stop-supabase, then emp-verify up)"; ok=0
+  else echo "FAIL  the stack was started from ${functions%/supabase/functions} (run npm run stop-supabase there, then emp-verify up here)"; ok=0; fi
+  applied="$(docker exec "supabase_db_$project" psql -U postgres -At -c 'select version from supabase_migrations.schema_migrations order by 1' 2>/dev/null || true)"
+  local_migrations="$(ls "$REPO/supabase/migrations" | sed 's/_.*//' | sort)"
+  if [[ "$applied" == "$local_migrations" ]]; then echo "ok    the database has exactly this checkout's migrations"
+  else echo "FAIL  the database migrations differ from this checkout's (run: emp-verify reset)"; ok=0; fi
 
   if alive "$STATE/ng.pid"; then
     url="$(cat "$STATE/url")"; local port="${url##*:}" owner
@@ -144,14 +187,16 @@ cmd_doctor() {
     else echo "FAIL  $url does not serve EventMaster Pro"; ok=0; fi
   else echo "FAIL  no dev server for RUN_ID=$RUN_ID (run: emp-verify up)"; ok=0; fi
 
-  if curl -fsS -o /dev/null "https://$ref.supabase.co/auth/v1/health" -H "apikey: $(sed -n 's/^NG_APP_SUPABASE_ANON_KEY=//p' "$REPO/.env")"; then
-    echo "ok    Supabase auth reachable for $ref"
-  else echo "FAIL  Supabase auth unreachable for $ref"; ok=0; fi
-
   if alive "$STATE/browser.pid" && [[ -s "$STATE/browser_port" ]]; then
     echo "ok    browser server pgid $(cat "$STATE/browser.pid")"
+    local origins; origins="$(cmd_browser api)"
+    if [[ -z "$origins" ]]; then echo "INFO  the app has not called Supabase yet (run: emp-verify login)"
+    elif [[ "$origins" == "$api" ]]; then echo "ok    the app calls only $api"
+    else echo "FAIL  the app called $(tr '\n' ' ' <<<"$origins")instead of only $api"; ok=0; fi
     cmd_browser whoami | sed 's/^/      /'
   else echo "INFO  no browser yet (run: emp-verify browser start)"; fi
+  local others; others="$(other_live_runs)"
+  [[ -z "$others" ]] || echo "INFO  other runs share this database: $others"
   echo "      evidence dir: $EVIDENCE"
   [[ $ok == 1 ]]
 }
@@ -184,7 +229,8 @@ case "${1:-}" in
   up) cmd_up ;;
   doctor) cmd_doctor ;;
   browser) shift; cmd_browser "$@" ;;
-  login) cmd_login ;;
+  login) shift; cmd_login "$@" ;;
+  reset) shift; cmd_reset "$@" ;;
   status) cmd_status ;;
   down) cmd_down ;;
   *) sed -n '2,4p' "$0" | sed 's/^# //'; exit 2 ;;
