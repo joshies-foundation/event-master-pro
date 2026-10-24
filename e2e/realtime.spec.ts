@@ -29,9 +29,11 @@ async function setColinsScore(score: number): Promise<void> {
   await sql`update player set score = ${score} where id = ${seed.colin.playerId}`;
 }
 
-test('two live subscriptions to the same table and filter both receive changes', async () => {
+test('two live subscriptions to the same table and filter both receive changes', async ({
+  baseURL,
+}) => {
   const supabase = createClient<Database>(
-    'http://127.0.0.1:55321',
+    baseURL!,
     'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH',
     { auth: { persistSession: false } },
   );
