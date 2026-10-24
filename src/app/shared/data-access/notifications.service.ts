@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { map, shareReplay, startWith } from 'rxjs';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import { showErrorMessage } from '../util/message-helpers';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { FunctionsResponse } from '@supabase/functions-js';

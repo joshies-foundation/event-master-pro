@@ -1,4 +1,4 @@
-// without "!", PrimeNG confirm dialogs remove this padding
+// without "!", Optimus UI confirm dialogs remove this padding
 export const pagePaddingXCssClass = '!px-4';
 export const pagePaddingXCssAmount = '1rem';
 

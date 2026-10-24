@@ -1,5 +1,5 @@
 import { WritableSignal } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { showMessageOnError } from './supabase-helpers';
 import { showSuccessMessage } from './message-helpers';
 import { ActivatedRoute, Router } from '@angular/router';

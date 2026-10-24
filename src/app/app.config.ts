@@ -9,7 +9,7 @@ import {
   withInMemoryScrolling,
 } from '@angular/router';
 import { routes } from './app.routes';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
 import { resolveSupabaseConnection } from './shared/util/supabase-connection';
@@ -19,9 +19,9 @@ import { NumberSignColorClassPipe } from './shared/ui/number-sign-color-class.pi
 import { NumberWithSignPipe } from './shared/ui/number-with-sign.pipe';
 import { NumberSignPipe } from './shared/ui/number-sign.pipe';
 import { LoseOrGainPipe } from './gm-tools/ui/lose-or-gain.pipe';
-import { providePrimeNG } from 'primeng/config';
+import { provideOptimus } from '@openng/optimus-ui/config';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { preset } from './primeng-preset';
+import { preset } from './optimus-preset';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -43,15 +43,14 @@ export const appConfig: ApplicationConfig = {
     // animations
     provideAnimationsAsync(),
 
-    // PrimeNG
-    providePrimeNG({
+    provideOptimus({
       ripple: true,
       theme: {
         preset,
         options: {
           cssLayer: {
-            name: 'primeng',
-            order: 'theme, base, primeng',
+            name: 'optimus',
+            order: 'theme, base, optimus',
           },
         },
       },

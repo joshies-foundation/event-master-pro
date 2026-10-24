@@ -1,4 +1,4 @@
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 
 export function showErrorMessage(
   message: string,

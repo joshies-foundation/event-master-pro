@@ -6,7 +6,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ToastModule } from 'primeng/toast';
+import { ToastModule } from '@openng/optimus-ui/toast';
 import { pagePaddingXCssClass } from './shared/util/css-helpers';
 import { SquidwardService } from './shared/data-access/squidward.service';
 

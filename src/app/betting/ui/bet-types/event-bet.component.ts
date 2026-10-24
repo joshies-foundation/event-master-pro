@@ -1,7 +1,7 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Select } from 'primeng/select';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { Select } from '@openng/optimus-ui/select';
+import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
 import { OverUnderComponent } from '../over-under.component';
 import {
   BetSubtype,

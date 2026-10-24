@@ -3,14 +3,14 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
 import { RouterLink } from '@angular/router';
 import { StatusTagComponent } from './status-tag.component';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { FormsModule } from '@angular/forms';
-import { AvatarModule } from 'primeng/avatar';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { DuelModel } from '../../shared/util/supabase-types';
 import { trackById } from '../../shared/util/supabase-helpers';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { DuelService } from '../../shared/data-access/duel.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { CanCancelDuelPipe } from './can-cancel-duel.pipe';
 

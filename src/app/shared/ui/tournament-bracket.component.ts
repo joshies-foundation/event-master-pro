@@ -8,14 +8,18 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
-import { TreeModule, TreeNodeSelectEvent } from 'primeng/tree';
+import {
+  ConfirmationService,
+  MessageService,
+  TreeNode,
+} from '@openng/optimus-ui/api';
+import { TreeModule, TreeNodeSelectEvent } from '@openng/optimus-ui/tree';
 import { EventTeamModel } from '../util/supabase-types';
 import { EventService } from '../data-access/event.service';
-import { AvatarModule } from 'primeng/avatar';
-import { AvatarGroupModule } from 'primeng/avatargroup';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
+import { AvatarGroupModule } from '@openng/optimus-ui/avatargroup';
 import { ParticipantListPipe } from './participant-list.pipe';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { confirmBackendAction } from '../util/dialog-helpers';
 import { ActivatedRoute, Router } from '@angular/router';
 

@@ -18,11 +18,11 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputNumber } from 'primeng/inputnumber';
-import { Message } from 'primeng/message';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { Dialog } from '@openng/optimus-ui/dialog';
+import { InputNumber } from '@openng/optimus-ui/inputnumber';
+import { Message } from '@openng/optimus-ui/message';
 import {
   EventParticipantWithPlayerInfo,
   EventService,

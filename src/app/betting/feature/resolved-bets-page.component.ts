@@ -10,8 +10,8 @@ import { BetService } from '../../shared/data-access/bet.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BetComponent } from '../../shared/ui/bet.component';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { SkeletonModule } from 'primeng/skeleton';
-import { DividerModule } from 'primeng/divider';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { DividerModule } from '@openng/optimus-ui/divider';
 import { CardComponent } from '../../shared/ui/card.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 

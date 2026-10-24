@@ -8,9 +8,9 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
+import { MessageService } from '@openng/optimus-ui/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
 
 @Component({
   selector: 'joshies-reset-password-page',

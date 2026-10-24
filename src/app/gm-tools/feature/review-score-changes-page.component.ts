@@ -9,18 +9,18 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { Router } from '@angular/router';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { SessionService } from '../../shared/data-access/session.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { SkeletonModule } from 'primeng/skeleton';
-import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import {
   getRecordFromLocalStorage,
   LocalStorageRecord,
   removeRecordFromLocalStorage,
 } from '../../shared/util/local-storage-helpers';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
   EdgeFunction,

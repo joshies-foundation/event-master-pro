@@ -4,7 +4,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { Button } from 'primeng/button';
+import { Button } from '@openng/optimus-ui/button';
 import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 import { BetStatus } from '../../shared/util/supabase-helpers';
 import { BetComponent } from '../../shared/ui/bet.component';

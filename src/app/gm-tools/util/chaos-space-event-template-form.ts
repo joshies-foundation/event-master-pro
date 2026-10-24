@@ -12,7 +12,7 @@ import {
 import { Form } from '../../shared/ui/form.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import {
   ChaosSpaceEventType,

@@ -9,7 +9,7 @@ import {
 import { PlayerService } from '../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { RankingsTableComponent } from '../../shared/ui/rankings-table.component';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { AuthService } from '../../auth/data-access/auth.service';
 
 @Component({

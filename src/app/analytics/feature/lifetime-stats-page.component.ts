@@ -8,9 +8,9 @@ import {
 import { Tables } from '../../shared/util/schema';
 import { trackByUserId, View } from '../../shared/util/supabase-helpers';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { SharedModule } from 'primeng/api';
-import { TableModule } from 'primeng/table';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
+import { SharedModule } from '@openng/optimus-ui/api';
+import { TableModule } from '@openng/optimus-ui/table';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { PostgrestResponse } from '@supabase/supabase-js';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';

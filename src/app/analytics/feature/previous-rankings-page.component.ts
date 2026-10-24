@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { AnalyticsService } from '../data-access/analytics.service';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import { startWith, switchMap } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { PlayerWithUserAndRankInfo } from '../../shared/data-access/player.service';

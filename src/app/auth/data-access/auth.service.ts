@@ -11,7 +11,7 @@ import {
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import { Database } from '../../shared/util/schema';
 
 @Injectable({

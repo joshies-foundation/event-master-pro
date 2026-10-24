@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../../shared/data-access/event.service';
 import { NgOptimizedImage } from '@angular/common';
@@ -20,8 +20,8 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';

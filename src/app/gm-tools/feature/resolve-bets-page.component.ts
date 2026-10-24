@@ -7,19 +7,19 @@ import {
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
+import { TableModule } from '@openng/optimus-ui/table';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { RouterLink } from '@angular/router';
 import { BetStatus, BetType } from '../../shared/util/supabase-helpers';
 import { BetService } from '../../shared/data-access/bet.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { BetModel } from '../../shared/util/supabase-types';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { DividerModule } from 'primeng/divider';
-import { SkeletonModule } from 'primeng/skeleton';
+import { DividerModule } from '@openng/optimus-ui/divider';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { BetToResolveComponent } from '../../betting/ui/bet-to-resolve.component';
-import { AccordionModule } from 'primeng/accordion';
+import { AccordionModule } from '@openng/optimus-ui/accordion';
 import { CardComponent } from '../../shared/ui/card.component';
 
 @Component({

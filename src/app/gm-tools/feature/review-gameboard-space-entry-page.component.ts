@@ -11,14 +11,14 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import {
   GameboardSpaceEffect,
   trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
 import { DecimalPipe, NgOptimizedImage, TitleCasePipe } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import {
   getRecordFromLocalStorage,
@@ -27,7 +27,7 @@ import {
 } from '../../shared/util/local-storage-helpers';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { GameboardSpaceEntryFormModel } from './gameboard-space-entry-page.component';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { GameboardService } from '../../shared/data-access/gameboard.service';

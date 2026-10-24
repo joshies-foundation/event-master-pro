@@ -9,7 +9,7 @@ import {
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormFieldType } from '../../shared/ui/form-field/form-field.component';
 import { Form, FormComponent } from '../../shared/ui/form.component';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { SessionService } from '../../shared/data-access/session.service';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -19,7 +19,7 @@ import {
   PlayerService,
   PlayerWithUserInfo,
 } from '../../shared/data-access/player.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 

@@ -14,13 +14,13 @@ import {
   PlayerWithUserAndRankInfo,
 } from '../../shared/data-access/player.service';
 import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from '@openng/optimus-ui/table';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import OverridePointsCardComponent from '../ui/override-points-card.component';
-import { DialogModule } from 'primeng/dialog';
+import { DialogModule } from '@openng/optimus-ui/dialog';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
@@ -47,18 +47,18 @@ import {
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
 import {
   GameboardSpaceEffect,
   trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { ReturnSpaceWithIdIfItsEffectIsPipe } from '../../shared/ui/return-space-with-id-if-its-effect-is.pipe';
 import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 import { GameboardSpaceModel } from '../../shared/util/supabase-types';
-import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxModule } from '@openng/optimus-ui/checkbox';
 import NewDuelComponent from '../ui/new-duel.component';
 import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 

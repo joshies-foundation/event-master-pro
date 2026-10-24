@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import { RouterLink } from '@angular/router';

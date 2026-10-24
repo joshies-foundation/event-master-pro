@@ -4,7 +4,7 @@ import {
   computed,
   input,
 } from '@angular/core';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import {
   OverrideDefinitionTableComponent,
   OverrideDefinitionTableModel,

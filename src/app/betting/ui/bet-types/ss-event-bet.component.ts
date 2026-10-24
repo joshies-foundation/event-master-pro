@@ -1,6 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import { OverUnderComponent } from '../over-under.component';
 import { SpecialSpaceEventModel } from '../../../shared/util/supabase-types';
 import { GameboardService } from '../../../shared/data-access/gameboard.service';

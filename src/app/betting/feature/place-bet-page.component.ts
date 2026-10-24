@@ -16,11 +16,11 @@ import {
   PlayerWithUserAndRankInfo,
 } from '../../shared/data-access/player.service';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CheckboxModule } from 'primeng/checkbox';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { CheckboxModule } from '@openng/optimus-ui/checkbox';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { BetService } from '../../shared/data-access/bet.service';
 import {
   BetModel,
@@ -32,7 +32,7 @@ import {
   SpecialSpaceEventModel,
 } from '../../shared/util/supabase-types';
 import { SessionService } from '../../shared/data-access/session.service';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import {
   BetStatus,
@@ -40,7 +40,7 @@ import {
   BetType,
   Table,
 } from '../../shared/util/supabase-helpers';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
 import {
   generateBetDescription,
   generateBetDetails,
@@ -48,20 +48,20 @@ import {
 } from '../util/place-bet-helpers';
 import { Tables } from '../../shared/util/schema';
 import { CardComponent } from '../../shared/ui/card.component';
-import { ToggleSwitch } from 'primeng/toggleswitch';
+import { ToggleSwitch } from '@openng/optimus-ui/toggleswitch';
 import { EventTeamWithParticipantInfo } from '../../shared/data-access/event.service';
 import {
   ConfirmPlaceBetDialogComponent,
   confirmPlaceBetDialogKey,
 } from '../ui/confirm-place-bet-dialog.component';
 import { DecimalPipe } from '@angular/common';
-import { AvatarModule } from 'primeng/avatar';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { DuelWinnerBetComponent } from '../ui/bet-types/duel-winner-bet.component';
 import { SSEventBetComponent } from '../ui/bet-types/ss-event-bet.component';
 import { ChaosSpaceBetComponent } from '../ui/bet-types/chaos-space-bet.component';
 import { EventBetComponent } from '../ui/bet-types/event-bet.component';
 import { GameboardBetComponent } from '../ui/bet-types/gameboard-bet.component';
-import { Textarea } from 'primeng/textarea';
+import { Textarea } from '@openng/optimus-ui/textarea';
 
 @Component({
   selector: 'joshies-place-bet-page',

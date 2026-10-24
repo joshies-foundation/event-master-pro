@@ -5,8 +5,8 @@ import {
   model,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
+import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
 
 @Component({
   selector: 'joshies-top-bottom',

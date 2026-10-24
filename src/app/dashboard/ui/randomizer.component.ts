@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { CardComponent } from '../../shared/ui/card.component';
-import { Button } from 'primeng/button';
+import { Button } from '@openng/optimus-ui/button';
 import { Sound } from '../../shared/util/sound';
 
 @Component({

@@ -12,27 +12,31 @@ import { BetService } from '../../shared/data-access/bet.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
-import { ChartModule } from 'primeng/chart';
+import { ChartModule } from '@openng/optimus-ui/chart';
 import { ChartOptions } from 'chart.js';
 import { getCssVariableValue } from '../../shared/util/css-helpers';
 import { BetComponent } from '../../shared/ui/bet.component';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { Button } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';
+import { Button } from '@openng/optimus-ui/button';
+import { DividerModule } from '@openng/optimus-ui/divider';
 import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
+import {
+  ConfirmationService,
+  MessageService,
+  OpenngIcons,
+} from '@openng/optimus-ui/api';
 import { BetRequestComponent } from '../ui/bet-request.component';
 import { getUserBetData } from '../../shared/util/bet-helpers';
-import { AccordionModule } from 'primeng/accordion';
+import { AccordionModule } from '@openng/optimus-ui/accordion';
 import { RouterLink } from '@angular/router';
 import { BetType } from '../../shared/util/supabase-helpers';
 import { BetToResolveComponent } from '../ui/bet-awaiting-acceptance.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { Ripple } from 'primeng/ripple';
+import { Ripple } from '@openng/optimus-ui/ripple';
 
 const textColorMuted = getCssVariableValue('--color-muted-color');
 const borderColor = getCssVariableValue('--color-standard-border-color');
@@ -524,31 +528,31 @@ export default class BettingDashboardPageComponent {
     queryParams: { betType: BetType };
   }[] = [
     {
-      iconClass: PrimeIcons.PENCIL,
+      iconClass: OpenngIcons.PENCIL,
       label: 'Custom',
       routerLink: './place-bet',
       queryParams: { betType: BetType.Custom },
     },
     {
-      iconClass: PrimeIcons.FLAG,
+      iconClass: OpenngIcons.FLAG,
       label: 'Main Event',
       routerLink: './place-bet',
       queryParams: { betType: BetType.MainEvent },
     },
     {
-      iconClass: PrimeIcons.BOLT,
+      iconClass: OpenngIcons.BOLT,
       label: 'Duel',
       routerLink: './place-bet',
       queryParams: { betType: BetType.DuelWinner },
     },
     {
-      iconClass: PrimeIcons.QUESTION_CIRCLE,
+      iconClass: OpenngIcons.QUESTION_CIRCLE,
       label: 'Special Space Event',
       routerLink: './place-bet',
       queryParams: { betType: BetType.SpecialSpaceEvent },
     },
     {
-      iconClass: PrimeIcons.EXCLAMATION_CIRCLE,
+      iconClass: OpenngIcons.EXCLAMATION_CIRCLE,
       label: 'Chaos Space Event',
       routerLink: './place-bet',
       queryParams: { betType: BetType.ChaosSpaceEvent },

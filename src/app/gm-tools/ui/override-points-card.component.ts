@@ -10,16 +10,16 @@ import {
 } from '@angular/core';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { withAllDefined } from '../../shared/util/signal-helpers';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { ButtonModule } from 'primeng/button';
+import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
 import { take } from 'rxjs';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { InputTextModule } from 'primeng/inputtext';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
@@ -32,7 +32,7 @@ import {
   OverrideDefinitionTableModel,
 } from '../ui/override-definition-table.component';
 import { CardComponent } from '../../shared/ui/card.component';
-import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxModule } from '@openng/optimus-ui/checkbox';
 
 @Component({
   selector: 'joshies-override-points-card',

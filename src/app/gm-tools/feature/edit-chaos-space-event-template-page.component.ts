@@ -16,11 +16,11 @@ import {
   ChaosSpaceEventTemplateModel,
   ChaosSpaceEventType,
 } from '../../shared/util/supabase-types';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { FormBuilder } from '@angular/forms';
 import { Form, FormComponent } from '../../shared/ui/form.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';

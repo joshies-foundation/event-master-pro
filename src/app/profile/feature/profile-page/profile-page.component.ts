@@ -5,16 +5,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { UserService } from '../../../shared/data-access/user.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 import { DatePipe } from '@angular/common';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { NotificationsService } from '../../../shared/data-access/notifications.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { UserModel } from '../../../shared/util/supabase-types';
-import { ToggleSwitch } from 'primeng/toggleswitch';
+import { ToggleSwitch } from '@openng/optimus-ui/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { SquidwardService } from '../../../shared/data-access/squidward.service';
 

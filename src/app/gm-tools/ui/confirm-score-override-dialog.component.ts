@@ -4,15 +4,17 @@ import {
   computed,
   input,
 } from '@angular/core';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { PlayerWithUserInfo } from '../../shared/data-access/player.service';
 import {
   OverrideDefinitionTableComponent,
   OverrideDefinitionTableModel,
 } from './override-definition-table.component';
 
-export interface ConfirmOverrideDialogModel
-  extends Omit<OverrideDefinitionTableModel, 'inputDisabled'> {
+export interface ConfirmOverrideDialogModel extends Omit<
+  OverrideDefinitionTableModel,
+  'inputDisabled'
+> {
   player: PlayerWithUserInfo;
   comment: string;
 }

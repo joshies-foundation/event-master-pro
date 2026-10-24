@@ -5,12 +5,12 @@ import {
   input,
   Signal,
 } from '@angular/core';
-import { Tag, TagModule } from 'primeng/tag';
+import { Tag, TagModule } from '@openng/optimus-ui/tag';
 import {
   DuelStatus,
   SpaceEventStatus,
 } from '../../shared/util/supabase-helpers';
-import { PrimeIcons } from 'primeng/api';
+import { OpenngIcons } from '@openng/optimus-ui/api';
 import { SnakeCaseToTitleCasePipe } from '../../shared/ui/snake-case-to-title-case.pipe';
 
 type Status = SpaceEventStatus | DuelStatus;
@@ -39,15 +39,15 @@ export class StatusTagComponent {
     () =>
       ({
         [SpaceEventStatus.EventNotSelected]: '',
-        [SpaceEventStatus.WaitingToBegin]: PrimeIcons.HOURGLASS,
-        [SpaceEventStatus.InProgress]: PrimeIcons.PLAY,
-        [SpaceEventStatus.Finished]: PrimeIcons.CHECK,
-        [SpaceEventStatus.Canceled]: PrimeIcons.TIMES,
+        [SpaceEventStatus.WaitingToBegin]: OpenngIcons.HOURGLASS,
+        [SpaceEventStatus.InProgress]: OpenngIcons.PLAY,
+        [SpaceEventStatus.Finished]: OpenngIcons.CHECK,
+        [SpaceEventStatus.Canceled]: OpenngIcons.TIMES,
         [DuelStatus.OpponentNotSelected]: '',
         [DuelStatus.WagerNotSelected]: '',
         [DuelStatus.GameNotSelected]: '',
-        [DuelStatus.ChallengerWon]: PrimeIcons.CROWN,
-        [DuelStatus.OpponentWon]: PrimeIcons.CROWN,
+        [DuelStatus.ChallengerWon]: OpenngIcons.CROWN,
+        [DuelStatus.OpponentWon]: OpenngIcons.CROWN,
       })[this.status()],
   );
 

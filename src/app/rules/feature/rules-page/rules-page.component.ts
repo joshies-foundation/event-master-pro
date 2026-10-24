@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { RulesService } from '../../data-access/rules.service';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { FormBuilder, FormsModule } from '@angular/forms';
 import { Form, FormComponent } from '../../../shared/ui/form.component';
 import {
@@ -16,9 +16,9 @@ import {
   FormFieldType,
 } from '../../../shared/ui/form-field/form-field.component';
 import { SessionService } from '../../../shared/data-access/session.service';
-import { ButtonModule } from 'primeng/button';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { FooterService } from '../../../shared/data-access/footer.service';
 import { PlayerService } from '../../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
@@ -35,7 +35,7 @@ import { GameboardSpaceComponent } from '../../../gm-tools/ui/gameboard-space.co
 import { GameboardSpaceDescriptionPipe } from '../../../gm-tools/ui/gameboard-space-description.pipe';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
-import { ImageModule } from 'primeng/image';
+import { ImageModule } from '@openng/optimus-ui/image';
 
 @Component({
   selector: 'joshies-rules-page',

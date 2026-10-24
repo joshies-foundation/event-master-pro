@@ -17,11 +17,11 @@ import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { EventForm, eventFormFactory } from '../util/event-form';
 import { EventService } from '../../shared/data-access/event.service';
 import { FormBuilder } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventFormat } from '../../shared/util/supabase-helpers';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 
 @Component({
   selector: 'joshies-edit-event-page',

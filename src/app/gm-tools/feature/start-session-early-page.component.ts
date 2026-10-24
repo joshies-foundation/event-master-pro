@@ -5,15 +5,15 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { SessionService } from '../../shared/data-access/session.service';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 
 @Component({
   selector: 'joshies-start-session-early-page',

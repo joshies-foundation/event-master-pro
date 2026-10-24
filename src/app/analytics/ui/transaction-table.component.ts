@@ -3,7 +3,7 @@ import { trackById } from '../../shared/util/supabase-helpers';
 import { DatePipe } from '@angular/common';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { TransactionModel } from '../../shared/util/supabase-types';
 
 @Component({

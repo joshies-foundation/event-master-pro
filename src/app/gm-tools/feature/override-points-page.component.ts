@@ -7,13 +7,13 @@ import {
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { FormsModule } from '@angular/forms';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
+import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxModule } from '@openng/optimus-ui/checkbox';
 import OverridePointsCardComponent from '../ui/override-points-card.component';
 
 @Component({

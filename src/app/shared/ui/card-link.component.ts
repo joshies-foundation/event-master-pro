@@ -6,7 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RippleModule } from 'primeng/ripple';
+import { RippleModule } from '@openng/optimus-ui/ripple';
 
 export interface CardLinkModel {
   iconClass: string;

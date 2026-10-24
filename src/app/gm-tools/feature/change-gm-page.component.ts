@@ -7,12 +7,12 @@ import {
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
+import { TableModule } from '@openng/optimus-ui/table';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { NgOptimizedImage } from '@angular/common';
 import { UserService } from '../../shared/data-access/user.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { UserModel } from '../../shared/util/supabase-types';
 import {
   showMessageOnError,
@@ -20,8 +20,8 @@ import {
 } from '../../shared/util/supabase-helpers';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import { Router } from '@angular/router';
-import { SkeletonModule } from 'primeng/skeleton';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { toSignal } from '@angular/core/rxjs-interop';

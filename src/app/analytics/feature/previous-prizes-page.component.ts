@@ -4,7 +4,7 @@ import { PastSessionPrizes } from '../data-access/analytics.service';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { PrizeGalleryComponent } from '../../prizes/ui/prize-gallery.component';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 
 @Component({
   selector: 'joshies-previous-prizes-page',
