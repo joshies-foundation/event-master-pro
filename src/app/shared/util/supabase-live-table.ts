@@ -7,6 +7,7 @@ import {
   RealtimePostgresChangesPayload,
   SupabaseClient,
 } from '@supabase/supabase-js';
+import { compareIds } from './sort-helpers';
 
 type ID = string | number;
 
@@ -287,12 +288,8 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
     }
   }
 
-  /**
-   * Returns the replica of the table as an array of records.
-   * The records are not sorted, and there is no guarantee of order.
-   */
   get records(): readonly Row[] {
-    return [...this.recordById.values()];
+    return [...this.recordById.values()].sort((a, b) => compareIds(a.id, b.id));
   }
 }
 
