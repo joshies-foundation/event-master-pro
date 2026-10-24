@@ -40,6 +40,84 @@ test('the rankings list every player by score with a crown for the leader', asyn
   expect(numbers).toEqual([...numbers].sort((a, b) => b - a));
 });
 
+test('tied players keep their order whatever order the rows arrive in', async ({
+  page,
+  login,
+}) => {
+  const expected = [
+    ['👑', 'Leo', '70'],
+    ['2', 'Olivia', '51'],
+    ['3', 'Josh', '40'],
+    ['3', 'Molly', '40'],
+    ['5', 'Colin', '33'],
+    ['6', 'Dan', '20'],
+    ['7', 'Alyssa', '10'],
+    ['7', 'Brittany', '10'],
+    ['7', 'Ellie', '10'],
+    ['💩', 'Leo', '-10'],
+    ['💩', 'Tim', '-10'],
+  ];
+  const expectRankings = async () => {
+    const rows = page.getByRole('table').locator('tbody tr');
+    await expect(rows).toHaveCount(expected.length);
+    for (const [index, cells] of expected.entries()) {
+      await expect(rows.nth(index).getByRole('cell')).toHaveText(cells);
+    }
+  };
+
+  await login();
+  await expectRankings();
+
+  let reversed = false;
+  await page.route(
+    /\/rest\/v1\/player\?select=\*&session_id=eq\./,
+    async (route) => {
+      const response = await route.fetch();
+      const players: unknown[] = await response.json();
+      reversed = true;
+      await route.fulfill({ response, json: players.reverse() });
+    },
+  );
+  await page.reload();
+  await expectRankings();
+  expect(reversed).toBe(true);
+});
+
+test('every player tied for last place gets the poop emoji', async ({
+  page,
+  login,
+}) => {
+  await login();
+  for (const name of ['Leo', 'Tim']) {
+    await expect(
+      page
+        .getByRole('row')
+        .filter({ hasText: name })
+        .filter({ hasText: '-10' })
+        .getByRole('cell'),
+    ).toHaveText(['💩', name, '-10']);
+  }
+});
+
+test('everyone tied for first gets the crown and nobody gets the poop', async ({
+  page,
+  login,
+}) => {
+  await sql`update player set score = 0 where session_id = ${seed.sessionId}`;
+  await login();
+  const rankCells = page.getByRole('table').locator('tbody tr td:first-child');
+  await expect(rankCells).toHaveText(Array(seed.playersInSession).fill('👑'));
+});
+
+test('a lone player gets the crown', async ({ page, login }) => {
+  await sql`update player set enabled = false
+    where session_id = ${seed.sessionId} and id <> ${seed.colin.playerId}`;
+  await login();
+  await expect(
+    page.getByRole('table').locator('tbody tr').getByRole('cell'),
+  ).toHaveText(['👑', 'Colin', '33']);
+});
+
 test('rankings update live when a score changes', async ({ page, login }) => {
   await login();
   const leader = page.getByRole('table').getByRole('row').nth(1);

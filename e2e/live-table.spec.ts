@@ -64,3 +64,33 @@ test('a page opened while the game changes loads without errors', async ({
     page.getByRole('combobox', { name: seed.sessionName }),
   ).toBeVisible();
 });
+
+test('team members keep their order whatever order the rows arrive in', async ({
+  page,
+  login,
+}) => {
+  const teams = page.locator('tbody tr td:first-child .text-xs');
+  const expectTeams = () =>
+    expect(teams).toHaveText([
+      'Olivia, Colin, Molly, Leo, Josh & Dan',
+      'Brittany, Tim, Leo, Ellie & Alyssa',
+    ]);
+
+  await login();
+  await page.goto('/gm-tools/enter-event-scores');
+  await expectTeams();
+
+  let reversed = false;
+  await page.route(
+    /\/rest\/v1\/event_participant\?select=\*/,
+    async (route) => {
+      const response = await route.fetch();
+      const rows: unknown[] = await response.json();
+      reversed = true;
+      await route.fulfill({ response, json: rows.reverse() });
+    },
+  );
+  await page.reload();
+  await expectTeams();
+  expect(reversed).toBe(true);
+});
