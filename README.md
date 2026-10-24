@@ -65,6 +65,26 @@ Dev builds do not register the service worker, and the seed has no push subscrip
 
 To change the schema, make the change in the local database (in Studio or with SQL), run `npm run create-migration <name>`, then run `npm run reset-supabase` to check that the migrations rebuild it. Run `npm run generate-db-types` after any schema change.
 
+### End-to-end tests
+
+```sh
+npx playwright install webkit chromium   # once per machine
+npm run e2e
+```
+
+The tests in `e2e/` drive the app the way players and the GM use it, on an emulated iPhone 16 Pro (WebKit) and Pixel 8 (Chromium). Playwright starts its own `ng serve` on port 4380 and never reuses a dev server you already have running. The local Supabase stack must be up.
+
+Each test starts by putting the local database back to `supabase/seed.sql`, which takes under a second. That wipes whatever you changed in the local database, including logins. Tests run one at a time because they share that database. A test fails if the page logs a console error that the test did not expect.
+
+Useful variations:
+
+| Command                              | What it does                                            |
+| ------------------------------------ | ------------------------------------------------------- |
+| `npm run e2e -- --project=iphone`    | Runs on the iPhone only, which halves the time.         |
+| `npm run e2e -- e2e/betting.spec.ts` | Runs one file.                                          |
+| `npm run e2e -- --ui`                | Opens Playwright's UI to step through tests and traces. |
+| `npx playwright show-report`         | Opens the report of the last run, with failure traces.  |
+
 ### Builds
 
 Every `ng build` talks to the hosted Supabase project named in `.env`, in both the production and development configurations. That includes `npm run build`, the Cloudflare Pages deploys (production from `main`, a development-configuration preview for every other branch), and `ng serve --configuration production`. Only `ng serve` in its default configuration swaps in the local stack. Create `.env` and fill in the variables:
