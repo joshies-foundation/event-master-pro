@@ -12,6 +12,7 @@ import { routes } from './app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideSupabase } from './custom-providers';
+import { resolveSupabaseConnection } from './shared/util/supabase-connection';
 import { provideHttpClient } from '@angular/common/http';
 import { DecimalPipe, TitleCasePipe } from '@angular/common';
 import { NumberSignColorClassPipe } from './shared/ui/number-sign-color-class.pipe';
@@ -37,10 +38,7 @@ export const appConfig: ApplicationConfig = {
     ),
 
     // supabase
-    provideSupabase({
-      supabaseProjectId: import.meta.env.NG_APP_SUPABASE_PROJECT_ID,
-      supabaseAnonKey: import.meta.env.NG_APP_SUPABASE_ANON_KEY,
-    }),
+    provideSupabase(resolveSupabaseConnection()),
 
     // animations
     provideAnimationsAsync(),
