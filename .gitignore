@@ -55,3 +55,7 @@ Thumbs.db
 /test-results/
 /playwright-report/
 /blob-report/
+
+# Cloudflare
+/.cloudflare
+/.wrangler
