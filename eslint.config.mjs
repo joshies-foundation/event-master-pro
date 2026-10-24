@@ -1,17 +1,8 @@
-import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import tseslint from 'typescript-eslint';
+import angular from 'angular-eslint';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
-export default [
+export default tseslint.config(
   {
     ignores: [
       'projects/**/*',
@@ -21,20 +12,14 @@ export default [
       'node_modules/**/*',
     ],
   },
-  ...compat
-    .extends(
-      'eslint:recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:@angular-eslint/recommended',
-      'plugin:@angular-eslint/template/process-inline-templates',
-    )
-    .map((config) => ({
-      ...config,
-      files: ['**/*.ts'],
-    })),
   {
     files: ['**/*.ts'],
-
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      ...angular.configs.tsRecommended,
+    ],
+    processor: angular.processInlineTemplates,
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -54,22 +39,20 @@ export default [
         },
       ],
 
-      '@angular-eslint/no-host-metadata-property': 'off',
+      '@angular-eslint/prefer-on-push-component-change-detection': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       'no-case-declarations': 'off',
     },
   },
-  ...compat
-    .extends(
-      'plugin:@angular-eslint/template/recommended',
-      'plugin:@angular-eslint/template/accessibility',
-    )
-    .map((config) => ({
-      ...config,
-      files: ['**/*.html'],
-    })),
   {
     files: ['**/*.html'],
-
+    extends: [
+      ...angular.configs.templateRecommended,
+      ...angular.configs.templateAccessibility,
+    ],
     rules: {
       '@angular-eslint/template/label-has-associated-control': [
         'error',
@@ -88,4 +71,4 @@ export default [
       '@angular-eslint/template/elements-content': 'off',
     },
   },
-];
+);

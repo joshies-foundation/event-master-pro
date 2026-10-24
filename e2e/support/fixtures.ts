@@ -45,7 +45,10 @@ export const test = base.extend<Fixtures & { freshDatabase: void }>({
 
   consoleGuard: [
     async ({ page }, use) => {
-      const allowed: RegExp[] = [];
+      // NG02955 is a dev-mode hint that an image was the LCP element. Whether an
+      // avatar outranks the page header depends on paint timing and on the
+      // fonts installed on the machine that runs the test.
+      const allowed: RegExp[] = [/NG02955/];
       const errors: string[] = [];
       const watch = (watched: Page) => {
         watched.on('console', (message) => {

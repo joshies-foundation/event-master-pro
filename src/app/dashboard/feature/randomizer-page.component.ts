@@ -4,6 +4,7 @@ import {
   inject,
   linkedSignal,
   signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
@@ -113,6 +114,7 @@ enum RandomizerOption {
   host: {
     class: 'grid grid-rows-[1fr_auto_1fr] gap-1 justify-items-center size-full',
   },
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     Select,
     FormsModule,

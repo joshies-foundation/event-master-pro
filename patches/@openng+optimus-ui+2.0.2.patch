@@ -1,5 +1,5 @@
 diff --git a/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs b/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs
-index e197440..5a5f9fe 100644
+index 94ba5d7..d29e2db 100644
 --- a/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs
 +++ b/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs
 @@ -14,6 +14,7 @@ import { TimesIcon, AngleUpIcon, AngleDownIcon } from '@openng/optimus-ui/icons'
