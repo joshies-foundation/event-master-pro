@@ -115,7 +115,9 @@ export function liveTable<
               break;
             }
           }
-          callback(undefined, liveTable.records);
+          if (liveTable.hasSnapshot) {
+            callback(undefined, liveTable.records);
+          }
         },
       )
       .subscribe((status) => {
@@ -198,6 +200,10 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
   private snapshotTimestamp: number | undefined;
 
   constructor(private readonly parseTimestamp: ParseTimestamp) {}
+
+  get hasSnapshot(): boolean {
+    return this.snapshotTimestamp !== undefined;
+  }
 
   public processEvent(event: LiveTableEvent<Row>) {
     if (this.snapshotTimestamp === undefined) {
