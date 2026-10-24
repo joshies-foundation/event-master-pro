@@ -63,11 +63,16 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run deploy
+      - name: Check the build variables
+        run: |
+          for name in NG_APP_SUPABASE_PROJECT_ID NG_APP_SUPABASE_PUBLISHABLE_KEY NG_APP_VAPID_PUBLIC_KEY; do
+            [ -n "${!name}" ] || { echo "::error::$name is empty in this environment"; exit 1; }
+          done
+      - run: npm run deploy </dev/null
       - name: Check the live site
         run: |
           for path in / /home /rules /ngsw.json; do
-            curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 5 \
+            curl --fail --silent --show-error --retry 12 --retry-all-errors --retry-delay 10 \
               --output /dev/null "https://joshies.app$path"
           done
           curl --fail --silent https://joshies.app/home | grep -q '<joshies-root'
@@ -96,6 +101,11 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Check the build variables
+        run: |
+          for name in NG_APP_SUPABASE_PROJECT_ID NG_APP_SUPABASE_PUBLISHABLE_KEY NG_APP_VAPID_PUBLIC_KEY; do
+            [ -n "${!name}" ] || { echo "::error::$name is empty in this environment"; exit 1; }
+          done
       - name: Deploy the preview
         id: deploy
         run: |
