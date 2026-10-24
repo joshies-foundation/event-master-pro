@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://joshies.app
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      NG_APP_SUPABASE_PROJECT_ID: ${{ vars.NG_APP_SUPABASE_PROJECT_ID }}
+      NG_APP_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NG_APP_SUPABASE_PUBLISHABLE_KEY }}
+      NG_APP_VAPID_PUBLIC_KEY: ${{ vars.NG_APP_VAPID_PUBLIC_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Check the build variables
+        run: |
+          for name in NG_APP_SUPABASE_PROJECT_ID NG_APP_SUPABASE_PUBLISHABLE_KEY NG_APP_VAPID_PUBLIC_KEY; do
+            [ -n "${!name}" ] || { echo "::error::$name is empty in this environment"; exit 1; }
+          done
+      - run: npm run deploy </dev/null
+      - name: Check the live site
+        run: |
+          for path in / /home /rules /ngsw.json; do
+            curl --fail --silent --show-error --retry 12 --retry-all-errors --retry-delay 10 \
+              --output /dev/null "https://joshies.app$path"
+          done
+          curl --fail --silent https://joshies.app/home | grep -q '<joshies-root'
+          curl --fail --silent https://joshies.app/ngsw.json | grep -q '"hashTable"'
