@@ -3,7 +3,7 @@
 <p align="center">Supercharge dynamic, multi-day competitions with realtime brackets, betting, analytics, and more</p>
 
 <p align="center">
-  <img alt="EventMaster Pro Logo" height="200" width="100%" src="https://colinaw.com/assets/images/logos/emp.svg" />
+  <img alt="EventMaster Pro Logo" height="200" width="100%" src="https://colinaw.com/images/logos/emp.svg" />
 </p>
 
 ## About
