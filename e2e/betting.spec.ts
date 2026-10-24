@@ -39,20 +39,22 @@ test('a custom bet goes from request to acceptance to the GM settling it', async
   await expect.poll(() => betStatus(terms)).toEqual(['pending_acceptance']);
 
   const leo = await secondPhone(seed.leo);
-  await leo.goto('/betting/accept-bets');
-  const request = leo.getByRole('row', {
-    name: new RegExp(`Colin \\(33 points\\) bets 5 that ${terms}`),
-  });
-  await request.getByRole('button', { name: 'Accept Bet' }).tap();
-  await expect(confirmDialog(leo)).toContainText(
-    'Are you sure you want to accept this bet?',
+  await openTab(leo, 'Betting');
+  await expect(leo.getByText('Bet Requests (1)')).toBeVisible();
+  await expect(leo.getByText(terms)).toBeVisible();
+  await leo.getByRole('button', { name: 'Accept' }).tap();
+  await expect(confirmDialog(leo, 'Confirm Accept')).toContainText(
+    'Are you sure you want to wager 5 points against Colin?',
   );
-  await confirmDialog(leo).getByRole('button', { name: 'Yes' }).tap();
-  await expect(leo.getByText('Bet accepted')).toBeVisible();
-  await expect(leo.getByText('No pending bets')).toBeVisible();
+  await confirmDialog(leo, 'Confirm Accept')
+    .getByRole('button', { name: 'Yes' })
+    .tap();
+  await expect(leo.getByText("ACCEPTED Colin's bet")).toBeVisible();
+  await expect(leo.getByText('Bet Requests (1)')).toHaveCount(0);
   await expect.poll(() => betStatus(terms)).toEqual(['active']);
 
-  await page.goto('/gm-tools/resolve-bets');
+  await openTab(page, 'GM Tools');
+  await page.getByRole('link', { name: 'Settle or Cancel Bets' }).tap();
   const custom = page.getByRole('region', { name: 'Custom Bets (1)' });
   await expect(custom).toContainText('Colin bet Leo');
   await expect(custom).toContainText('Both wagered 5 points');
@@ -83,10 +85,15 @@ test('the opponent can reject a bet request', async ({
   await placeBetAgainstLeo(page, terms, 3);
 
   const leo = await secondPhone(seed.leo);
-  await leo.goto('/betting/accept-bets');
-  await leo.getByRole('button', { name: 'Reject Bet' }).tap();
-  await confirmDialog(leo).getByRole('button', { name: 'Yes' }).tap();
-  await expect(leo.getByText('No pending bets')).toBeVisible();
+  await openTab(leo, 'Betting');
+  await leo.getByRole('button', { name: 'Reject' }).tap();
+  await expect(confirmDialog(leo, 'Confirm Reject')).toContainText(
+    "Are you sure you want to REJECT Colin's bet request?",
+  );
+  await confirmDialog(leo, 'Confirm Reject')
+    .getByRole('button', { name: 'Yes' })
+    .tap();
+  await expect(leo.getByText("REJECTED Colin's bet")).toBeVisible();
 
   await expect.poll(() => betStatus(terms)).toEqual(['rejected']);
   expect(await score(seed.colin.playerId)).toBe(seed.colin.score);
