@@ -87,57 +87,55 @@ export default class RulesPageComponent {
     }),
   );
 
-  private readonly form = computed(
-    (): Form => ({
-      formGroup: this.formGroup(),
-      onSubmit: () => this.confirmSaveRules(),
-      disabled: this.savingRules,
-      fields: computed((): FormField[] => [
-        {
-          name: 'intro',
-          label: 'Intro',
-          placeholder: 'Intro',
-          type: FormFieldType.Editor,
-          control: this.formGroup().controls.intro,
-        },
-        {
-          name: 'events',
-          label: 'Events',
-          placeholder: 'Events',
-          type: FormFieldType.Editor,
-          control: this.formGroup().controls.events,
-        },
-        {
-          name: 'gameboard',
-          label: 'Gameboard',
-          placeholder: 'Gameboard',
-          type: FormFieldType.Editor,
-          control: this.formGroup().controls.gameboard,
-        },
-        {
-          name: 'special-space-events',
-          label: 'Special Space Events',
-          placeholder: 'Special Space Events',
-          type: FormFieldType.Editor,
-          control: this.formGroup().controls.special_space_events,
-        },
-        {
-          name: 'chaos-space-events',
-          label: 'Chaos Space Events',
-          placeholder: 'Chaos Space Events',
-          type: FormFieldType.Editor,
-          control: this.formGroup().controls.chaos_space_events,
-        },
-        {
-          name: 'submit',
-          label: 'Save Rules',
-          type: FormFieldType.Submit,
-          position: 'full',
-          loading: this.savingRules(),
-        },
-      ]),
-    }),
-  );
+  private readonly form = computed((): Form => ({
+    formGroup: this.formGroup(),
+    onSubmit: () => this.confirmSaveRules(),
+    disabled: this.savingRules,
+    fields: computed((): FormField[] => [
+      {
+        name: 'intro',
+        label: 'Intro',
+        placeholder: 'Intro',
+        type: FormFieldType.Editor,
+        control: this.formGroup().controls.intro,
+      },
+      {
+        name: 'events',
+        label: 'Events',
+        placeholder: 'Events',
+        type: FormFieldType.Editor,
+        control: this.formGroup().controls.events,
+      },
+      {
+        name: 'gameboard',
+        label: 'Gameboard',
+        placeholder: 'Gameboard',
+        type: FormFieldType.Editor,
+        control: this.formGroup().controls.gameboard,
+      },
+      {
+        name: 'special-space-events',
+        label: 'Special Space Events',
+        placeholder: 'Special Space Events',
+        type: FormFieldType.Editor,
+        control: this.formGroup().controls.special_space_events,
+      },
+      {
+        name: 'chaos-space-events',
+        label: 'Chaos Space Events',
+        placeholder: 'Chaos Space Events',
+        type: FormFieldType.Editor,
+        control: this.formGroup().controls.chaos_space_events,
+      },
+      {
+        name: 'submit',
+        label: 'Save Rules',
+        type: FormFieldType.Submit,
+        position: 'full',
+        loading: this.savingRules(),
+      },
+    ]),
+  }));
 
   private readonly disableFooterEffect = effect(() =>
     this.editMode()

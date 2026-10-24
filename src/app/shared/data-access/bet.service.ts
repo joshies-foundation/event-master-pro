@@ -194,51 +194,49 @@ export class BetService {
       map((bets) => (bets ? [...bets].reverse() : bets)),
     ),
   }).pipe(
-    whenAllValuesNotNull(
-      ({ userPlayerId, bets }): Observable<ChartData> =>
-        of({
-          labels: Array.from({ length: bets.length }, () => ''),
-          datasets: [
-            {
-              label: 'Total Profit',
-              data: bets.reduce<number[]>(
-                (prev, bet, index) => [
-                  ...prev,
-                  (prev[index - 1] ?? 0) +
-                    betGainOrLossAmount(bet, userPlayerId),
-                ],
-                [],
-              ),
-              borderColor: getCssVariableValue('--color-foreground'),
-              borderWidth: 2,
-              type: 'line',
-            },
-            {
-              label: 'Bet Result',
-              data:
-                bets.map((bet) => betGainOrLossAmount(bet, userPlayerId)) ?? [],
-              backgroundColor:
-                bets.map((bet) =>
-                  betGainOrLossAmount(bet, userPlayerId) > 0
-                    ? getCssVariableValue(
-                        '--color-success-background-translucent',
-                      )
-                    : getCssVariableValue(
-                        '--color-danger-background-translucent',
-                      ),
-                ) ?? [],
-              borderColor:
-                bets.map((bet) =>
-                  betGainOrLossAmount(bet, userPlayerId) > 0
-                    ? getCssVariableValue('--color-success-foreground')
-                    : getCssVariableValue('--color-danger-foreground'),
-                ) ?? [],
-              borderWidth: 1,
-              borderRadius: 20,
-              maxBarThickness: 12,
-            },
-          ],
-        } as ChartData),
+    whenAllValuesNotNull(({ userPlayerId, bets }): Observable<ChartData> =>
+      of({
+        labels: Array.from({ length: bets.length }, () => ''),
+        datasets: [
+          {
+            label: 'Total Profit',
+            data: bets.reduce<number[]>(
+              (prev, bet, index) => [
+                ...prev,
+                (prev[index - 1] ?? 0) + betGainOrLossAmount(bet, userPlayerId),
+              ],
+              [],
+            ),
+            borderColor: getCssVariableValue('--color-foreground'),
+            borderWidth: 2,
+            type: 'line',
+          },
+          {
+            label: 'Bet Result',
+            data:
+              bets.map((bet) => betGainOrLossAmount(bet, userPlayerId)) ?? [],
+            backgroundColor:
+              bets.map((bet) =>
+                betGainOrLossAmount(bet, userPlayerId) > 0
+                  ? getCssVariableValue(
+                      '--color-success-background-translucent',
+                    )
+                  : getCssVariableValue(
+                      '--color-danger-background-translucent',
+                    ),
+              ) ?? [],
+            borderColor:
+              bets.map((bet) =>
+                betGainOrLossAmount(bet, userPlayerId) > 0
+                  ? getCssVariableValue('--color-success-foreground')
+                  : getCssVariableValue('--color-danger-foreground'),
+              ) ?? [],
+            borderWidth: 1,
+            borderRadius: 20,
+            maxBarThickness: 12,
+          },
+        ],
+      } as ChartData),
     ),
     shareReplay(1),
   );

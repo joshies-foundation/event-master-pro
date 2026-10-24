@@ -25,11 +25,11 @@ type FunctionReturnType<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema['Functions']
     | { schema: keyof DatabaseWithoutInternals },
-  FunctionName extends DefaultSchemaTableNameOrOptions extends {
+  FunctionName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Functions']
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }

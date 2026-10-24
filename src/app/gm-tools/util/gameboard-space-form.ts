@@ -96,9 +96,8 @@ export function gameboardSpaceFormFactory(
   );
 
   const gameboardSpacePreviewData: Signal<GameboardSpaceEffectWithData> =
-    computed(
-      (): GameboardSpaceEffectWithData =>
-        getGameboardSpaceEffectWithData(gameboardSpaceFormValue()),
+    computed((): GameboardSpaceEffectWithData =>
+      getGameboardSpaceEffectWithData(gameboardSpaceFormValue()),
     );
 
   const gameboardSpaceForm = {

@@ -318,43 +318,41 @@ export default class GameboardSpaceEntryPageComponent {
   > = this.playerService.players$.pipe(
     defined(),
     take(1), // take 1 so a player changing their name or picture doesn't reset the form
-    map(
-      (players): FormGroup =>
-        this.formBuilder.nonNullable.group(
-          players!.reduce(
-            (prev, player) => ({
-              ...prev,
-              [player.player_id]: this.formBuilder.group({
-                distanceTraveled: [
-                  this.initialFormValue?.[player.player_id]?.distanceTraveled,
-                  Validators.required,
-                ],
-                gameboardSpaceId: [
-                  this.initialFormValue?.[player.player_id]?.gameboardSpaceId,
-                  Validators.required,
-                ],
-                decision: [
-                  this.initialFormValue?.[player.player_id]?.decision ??
-                    'points',
-                  Validators.required,
-                ],
-                triggersDuel: [
-                  this.initialFormValue?.[player.player_id]?.triggersDuel ??
-                    false,
-                ],
-                triggeredDuelCreated: [
-                  this.initialFormValue?.[player.player_id]
-                    ?.triggeredDuelCreated ?? false,
-                ],
-                chancePointsAmount: [
-                  this.initialFormValue?.[player.player_id]
-                    ?.chancePointsAmount ?? 0,
-                ],
-              }),
+    map((players): FormGroup =>
+      this.formBuilder.nonNullable.group(
+        players!.reduce(
+          (prev, player) => ({
+            ...prev,
+            [player.player_id]: this.formBuilder.group({
+              distanceTraveled: [
+                this.initialFormValue?.[player.player_id]?.distanceTraveled,
+                Validators.required,
+              ],
+              gameboardSpaceId: [
+                this.initialFormValue?.[player.player_id]?.gameboardSpaceId,
+                Validators.required,
+              ],
+              decision: [
+                this.initialFormValue?.[player.player_id]?.decision ?? 'points',
+                Validators.required,
+              ],
+              triggersDuel: [
+                this.initialFormValue?.[player.player_id]?.triggersDuel ??
+                  false,
+              ],
+              triggeredDuelCreated: [
+                this.initialFormValue?.[player.player_id]
+                  ?.triggeredDuelCreated ?? false,
+              ],
+              chancePointsAmount: [
+                this.initialFormValue?.[player.player_id]?.chancePointsAmount ??
+                  0,
+              ],
             }),
-            {},
-          ),
+          }),
+          {},
         ),
+      ),
     ),
     shareReplay(1),
   );
@@ -397,8 +395,7 @@ export default class GameboardSpaceEntryPageComponent {
       formValue: this.formValue(),
       players: this.playerService.players(),
       gameboardSpaces: this.gameboardService.gameboardSpaces() as
-        | GameboardSpaceModel[]
-        | undefined,
+        GameboardSpaceModel[] | undefined,
     }),
   );
 

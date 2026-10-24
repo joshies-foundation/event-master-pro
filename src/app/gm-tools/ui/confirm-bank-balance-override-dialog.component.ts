@@ -54,10 +54,8 @@ export class ConfirmBankBalanceOverrideDialogComponent {
 
   protected readonly confirmOverrideDialogKey = confirmOverrideDialogKey;
 
-  readonly tableModel = computed(
-    (): OverrideDefinitionTableModel => ({
-      ...this.model(),
-      readonly: true,
-    }),
-  );
+  readonly tableModel = computed((): OverrideDefinitionTableModel => ({
+    ...this.model(),
+    readonly: true,
+  }));
 }

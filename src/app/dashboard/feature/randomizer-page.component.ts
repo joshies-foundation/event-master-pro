@@ -199,8 +199,7 @@ export default class RandomizerPageComponent {
   private readonly specialSpaceEvents = computed(() => {
     const selectedSpecialSpace = this.selectedSpecialSpace();
     const effectData = selectedSpecialSpace?.effect_data as
-      | SpecialSpaceEffectData
-      | undefined;
+      SpecialSpaceEffectData | undefined;
     const eventTemplates = this.specialSpaceEventTemplates();
 
     return (
@@ -222,8 +221,7 @@ export default class RandomizerPageComponent {
   private readonly chaosEvents = computed(() => {
     const selectedChaosSpace = this.selectedChaosSpace();
     const effectData = selectedChaosSpace?.effect_data as
-      | ChaosSpaceEffectData
-      | undefined;
+      ChaosSpaceEffectData | undefined;
     const chaosSpaceEventTemplates = this.chaosSpaceEventTemplates();
 
     return (
