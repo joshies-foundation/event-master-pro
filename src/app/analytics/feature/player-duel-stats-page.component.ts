@@ -13,7 +13,7 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerDuelStats } from '../../shared/util/supabase-types';
 import { BattingAvgPipe } from '../../shared/ui/batting-average.pipe';
-import { ChartModule } from 'primeng/chart';
+import { ChartModule } from '@openng/optimus-ui/chart';
 import { PlayerDuelStatsChartDataPipe } from '../ui/player-duel-stats-chart-data.pipe';
 import { ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';

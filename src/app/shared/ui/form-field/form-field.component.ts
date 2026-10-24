@@ -9,30 +9,30 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import {
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
+import { InputTextModule } from '@openng/optimus-ui/inputtext';
 import { LowerCasePipe, NgClass, NgOptimizedImage } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import {
   takeUntilDestroyed,
   toObservable,
   toSignal,
 } from '@angular/core/rxjs-interop';
-import { DatePicker } from 'primeng/datepicker';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { EditorModule } from 'primeng/editor';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { CheckboxModule } from 'primeng/checkbox';
+import { DatePicker } from '@openng/optimus-ui/datepicker';
+import { MultiSelectModule } from '@openng/optimus-ui/multiselect';
+import { EditorModule } from '@openng/optimus-ui/editor';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
+import { CheckboxModule } from '@openng/optimus-ui/checkbox';
 import { concat, delay, map, of, switchMap } from 'rxjs';
 import { EventService } from '../../data-access/event.service';
-import { ImageModule } from 'primeng/image';
-import { SkeletonModule } from 'primeng/skeleton';
+import { ImageModule } from '@openng/optimus-ui/image';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 
 export enum FormFieldType {
   Text,

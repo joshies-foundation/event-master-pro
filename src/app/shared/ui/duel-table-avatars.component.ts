@@ -5,7 +5,7 @@ import {
   input,
 } from '@angular/core';
 import { DuelStatus } from '../util/supabase-helpers';
-import { AvatarModule } from 'primeng/avatar';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { DuelModel } from '../util/supabase-types';
 
 @Component({

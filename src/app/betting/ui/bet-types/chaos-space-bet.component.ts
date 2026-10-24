@@ -1,11 +1,11 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import {
   BetSubtype,
   SpaceEventStatus,
 } from '../../../shared/util/supabase-helpers';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
 import {
   outputFromObservable,
   toObservable,

@@ -8,8 +8,8 @@ import {
   signal,
 } from '@angular/core';
 import { CardComponent } from '../../shared/ui/card.component';
-import { Select } from 'primeng/select';
-import { AvatarModule } from 'primeng/avatar';
+import { Select } from '@openng/optimus-ui/select';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { DecimalPipe } from '@angular/common';
 import {
   PlayerService,
@@ -19,10 +19,10 @@ import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { GameboardSpaceModel } from '../../shared/util/supabase-types';
-import { Button } from 'primeng/button';
+import { Button } from '@openng/optimus-ui/button';
 import { DuelService } from '../../shared/data-access/duel.service';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({

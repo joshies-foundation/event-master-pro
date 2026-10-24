@@ -65,31 +65,31 @@ All lines must be `ok`. It checks that the local Supabase auth service answers, 
 
 `$V browser <command>` sends one action to the run's browser and prints the result. Exit code 1 means the action failed. Paths are relative to the dev server, and `--path` values are relative to the evidence dir.
 
-| Command                                                                 | Does                                                                                  |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `goto /betting`                                                         | load a route (full page load; Angular boots again)                                    |
-| `tap --role link --name "Analytics" --within nav`                       | touch-tap an element; use `tap`, not `click`, since this is a touch device            |
-| `fill --placeholder Username --value colin`                             | set an input's value                                                                  |
-| `type --role spinbutton --value -5`                                     | clear and type real keystrokes; needed for PrimeNG number inputs, which ignore `fill` |
-| `press --key Enter`                                                     | keyboard key                                                                          |
-| `back`                                                                  | browser back (the iOS swipe-back gesture)                                             |
-| `wait --url /home` / `wait --role table` / `wait --text "Saved" --gone` | wait for a URL substring, or for an element to appear or disappear                    |
-| `text --role heading --name "Colin"` / `count --role row`               | read text or count matches                                                            |
-| `dialog --value "New name"` / `dialog --dismiss`                        | answer the next native `prompt`/`confirm`/`alert` (default: accept)                   |
-| `snapshot [--path x.aria.txt] [--css sel]`                              | ARIA snapshot of the page, the main way to see what is on screen                      |
-| `screenshot --path x.png [--full]`                                      | phone-size screenshot                                                                 |
-| `rest "/user?select=display_name&id=eq.<uuid>" [--path x.json]`         | read-only PostgREST GET as the logged-in user, for checking stored state              |
-| `console [--errors] [--tail 80] [--path x.log]`                         | browser console, page errors, dialogs, and navigations for this browser               |
-| `eval "document.title"`                                                 | run JS in the page                                                                    |
-| `api`                                                                   | origins of every Supabase API call the page made                                      |
-| `whoami`                                                                | device, URL, Supabase origins, session user                                           |
+| Command                                                                 | Does                                                                                     |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `goto /betting`                                                         | load a route (full page load; Angular boots again)                                       |
+| `tap --role link --name "Analytics" --within nav`                       | touch-tap an element; use `tap`, not `click`, since this is a touch device               |
+| `fill --placeholder Username --value colin`                             | set an input's value                                                                     |
+| `type --role spinbutton --value -5`                                     | clear and type real keystrokes; needed for Optimus UI number inputs, which ignore `fill` |
+| `press --key Enter`                                                     | keyboard key                                                                             |
+| `back`                                                                  | browser back (the iOS swipe-back gesture)                                                |
+| `wait --url /home` / `wait --role table` / `wait --text "Saved" --gone` | wait for a URL substring, or for an element to appear or disappear                       |
+| `text --role heading --name "Colin"` / `count --role row`               | read text or count matches                                                               |
+| `dialog --value "New name"` / `dialog --dismiss`                        | answer the next native `prompt`/`confirm`/`alert` (default: accept)                      |
+| `snapshot [--path x.aria.txt] [--css sel]`                              | ARIA snapshot of the page, the main way to see what is on screen                         |
+| `screenshot --path x.png [--full]`                                      | phone-size screenshot                                                                    |
+| `rest "/user?select=display_name&id=eq.<uuid>" [--path x.json]`         | read-only PostgREST GET as the logged-in user, for checking stored state                 |
+| `console [--errors] [--tail 80] [--path x.log]`                         | browser console, page errors, dialogs, and navigations for this browser                  |
+| `eval "document.title"`                                                 | run JS in the page                                                                       |
+| `api`                                                                   | origins of every Supabase API call the page made                                         |
+| `whoami`                                                                | device, URL, Supabase origins, session user                                              |
 
 Locators: `--role` + `--name` (substring match unless `--exact`), `--text`, `--placeholder`, `--label`, or `--css`. Add `--within <css>` to scope and `--nth N` to pick a match. Prefer roles and visible names. Examples that work in this app:
 
 - Footer tabs: `tap --role link --name "GM Tools" --within nav`. Tab names have a leading icon glyph, so a substring match is what finds them.
 - A button in a table row: `tap --role button --name Edit --within 'tr:has-text("Colin")'`.
-- PrimeNG inputs: `--role spinbutton` (with `type`), `--role switch`, `--role checkbox`, `--role combobox --name "Select an opponent"`, `--role radio --name "Replace Score Entirely"`.
-- In-app confirm dialogs (PrimeNG, not native): `tap --role button --name Yes --within '[role=alertdialog]:has-text("Confirmation")'`. Native `confirm()`/`prompt()` use the `dialog` command instead.
+- Optimus UI inputs: `--role spinbutton` (with `type`), `--role switch`, `--role checkbox`, `--role combobox --name "Select an opponent"`, `--role radio --name "Replace Score Entirely"`.
+- In-app confirm dialogs (Optimus UI, not native): `tap --role button --name Yes --within '[role=alertdialog]:has-text("Confirmation")'`. Native `confirm()`/`prompt()` use the `dialog` command instead.
 
 Any command that triggers a console error, page error, or native dialog appends them under `-- during this command:`. Read that output.
 

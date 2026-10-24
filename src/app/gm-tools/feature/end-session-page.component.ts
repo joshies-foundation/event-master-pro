@@ -4,8 +4,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
+import { MessageService } from '@openng/optimus-ui/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { SessionService } from '../../shared/data-access/session.service';
 import {
   showErrorMessage,

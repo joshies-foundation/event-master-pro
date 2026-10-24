@@ -7,14 +7,14 @@ import {
   Signal,
 } from '@angular/core';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { TableModule } from '@openng/optimus-ui/table';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { SessionService } from '../../shared/data-access/session.service';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -23,8 +23,8 @@ import {
   saveRecordToLocalStorage,
 } from '../../shared/util/local-storage-helpers';
 import { EventService } from '../../shared/data-access/event.service';
-import { AvatarGroupModule } from 'primeng/avatargroup';
-import { AvatarModule } from 'primeng/avatar';
+import { AvatarGroupModule } from '@openng/optimus-ui/avatargroup';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { switchMap } from 'rxjs';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';

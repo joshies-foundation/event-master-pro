@@ -13,10 +13,10 @@ import {
   GameboardSpaceModel,
   SpecialSpaceEffectData,
 } from '../../shared/util/supabase-types';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import { FormsModule } from '@angular/forms';
 import RandomizerComponent from '../ui/randomizer.component';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';

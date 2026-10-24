@@ -6,7 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { PostgrestResponse } from '@supabase/supabase-js';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';

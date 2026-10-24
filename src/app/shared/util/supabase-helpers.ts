@@ -1,7 +1,7 @@
 import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import { Observable, switchMap } from 'rxjs';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';

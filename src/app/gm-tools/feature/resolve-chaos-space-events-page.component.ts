@@ -7,25 +7,25 @@ import {
 } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import {
   GameboardSpaceEffect,
   RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
-import { AvatarModule } from 'primeng/avatar';
-import { SkeletonModule } from 'primeng/skeleton';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { StatusTagComponent } from '../ui/status-tag.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { ChaosSpaceEventModel } from '../../shared/util/supabase-types';
 
 @Component({

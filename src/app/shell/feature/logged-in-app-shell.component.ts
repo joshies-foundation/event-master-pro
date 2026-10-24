@@ -14,7 +14,7 @@ import { FooterService } from '../../shared/data-access/footer.service';
 import { layerPages } from '../../route-animations';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-helpers';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { BetService } from '../../shared/data-access/bet.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PrizeService } from '../../shared/data-access/prize.service';

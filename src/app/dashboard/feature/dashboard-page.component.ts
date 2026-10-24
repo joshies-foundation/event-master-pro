@@ -7,7 +7,7 @@ import {
 import { SessionService } from '../../shared/data-access/session.service';
 import { CountdownTimerComponent } from '../../shared/ui/countdown-timer.component';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
   BetStatus,
@@ -30,8 +30,8 @@ import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.co
 import { StatusTagComponent } from '../../gm-tools/ui/status-tag.component';
 import { EventInfoComponent } from '../../shared/ui/event-info.component';
 import { EventService } from '../../shared/data-access/event.service';
-import { ButtonModule } from 'primeng/button';
-import { CarouselModule } from 'primeng/carousel';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { CarouselModule } from '@openng/optimus-ui/carousel';
 import { BetService } from '../../shared/data-access/bet.service';
 import { BetComponent } from '../../shared/ui/bet.component';
 import { RouterLink } from '@angular/router';

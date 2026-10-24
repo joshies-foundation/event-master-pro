@@ -9,18 +9,18 @@ import {
 } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
+import { TableModule } from '@openng/optimus-ui/table';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { EventService } from '../../shared/data-access/event.service';
-import { AvatarModule } from 'primeng/avatar';
-import { AvatarGroupModule } from 'primeng/avatargroup';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
+import { AvatarGroupModule } from '@openng/optimus-ui/avatargroup';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
 

@@ -18,7 +18,7 @@ import { GameboardSpaceEffect } from '../../shared/util/supabase-helpers';
 import { Form } from '../../shared/ui/form.component';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import {
   ChaosSpaceEventTemplateModel,
@@ -173,7 +173,7 @@ export function gameboardSpaceFormFactory(
         type: FormFieldType.Text,
         name: 'icon-class',
         label:
-          'Icon Class (<a href="https://primeng.org/icons#list" target="_blank" class="text-blue-500 underline">List of possible icons</a>)',
+          'Icon Class (<a href="https://optimus.openng.org/icons" target="_blank" class="text-blue-500 underline">List of possible icons</a>)',
         placeholder: 'Eg: pi pi-bolt',
         control: gameboardSpaceFormGroup.controls.icon_class,
       },

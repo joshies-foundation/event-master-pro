@@ -1,6 +1,6 @@
 import { Component, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import {
   PlayerService,
   PlayerWithUserAndRankInfo,

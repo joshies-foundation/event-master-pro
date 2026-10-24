@@ -9,11 +9,11 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToggleSwitch } from 'primeng/toggleswitch';
-import { SkeletonModule } from 'primeng/skeleton';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
+import { ToggleSwitch } from '@openng/optimus-ui/toggleswitch';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { PrizeService } from '../../shared/data-access/prize.service';
 import { SessionService } from '../../shared/data-access/session.service';

@@ -8,11 +8,11 @@ import {
   Signal,
   signal,
 } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { TableModule } from '@openng/optimus-ui/table';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { FormsModule } from '@angular/forms';
 import { PlayerService } from '../../../shared/data-access/player.service';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { undefinedUntilAllPropertiesAreDefined } from '../../../shared/util/signal-helpers';
 import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { SessionService } from '../../../shared/data-access/session.service';
@@ -41,14 +41,14 @@ import {
   showMessageOnError,
   SpaceEventStatus,
 } from '../../../shared/util/supabase-helpers';
-import { ButtonModule } from 'primeng/button';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { showSuccessMessage } from '../../../shared/util/message-helpers';
 import { EventService } from '../../../shared/data-access/event.service';
 import { RouterLink } from '@angular/router';
 import { EventInfoComponent } from '../../../shared/ui/event-info.component';
 import { GameboardService } from '../../../shared/data-access/gameboard.service';
-import { AvatarModule } from 'primeng/avatar';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { StatusTagComponent } from '../../../gm-tools/ui/status-tag.component';
 import { confirmBackendAction } from '../../../shared/util/dialog-helpers';
 import { DuelService } from '../../../shared/data-access/duel.service';

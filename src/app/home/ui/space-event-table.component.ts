@@ -9,8 +9,8 @@ import {
   GameboardSpaceEffect,
   SpaceEventStatus,
 } from '../../shared/util/supabase-helpers';
-import { AvatarModule } from 'primeng/avatar';
-import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { StatusTagComponent } from '../../gm-tools/ui/status-tag.component';
 import {
   ChaosSpaceEventModel,

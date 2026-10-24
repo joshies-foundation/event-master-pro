@@ -8,16 +8,16 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { TableModule } from 'primeng/table';
-import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from '@openng/optimus-ui/table';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { NgOptimizedImage } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { BetStatus, trackByPlayerId } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
 import { PlayerModel, UserModel } from '../../shared/util/supabase-types';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { BadgeModule } from 'primeng/badge';
-import { OverlayBadge } from 'primeng/overlaybadge';
+import { BadgeModule } from '@openng/optimus-ui/badge';
+import { OverlayBadge } from '@openng/optimus-ui/overlaybadge';
 
 export interface FooterLinkModel {
   href: string;

@@ -1,11 +1,11 @@
 import { DecimalPipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { PlayerWithUserAndRankInfo } from '../data-access/player.service';
 import { trackByUserId } from '../util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from './strongly-typed-table-row.directive';
-import { ImageModule } from 'primeng/image';
+import { ImageModule } from '@openng/optimus-ui/image';
 
 @Component({
   selector: 'joshies-rankings-table',

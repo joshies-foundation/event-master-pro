@@ -13,10 +13,10 @@ import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { GameboardSpaceEffectWithData } from '../../shared/util/supabase-types';
 import { Form, FormComponent } from '../../shared/ui/form.component';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { GameboardSpaceDescriptionPipe } from '../ui/gameboard-space-description.pipe';
 import {
   GameboardSpaceTypeForm,

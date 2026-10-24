@@ -14,12 +14,12 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { GetPlayerRoundScoreFunctionReturnType } from '../../shared/util/supabase-types';
 import { ChartData, ChartOptions } from 'chart.js';
 import { getCssVariableValue } from '../../shared/util/css-helpers';
-import { ChartModule } from 'primeng/chart';
+import { ChartModule } from '@openng/optimus-ui/chart';
 import { AnalyticsService } from '../data-access/analytics.service';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { TransactionTableComponent } from '../ui/transaction-table.component';
-import { Button } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';
+import { Button } from '@openng/optimus-ui/button';
+import { DividerModule } from '@openng/optimus-ui/divider';
 import { RouterLink } from '@angular/router';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 

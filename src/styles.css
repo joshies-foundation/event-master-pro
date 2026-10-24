@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-@import 'tailwindcss-primeui';
-@import 'primeicons/primeicons.css';
+@import '@openng/optimus-ui-tailwindcss';
+@import '@openng/icons/openng-icons.css';
 @import './customicons.css';
 
 @source inline('animate-spin');
@@ -102,7 +102,7 @@ body {
   width: 100%;
   height: calc(100% + env(safe-area-inset-top) / 2);
   overscroll-behavior: contain;
-  line-height: 1.2; /* override Tailwind's default of 1.5 to match PrimeNG's styles */
+  line-height: 1.2;
 }
 
 body {

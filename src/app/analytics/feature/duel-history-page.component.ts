@@ -9,7 +9,7 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { trackById } from '../../shared/util/supabase-helpers';
 import { DecimalPipe } from '@angular/common';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { DuelHistoryRecord } from '../../shared/util/supabase-types';
 import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.component';

@@ -11,7 +11,7 @@ import { PrizeMachineComponent } from '../ui/prize-machine.component';
 import { PrizeGalleryComponent } from '../ui/prize-gallery.component';
 import { PrizeRevealComponent } from '../ui/prize-reveal.component';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import { PrizeModel } from '../../shared/util/supabase-types';
 
 @Component({

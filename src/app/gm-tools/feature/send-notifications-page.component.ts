@@ -8,14 +8,18 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../shared/data-access/user.service';
 import { NotificationsService } from '../../shared/data-access/notifications.service';
-import { ConfirmationService, MessageService, PrimeIcons } from 'primeng/api';
+import {
+  ConfirmationService,
+  MessageService,
+  OpenngIcons,
+} from '@openng/optimus-ui/api';
 import { Form, FormComponent } from '../../shared/ui/form.component';
 import {
   FormField,
   FormFieldType,
 } from '../../shared/ui/form-field/form-field.component';
 import { withAllDefined } from '../../shared/util/signal-helpers';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
@@ -121,7 +125,7 @@ export default class SendNotificationsPageComponent {
             label: 'Send Notification',
             type: FormFieldType.Submit,
             position: 'full',
-            icon: PrimeIcons.SEND,
+            icon: OpenngIcons.SEND,
             loading: this.sending(),
           },
         ],

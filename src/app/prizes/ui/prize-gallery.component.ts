@@ -4,7 +4,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
+import { DialogModule } from '@openng/optimus-ui/dialog';
 import { PrizeModel } from '../../shared/util/supabase-types';
 import { trackById } from '../../shared/util/supabase-helpers';
 

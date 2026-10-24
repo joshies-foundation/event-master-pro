@@ -7,18 +7,18 @@ import {
 } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import {
   DuelStatus,
   RoundPhase,
   trackById,
 } from '../../shared/util/supabase-helpers';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { DuelService } from '../../shared/data-access/duel.service';
 import { DuelModel } from '../../shared/util/supabase-types';
 import { DuelsTableComponent } from '../ui/duels-table.component';

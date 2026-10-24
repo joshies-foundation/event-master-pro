@@ -1,13 +1,13 @@
-diff --git a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
-index 04756cf..4c896d2 100644
---- a/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
-+++ b/node_modules/primeng/fesm2022/primeng-inputnumber.mjs
-@@ -14,6 +14,7 @@ import { TimesIcon, AngleUpIcon, AngleDownIcon } from 'primeng/icons';
- import { InputText } from 'primeng/inputtext';
- import { style as style$1 } from '@primeuix/styles/inputnumber';
- import { BaseStyle } from 'primeng/base';
-+import { DomHandler } from 'primeng/dom';
- export * from 'primeng/types/inputnumber';
+diff --git a/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs b/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs
+index e197440..5a5f9fe 100644
+--- a/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs
++++ b/node_modules/@openng/optimus-ui/fesm2022/openng-optimus-ui-inputnumber.mjs
+@@ -14,6 +14,7 @@ import { TimesIcon, AngleUpIcon, AngleDownIcon } from '@openng/optimus-ui/icons'
+ import { InputText } from '@openng/optimus-ui/inputtext';
+ import { style as style$1 } from '@openng/optimus-ui-styles/inputnumber';
+ import { BaseStyle } from '@openng/optimus-ui/base';
++import { DomHandler } from '@openng/optimus-ui/dom';
+ export * from '@openng/optimus-ui/types/inputnumber';
  
  const style = /*css*/ `
 @@ -573,7 +574,7 @@ class InputNumber extends BaseInput {

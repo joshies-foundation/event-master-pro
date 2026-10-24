@@ -5,11 +5,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { TableModule } from '@openng/optimus-ui/table';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { NgOptimizedImage } from '@angular/common';
-import { SkeletonModule } from 'primeng/skeleton';
-import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { UserService } from '../../shared/data-access/user.service';
 import { trackByPlayerId } from '../../shared/util/supabase-helpers';

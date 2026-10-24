@@ -5,11 +5,15 @@ import {
   Signal,
   signal,
 } from '@angular/core';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { Form, FormComponent } from '../../shared/ui/form.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import { ConfirmationService, MessageService, SharedModule } from 'primeng/api';
+import {
+  ConfirmationService,
+  MessageService,
+  SharedModule,
+} from '@openng/optimus-ui/api';
 import { FormBuilder } from '@angular/forms';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';

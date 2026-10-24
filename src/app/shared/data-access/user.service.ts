@@ -7,7 +7,7 @@ import {
 } from '../util/supabase-helpers';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import { resizeImage } from '../util/image-helpers';
 import { map, Observable, shareReplay } from 'rxjs';
 import { whenNotUndefined } from '../util/rxjs-helpers';

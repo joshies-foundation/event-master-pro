@@ -9,7 +9,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TournamentBracketComponent } from './tournament-bracket.component';
 import { BetType, EventFormat } from '../../shared/util/supabase-helpers';
-import { Button } from 'primeng/button';
+import { Button } from '@openng/optimus-ui/button';
 
 @Component({
   selector: 'joshies-event-info',

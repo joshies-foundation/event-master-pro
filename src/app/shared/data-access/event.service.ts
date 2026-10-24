@@ -1,7 +1,7 @@
 import { inject, Injectable, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
-import { MessageService } from 'primeng/api';
+import { MessageService } from '@openng/optimus-ui/api';
 import {
   combineLatestWith,
   distinctUntilChanged,

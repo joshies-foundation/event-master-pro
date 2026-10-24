@@ -13,14 +13,14 @@ import {
 import { Form, FormComponent } from '../../shared/ui/form.component';
 import { withAllDefined } from '../../shared/util/signal-helpers';
 import { UserService } from '../../shared/data-access/user.service';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { SessionService } from '../../shared/data-access/session.service';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 
 @Component({

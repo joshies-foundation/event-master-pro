@@ -8,13 +8,13 @@ import {
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
+import { TableModule } from '@openng/optimus-ui/table';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { RouterLink } from '@angular/router';
 import { BetStatus } from '../../shared/util/supabase-helpers';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { BetService } from '../../shared/data-access/bet.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
 import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 

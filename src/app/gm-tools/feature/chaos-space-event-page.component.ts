@@ -16,9 +16,9 @@ import {
   PlayerService,
   PlayerWithUserAndRankInfo,
 } from '../../shared/data-access/player.service';
-import { AvatarModule } from 'primeng/avatar';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import {
   combineLatest,
   combineLatestWith,
@@ -38,7 +38,7 @@ import {
 } from '../../shared/util/rxjs-helpers';
 import { DecimalPipe, JsonPipe } from '@angular/common';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import {
   ChaosSpaceEffectData,
   ChaosSpaceEventModel,
@@ -53,15 +53,15 @@ import {
   trackByPlayerId,
 } from '../../shared/util/supabase-helpers';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { PaginatorModule } from 'primeng/paginator';
-import { TableModule } from 'primeng/table';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
+import { PaginatorModule } from '@openng/optimus-ui/paginator';
+import { TableModule } from '@openng/optimus-ui/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { playersWithScoreChangesToPlayerScoreChanges } from '../util/score-change-helpers';
-import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxModule } from '@openng/optimus-ui/checkbox';
 import { BetService } from '../../shared/data-access/bet.service';
 
 interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {

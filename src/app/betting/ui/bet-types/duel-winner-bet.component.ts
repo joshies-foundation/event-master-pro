@@ -1,6 +1,6 @@
 import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import { DuelService } from '../../../shared/data-access/duel.service';
 import { DuelStatus } from '../../../shared/util/supabase-helpers';
 import { DuelModel } from '../../../shared/util/supabase-types';

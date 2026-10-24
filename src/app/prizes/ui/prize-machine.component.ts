@@ -5,7 +5,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
+import { ButtonModule } from '@openng/optimus-ui/button';
 
 @Component({
   selector: 'joshies-prize-machine',

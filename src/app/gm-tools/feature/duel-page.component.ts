@@ -16,9 +16,9 @@ import {
   PlayerService,
   PlayerWithUserAndRankInfo,
 } from '../../shared/data-access/player.service';
-import { AvatarModule } from 'primeng/avatar';
+import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { GameStateService } from '../../shared/data-access/game-state.service';
-import { SkeletonModule } from 'primeng/skeleton';
+import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -27,7 +27,7 @@ import {
   switchMap,
 } from 'rxjs';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { Select } from 'primeng/select';
+import { Select } from '@openng/optimus-ui/select';
 import {
   DuelModel,
   DuelSpaceEffectData,
@@ -37,17 +37,17 @@ import {
 } from '../../shared/util/supabase-types';
 import { BetStatus, DuelStatus } from '../../shared/util/supabase-helpers';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { PaginatorModule } from 'primeng/paginator';
-import { TableModule } from 'primeng/table';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
+import { PaginatorModule } from '@openng/optimus-ui/paginator';
+import { TableModule } from '@openng/optimus-ui/table';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
 import { DuelService } from '../../shared/data-access/duel.service';
 import { confirmBackendAction } from '../../shared/util/dialog-helpers';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
 import { BetService } from '../../shared/data-access/bet.service';
-import { InputNumber } from 'primeng/inputnumber';
+import { InputNumber } from '@openng/optimus-ui/inputnumber';
 
 interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
   scoreChange: number;

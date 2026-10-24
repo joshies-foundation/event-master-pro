@@ -7,7 +7,7 @@ import {
   model,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
 import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-class.pipe';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
