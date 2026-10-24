@@ -7,7 +7,6 @@ import {
   RealtimePostgresChangesPayload,
   SupabaseClient,
 } from '@supabase/supabase-js';
-import type { GenericSchema } from '@supabase/supabase-js';
 
 type ID = string | number;
 
@@ -27,7 +26,7 @@ export type LiveTableCallback<LiveRow> = (
 export type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'in';
 
 type TDatabase = {
-  public: GenericSchema;
+  public: { Tables: Record<string, { Row: Record<string, unknown> }> };
 };
 
 type TTable<Database extends TDatabase> = keyof Database['public']['Tables'] &
@@ -184,9 +183,7 @@ type Delete<Row extends LiveRow> = {
 };
 
 export type LiveTableEvent<Row extends LiveRow> =
-  | Insert<Row>
-  | Update<Row>
-  | Delete<Row>;
+  Insert<Row> | Update<Row> | Delete<Row>;
 
 export type ILiveTable<Row extends LiveRow> = {
   processSnapshot(records: readonly Row[]): void;
