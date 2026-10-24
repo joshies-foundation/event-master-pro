@@ -88,6 +88,14 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "local-supabase": {
+              "fileReplacements": [
+                {
+                  "replace": "src/app/shared/util/supabase-connection.ts",
+                  "with": "src/app/shared/util/supabase-connection.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -99,7 +107,7 @@
               "buildTarget": "joshies:build:production"
             },
             "development": {
-              "buildTarget": "joshies:build:development"
+              "buildTarget": "joshies:build:development,local-supabase"
             }
           },
           "defaultConfiguration": "development"

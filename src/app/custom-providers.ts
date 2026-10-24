@@ -1,18 +1,17 @@
 import { Provider } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+export interface SupabaseConnection {
+  url: string;
+  anonKey: string;
+}
+
 export function provideSupabase({
-  supabaseProjectId,
-  supabaseAnonKey,
-}: {
-  supabaseProjectId: string;
-  supabaseAnonKey: string;
-}): Provider {
+  url,
+  anonKey,
+}: SupabaseConnection): Provider {
   return {
     provide: SupabaseClient,
-    useValue: createClient(
-      `https://${supabaseProjectId}.supabase.co`,
-      supabaseAnonKey,
-    ),
+    useValue: createClient(url, anonKey),
   };
 }
