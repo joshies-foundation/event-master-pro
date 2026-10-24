@@ -3,15 +3,15 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export interface SupabaseConnection {
   url: string;
-  anonKey: string;
+  publishableKey: string;
 }
 
 export function provideSupabase({
   url,
-  anonKey,
+  publishableKey,
 }: SupabaseConnection): Provider {
   return {
     provide: SupabaseClient,
-    useValue: createClient(url, anonKey),
+    useValue: createClient(url, publishableKey),
   };
 }

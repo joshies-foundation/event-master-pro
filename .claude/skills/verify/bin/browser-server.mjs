@@ -164,7 +164,7 @@ const commands = {
     });
     if (!token) throw new Error('not logged in; run emp-verify login');
     const res = await fetch(`${stack.API_URL}/rest/v1${path.startsWith('/') ? path : `/${path}`}`, {
-      headers: { apikey: stack.ANON_KEY, authorization: `Bearer ${token}` },
+      headers: { apikey: stack.PUBLISHABLE_KEY, authorization: `Bearer ${token}` },
     });
     const body = await res.text();
     if (!res.ok) throw new Error(`HTTP ${res.status} ${body}`);

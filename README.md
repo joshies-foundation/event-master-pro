@@ -73,6 +73,8 @@ Every `ng build` talks to the hosted Supabase project named in `.env`, in both t
 cp .env.example .env
 ```
 
+`NG_APP_SUPABASE_PUBLISHABLE_KEY` is the project's publishable key (`sb_publishable_...`, under Settings > API Keys in the Supabase dashboard). The app never uses the legacy `anon` key. Cloudflare Pages reads the same variables from the Pages project's environment variables, with TEST values for previews and PROD values for production.
+
 ## Authors
 
 <a href="https://github.com/c-o-l-i-n">
