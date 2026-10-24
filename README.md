@@ -103,16 +103,11 @@ cp .env.example .env
 
 The app runs on Cloudflare Workers as a Worker named `event-master-pro` that serves the build output as static assets on `joshies.app`. `cloudflare.config.ts` configures the Worker, and `wrangler.config.ts` names the assets directory. Paths that are not files get `index.html`, so Angular handles every route.
 
-The `cf` CLI does not build Angular projects yet. Its `cf build` and plain `cf deploy` fail with `Unknown argument: prod`. The scripts build with `ng build`, package the output with `cf-wrangler build`, and upload it with `--prebuilt`:
+The `cf` CLI does not build Angular projects yet. Its `cf build` and plain `cf deploy` fail with `Unknown argument: prod`. `npm run deploy` builds the production configuration with `ng build`, packages the output with `cf-wrangler build`, and uploads it to `joshies.app` with `--prebuilt`.
 
-| Command                            | What it does                                                                            |
-| ---------------------------------- | --------------------------------------------------------------------------------------- |
-| `npm run deploy`                   | Builds the production configuration and deploys it to `joshies.app`.                    |
-| `npm run deploy-preview -- <name>` | Builds the development configuration and uploads it as a Worker Preview named `<name>`. |
+The build reads the Supabase project from `.env`, so point `.env` at PROD before `npm run deploy`. Sign in first with `npx cf auth login`, or set `CLOUDFLARE_API_TOKEN`.
 
-Both read the Supabase project from `.env`, so point `.env` at PROD before `npm run deploy`. Sign in first with `npx cf auth login`, or set `CLOUDFLARE_API_TOKEN`.
-
-GitHub Actions runs these for you. Every pull request and every push to `main` runs lint, a production build, and the end-to-end tests. A push to `main` that passes deploys to `joshies.app` and then checks that the site answers. A pull request from a branch in this repository also gets a preview against the TEST Supabase project, linked in a comment on the pull request. Closing the pull request deletes the preview. The workflows read `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the repository secrets, and the `NG_APP_` variables from the `production` and `preview` environments.
+GitHub Actions deploys for you. Every pull request and every push to `main` runs lint, a production build, and the end-to-end tests. A push to `main` that passes deploys to `joshies.app` and then checks that the site answers. The workflow reads `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the repository secrets, and the `NG_APP_` variables from the `production` environment.
 
 ## Authors
 
