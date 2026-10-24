@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+# Lifecycle for one EventMaster Pro verification run.
+# Usage: emp-verify <setup|up|doctor|browser|login|down|status> [args]
+# Every command except setup needs RUN_ID set. See ../SKILL.md.
+set -euo pipefail
+
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO="$(cd "$SKILL_DIR/../../.." && pwd)"
+PW_HOME="${EMP_VERIFY_PW_HOME:-$HOME/.cache/emp-verify/node}"
+TEST_REF="jdwvtjrhfsciqttiueud"
+PROD_REF="bbptbpmmfformxfzkdgl"
+TMP_BASE="${TMPDIR:-/tmp}"
+RUN_ROOT="${TMP_BASE%/}/emp-verify"
+
+die() { echo "emp-verify: $*" >&2; exit 1; }
+
+need_run() {
+  [[ -n "${RUN_ID:-}" ]] || die "set RUN_ID first, e.g. export RUN_ID=\$(date +%Y%m%d-%H%M%S)"
+  [[ "$RUN_ID" =~ ^[A-Za-z0-9._-]+$ ]] || die "RUN_ID may only contain letters, digits, . _ -"
+  STATE="$RUN_ROOT/$RUN_ID"
+  EVIDENCE="$REPO/tmp/verify/$RUN_ID"
+}
+
+project_ref() { sed -n 's/^NG_APP_SUPABASE_PROJECT_ID=//p' "$REPO/.env" | tr -d '"'"'"' \r'; }
+
+guard_test_project() {
+  [[ -f "$REPO/.env" ]] || die "$REPO/.env missing; copy .env.example and fill in the TEST project values"
+  local ref; ref="$(project_ref)"
+  [[ "$ref" != "$PROD_REF" ]] || die ".env points at the PROD Supabase project ($PROD_REF). Refusing to drive production."
+  [[ "$ref" == "$TEST_REF" ]] || echo "emp-verify: warning: .env project $ref is not the known TEST project $TEST_REF" >&2
+}
+
+# Start a command in its own session so `down` can kill the whole process group.
+spawn() { # spawn <logfile> <cmd...>; prints pid
+  local log="$1"; shift
+  nohup perl -MPOSIX -e 'POSIX::setsid(); exec @ARGV or die "exec: $!"' "$@" >"$log" 2>&1 </dev/null &
+  echo $!
+}
+
+alive() { [[ -f "$1" ]] && kill -0 "$(cat "$1")" 2>/dev/null; }
+
+free_port() { # free_port <start>
+  local p="$1"
+  while lsof -nP -iTCP:"$p" -sTCP:LISTEN >/dev/null 2>&1; do p=$((p + 1)); done
+  echo "$p"
+}
+
+kill_group() { # kill_group <pidfile> <label>
+  local pidfile="$1" label="$2"
+  alive "$pidfile" || { rm -f "$pidfile"; return 0; }
+  local pid; pid="$(cat "$pidfile")"
+  kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null || true
+  for _ in $(seq 1 20); do kill -0 "$pid" 2>/dev/null || break; sleep 0.25; done
+  kill -KILL -- "-$pid" 2>/dev/null || true
+  rm -f "$pidfile"
+  echo "stopped $label (pgid $pid)"
+}
+
+cmd_setup() {
+  mkdir -p "$PW_HOME"
+  if [[ ! -d "$PW_HOME/node_modules/playwright" ]]; then
+    npm install --prefix "$PW_HOME" --no-audit --no-fund playwright@1 >/dev/null
+  fi
+  # webkit for iPhone profiles, chromium for Android profiles
+  "$PW_HOME/node_modules/.bin/playwright" install webkit chromium >/dev/null
+  echo "playwright $("$PW_HOME/node_modules/.bin/playwright" --version) ready in $PW_HOME"
+}
+
+cmd_up() {
+  need_run; guard_test_project
+  mkdir -p "$STATE" "$EVIDENCE"
+  if alive "$STATE/ng.pid"; then echo "dev server already up: $(cat "$STATE/url")"; return 0; fi
+  [[ -d "$REPO/node_modules" ]] || die "node_modules missing; run npm install in $REPO"
+  local port; port="$(free_port "${EMP_VERIFY_PORT:-4310}")"
+  echo "http://127.0.0.1:$port" >"$STATE/url"
+  (cd "$REPO" && spawn "$STATE/ng.log" npx ng serve --host 127.0.0.1 --port "$port" --no-hmr) >"$STATE/ng.pid"
+  echo "starting ng serve on $port (log: $STATE/ng.log)"
+  for _ in $(seq 1 180); do
+    alive "$STATE/ng.pid" || { tail -40 "$STATE/ng.log" >&2; die "ng serve exited"; }
+    if grep -q "Local:" "$STATE/ng.log" && curl -fsS "http://127.0.0.1:$port/" 2>/dev/null | grep -q "<joshies-root"; then
+      echo "ready: http://127.0.0.1:$port"; return 0
+    fi
+    sleep 1
+  done
+  die "dev server not ready after 180s; see $STATE/ng.log"
+}
+
+cmd_browser() {
+  need_run
+  local sub="${1:-}"
+  if [[ "$sub" == "stop" ]]; then
+    kill_group "$STATE/browser.pid" browser
+    [[ -f "$STATE/console.log" ]] && mkdir -p "$EVIDENCE" && cat "$STATE/console.log" >>"$EVIDENCE/console.log"
+    rm -f "$STATE/browser_port" "$STATE/console.log"
+    return 0
+  fi
+  if [[ "$sub" == "start" ]]; then
+    [[ -d "$PW_HOME/node_modules/playwright" ]] || die "run '$0 setup' first"
+    [[ -f "$STATE/url" ]] || die "no dev server for RUN_ID=$RUN_ID; run '$0 up' first"
+    if alive "$STATE/browser.pid"; then echo "browser already up"; return 0; fi
+    rm -f "$STATE/browser_port"
+    STATE="$STATE" EVIDENCE="$EVIDENCE" PW_HOME="$PW_HOME" REPO="$REPO" \
+      spawn "$STATE/browser.log" node "$SKILL_DIR/bin/browser-server.mjs" >"$STATE/browser.pid"
+    for _ in $(seq 1 60); do
+      [[ -s "$STATE/browser_port" ]] && { cat "$STATE/browser.log"; return 0; }
+      alive "$STATE/browser.pid" || break
+      sleep 0.5
+    done
+    cat "$STATE/browser.log" >&2; die "browser server did not start"
+  fi
+  alive "$STATE/browser.pid" && [[ -s "$STATE/browser_port" ]] || die "no browser for RUN_ID=$RUN_ID; run '$0 browser start'"
+  STATE="$STATE" node "$SKILL_DIR/bin/browser.mjs" "$@"
+}
+
+cmd_login() {
+  need_run
+  local creds="$SKILL_DIR/.env.local"
+  [[ -f "$creds" ]] && set -a && source "$creds" && set +a
+  [[ -n "${EMP_VERIFY_USERNAME:-}" && -n "${EMP_VERIFY_PASSWORD:-}" ]] ||
+    die "set EMP_VERIFY_USERNAME and EMP_VERIFY_PASSWORD (or write them to $creds)"
+  cmd_browser goto /auth/login
+  cmd_browser fill --placeholder Username --value "$EMP_VERIFY_USERNAME"
+  cmd_browser fill --placeholder Password --value "$EMP_VERIFY_PASSWORD"
+  cmd_browser tap --role button --name "Log In"
+  cmd_browser wait --url '/home'
+  echo "logged in as $EMP_VERIFY_USERNAME"
+}
+
+cmd_doctor() {
+  need_run
+  local ok=1 ref url
+  ref="$(project_ref)"
+  if [[ "$ref" == "$PROD_REF" ]]; then echo "FAIL  .env targets PROD ($PROD_REF)"; ok=0
+  elif [[ "$ref" == "$TEST_REF" ]]; then echo "ok    .env targets TEST project $TEST_REF"
+  else echo "WARN  .env targets unknown project $ref"; fi
+
+  if alive "$STATE/ng.pid"; then
+    url="$(cat "$STATE/url")"; local port="${url##*:}" owner
+    owner="$(lsof -nP -t -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | head -1)"
+    if [[ -n "$owner" && "$(ps -o pgid= -p "$owner" | tr -d ' ')" == "$(cat "$STATE/ng.pid")" ]]; then
+      echo "ok    dev server pgid $(cat "$STATE/ng.pid") owns port $port"
+    else echo "FAIL  port $port is not owned by this run's dev server"; ok=0; fi
+    if curl -fsS "$url/" | grep -q "<title>EventMaster Pro</title>"; then echo "ok    $url serves EventMaster Pro"
+    else echo "FAIL  $url does not serve EventMaster Pro"; ok=0; fi
+  else echo "FAIL  no dev server for RUN_ID=$RUN_ID (run: emp-verify up)"; ok=0; fi
+
+  if curl -fsS -o /dev/null "https://$ref.supabase.co/auth/v1/health" -H "apikey: $(sed -n 's/^NG_APP_SUPABASE_ANON_KEY=//p' "$REPO/.env")"; then
+    echo "ok    Supabase auth reachable for $ref"
+  else echo "FAIL  Supabase auth unreachable for $ref"; ok=0; fi
+
+  if alive "$STATE/browser.pid" && [[ -s "$STATE/browser_port" ]]; then
+    echo "ok    browser server pgid $(cat "$STATE/browser.pid")"
+    cmd_browser whoami | sed 's/^/      /'
+  else echo "INFO  no browser yet (run: emp-verify browser start)"; fi
+  echo "      evidence dir: $EVIDENCE"
+  [[ $ok == 1 ]]
+}
+
+cmd_status() {
+  local root="$RUN_ROOT"
+  local found=0
+  for d in "$root"/*/; do
+    [[ -d "$d" ]] || continue
+    local id; id="$(basename "$d")"; found=1
+    printf '%s  ng:%s browser:%s  %s\n' "$id" \
+      "$(alive "$d/ng.pid" && echo up || echo down)" \
+      "$(alive "$d/browser.pid" && echo up || echo down)" "$(cat "$d/url" 2>/dev/null)"
+  done
+  [[ $found == 1 ]] || echo "no runs"
+}
+
+cmd_down() {
+  need_run
+  [[ -d "$STATE" ]] || { echo "nothing to stop for RUN_ID=$RUN_ID"; return 0; }
+  cmd_browser stop
+  kill_group "$STATE/ng.pid" "dev server"
+  rm -rf "$STATE"
+  echo "evidence kept: $EVIDENCE"
+  [[ -d "$EVIDENCE" ]] && /bin/ls -1 "$EVIDENCE" | sed 's/^/  /' || true
+}
+
+case "${1:-}" in
+  setup) cmd_setup ;;
+  up) cmd_up ;;
+  doctor) cmd_doctor ;;
+  browser) shift; cmd_browser "$@" ;;
+  login) cmd_login ;;
+  status) cmd_status ;;
+  down) cmd_down ;;
+  *) sed -n '2,4p' "$0" | sed 's/^# //'; exit 2 ;;
+esac
