@@ -191,7 +191,8 @@ export class AnalyticsService {
       .from(View.UserPrize)
       .select('*')
       .eq('user_id', userId)
-      .order('won_at', { ascending: false });
+      .order('won_at', { ascending: false })
+      .order('id', { ascending: false });
 
     if (currentSessionId !== undefined) {
       query = query.neq('session_id', currentSessionId);

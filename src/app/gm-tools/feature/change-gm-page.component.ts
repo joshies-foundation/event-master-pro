@@ -45,14 +45,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     <p class="mt-8 mb-4">Who do you want to be the new GM?</p>
 
     @if (users(); as users) {
-      <p-table
-        [value]="users"
-        [defaultSortOrder]="-1"
-        sortField="score"
-        [sortOrder]="-1"
-        [scrollable]="true"
-        [rowTrackBy]="trackById"
-      >
+      <p-table [value]="users" [scrollable]="true" [rowTrackBy]="trackById">
         <ng-template #body [joshiesStronglyTypedTableRow]="users" let-user>
           <tr>
             <!-- User -->

@@ -164,6 +164,9 @@ export class SessionService {
   }
 
   async getAllSessions(): Promise<PostgrestResponse<SessionModel>> {
-    return this.supabase.from(Table.Session).select('*');
+    return this.supabase
+      .from(Table.Session)
+      .select('*')
+      .order('id', { ascending: false });
   }
 }

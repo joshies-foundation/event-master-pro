@@ -35,7 +35,8 @@ export class PrizeService {
         ).pipe(
           map((prizes) =>
             [...prizes].sort((a, b) => {
-              if (a.won_at && b.won_at) return b.won_at.localeCompare(a.won_at);
+              if (a.won_at && b.won_at)
+                return b.won_at.localeCompare(a.won_at) || b.id - a.id;
               if (a.won_at) return -1;
               if (b.won_at) return 1;
               return a.id - b.id;

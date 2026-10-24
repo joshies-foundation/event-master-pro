@@ -529,7 +529,8 @@ export default class DashboardPageComponent {
       }))
       .sort(
         (a, b) =>
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime() ||
+          b.id - a.id,
       );
 
     // TODO: get rid of magic number and add slider or other input for duel history size
