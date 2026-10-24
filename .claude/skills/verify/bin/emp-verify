@@ -29,7 +29,7 @@ ensure_stack() {
     supabase start >"$STATE/supabase-start.log" 2>&1 || { tail -20 "$STATE/supabase-start.log" >&2; die "supabase start failed"; }
     env="$(supabase status -o env 2>/dev/null)"
   fi
-  grep -E '^(API_URL|ANON_KEY)=' <<<"$env" | tr -d '"' >"$STATE/supabase.env"
+  grep -E '^(API_URL|PUBLISHABLE_KEY)=' <<<"$env" | tr -d '"' >"$STATE/supabase.env"
   echo "local Supabase: $(sed -n 's/^API_URL=//p' "$STATE/supabase.env")"
 }
 
@@ -162,7 +162,7 @@ cmd_doctor() {
   need_run
   local ok=1 url api
   api="$(stack_var API_URL)"
-  if [[ -n "$api" ]] && curl -fsS -o /dev/null "$api/auth/v1/health" -H "apikey: $(stack_var ANON_KEY)"; then
+  if [[ -n "$api" ]] && curl -fsS -o /dev/null "$api/auth/v1/health" -H "apikey: $(stack_var PUBLISHABLE_KEY)"; then
     echo "ok    local Supabase answers at $api"
   else echo "FAIL  local Supabase is not answering (run: emp-verify up)"; ok=0; fi
 
