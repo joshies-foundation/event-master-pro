@@ -56,8 +56,12 @@ export type LiveTableParams<
   filter?: RealtimeFilter<Database, Table>;
   callback: LiveTableCallback<Row>;
   schema?: string;
-  channelName?: string;
 };
+
+// supabase.channel() returns the existing channel for a topic, and a joined
+// channel rejects new postgres_changes callbacks, so every subscription gets
+// its own topic.
+let channelCount = 0;
 
 export function liveTable<
   Database extends TDatabase,
@@ -70,17 +74,11 @@ export function liveTable<
   const parseTimestamp = (timestamp: string) => new Date(timestamp).getTime();
   const liveTable = new LiveTable<Row>(parseTimestamp);
 
-  const {
-    table,
-    filter,
-    callback,
-    channelName = `${table}-${filter}`,
-    schema = 'public',
-  } = params;
+  const { table, filter, callback, schema = 'public' } = params;
 
   return (
     supabase
-      .channel(channelName)
+      .channel(`${table}-${filter}-${channelCount++}`)
       .on(
         REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
         {
