@@ -36,9 +36,6 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
     @if (rollHistory(); as rollHistory) {
       <p-table
         [value]="rollHistory"
-        [defaultSortOrder]="-1"
-        sortField="lifetime_score"
-        [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >

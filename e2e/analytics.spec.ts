@@ -1,4 +1,6 @@
+import { sql } from './support/db';
 import { expect, openTab, test } from './support/fixtures';
+import { seed } from './support/seed';
 
 test('Analytics shows the latest transactions and the full list', async ({
   page,
@@ -44,4 +46,74 @@ test('the stats pages open from Analytics and lead back', async ({
     await page.getByRole('link', { name: 'Analytics' }).first().tap();
     await expect(page).toHaveURL(/\/analytics$/);
   }
+});
+
+const joinPlans = [
+  ['enable_mergejoin', 'enable_nestloop'],
+  ['enable_hashjoin', 'enable_nestloop'],
+  ['enable_hashjoin', 'enable_mergejoin'],
+];
+
+interface PlayerRow {
+  display_name: string;
+  user_id: string;
+}
+
+async function playerOrderUnderEachJoinPlan(
+  query: string,
+): Promise<PlayerRow[][]> {
+  const orders: PlayerRow[][] = [];
+  for (const disabled of joinPlans) {
+    const rows = await sql.begin(async (tx) => {
+      await tx`discard plans`;
+      for (const setting of disabled) {
+        await tx.unsafe(`set local ${setting} = off`);
+      }
+      return tx.unsafe<PlayerRow[]>(query);
+    });
+    orders.push([...rows]);
+  }
+  return orders;
+}
+
+test('Previous Session Rankings orders tied players by name under every join plan', async () => {
+  const [first, ...others] = await playerOrderUnderEachJoinPlan(
+    `select display_name, user_id::text
+     from get_all_scores_from_session(37)
+       as (user_id uuid, score bigint, display_name text, avatar_url text)`,
+  );
+  for (const order of others) expect(order).toEqual(first);
+  expect(first.map((row) => row.display_name)).toEqual([
+    'Alyssa',
+    'Brittany',
+    'Dan',
+    'Ellie',
+    'Josh',
+    'Leo',
+    'Leo',
+    'Molly',
+    'Olivia',
+    'Tim',
+  ]);
+});
+
+test('Roll History orders players by name under every join plan', async () => {
+  const [first, ...others] = await playerOrderUnderEachJoinPlan(
+    `select r->>'display_name' as display_name, r->>'user_id' as user_id
+     from get_roll_history_for_session(${seed.sessionId}) as r`,
+  );
+  for (const order of others) expect(order).toEqual(first);
+  expect(first.map((row) => row.display_name)).toEqual([
+    'Alyssa',
+    'Brittany',
+    'Colin',
+    'Dan',
+    'Ellie',
+    'Josh',
+    'Leo',
+    'Leo',
+    'Molly',
+    'Olivia',
+    'Tim',
+  ]);
 });
