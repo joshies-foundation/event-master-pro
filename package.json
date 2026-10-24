@@ -13,10 +13,11 @@
     "postinstall": "patch-package",
     "lint": "ng lint",
     "lint-staged": "lint-staged",
-    "generate-db-types": "dotenv -- sh -c 'supabase gen types typescript --project-id \"$NG_APP_SUPABASE_PROJECT_ID\" --schema public > src/app/shared/util/schema.ts && prettier --write src/app/shared/util/schema.ts'",
+    "generate-db-types": "supabase gen types typescript --local --schema public > src/app/shared/util/schema.ts && prettier --write src/app/shared/util/schema.ts",
     "start-supabase": "supabase start",
     "stop-supabase": "supabase stop",
-    "reset-supabase": "supabase db reset"
+    "reset-supabase": "supabase db reset",
+    "create-migration": "supabase db diff --use-migra -f"
   },
   "private": true,
   "prettier": {
@@ -73,7 +74,6 @@
     "@ngx-env/builder": "^21.0.1",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
-    "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.2",
     "hono": "^4.11.7",
     "lint-staged": "^16.2.7",
