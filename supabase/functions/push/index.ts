@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, MiddlewareHandler } from 'hono';
 import { HTTPException } from 'hono/dist/types/http-exception';
 import { StatusCode } from 'hono/dist/types/utils/http-status';
 import { corsHeaders } from '../_shared/cors.ts';
@@ -9,13 +9,36 @@ import {
   sendPushNotificationToPlayers,
   sendPushNotificationToUsers,
 } from '../_shared/push-notification-helpers.ts';
-import { supabaseAdmin } from '../_shared/supabase-admin.ts';
+import { secretKeys, supabaseAdmin } from '../_shared/supabase-admin.ts';
 
 const edgeFunctionName = 'push';
 const app = new Hono().basePath(`/${edgeFunctionName}`);
 
 // return CORS headers for OPTIONS requests - needed when invoking function from a browser.
 app.options('*', (c) => c.body(null, 204, corsHeaders));
+
+// config.toml turns off the platform's JWT check, so each route checks its caller here.
+const bearerToken = (header?: string) => header?.replace(/^Bearer /, '');
+
+const requireSecretKey: MiddlewareHandler = async (c, next) => {
+  const key =
+    c.req.header('apikey') ?? bearerToken(c.req.header('Authorization'));
+  if (!key || !Object.values(secretKeys).includes(key)) {
+    return c.body(null, 401, corsHeaders);
+  }
+  return next();
+};
+
+const requireUser: MiddlewareHandler = async (c, next) => {
+  const token = bearerToken(c.req.header('Authorization'));
+  const { data } = token
+    ? await supabaseAdmin.auth.getClaims(token)
+    : { data: null };
+  if (!data?.claims.sub) {
+    return c.body(null, 401, corsHeaders);
+  }
+  return next();
+};
 
 interface BetWebhookPayload {
   type: 'INSERT' | 'UPDATE';
@@ -44,7 +67,7 @@ interface BetModel {
 }
 
 // bet insert/update webhook
-app.post('/', async (c) => {
+app.post('/', requireSecretKey, async (c) => {
   // extract request payload
   const payload = (await c.req.json()) as BetWebhookPayload;
   console.log('Received Bet webhook payload:', payload);
@@ -173,7 +196,7 @@ interface GmMessagePayload {
   openUrl?: string;
 }
 
-app.post('/gm-message', async (c) => {
+app.post('/gm-message', requireUser, async (c) => {
   // extract request payload
   const payload = (await c.req.json()) as GmMessagePayload;
   console.log('Received GM Message payload:', payload);
@@ -192,7 +215,7 @@ interface OverridePayload {
   replace: boolean;
 }
 
-app.post('/override', async (c) => {
+app.post('/override', requireUser, async (c) => {
   // extract request payload
   const payload = (await c.req.json()) as OverridePayload;
   console.log('Received GM Override payload:', payload);
@@ -229,7 +252,7 @@ interface PrizeTokenPayload {
   recipientUserId?: string;
 }
 
-app.post('/prize-token', async (c) => {
+app.post('/prize-token', requireUser, async (c) => {
   const payload = (await c.req.json()) as PrizeTokenPayload;
   console.log('Received Prize Token payload:', payload);
 
