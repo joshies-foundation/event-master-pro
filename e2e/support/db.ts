@@ -3,9 +3,8 @@ import postgres from 'postgres';
 
 const seed = readFileSync('supabase/seed.sql', 'utf8');
 
-const url =
-  process.env['E2E_DB_URL'] ??
-  'postgresql://postgres:postgres@127.0.0.1:55322/postgres';
+const url = process.env['E2E_DB_URL'];
+if (!url) throw new Error('E2E_DB_URL is unset; playwright.config.ts sets it');
 if (!['127.0.0.1', 'localhost'].includes(new URL(url).hostname)) {
   throw new Error(`E2E_DB_URL must point at a local database, not ${url}`);
 }

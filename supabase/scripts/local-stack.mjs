@@ -15,7 +15,7 @@ const gatewayHostFromDatabase = {
   native: '127.0.0.1',
 };
 
-/** @returns {{ apiUrl: string, dbUrl: string, runtime: string }} */
+/** @returns {import('./local-stack.d.mts').LocalStack} */
 export function localStack() {
   let status;
   try {

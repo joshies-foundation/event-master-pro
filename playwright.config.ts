@@ -1,7 +1,25 @@
 import { defineConfig, devices, type ViewportSize } from '@playwright/test';
+import { createServer, type AddressInfo } from 'node:net';
+import { localStack } from './supabase/scripts/local-stack.mjs';
 
-const port = Number(process.env['E2E_PORT'] ?? 4380);
+// Playwright evaluates this file again in every worker. Workers inherit the
+// environment, so they see the values the main process picked.
+process.env['E2E_DB_URL'] ??= localStack().dbUrl;
+process.env['E2E_PORT'] ??= String(await freePort());
+
+const port = Number(process.env['E2E_PORT']);
 const baseURL = `http://127.0.0.1:${port}`;
+
+function freePort(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const server = createServer();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const { port } = server.address() as AddressInfo;
+      server.close(() => resolve(port));
+    });
+  });
+}
 
 function installedPwaOn(name: string) {
   const device = devices[name];
