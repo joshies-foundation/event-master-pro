@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { sql } from './support/db';
 import { expect, openTab, test, pushFailure } from './support/fixtures';
 import { seed } from './support/seed';
@@ -82,3 +83,39 @@ test('the GM gives and takes prize tokens', async ({
     page.locator('nav').getByRole('link', { name: 'Prizes' }),
   ).toHaveCount(0);
 });
+
+async function colinsTokenRow(page: Page) {
+  await openTab(page, 'GM Tools');
+  await page.getByRole('link', { name: 'Adjust Prize Tokens' }).tap();
+  const row = page.getByRole('row', { name: /^Colin Colin / });
+  return {
+    count: row.getByRole('cell').nth(1),
+    minus: row.getByRole('button').nth(0),
+    plus: row.getByRole('button').nth(1),
+  };
+}
+
+for (const { button, from, to } of [
+  { button: 'plus', from: 1, to: 3 },
+  { button: 'minus', from: 3, to: 1 },
+] as const) {
+  test(`two GM phones that tap ${button} at the same moment both count`, async ({
+    page,
+    login,
+    secondPhone,
+    consoleGuard,
+  }) => {
+    consoleGuard.allow(pushFailure);
+    await sql`update player set prize_tokens = ${from} where id = ${seed.colin.playerId}`;
+    await login();
+    const rows = await Promise.all(
+      [page, await secondPhone(seed.colin)].map(colinsTokenRow),
+    );
+    for (const row of rows) await expect(row.count).toHaveText(String(from));
+
+    await Promise.all(rows.map((row) => row[button].tap()));
+
+    await expect.poll(() => tokens(seed.colin.playerId)).toBe(to);
+    for (const row of rows) await expect(row.count).toHaveText(String(to));
+  });
+}
