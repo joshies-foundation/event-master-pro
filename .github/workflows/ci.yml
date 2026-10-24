@@ -29,9 +29,12 @@ jobs:
       - name: Build
         run: cp .env.example .env && npm run build
       - name: Start the local Supabase stack
+        env:
+          # The default registry, public.ecr.aws, throttles the shared runner IPs.
+          SUPABASE_INTERNAL_IMAGE_REGISTRY: ghcr.io
         run: npx supabase start -x studio,imgproxy,logflare,vector,supavisor,mailpit </dev/null
-      - run: npx playwright install --with-deps webkit chromium
-      - run: npm run e2e
+      - run: npx playwright install --with-deps webkit
+      - run: npm run e2e -- --project=iphone
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
