@@ -20,10 +20,10 @@ The home tab shows the current session's name and dates, a "Happening Now" card 
 
 Preconditions:
 
-- Logged in as `colin`. The TEST session "Test Jaybies" is `in_progress`.
+- Logged in as `colin`. The seeded session "Test Jaybies" is `in_progress`.
 
 - **Open.** Run `$V browser tap --role link --name Home --within nav`, then `$V browser wait --role table`. `snapshot` shows `heading "Test Jaybies" [level=1]` and `heading " Current Rankings"`.
-- **Rankings.** Run `$V browser count --role row`. The header row plus one row per player (11 players in TEST at the time of writing). `$V browser text --role row --name Colin` prints Colin's rank and score.
+- **Rankings.** Run `$V browser count --role row`. The header row plus one row per player (11 seeded players). `$V browser text --role row --name Colin` prints Colin's rank and score.
 - **Phase card.** The `Happening Now` paragraph names the phase, for example `Gameboard moves for turn 1 of 3.`. As GM, `--role button --name "Enter Gameboard Moves"` is visible.
 - **Footer.** `$V browser snapshot --css nav` lists the tabs. For `colin` this includes `GM Tools` and a `Prizes` link whose name includes the token count.
 - **Proof.** Save `snapshot --path home/home.aria.txt` and `screenshot --path home/home.png`. Use `screenshot --full` to capture the rankings below the fold.
@@ -33,4 +33,4 @@ Preconditions:
 - The footer is fixed at the bottom of the screen and overlaps content in non-full screenshots. Use `--full` for long pages.
 - Rankings update over Supabase realtime. A score change made elsewhere shows up without a reload. Wait for the new value instead of reloading immediately.
 - Every page ARIA snapshot ends with an unnamed `alertdialog`. That is the app-wide confirm dialog host, not an open dialog.
-- The card text depends on the shared TEST `game_state` (phase and round). Assert on what the phase implies, not on a fixed sentence, unless you set the phase yourself.
+- The card text depends on the global `game_state` row (phase and round), which other runs on this machine can change. Assert on what the phase implies, not on a fixed sentence, unless you set the phase yourself.

@@ -20,7 +20,7 @@ Players bet points against each other. The betting tab shows the player's settle
 
 Preconditions:
 
-- Logged in as `colin`, who is a player in the TEST session.
+- Logged in as `colin`, who is a player in the seeded session.
 
 - **Dashboard.** Run `$V browser tap --role link --name Betting --within nav`, then `$V browser wait --text "Overall Win %"`. `snapshot` shows the three stats, `heading " Open Bets (N)"`, and `heading " Settled Bets (N)"`.
 - **Form from Betting.** Run `$V browser tap --role link --name Custom`, then `$V browser wait --url place-bet`. The URL ends in `?betType=custom`, the heading reads `Your score: <n>`, and `button "Submit Bet" [disabled]` is present.
@@ -30,6 +30,6 @@ Preconditions:
 
 ## Gotchas
 
-- Do not tap `Submit Bet`, accept, reject, or settle a bet without the user's agreement. Any insert or update on the TEST `bet` table fires a database trigger that calls the **PROD** push function, which can notify real players.
+- Submitting, accepting, rejecting, or settling a bet changes the shared local database, so `reset` afterwards. Each insert or update on `bet` fires a trigger that calls the local `push` function. The seed has no push subscriptions, so the edge runtime log shows `No notifications subscriptions found` and nothing is sent.
 - The Betting tab is missing for users who are not players in the session. That is not a bug.
 - Bet type, opponent, and wager inputs are PrimeNG widgets. Use `--role combobox`, `--role option`, `--role switch`, and `--role spinbutton` rather than CSS classes.

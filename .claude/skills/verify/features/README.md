@@ -6,8 +6,8 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 - A run is up: `$V up`, `$V browser start`, `$V login`, where `V=.claude/skills/verify/bin/emp-verify` and `RUN_ID` is exported.
 - `$V doctor` prints only `ok` lines, the device line names a phone, and the session is `colin@joshies.app`.
-- `.env` targets the TEST Supabase project `jdwvtjrhfsciqttiueud`.
-- The TEST session "Test Jaybies" is `in_progress`, and `colin` is its GM and a player. If the home page shows something else, someone changed TEST. Report the state you found; do not rebuild it unprompted.
+- `doctor` reports `ok the app calls only http://127.0.0.1:55321`, the local Supabase stack.
+- The seeded session "Test Jaybies" is `in_progress`, and `colin` is its GM and a player. If the home page shows something else, an earlier run changed the database. Run `$V reset` and `$V login` to get the seeded state back.
 - Never drive a run you did not start.
 
 ## Driving conventions
@@ -17,7 +17,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 - Prefer roles and visible names. Footer and card link names start with an icon glyph, so match by substring (the default).
 - Wait for data-driven elements (`wait --role table`, `wait --text ...`) before asserting. Supabase data arrives after first render.
 - Native `prompt`/`confirm`/`alert` dialogs are answered by `dialog` before the triggering tap. The default is accept.
-- Restore every mutation of TEST data in the same run and prove the restore.
+- Undo a run's changes with `$V reset` before `down`. While another run shares the database, restore by hand and prove the restore instead.
 
 ## Proof and skip reporting
 

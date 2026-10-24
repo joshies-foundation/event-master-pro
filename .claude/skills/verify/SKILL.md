@@ -21,10 +21,11 @@ export RUN_ID=$(date +%Y%m%d-%H%M%S)   # one id per verification run
 
 ## What you are driving
 
-- The dev server (`ng serve`) builds the app from this checkout. It does not run a backend.
-- The app talks to the hosted Supabase project named in `.env`. That must be the **TEST** project `jdwvtjrhfsciqttiueud`. `$V up` refuses to start against PROD (`bbptbpmmfformxfzkdgl`). There is no local Supabase stack.
-- The TEST database is shared with the other developers and holds one live session ("Test Jaybies"). The single `game_state` row is global, so a GM action changes the game for everyone who has the TEST app open. Restore anything you change.
-- The login is the TEST account in `.claude/skills/verify/.env.local` (gitignored): `EMP_VERIFY_USERNAME` and `EMP_VERIFY_PASSWORD`. That user (`colin`) is the GM of the current TEST session and a player in it, so every tab including GM Tools is visible. If the file is missing, ask the user for TEST credentials and write it.
+- The dev server (`ng serve`) builds the app from this checkout. Its default configuration talks to the local Supabase stack at `<page host>:55321`, so the app never reaches the hosted TEST or PROD projects, whatever `.env` says. An `ng build` of any configuration, including a Cloudflare preview, uses the hosted project in `.env` instead.
+- The local stack runs in Docker (`npm run start-supabase`, project id `joshies`, ports 553xx). `$V up` starts it if it is down and leaves it running afterwards.
+- `supabase/seed.sql` loads one in-progress session, "Test Jaybies", with `colin` as GM and a player (score 33, 1 prize token), 3 un-won prizes, and 10 more players. The single `game_state` row is global, so a GM action changes the game for every run on this machine.
+- Every seeded account has the password `password`. `$V login` logs in as `colin`, and `$V login leo` logs in as a player who is not the GM. Usernames are the part before `@joshies.app` in `auth.users`.
+- Seeded image URLs (avatars, prize images) point at TEST's public storage. The browser loads them read-only; nothing writes to TEST.
 
 ## Launch
 
@@ -32,14 +33,23 @@ export RUN_ID=$(date +%Y%m%d-%H%M%S)   # one id per verification run
 $V setup            # once per machine: installs Playwright + WebKit + Chromium into ~/.cache/emp-verify/node
 $V up               # ng serve on 127.0.0.1, first free port from 4310; blocks until the page serves
 $V browser start    # phone browser holding one context for this run
-$V login            # fills /auth/login, taps "Log In", waits for /home
+$V login [user]     # clears the old session, logs in as colin (or user) with the seeded password, waits for /home
 ```
 
 `up` is ready when it prints `ready: http://127.0.0.1:<port>` (the log shows `Local:` and `/` returns the `<joshies-root>` shell). A cold build takes 10 to 30 s. Each `browser start` creates a fresh context, so run `login` again after it.
 
 Android instead of iPhone: `$V browser stop`, then `EMP_VERIFY_DEVICE="Pixel 8" $V browser start` (Chromium). Any Playwright device name works, for example `iPhone 16e` or `Galaxy S24`. Verify on both platforms when the change touches layout, safe areas, touch handling, or input widgets.
 
-Two runs can coexist. Each gets its own port, browser, and state dir, but they share the TEST database, so they must not mutate the same rows.
+Two runs can coexist. Each gets its own port, browser, and state dir, but they share one local stack and its database, so they must not mutate the same rows, and neither may reset while the other is up.
+
+## Reset
+
+```sh
+$V reset            # supabase db reset: reapply every migration and the seed
+$V login
+```
+
+Start a run from `reset` when you need the seeded state, and use it to undo whatever a run changed. It takes about 30 s, ends every session, and restarts realtime, so log in again afterwards. It first moves this run's browser off the app. If the page still had requests in flight, WebKit logs them as `... due to access control checks` page errors, which are expected. It refuses while another run on this machine has a live dev server or browser, because that run shares the database. `--force` resets anyway. The output goes to `$TMPDIR/emp-verify/$RUN_ID/reset.log`.
 
 ## Doctor
 
@@ -49,7 +59,7 @@ Run this first, and again whenever anything looks off:
 $V doctor
 ```
 
-All lines must be `ok`. It checks that `.env` targets TEST, that this run's dev server process group owns its port, that the port serves EventMaster Pro, that Supabase auth answers, and it prints the device, current URL, and logged-in user (`session colin@joshies.app ...`). `$V status` lists every run on this machine with dev-server and browser state. Never drive a run you did not start.
+All lines must be `ok`. It checks that the local Supabase auth service answers, that the stack was started from this checkout and holds exactly its migrations (all worktrees of this repo share one stack), that this run's dev server process group owns its port and serves EventMaster Pro, and that every Supabase API call the page has made went to the local stack (`ok the app calls only http://127.0.0.1:55321`). It prints `INFO` while the page has made no API call yet, and when other runs share the database. It also prints the device, current URL, and logged-in user (`session colin@joshies.app ...`). `$V status` lists every run on this machine with dev-server and browser state. Never drive a run you did not start.
 
 ## Drive
 
@@ -71,7 +81,8 @@ All lines must be `ok`. It checks that `.env` targets TEST, that this run's dev 
 | `rest "/user?select=display_name&id=eq.<uuid>" [--path x.json]`         | read-only PostgREST GET as the logged-in user, for checking stored state              |
 | `console [--errors] [--tail 80] [--path x.log]`                         | browser console, page errors, dialogs, and navigations for this browser               |
 | `eval "document.title"`                                                 | run JS in the page                                                                    |
-| `whoami`                                                                | device, URL, session user                                                             |
+| `api`                                                                   | origins of every Supabase API call the page made                                      |
+| `whoami`                                                                | device, URL, Supabase origins, session user                                           |
 
 Locators: `--role` + `--name` (substring match unless `--exact`), `--text`, `--placeholder`, `--label`, or `--css`. Add `--within <css>` to scope and `--nth N` to pick a match. Prefer roles and visible names. Examples that work in this app:
 
@@ -98,9 +109,9 @@ A proof for a change includes:
 
 Side effects outside the page:
 
-- Notifications. Several GM actions call the TEST `push` edge function, which sends real web pushes to every device subscribed in TEST: override points, prize tokens, and Send Notifications. Inserting or updating a `bet` row in TEST fires a database trigger that calls the **PROD** `push` function. Do not place, accept, or settle bets, or press Send Notifications, unless the change under test is that flow and the user has agreed.
-- Push permission. "Enable Push Notifications" on Profile needs a real browser push permission and a service worker, and the service worker is off in dev builds. You cannot verify it here; say so instead of claiming it works.
-- Restore every mutation in the same run (score back, name back, toggle back) and verify the restore with the same second view.
+- Notifications. GM actions (override points, prize tokens, Send Notifications) call the local `push` edge function, and inserting or updating a `bet` row fires a trigger that calls it too. The seed has no push subscriptions, so no push leaves the machine. A route that notifies everyone (for example `/override`) answers 500 `No notifications subscriptions found`, which shows as one `Failed to load resource ... 500` console error. That error is expected. The edge runtime log (`docker logs supabase_edge_runtime_joshies`) shows what the function would have sent.
+- Push permission. "Enable Push Notifications" on Profile needs a service worker, and dev builds do not register one (`navigator.serviceWorker.getRegistrations()` is empty). You cannot verify it here; say so instead of claiming it works.
+- Undo what a run changed with `$V reset` before `down`, unless another run is still using the database. In that case, restore by hand and check the restore with the same second view.
 
 ## Cleanup
 
@@ -108,11 +119,11 @@ Side effects outside the page:
 $V down
 ```
 
-This kills only this run's browser server and dev server by process group, copies the browser console log into the evidence dir, deletes `$TMPDIR/emp-verify/$RUN_ID/`, and lists the evidence it kept in `tmp/verify/$RUN_ID/`. Run it after failed attempts too. It never touches other runs or processes it did not start. Restoring TEST data is your job before `down`; it does not do that for you.
+This kills only this run's browser server and dev server by process group, copies the browser console log into the evidence dir, deletes `$TMPDIR/emp-verify/$RUN_ID/`, and lists the evidence it kept in `tmp/verify/$RUN_ID/`. Run it after failed attempts too. It never touches other runs or processes it did not start. It leaves the local Supabase stack running for other runs; `npm run stop-supabase` stops it.
 
 ## Helpers
 
-- `bin/emp-verify`: lifecycle (`setup`, `up`, `doctor`, `browser start|stop|<command>`, `login`, `status`, `down`). Run it with no arguments to print usage.
+- `bin/emp-verify`: lifecycle (`setup`, `up`, `doctor`, `browser start|stop|<command>`, `login`, `reset`, `status`, `down`). Run it with no arguments to print usage.
 - `bin/browser-server.mjs`: the long-lived Playwright process that holds the phone context. `browser start` launches it, and it reads `EMP_VERIFY_DEVICE` (default `iPhone 16 Pro`) and `EMP_VERIFY_ENGINE` (default: the device's engine).
 - `bin/browser.mjs`: the client behind `$V browser <command>`.
 
