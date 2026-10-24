@@ -1286,6 +1286,10 @@ export type Database = {
       };
     };
     Functions: {
+      adjust_prize_tokens: {
+        Args: { _delta: number; _player_id: number };
+        Returns: undefined;
+      };
       bulk_cancel_bets: {
         Args: { includeactive: boolean; player_id: number };
         Returns: undefined;

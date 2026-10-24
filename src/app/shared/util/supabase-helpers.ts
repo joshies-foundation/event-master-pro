@@ -46,6 +46,7 @@ export enum View {
 }
 
 export enum Function {
+  AdjustPrizeTokens = 'adjust_prize_tokens',
   BulkCancelBets = 'bulk_cancel_bets',
   CreateSession = 'create_session',
   EndRound = 'end_round',
