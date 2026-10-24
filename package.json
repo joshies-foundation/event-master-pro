@@ -7,6 +7,9 @@
     "build": "ng build",
     "prebuild": "node src/set-last-updated-date.mjs pre",
     "postbuild": "node src/set-last-updated-date.mjs post",
+    "build-worker": "cf-wrangler build",
+    "deploy": "npm run build && npm run build-worker && cf deploy --prebuilt",
+    "deploy-preview": "npm run build -- --configuration development && CLOUDFLARE_PREVIEW_BUILD=true npm run build-worker && cf previews deploy --prebuilt",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "format": "prettier --write .",
@@ -78,6 +81,7 @@
     "@playwright/test": "^1.64.1",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
+    "cf": "1.0.0-beta.21",
     "eslint": "^9.39.2",
     "hono": "^4.11.7",
     "lint-staged": "^16.2.7",
@@ -86,10 +90,12 @@
     "prettier": "3.8.1",
     "prettier-plugin-tailwindcss": "0.7.2",
     "supabase": "2.109.1",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "wrangler": "4.152.0"
   },
   "engines": {
     "node": "24",
     "npm": "11"
-  }
+  },
+  "type": "module"
 }

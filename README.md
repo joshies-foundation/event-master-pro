@@ -87,13 +87,26 @@ Useful variations:
 
 ### Builds
 
-Every `ng build` talks to the hosted Supabase project named in `.env`, in both the production and development configurations. That includes `npm run build`, the Cloudflare Pages deploys (production from `main`, a development-configuration preview for every other branch), and `ng serve --configuration production`. Only `ng serve` in its default configuration swaps in the local stack. Create `.env` and fill in the variables:
+Every `ng build` talks to the hosted Supabase project named in `.env`, in both the production and development configurations. That includes `npm run build`, both deploy scripts below, and `ng serve --configuration production`. Only `ng serve` in its default configuration swaps in the local stack. Create `.env` and fill in the variables:
 
 ```shell
 cp .env.example .env
 ```
 
-`NG_APP_SUPABASE_PUBLISHABLE_KEY` is the project's publishable key (`sb_publishable_...`, under Settings > API Keys in the Supabase dashboard). The app never uses the legacy `anon` key. Cloudflare Pages reads the same variables from the Pages project's environment variables, with TEST values for previews and PROD values for production.
+`NG_APP_SUPABASE_PUBLISHABLE_KEY` is the project's publishable key (`sb_publishable_...`, under Settings > API Keys in the Supabase dashboard). The app never uses the legacy `anon` key.
+
+### Deploys
+
+The app runs on Cloudflare Workers as a Worker named `event-master-pro` that serves the build output as static assets on `joshies.app`. `cloudflare.config.ts` configures the Worker, and `wrangler.config.ts` names the assets directory. Paths that are not files get `index.html`, so Angular handles every route.
+
+The `cf` CLI does not build Angular projects yet. Its `cf build` and plain `cf deploy` fail with `Unknown argument: prod`. The scripts build with `ng build`, package the output with `cf-wrangler build`, and upload it with `--prebuilt`:
+
+| Command                            | What it does                                                                            |
+| ---------------------------------- | --------------------------------------------------------------------------------------- |
+| `npm run deploy`                   | Builds the production configuration and deploys it to `joshies.app`.                    |
+| `npm run deploy-preview -- <name>` | Builds the development configuration and uploads it as a Worker Preview named `<name>`. |
+
+Both read the Supabase project from `.env`, so point `.env` at PROD before `npm run deploy`. Sign in first with `npx cf auth login`, or set `CLOUDFLARE_API_TOKEN`.
 
 ## Authors
 
