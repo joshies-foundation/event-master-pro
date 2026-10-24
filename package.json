@@ -9,7 +9,6 @@
     "postbuild": "node src/set-last-updated-date.mjs post",
     "build-worker": "cf-wrangler build",
     "deploy": "npm run build && npm run build-worker && cf deploy --prebuilt",
-    "deploy-preview": "npm run build -- --configuration development && CLOUDFLARE_PREVIEW_BUILD=true npm run build-worker && cf previews deploy --prebuilt",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write .",
     "postinstall": "patch-package",

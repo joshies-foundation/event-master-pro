@@ -21,7 +21,7 @@ export RUN_ID=$(date +%Y%m%d-%H%M%S)   # one id per verification run
 
 ## What you are driving
 
-- The dev server (`ng serve`) builds the app from this checkout. In its default configuration the app calls the dev server's own origin, and the dev server proxies the Supabase API paths to this checkout's local Supabase project. The app never reaches the hosted TEST or PROD projects, whatever `.env` says. An `ng build` of any configuration, including a Cloudflare preview, uses the hosted project in `.env` instead.
+- The dev server (`ng serve`) builds the app from this checkout. In its default configuration the app calls the dev server's own origin, and the dev server proxies the Supabase API paths to this checkout's local Supabase project. The app never reaches the hosted TEST or PROD projects, whatever `.env` says. An `ng build` of any configuration uses the hosted project in `.env` instead.
 - Each checkout and git branch has its own local Supabase project in Docker, on ports the CLI assigns (`npx supabase status </dev/null` prints them). `$V up` runs `npm run start-supabase`, which starts the project if it is down, and leaves it running afterwards.
 - `supabase/seed.sql` loads one in-progress session, "Test Jaybies", with `colin` as GM and a player (score 33, 1 prize token), 3 un-won prizes, and 10 more players. The single `game_state` row is global, so a GM action changes the game for every run from this checkout.
 - Every seeded account has the password `password`. `$V login` logs in as `colin`, and `$V login leo` logs in as a player who is not the GM. Usernames are the part before `@joshies.app` in `auth.users`.
