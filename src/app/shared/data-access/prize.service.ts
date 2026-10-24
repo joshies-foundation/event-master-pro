@@ -114,14 +114,14 @@ export class PrizeService {
     return this.supabase.from(Table.Prize).delete().eq('id', prize.id);
   }
 
-  async setPlayerTokens(
+  async adjustPlayerTokens(
     playerId: PlayerModel['id'],
-    newCount: number,
-  ): Promise<PostgrestSingleResponse<null>> {
-    return this.supabase
-      .from(Table.Player)
-      .update({ prize_tokens: Math.max(0, newCount) })
-      .eq('id', playerId);
+    delta: number,
+  ): Promise<PostgrestSingleResponse<undefined>> {
+    return this.supabase.rpc(Function.AdjustPrizeTokens, {
+      _player_id: playerId,
+      _delta: delta,
+    });
   }
 
   async setAutoMint(

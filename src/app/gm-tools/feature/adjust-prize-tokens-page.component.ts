@@ -82,7 +82,7 @@ import {
                   [text]="true"
                   [rounded]="true"
                   [disabled]="player.prize_tokens === 0"
-                  (onClick)="adjust(player.player_id, player.prize_tokens, -1)"
+                  (onClick)="adjust(player.player_id, -1)"
                 />
                 <p-button
                   icon="pi pi-plus"
@@ -93,7 +93,6 @@ import {
                   (onClick)="
                     adjust(
                       player.player_id,
-                      player.prize_tokens,
                       1,
                       player.user_id,
                       player.display_name
@@ -121,14 +120,12 @@ export default class AdjustPrizeTokensPageComponent {
 
   protected async adjust(
     playerId: number,
-    currentTokens: number,
     delta: number,
     recipientUserId?: string,
     recipientName?: string,
   ): Promise<void> {
-    const newCount = Math.max(0, currentTokens + delta);
     const response = await showMessageOnError(
-      this.prizeService.setPlayerTokens(playerId, newCount),
+      this.prizeService.adjustPlayerTokens(playerId, delta),
       this.messageService,
     );
 
