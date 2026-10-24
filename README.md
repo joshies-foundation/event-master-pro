@@ -21,7 +21,8 @@ Forget the admin, and focus on the games. EventMaster Pro saves you hours of man
 ### Prerequisites
 
 - [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/) v22
+- [Node.js](https://nodejs.org/) v24
+- [Docker](https://docs.docker.com/get-docker/), running. The local Supabase stack runs in containers.
 
 ### Install
 
@@ -31,18 +32,45 @@ cd event-master-pro
 npm install
 ```
 
-### Add environment variables
+### Start the local Supabase stack
 
-Create a `.env` file, and fill in the variables.
-
-```shell
-cp .env.example .env
+```sh
+npm run start-supabase
 ```
 
-### Run
+The first start downloads the Supabase images and takes a few minutes. The stack applies every migration in `supabase/migrations` and loads `supabase/seed.sql`. It uses ports 55320 to 55329, so it can run next to another project's Supabase stack on the default ports. Supabase Studio is at http://127.0.0.1:55323.
+
+### Run the app
 
 ```sh
 npm start
+```
+
+Open http://localhost:4200 and log in as `colin` with the password `password`. Colin is the Game Master of the seeded in-progress session "Test Jaybies". Every seeded user has the password `password`, so you can also log in as a regular player such as `leo`.
+
+To try the app on a phone, connect it to the same Wi-Fi network and open `http://<your computer's LAN IP>:4200`. The dev server (`npm start`, which runs `ng serve`) builds an app that talks to the Supabase stack on the same host at port 55321, so the phone reaches your local stack without extra setup. The dev server ignores the Supabase values in `.env`.
+
+Dev builds do not register the service worker, and the seed has no push subscriptions. Actions that send push notifications run the local `push` edge function, which logs what it would send and sends nothing.
+
+### Database tasks
+
+| Command                           | What it does                                                                                 |
+| --------------------------------- | -------------------------------------------------------------------------------------------- |
+| `npm run reset-supabase`          | Rebuilds the local database from the migrations and `supabase/seed.sql`. Ends every login.   |
+| `npm run create-migration <name>` | Writes the difference between the local database and the migrations to a new migration file. |
+| `npm run generate-db-types`       | Regenerates `src/app/shared/util/schema.ts` from the local database.                         |
+| `npm run save-seed`               | Overwrites `supabase/seed.sql` with the data now in the local database.                      |
+| `npm run serve-edge-functions`    | Runs the edge functions in the foreground and prints their logs.                             |
+| `npm run stop-supabase`           | Stops the local stack. The data stays until the next reset.                                  |
+
+To change the schema, make the change in the local database (in Studio or with SQL), run `npm run create-migration <name>`, then run `npm run reset-supabase` to check that the migrations rebuild it. Run `npm run generate-db-types` after any schema change.
+
+### Builds
+
+Every `ng build` talks to the hosted Supabase project named in `.env`, in both the production and development configurations. That includes `npm run build`, the Cloudflare Pages deploys (production from `main`, a development-configuration preview for every other branch), and `ng serve --configuration production`. Only `ng serve` in its default configuration swaps in the local stack. Create `.env` and fill in the variables:
+
+```shell
+cp .env.example .env
 ```
 
 ## Authors
