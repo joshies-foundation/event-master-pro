@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { AuthService } from '../../../auth/data-access/auth.service';
 import { UserService } from '../../../shared/data-access/user.service';
@@ -21,7 +15,6 @@ import { SquidwardService } from '../../../shared/data-access/squidward.service'
 @Component({
   selector: 'joshies-profile-page',
   templateUrl: './profile-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ButtonModule,
     DatePipe,

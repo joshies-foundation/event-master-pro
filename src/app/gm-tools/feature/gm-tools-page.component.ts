@@ -1,13 +1,7 @@
 import { CardLinkModel } from '../../shared/ui/card-link.component';
 import { CardComponent } from '../../shared/ui/card.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  Signal,
-} from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import {
   EventFormat,
@@ -41,7 +35,6 @@ import { EventService } from '../../shared/data-access/event.service';
   host: {
     class: 'block pb-12',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class GmToolsPageComponent {
   private readonly gameStateService = inject(GameStateService);

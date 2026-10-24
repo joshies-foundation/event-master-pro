@@ -9,7 +9,6 @@ import {
 } from '@angular/cdk/drag-drop';
 import { NgOptimizedImage } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -309,7 +308,6 @@ const unassignedPlayerDropListId = `${dropListIdPrefix}unassigned`;
       padding-bottom: 0.5rem;
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EditEventTeamsPageComponent {
   // *** Injected Dependencies ***

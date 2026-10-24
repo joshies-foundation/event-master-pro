@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -289,7 +288,6 @@ import { Textarea } from '@openng/optimus-ui/textarea';
       [userPlayerId]="userPlayer()?.player_id ?? 0"
     />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaceBetPageComponent implements OnInit {
   private readonly messageService = inject(MessageService);

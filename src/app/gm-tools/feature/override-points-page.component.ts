@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-  numberAttribute,
-} from '@angular/core';
+import { Component, inject, input, numberAttribute } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
@@ -43,7 +37,6 @@ import OverridePointsCardComponent from '../ui/override-points-card.component';
       (complete)="onComplete()"
     />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OverridePointsPageComponent {
   private readonly router = inject(Router);

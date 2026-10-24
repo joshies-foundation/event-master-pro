@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
@@ -95,7 +89,6 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
       <p-skeleton height="35rem" class="mt-8" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OverridePointsPageComponent {
   private readonly gameStateService = inject(GameStateService);

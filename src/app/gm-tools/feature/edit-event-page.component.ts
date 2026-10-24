@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   Signal,
   computed,
@@ -49,7 +48,6 @@ import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
       </ng-template>
     </p-confirm-dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

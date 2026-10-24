@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import {
   OverrideDefinitionTableComponent,
@@ -47,7 +42,6 @@ export const confirmOverrideDialogKey = 'confirm-override';
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmBankBalanceOverrideDialogComponent {
   readonly model = input.required<ConfirmBankBalanceOverrideDialogModel>();

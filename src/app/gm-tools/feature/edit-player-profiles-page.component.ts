@@ -1,10 +1,5 @@
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TableModule } from '@openng/optimus-ui/table';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { NgOptimizedImage } from '@angular/common';
@@ -101,7 +96,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       <p-skeleton width="100%" height="30rem" class="mt-6" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EditPlayerProfilesPageComponent {
   private readonly playerService = inject(PlayerService);

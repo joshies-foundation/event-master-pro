@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { trackById } from '../../shared/util/supabase-helpers';
 import { DatePipe } from '@angular/common';
 import { NumberWithSignAndColorPipe } from '../../shared/ui/number-with-sign-and-color.pipe';
@@ -38,7 +38,6 @@ import { TransactionModel } from '../../shared/util/supabase-types';
       </ng-template>
     </p-table>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionTableComponent {
   readonly transactions = input.required<TransactionModel[]>();

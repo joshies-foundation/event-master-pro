@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Signal,
-  computed,
-  inject,
-  viewChild,
-} from '@angular/core';
+import { Component, Signal, computed, inject, viewChild } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../ui/footer.component';
 import { FooterLinkModel } from '../ui/footer-link.component';
@@ -42,7 +35,6 @@ import { PrizeService } from '../../shared/data-access/prize.service';
   host: {
     class: 'h-full flex flex-col',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoggedInAppShellComponent {
   private readonly gameStateService = inject(GameStateService);

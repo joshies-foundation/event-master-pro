@@ -1,6 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -39,7 +38,6 @@ import { CardComponent } from '../../shared/ui/card.component';
     NgOptimizedImage,
     CardComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ConfirmationService],
   template: `
     <joshies-page-header headerText="Manage Prize Pool" alwaysSmall>

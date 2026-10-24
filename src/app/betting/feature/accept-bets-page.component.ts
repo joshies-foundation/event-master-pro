@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
@@ -103,7 +97,6 @@ import { BetModel } from '../../shared/util/supabase-types';
       </p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaceBetChoosePlayerPageComponent {
   private readonly playerService = inject(PlayerService);

@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -111,7 +110,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
       <p-skeleton height="30rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

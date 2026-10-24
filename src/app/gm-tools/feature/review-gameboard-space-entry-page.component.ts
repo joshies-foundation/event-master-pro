@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  Signal,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
@@ -133,7 +126,6 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
     } @else {
       <p-skeleton height="30rem" />
     }`,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

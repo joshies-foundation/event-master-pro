@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -66,7 +65,6 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PreviousRankingsPageComponent {
   readonly analyticsPreviousResolvedData =

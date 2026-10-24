@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { TableModule } from '@openng/optimus-ui/table';
 import { AuthService } from '../../auth/data-access/auth.service';
@@ -99,7 +93,6 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
       <p class="text-danger-foreground">Error loading data</p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SpaceStatsPageComponent {
   private readonly gameboardService = inject(GameboardService);

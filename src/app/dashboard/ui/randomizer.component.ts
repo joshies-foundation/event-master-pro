@@ -1,12 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  computed,
-  inject,
-  input,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { CardComponent } from '../../shared/ui/card.component';
 import { Button } from '@openng/optimus-ui/button';
 import { Sound } from '../../shared/util/sound';
@@ -46,7 +38,6 @@ import { Sound } from '../../shared/util/sound';
     }
   `,
   imports: [CardComponent, Button],
-  changeDetection: ChangeDetectionStrategy.Eager,
   host: {
     '(document:keyup.space)': 'onSpaceKeyUp()',
   },
@@ -60,19 +51,18 @@ export default class RandomizerComponent {
     }
   }
 
-  private readonly cd = inject(ChangeDetectorRef);
   private readonly squidSound = new Sound('/audio/squidward-walk-1.wav');
 
   //Tada Fanfare F by plasterbrain -- https://freesound.org/s/397354/ -- License: Creative Commons 0
   private readonly fanfareSound = new Sound('/audio/tada-fanfare-f.wav');
 
   readonly items = input<string[]>([]);
-  lockedItems: string[] = [];
-  displayItems = computed(() => {
+  private readonly lockedItems = signal<string[]>([]);
+  readonly displayItems = computed(() => {
     const items = this.items();
     const isRunning = this.isRunning();
 
-    const itemsToDisplay = isRunning ? this.lockedItems : items;
+    const itemsToDisplay = isRunning ? this.lockedItems() : items;
 
     return itemsToDisplay && itemsToDisplay.length > 0
       ? itemsToDisplay
@@ -88,7 +78,7 @@ export default class RandomizerComponent {
     const MIN_CYCLE_TIME = 50;
 
     const displayItems = this.displayItems();
-    this.lockedItems = this.items();
+    this.lockedItems.set(this.items());
     this.isRunning.set(true);
     this.highlightedIndex.set(0);
 

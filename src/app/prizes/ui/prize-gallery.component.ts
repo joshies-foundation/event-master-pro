@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { DialogModule } from '@openng/optimus-ui/dialog';
 import { PrizeModel } from '../../shared/util/supabase-types';
 import { trackById } from '../../shared/util/supabase-helpers';
@@ -11,7 +6,6 @@ import { trackById } from '../../shared/util/supabase-helpers';
 @Component({
   selector: 'joshies-prize-gallery',
   imports: [DialogModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (prizes()?.length) {
       <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">

@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../shared/data-access/user.service';
 import { NotificationsService } from '../../shared/data-access/notifications.service';
@@ -59,7 +53,6 @@ import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
       <p-skeleton width="100%" height="19rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SendNotificationsPageComponent {
   private readonly userService = inject(UserService);

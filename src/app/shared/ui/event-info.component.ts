@@ -1,9 +1,4 @@
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  input,
-} from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 import { EventModel } from '../util/supabase-types';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -53,7 +48,6 @@ import { Button } from '@openng/optimus-ui/button';
       [queryParams]="{ betType: BetType.MainEvent, eventId: event().id }"
     />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgOptimizedImage, RouterLink, TournamentBracketComponent, Button],
 })
 export class EventInfoComponent {

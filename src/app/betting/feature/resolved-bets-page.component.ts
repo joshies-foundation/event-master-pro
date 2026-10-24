@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { BetService } from '../../shared/data-access/bet.service';
@@ -58,7 +53,6 @@ import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-
       <p-skeleton height="9.5rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ResolvedBetsPageComponent {
   private readonly betService = inject(BetService);

@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MessageService } from '@openng/optimus-ui/api';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
@@ -27,7 +27,6 @@ import {
     NgOptimizedImage,
     StronglyTypedTableRowDirective,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <joshies-page-header headerText="Adjust Prize Tokens" alwaysSmall>
       <joshies-header-link

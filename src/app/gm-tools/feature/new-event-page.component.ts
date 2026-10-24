@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Signal,
-  signal,
-} from '@angular/core';
+import { Component, inject, Signal, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { FormBuilder } from '@angular/forms';
@@ -52,7 +46,6 @@ import {
       </ng-template>
     </p-confirm-dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class NewEventPageComponent {
   private readonly formBuilder = inject(FormBuilder);

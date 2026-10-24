@@ -1,12 +1,5 @@
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  Signal,
-} from '@angular/core';
+import { Component, computed, inject, input, Signal } from '@angular/core';
 import { CardLinkModel } from '../../shared/ui/card-link.component';
 import { CardComponent } from '../../shared/ui/card.component';
 import { PlayerService } from '../../shared/data-access/player.service';
@@ -128,7 +121,6 @@ const numTransactionsToShow = 3;
   host: {
     class: 'block pb-12',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AnalyticsTabComponent {
   private readonly playerService = inject(PlayerService);

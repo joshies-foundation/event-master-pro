@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Countdown } from '../data-access/session.service';
 
 @Component({
@@ -25,7 +25,6 @@ import { Countdown } from '../data-access/session.service';
       </p>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountdownTimerComponent {
   readonly countdown = input.required<Countdown>();

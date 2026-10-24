@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
@@ -66,7 +66,6 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
       <p-skeleton height="5rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ManageGameboardSpaceTypesPageComponent {
   private readonly gameboardService = inject(GameboardService);

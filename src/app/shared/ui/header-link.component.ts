@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -25,7 +25,6 @@ import { RouterLink } from '@angular/router';
       }
     </a>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderLinkComponent {
   text = input.required<string>();

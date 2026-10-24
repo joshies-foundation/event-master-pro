@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { Router } from '@angular/router';
@@ -125,7 +119,6 @@ import { EventService } from '../../shared/data-access/event.service';
       <p-skeleton height="30rem" class="mt-12" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ReviewScoreChangesPageComponent {
   private readonly router = inject(Router);

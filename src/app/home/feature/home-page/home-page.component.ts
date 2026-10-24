@@ -1,13 +1,6 @@
 import { CardComponent } from '../../../shared/ui/card.component';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  Signal,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { TableModule } from '@openng/optimus-ui/table';
 import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { FormsModule } from '@angular/forms';
@@ -66,7 +59,6 @@ interface Countdown {
 @Component({
   selector: 'joshies-home-page',
   templateUrl: './home-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'h-full block pb-12',
   },

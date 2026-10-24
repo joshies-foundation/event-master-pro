@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import {
   FormField,
@@ -51,7 +44,6 @@ import { GameStateService } from '../../shared/data-access/game-state.service';
       <p-skeleton width="100%" height="19rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CreateSessionPageComponent {
   private readonly playerService = inject(PlayerService);

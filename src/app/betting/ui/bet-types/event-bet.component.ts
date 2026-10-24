@@ -1,10 +1,4 @@
-import {
-  Component,
-  computed,
-  inject,
-  model,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Select } from '@openng/optimus-ui/select';
 import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
@@ -33,7 +27,6 @@ import { outputFromObservable, toObservable } from '@angular/core/rxjs-interop';
     OverUnderComponent,
     TopBottomComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <div class="flex flex-col gap-4">
       <!-- Event Dropdown -->

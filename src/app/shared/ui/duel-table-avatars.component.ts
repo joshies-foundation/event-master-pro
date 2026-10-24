@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostBinding,
-  input,
-} from '@angular/core';
+import { Component, HostBinding, input } from '@angular/core';
 import { DuelStatus } from '../util/supabase-helpers';
 import { AvatarModule } from '@openng/optimus-ui/avatar';
 import { DuelModel } from '../util/supabase-types';
@@ -37,7 +32,6 @@ import { DuelModel } from '../util/supabase-types';
   host: {
     class: 'flex items-center gap-2',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelTableAvatarsComponent {
   readonly duel = input.required<DuelModel>();

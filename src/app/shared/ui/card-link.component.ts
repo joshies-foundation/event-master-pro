@@ -1,10 +1,5 @@
 import { NgClass } from '@angular/common';
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  input,
-} from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RippleModule } from '@openng/optimus-ui/ripple';
 
@@ -53,7 +48,6 @@ export interface CardLinkModel {
       </div>
     </a>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardLinkComponent {
   model = input.required<CardLinkModel>();

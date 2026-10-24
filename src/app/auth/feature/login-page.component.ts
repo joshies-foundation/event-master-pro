@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { InputTextModule } from '@openng/optimus-ui/inputtext';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { FormsModule } from '@angular/forms';
@@ -100,7 +100,6 @@ import { AuthService } from '../data-access/auth.service';
   host: {
     class: 'h-full flex flex-col justify-center items-center',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoginPageComponent {
   private readonly authService = inject(AuthService);

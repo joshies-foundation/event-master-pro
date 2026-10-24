@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Signal,
-  signal,
-} from '@angular/core';
+import { Component, inject, Signal, signal } from '@angular/core';
 import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { Form, FormComponent } from '../../shared/ui/form.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
@@ -73,7 +67,6 @@ import {
       </ng-template>
     </p-confirm-dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class NewChaosSpaceEventTemplatePageComponent {
   private readonly formBuilder = inject(FormBuilder);

@@ -1,10 +1,4 @@
-import {
-  Component,
-  computed,
-  inject,
-  Signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import NewDuelComponent from '../ui/new-duel.component';
@@ -57,7 +51,6 @@ import { DuelsTableComponent } from '../ui/duels-table.component';
         }
       }
     </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

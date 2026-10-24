@@ -1,6 +1,5 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DestroyRef,
@@ -164,7 +163,6 @@ export type FormField = {
     NgOptimizedImage,
   ],
   templateUrl: './form-field.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent implements AfterViewInit {
   private readonly defaultImage = '/icons/icon-96x96.png';

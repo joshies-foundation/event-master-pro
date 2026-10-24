@@ -1,10 +1,4 @@
-import {
-  Component,
-  computed,
-  inject,
-  model,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Select } from '@openng/optimus-ui/select';
 import { OverUnderComponent } from '../over-under.component';
@@ -20,7 +14,6 @@ import { SpaceEventStatus } from '../../../shared/util/supabase-helpers';
 @Component({
   selector: 'joshies-ss-event-bet',
   imports: [Select, FormsModule, OverUnderComponent],
-  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <div class="flex flex-col gap-4">
       <label class="flex flex-col gap-2">

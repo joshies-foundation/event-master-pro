@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Signal,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, Signal, computed, input } from '@angular/core';
 import {
   FormField,
   FormFieldComponent,
@@ -23,7 +17,6 @@ export interface Form {
 @Component({
   selector: 'joshies-form',
   imports: [FormFieldComponent, FormsModule, ReactiveFormsModule, NgClass],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <form
       [formGroup]="form().formGroup"

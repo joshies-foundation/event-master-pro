@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Button } from '@openng/optimus-ui/button';
 import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
 import { BetStatus } from '../../shared/util/supabase-helpers';
@@ -26,7 +21,6 @@ import { BetComponent } from '../../shared/ui/bet.component';
       (onClick)="onCancelBetButtonClick()"
     />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BetToResolveComponent {
   readonly bet = input.required<BetModel>();

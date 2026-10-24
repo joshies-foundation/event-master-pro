@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -129,7 +128,6 @@ import { CheckboxModule } from '@openng/optimus-ui/checkbox';
       <p-skeleton height="35rem" class="mt-8" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OverridePointsCardComponent {
   private readonly playerService = inject(PlayerService);

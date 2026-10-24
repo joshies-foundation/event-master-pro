@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -54,7 +54,6 @@ import { InputTextModule } from '@openng/optimus-ui/inputtext';
       }
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
   host: {
     class: 'h-full flex flex-col justify-center items-center',
   },

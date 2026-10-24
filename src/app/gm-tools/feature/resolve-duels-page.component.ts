@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-  Signal,
-} from '@angular/core';
+import { Component, inject, signal, Signal } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { ButtonModule } from '@openng/optimus-ui/button';
@@ -65,7 +59,6 @@ import { DuelsTableComponent } from '../ui/duels-table.component';
       <p-skeleton height="30rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ResolveDuelsPageComponent {
   private readonly duelService = inject(DuelService);

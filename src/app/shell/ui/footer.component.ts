@@ -1,10 +1,4 @@
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FooterLinkComponent, FooterLinkModel } from './footer-link.component';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -14,7 +8,6 @@ import { notifyOnMutation } from '../../shared/util/rxjs-helpers';
 @Component({
   selector: 'joshies-footer',
   imports: [FooterLinkComponent, NgClass],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Spacer -->
     <div class="h-24"></div>

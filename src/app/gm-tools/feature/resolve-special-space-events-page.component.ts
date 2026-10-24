@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-  Signal,
-} from '@angular/core';
+import { Component, inject, signal, Signal } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { ButtonModule } from '@openng/optimus-ui/button';
@@ -111,7 +105,6 @@ import { SpecialSpaceEventModel } from '../../shared/util/supabase-types';
       <p-skeleton height="30rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ResolveSpecialSpaceEventsPageComponent {
   private readonly gameboardService = inject(GameboardService);

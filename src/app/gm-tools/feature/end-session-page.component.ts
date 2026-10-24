@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MessageService } from '@openng/optimus-ui/api';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { SessionService } from '../../shared/data-access/session.service';
@@ -36,7 +31,6 @@ import { Router } from '@angular/router';
       class="mt-12 block pt-12"
     />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EndSessionPageComponent {
   private readonly sessionService = inject(SessionService);

@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  Renderer2,
-} from '@angular/core';
+import { Component, inject, OnInit, Renderer2 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from '@openng/optimus-ui/toast';
 import { pagePaddingXCssClass } from './shared/util/css-helpers';
@@ -22,7 +16,6 @@ import { SquidwardService } from './shared/data-access/squidward.service';
       class="mt-8"
     />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
   private readonly renderer = inject(Renderer2);

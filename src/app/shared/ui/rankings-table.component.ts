@@ -1,5 +1,5 @@
 import { DecimalPipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from '@openng/optimus-ui/table';
 import { PlayerWithUserAndRankInfo } from '../data-access/player.service';
@@ -64,7 +64,6 @@ import { ImageModule } from '@openng/optimus-ui/image';
       </ng-template>
     </p-table>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RankingsTableComponent {
   players = input.required<PlayerWithUserAndRankInfo[]>();
