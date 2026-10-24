@@ -108,6 +108,8 @@ The `cf` CLI does not build Angular projects yet. Its `cf build` and plain `cf d
 
 Both read the Supabase project from `.env`, so point `.env` at PROD before `npm run deploy`. Sign in first with `npx cf auth login`, or set `CLOUDFLARE_API_TOKEN`.
 
+GitHub Actions runs these for you. Every pull request and every push to `main` runs lint, a production build, and the end-to-end tests. A push to `main` that passes deploys to `joshies.app` and then checks that the site answers. A pull request from a branch in this repository also gets a preview against the TEST Supabase project, linked in a comment on the pull request. Closing the pull request deletes the preview. The workflows read `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the repository secrets, and the `NG_APP_` variables from the `production` and `preview` environments.
+
 ## Authors
 
 <a href="https://github.com/c-o-l-i-n">
