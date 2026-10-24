@@ -1,6 +1,10 @@
 import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
+import {
+  FunctionsHttpError,
+  RealtimeChannelSendResponse,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 import { MessageService } from '@openng/optimus-ui/api';
 import { Observable, switchMap } from 'rxjs';
 import { showErrorMessage } from './message-helpers';
@@ -167,7 +171,7 @@ function subscribeToLiveTable<Table extends TTable, Row extends Tables<Table>>(
   table: Table,
   callback: (rows: readonly Row[]) => void,
   filter?: RealtimeFilter<Database, Table>,
-): () => Promise<'ok' | 'timed out' | 'error'> {
+): () => Promise<RealtimeChannelSendResponse> {
   const channel = liveTable(supabase, {
     table,
     filter,
