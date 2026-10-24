@@ -79,12 +79,12 @@
 
             @if (vm.userIsGameMaster) {
               <!-- Edit Button -->
-              <i
-                tabindex="0"
-                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
+              <a
+                class="pi pi-pencil ml-auto self-start p-2 text-neutral-700"
+                [attr.aria-label]="'Edit ' + event.name"
                 [routerLink]="['/gm-tools/events/edit', event.id]"
                 (click)="$event.stopPropagation()"
-              ></i>
+              ></a>
             }
           </h3>
           <p class="pre-wrap my-3">{{ event.description }}</p>
@@ -145,12 +145,12 @@
 
             @if (vm.userIsGameMaster) {
               <!-- Edit Button -->
-              <i
-                tabindex="0"
-                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
+              <a
+                class="pi pi-pencil ml-auto self-start p-2 text-neutral-700"
+                [attr.aria-label]="'Edit ' + space.name + ' Space'"
                 [routerLink]="['/gm-tools/space-types', space.id]"
                 (click)="$event.stopPropagation()"
-              ></i>
+              ></a>
             }
           </h3>
           <div
@@ -198,15 +198,15 @@
 
             @if (vm.userIsGameMaster) {
               <!-- Edit Button -->
-              <i
-                tabindex="0"
-                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
+              <a
+                class="pi pi-pencil ml-auto self-start p-2 text-neutral-700"
+                [attr.aria-label]="'Edit ' + specialSpaceEvent.name"
                 [routerLink]="[
                   '/gm-tools/special-space-event-templates',
                   specialSpaceEvent.id,
                 ]"
                 (click)="$event.stopPropagation()"
-              ></i>
+              ></a>
             }
           </h3>
           <p class="pre-wrap my-0">{{ specialSpaceEvent.description }}</p>
@@ -248,15 +248,15 @@
 
             @if (vm.userIsGameMaster) {
               <!-- Edit Button -->
-              <i
-                tabindex="0"
-                class="pi pi-pencil cursor ml-auto self-start p-2 text-neutral-700"
+              <a
+                class="pi pi-pencil ml-auto self-start p-2 text-neutral-700"
+                [attr.aria-label]="'Edit ' + chaosSpaceEvent.name"
                 [routerLink]="[
                   '/gm-tools/chaos-space-event-templates',
                   chaosSpaceEvent.id,
                 ]"
                 (click)="$event.stopPropagation()"
-              ></i>
+              ></a>
             }
           </h3>
           <p class="pre-wrap my-0">{{ chaosSpaceEvent.description }}</p>
