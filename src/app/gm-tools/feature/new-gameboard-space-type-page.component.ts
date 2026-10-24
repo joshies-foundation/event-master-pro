@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Signal,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, Signal, computed, inject, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { FormBuilder } from '@angular/forms';
@@ -79,7 +72,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </ng-template>
     </p-confirm-dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class NewGameboardSpaceTypePageComponent {
   private readonly formBuilder = inject(FormBuilder);

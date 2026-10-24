@@ -1,11 +1,5 @@
 import { DecimalPipe, NgClass } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  model,
-} from '@angular/core';
+import { Component, computed, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { NumberSignPipe } from '../../shared/ui/number-sign.pipe';
@@ -123,7 +117,6 @@ export interface OverrideDefinitionTableModel {
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverrideDefinitionTableComponent {
   model = input.required<OverrideDefinitionTableModel>();

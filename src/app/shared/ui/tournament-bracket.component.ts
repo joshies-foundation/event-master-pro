@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -109,7 +108,6 @@ interface EventTeamModelWithWinnerFlag extends EventTeamModel {
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TreeModule,
     AvatarModule,

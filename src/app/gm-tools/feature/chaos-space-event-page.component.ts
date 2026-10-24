@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -515,7 +514,6 @@ interface PlayerWithScoreChanges extends PlayerWithUserAndRankInfo {
   host: {
     class: 'flex flex-col h-full',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ChaosSpaceEventPageComponent {
   private readonly gameboardService = inject(GameboardService);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TableModule } from '@openng/optimus-ui/table';
 import { AnalyticsService } from '../data-access/analytics.service';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
@@ -47,7 +47,6 @@ import { TransactionTableComponent } from '../ui/transaction-table.component';
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class TransactionsPageComponent {
   private readonly analyticsService = inject(AnalyticsService);

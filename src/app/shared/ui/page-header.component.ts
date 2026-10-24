@@ -1,11 +1,5 @@
 import { NgClass } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  booleanAttribute,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, booleanAttribute, computed, input } from '@angular/core';
 import { pagePaddingXCssClass } from '../util/css-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { fromEvent, map } from 'rxjs';
@@ -13,7 +7,6 @@ import { fromEvent, map } from 'rxjs';
 @Component({
   selector: 'joshies-page-header',
   imports: [NgClass],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Small Header Container -->
     <div

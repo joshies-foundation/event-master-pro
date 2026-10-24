@@ -1,11 +1,6 @@
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { RankingsTableComponent } from '../../shared/ui/rankings-table.component';
@@ -47,7 +42,6 @@ import { AuthService } from '../../auth/data-access/auth.service';
       <p-skeleton height="25rem" class="mt-8" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CurrentRankingsPageComponent {
   private readonly playerService = inject(PlayerService);

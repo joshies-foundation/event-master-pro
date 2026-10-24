@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { BetComponent } from '../../shared/ui/bet.component';
 import { Button } from '@openng/optimus-ui/button';
 import { BetModel, PlayerModel } from '../../shared/util/supabase-types';
@@ -47,7 +41,6 @@ import { getUserBetData } from '../../shared/util/bet-helpers';
       />
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BetRequestComponent {
   readonly bet = input.required<BetModel>();

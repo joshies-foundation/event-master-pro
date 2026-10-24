@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { SessionService } from '../../shared/data-access/session.service';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
@@ -40,7 +34,6 @@ import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
       [loading]="startingSession()"
     />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class StartSessionEarlyPageComponent {
   private readonly confirmationService = inject(ConfirmationService);

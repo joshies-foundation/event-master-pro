@@ -39,7 +39,10 @@ export default tseslint.config(
         },
       ],
 
-      '@angular-eslint/prefer-on-push-component-change-detection': 'off',
+      '@angular-eslint/prefer-on-push-component-change-detection': [
+        'error',
+        { allowExplicitOnPush: false },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_' },

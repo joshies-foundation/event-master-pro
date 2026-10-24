@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { PastSessionPrizes } from '../data-access/analytics.service';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
@@ -15,7 +15,6 @@ import { SkeletonModule } from '@openng/optimus-ui/skeleton';
     SkeletonModule,
     DatePipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <joshies-page-header headerText="Past Prizes" alwaysSmall>
       <joshies-header-link

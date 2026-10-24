@@ -1,11 +1,4 @@
-import {
-  Component,
-  inject,
-  input,
-  OnInit,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseClient } from '@supabase/supabase-js';
 
@@ -13,7 +6,6 @@ import { SupabaseClient } from '@supabase/supabase-js';
   selector: 'joshies-confirm-page',
   imports: [],
   template: `{{ error() || 'Confirming...' }}`,
-  changeDetection: ChangeDetectionStrategy.Eager,
   host: {
     class: 'block mt-4',
   },

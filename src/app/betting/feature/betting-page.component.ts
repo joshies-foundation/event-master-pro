@@ -1,12 +1,7 @@
 import { PlayerService } from '../../shared/data-access/player.service';
 import { CardComponent } from '../../shared/ui/card.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 
 @Component({
   selector: 'joshies-betting-pages-wrapper',
@@ -17,7 +12,6 @@ import {
 
     <joshies-card headerText="Placing Bets" [links]="placingBetsLinks()" />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class BettingPageComponent {
   private readonly playerService = inject(PlayerService);

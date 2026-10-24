@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -270,7 +269,6 @@ export type GameboardSpaceEntryFormModel = Record<
       <p-skeleton height="30rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { trackById } from '../../shared/util/supabase-helpers';
@@ -95,7 +90,6 @@ import { DuelHistoryRecordToDuelPipe } from '../ui/duel-history-record-to-duel.p
       <p class="text-danger-foreground">Error loading data</p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class DuelHistoryPageComponent {
   readonly duelHistoryQueryResult =

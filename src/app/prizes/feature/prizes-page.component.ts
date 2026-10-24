@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { PrizeService } from '../../shared/data-access/prize.service';
 import { PlayerService } from '../../shared/data-access/player.service';
@@ -22,7 +17,6 @@ import { PrizeModel } from '../../shared/util/supabase-types';
     PrizeGalleryComponent,
     PrizeRevealComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <joshies-page-header headerText="Prizes" />
 

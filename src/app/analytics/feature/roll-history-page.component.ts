@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { TableModule } from '@openng/optimus-ui/table';
 import { AuthService } from '../../auth/data-access/auth.service';
@@ -104,7 +98,6 @@ import { trackByPlayerId } from '../../shared/util/supabase-helpers';
       <p class="text-danger-foreground">Error loading data</p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RollHistoryPageComponent {
   private readonly authService = inject(AuthService);

@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormFieldType } from '../../shared/ui/form-field/form-field.component';
 import { Form, FormComponent } from '../../shared/ui/form.component';
@@ -51,7 +44,6 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
       <p-skeleton width="100%" height="19rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CreateSessionPageComponent {
   private readonly sessionService = inject(SessionService);

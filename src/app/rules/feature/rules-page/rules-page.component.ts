@@ -1,12 +1,5 @@
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RulesService } from '../../data-access/rules.service';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { FormBuilder, FormsModule } from '@angular/forms';
@@ -43,7 +36,6 @@ import { ImageModule } from '@openng/optimus-ui/image';
   host: {
     class: 'block pb-12',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     SkeletonModule,

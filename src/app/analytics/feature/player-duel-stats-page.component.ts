@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  Signal,
-} from '@angular/core';
+import { Component, computed, inject, input, Signal } from '@angular/core';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { PostgrestResponse } from '@supabase/supabase-js';
@@ -122,7 +115,6 @@ import { NumberSignColorClassPipe } from '../../shared/ui/number-sign-color-clas
       <p class="text-danger-foreground">Error loading data</p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlayerDuelStatsPageComponent {
   private readonly authService = inject(AuthService);

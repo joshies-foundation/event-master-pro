@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  model,
-} from '@angular/core';
+import { Component, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
 import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
@@ -53,7 +48,6 @@ import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
       />
     </label>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, RadioButtonModule, InputNumberModule],
 })
 export class TopBottomComponent {

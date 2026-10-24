@@ -1,10 +1,4 @@
-import {
-  Component,
-  computed,
-  input,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { CardComponent } from '../../shared/ui/card.component';
 import { Button } from '@openng/optimus-ui/button';
 import { Sound } from '../../shared/util/sound';
@@ -44,7 +38,6 @@ import { Sound } from '../../shared/util/sound';
     }
   `,
   imports: [CardComponent, Button],
-  changeDetection: ChangeDetectionStrategy.Eager,
   host: {
     '(document:keyup.space)': 'onSpaceKeyUp()',
   },

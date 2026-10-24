@@ -1,16 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { ButtonModule } from '@openng/optimus-ui/button';
 
 @Component({
   selector: 'joshies-prize-machine',
   imports: [ButtonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex flex-col items-center gap-4 py-8 select-none">
       <!-- Gumball machine illustration -->

@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Signal,
-  signal,
-} from '@angular/core';
+import { Component, inject, Signal, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { TableModule } from '@openng/optimus-ui/table';
@@ -96,7 +90,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
       <p-skeleton height="30rem" class="mt-8" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ChangeGmPageComponent {
   private readonly userService = inject(UserService);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { RouterLink } from '@angular/router';
@@ -65,7 +65,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
       <p-skeleton height="5rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ManageSpecialSpaceEventTemplatesPageComponent {
   private readonly gameboardService = inject(GameboardService);

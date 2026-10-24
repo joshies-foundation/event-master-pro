@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { Tables } from '../../shared/util/schema';
 import { trackByUserId, View } from '../../shared/util/supabase-helpers';
 import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
@@ -98,7 +92,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       <p class="text-danger-foreground">Error loading data</p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LifetimeStatsPageComponent {
   readonly lifetimeResultsQueryResult =

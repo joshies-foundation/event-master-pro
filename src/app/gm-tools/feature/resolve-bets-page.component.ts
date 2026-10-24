@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { TableModule } from '@openng/optimus-ui/table';
@@ -187,7 +181,6 @@ import { CardComponent } from '../../shared/ui/card.component';
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ResolveBetsPageComponent {
   private readonly betService = inject(BetService);

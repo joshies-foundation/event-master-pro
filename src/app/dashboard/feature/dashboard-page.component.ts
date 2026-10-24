@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { SessionService } from '../../shared/data-access/session.service';
 import { CountdownTimerComponent } from '../../shared/ui/countdown-timer.component';
 import { PlayerService } from '../../shared/data-access/player.service';
@@ -467,7 +462,6 @@ import { RouterLink } from '@angular/router';
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class DashboardPageComponent {
   private readonly sessionService = inject(SessionService);

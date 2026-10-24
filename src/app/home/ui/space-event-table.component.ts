@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  booleanAttribute,
-  input,
-} from '@angular/core';
+import { Component, booleanAttribute, input } from '@angular/core';
 import {
   BetType,
   GameboardSpaceEffect,
@@ -77,7 +72,6 @@ import { RouterLink } from '@angular/router';
       </tbody>
     </table>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpaceEventTableComponent {
   spaceEvents = input.required<

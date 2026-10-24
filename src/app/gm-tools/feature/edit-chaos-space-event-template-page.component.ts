@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -108,7 +107,6 @@ import {
       </p>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export default class EditGameboardSpaceTypePageComponent implements OnInit {
   private readonly gameboardService = inject(GameboardService);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { BadgeModule } from '@openng/optimus-ui/badge';
@@ -15,7 +15,6 @@ export interface FooterLinkModel {
 @Component({
   selector: 'joshies-footer-link',
   imports: [RouterLink, NgClass, RouterLinkActive, BadgeModule, OverlayBadge],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a
       class="flex flex-col items-center justify-center gap-1 leading-none text-neutral-600"

@@ -1,10 +1,5 @@
 import { NgClass } from '@angular/common';
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  input,
-} from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 import { CardLinkComponent, CardLinkModel } from './card-link.component';
 
 @Component({
@@ -49,7 +44,6 @@ import { CardLinkComponent, CardLinkModel } from './card-link.component';
   host: {
     class: 'block',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent {
   headerText = input<string>();

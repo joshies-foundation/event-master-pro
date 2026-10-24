@@ -1,13 +1,7 @@
 import { CardLinkModel } from '../../shared/ui/card-link.component';
 import { CardComponent } from '../../shared/ui/card.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { BetService } from '../../shared/data-access/bet.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DecimalPipe, NgClass } from '@angular/common';
@@ -389,7 +383,6 @@ const borderColor = getCssVariableValue('--color-standard-border-color');
   host: {
     class: 'block pb-12',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class BettingDashboardPageComponent {
   private readonly gameStateService = inject(GameStateService);

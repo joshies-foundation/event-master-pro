@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
@@ -158,7 +151,6 @@ import { EventModel } from '../../shared/util/supabase-types';
       <p-skeleton height="5rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ManageEventsPageComponent {
   private readonly confirmationService = inject(ConfirmationService);

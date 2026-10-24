@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  Signal,
-} from '@angular/core';
+import { Component, computed, input, Signal } from '@angular/core';
 import { Tag, TagModule } from '@openng/optimus-ui/tag';
 import {
   DuelStatus,
@@ -30,7 +24,6 @@ type Status = SpaceEventStatus | DuelStatus;
       flex-shrink: 0;
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusTagComponent {
   readonly status = input.required<Status>();

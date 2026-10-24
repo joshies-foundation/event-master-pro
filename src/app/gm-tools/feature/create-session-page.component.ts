@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import {
   FormField,
@@ -51,7 +45,6 @@ import { confirmBackendAction } from '../../shared/util/dialog-helpers';
       <p-skeleton width="100%" height="19rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CreateSessionPageComponent {
   private readonly userService = inject(UserService);

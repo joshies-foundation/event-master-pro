@@ -5,14 +5,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { Component, effect, input, output, signal } from '@angular/core';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { DialogModule } from '@openng/optimus-ui/dialog';
 import { PrizeModel } from '../../shared/util/supabase-types';
@@ -22,7 +15,6 @@ type RevealPhase = 'idle' | 'drop' | 'crack' | 'reveal';
 @Component({
   selector: 'joshies-prize-reveal',
   imports: [DialogModule, ButtonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('capsuleDrop', [
       transition(':enter', [

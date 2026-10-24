@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { PlayerService } from '../../shared/data-access/player.service';
@@ -89,7 +89,6 @@ import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-t
       <p-skeleton height="30rem" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OverridePointsChoosePlayerPageComponent {
   private readonly playerService = inject(PlayerService);

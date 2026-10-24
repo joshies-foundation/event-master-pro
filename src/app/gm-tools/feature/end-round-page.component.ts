@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  Signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, Signal } from '@angular/core';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { TableModule } from '@openng/optimus-ui/table';
@@ -136,7 +129,6 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
       <p-skeleton height="30rem" class="mt-12" />
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     HeaderLinkComponent,
