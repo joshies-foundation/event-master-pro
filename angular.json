@@ -107,7 +107,8 @@
               "buildTarget": "joshies:build:production"
             },
             "development": {
-              "buildTarget": "joshies:build:development,local-supabase"
+              "buildTarget": "joshies:build:development,local-supabase",
+              "proxyConfig": "src/proxy.local-supabase.mjs"
             }
           },
           "defaultConfiguration": "development"

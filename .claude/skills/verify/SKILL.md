@@ -21,9 +21,9 @@ export RUN_ID=$(date +%Y%m%d-%H%M%S)   # one id per verification run
 
 ## What you are driving
 
-- The dev server (`ng serve`) builds the app from this checkout. Its default configuration talks to the local Supabase stack at `<page host>:55321`, so the app never reaches the hosted TEST or PROD projects, whatever `.env` says. An `ng build` of any configuration, including a Cloudflare preview, uses the hosted project in `.env` instead.
-- The local stack runs in Docker (`npm run start-supabase`, project id `joshies`, ports 553xx). `$V up` starts it if it is down and leaves it running afterwards.
-- `supabase/seed.sql` loads one in-progress session, "Test Jaybies", with `colin` as GM and a player (score 33, 1 prize token), 3 un-won prizes, and 10 more players. The single `game_state` row is global, so a GM action changes the game for every run on this machine.
+- The dev server (`ng serve`) builds the app from this checkout. In its default configuration the app calls the dev server's own origin, and the dev server proxies the Supabase API paths to this checkout's local Supabase project. The app never reaches the hosted TEST or PROD projects, whatever `.env` says. An `ng build` of any configuration, including a Cloudflare preview, uses the hosted project in `.env` instead.
+- Each checkout and git branch has its own local Supabase project in Docker, on ports the CLI assigns (`npx supabase status </dev/null` prints them). `$V up` runs `npm run start-supabase`, which starts the project if it is down, and leaves it running afterwards.
+- `supabase/seed.sql` loads one in-progress session, "Test Jaybies", with `colin` as GM and a player (score 33, 1 prize token), 3 un-won prizes, and 10 more players. The single `game_state` row is global, so a GM action changes the game for every run from this checkout.
 - Every seeded account has the password `password`. `$V login` logs in as `colin`, and `$V login leo` logs in as a player who is not the GM. Usernames are the part before `@joshies.app` in `auth.users`.
 - Seeded image URLs (avatars, prize images) point at TEST's public storage. The browser loads them read-only; nothing writes to TEST.
 
@@ -40,16 +40,16 @@ $V login [user]     # clears the old session, logs in as colin (or user) with th
 
 Android instead of iPhone: `$V browser stop`, then `EMP_VERIFY_DEVICE="Pixel 8" $V browser start` (Chromium). Any Playwright device name works, for example `iPhone 16e` or `Galaxy S24`. Verify on both platforms when the change touches layout, safe areas, touch handling, or input widgets.
 
-Two runs can coexist. Each gets its own port, browser, and state dir, but they share one local stack and its database, so they must not mutate the same rows, and neither may reset while the other is up.
+Two runs can coexist. Each gets its own port, browser, and state dir. Runs from different worktrees also get different databases. Two runs from the same checkout share its database, so they must not mutate the same rows, and neither may reset while the other is up.
 
 ## Reset
 
 ```sh
-$V reset            # supabase db reset: reapply every migration and the seed
+$V reset            # npm run reset-supabase: reapply every migration and the seed
 $V login
 ```
 
-Start a run from `reset` when you need the seeded state, and use it to undo whatever a run changed. It takes about 30 s, ends every session, and restarts realtime, so log in again afterwards. It first moves this run's browser off the app. If the page still had requests in flight, WebKit logs them as `... due to access control checks` page errors, which are expected. It refuses while another run on this machine has a live dev server or browser, because that run shares the database. `--force` resets anyway. The output goes to `$TMPDIR/emp-verify/$RUN_ID/reset.log`.
+Start a run from `reset` when you need the seeded state, and use it to undo whatever a run changed. It takes about 10 s, ends every session, and restarts realtime, so log in again afterwards. It first moves this run's browser off the app. If the page still had requests in flight, WebKit logs them as `... due to access control checks` page errors, which are expected. It refuses while another run from this checkout has a live dev server or browser, because that run shares the database. Runs from other worktrees do not block it. `--force` resets anyway. The output goes to `$TMPDIR/emp-verify/$RUN_ID/reset.log`.
 
 ## Doctor
 
@@ -59,7 +59,7 @@ Run this first, and again whenever anything looks off:
 $V doctor
 ```
 
-All lines must be `ok`. It checks that the local Supabase auth service answers, that the stack was started from this checkout and holds exactly its migrations (all worktrees of this repo share one stack), that this run's dev server process group owns its port and serves EventMaster Pro, and that every Supabase API call the page has made went to the local stack (`ok the app calls only http://127.0.0.1:55321`). It prints `INFO` while the page has made no API call yet, and when other runs share the database. It also prints the device, current URL, and logged-in user (`session colin@joshies.app ...`). `$V status` lists every run on this machine with dev-server and browser state. Never drive a run you did not start.
+All lines must be `ok`. It checks that the auth service of this checkout's local project answers, that its database holds exactly this checkout's migrations, that this run's dev server process group owns its port, serves EventMaster Pro, and proxies Supabase to the project, and that every Supabase API call the page has made went to the dev server (`ok the app calls only http://127.0.0.1:4310, which proxies to http://127.0.0.1:<API port>`). It prints `INFO` while the page has made no API call yet, and when other runs from this checkout share the database. It also prints the device, current URL, and logged-in user (`session colin@joshies.app ...`). `$V status` lists every run on this machine with dev-server and browser state and the checkout it came from. Never drive a run you did not start.
 
 ## Drive
 
@@ -109,7 +109,7 @@ A proof for a change includes:
 
 Side effects outside the page:
 
-- Notifications. GM actions (override points, prize tokens, Send Notifications) call the local `push` edge function, and inserting or updating a `bet` row fires a trigger that calls it too. The seed has no push subscriptions, so no push leaves the machine. A route that notifies everyone (for example `/override`) answers 500 `No notifications subscriptions found`, which shows as one `Failed to load resource ... 500` console error. That error is expected. The edge runtime log (`docker logs supabase_edge_runtime_joshies`) shows what the function would have sent.
+- Notifications. GM actions (override points, prize tokens, Send Notifications) call the local `push` edge function, and inserting or updating a `bet` row fires a trigger that calls it too. The seed has no push subscriptions, so no push leaves the machine. A route that notifies everyone (for example `/override`) answers 500 `No notifications subscriptions found`, which shows as one `Failed to load resource ... 500` console error. That error is expected. The functions log (`npx supabase stack logs --service functions --output-format text </dev/null`) shows what the function would have sent. Functions stop after a minute without calls, and the next cold start takes longer than the bet trigger's 1 s timeout, so `net._http_response` can show a timeout for the first bet after a pause. `start-supabase` and `reset-supabase` wake functions, so a bet right after them gets through.
 - Push permission. "Enable Push Notifications" on Profile needs a service worker, and dev builds do not register one (`navigator.serviceWorker.getRegistrations()` is empty). You cannot verify it here; say so instead of claiming it works.
 - Undo what a run changed with `$V reset` before `down`, unless another run is still using the database. In that case, restore by hand and check the restore with the same second view.
 
@@ -119,7 +119,7 @@ Side effects outside the page:
 $V down
 ```
 
-This kills only this run's browser server and dev server by process group, copies the browser console log into the evidence dir, deletes `$TMPDIR/emp-verify/$RUN_ID/`, and lists the evidence it kept in `tmp/verify/$RUN_ID/`. Run it after failed attempts too. It never touches other runs or processes it did not start. It leaves the local Supabase stack running for other runs; `npm run stop-supabase` stops it.
+This kills only this run's browser server and dev server by process group, copies the browser console log into the evidence dir, deletes `$TMPDIR/emp-verify/$RUN_ID/`, and lists the evidence it kept in `tmp/verify/$RUN_ID/`. Run it after failed attempts too. It never touches other runs or processes it did not start. It leaves this checkout's local Supabase project running. `npm run stop-supabase` stops it, and `npx supabase stack destroy --yes </dev/null` deletes it with its data.
 
 ## Helpers
 

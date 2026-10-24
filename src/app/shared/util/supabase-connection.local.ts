@@ -1,13 +1,12 @@
 import { SupabaseConnection } from '../../custom-providers';
 
-const LOCAL_API_PORT = 55321;
-
-/** Publishable key every local Supabase stack shares. */
+/** Publishable key every local Supabase project shares. */
 const LOCAL_PUBLISHABLE_KEY = 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH';
 
+/** The dev server proxies the Supabase API paths to this checkout's local project; see src/proxy.local-supabase.mjs. */
 export function resolveSupabaseConnection(): SupabaseConnection {
   return {
-    url: `http://${window.location.hostname}:${LOCAL_API_PORT}`,
+    url: window.location.origin,
     publishableKey: LOCAL_PUBLISHABLE_KEY,
   };
 }

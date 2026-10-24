@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Diff the schema of a hosted project against the local stack.
+# Diff the schema of a hosted project against this checkout's local Supabase project.
 # Usage: SUPABASE_ACCESS_TOKEN=sbp_... supabase/scripts/schema-drift.sh <project-ref>
 # Lines starting with < exist only in the hosted project, lines starting with > only locally.
 set -euo pipefail
@@ -17,7 +17,12 @@ jq -n --arg q "$sql" '{query: $q}' |
   jq -r '.[].line' | sort >"$tmp/remote.txt"
 
 # Match the search_path the hosted read-only role sees, so both sides qualify names the same way.
-project_id="$(sed -n 's/^project_id = "\(.*\)"/\1/p' "$dir/../config.toml")"
-docker exec -i -e PGOPTIONS="-c search_path=public" "supabase_db_$project_id" psql -U postgres -At -v ON_ERROR_STOP=1 <<<"$sql" | sort >"$tmp/local.txt"
+(cd "$dir/../.." && node --input-type=module -e '
+  import { readFileSync } from "node:fs";
+  import postgres from "postgres";
+  import { localStack } from "./supabase/scripts/local-stack.mjs";
+  const sql = postgres(localStack().dbUrl, { max: 1, connection: { search_path: "public" } });
+  for (const { line } of await sql.unsafe(readFileSync(0, "utf8"))) console.log(line);
+  await sql.end();' <<<"$sql") | sort >"$tmp/local.txt"
 
 diff "$tmp/remote.txt" "$tmp/local.txt" && echo "no drift"
