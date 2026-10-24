@@ -72,7 +72,7 @@ npx playwright install webkit chromium   # once per machine
 npm run e2e
 ```
 
-The tests in `e2e/` drive the app the way players and the GM use it, on an emulated iPhone 16 Pro (WebKit) and Pixel 8 (Chromium). Playwright starts its own `ng serve` on port 4380 and never reuses a dev server you already have running. The local Supabase stack must be up.
+The tests in `e2e/` drive the app the way players and the GM use it, on an emulated iPhone 16 Pro (WebKit) and Pixel 8 (Chromium). CI runs only the iPhone project. Playwright starts its own `ng serve` on port 4380 and never reuses a dev server you already have running. The local Supabase stack must be up.
 
 Each test starts by putting the local database back to `supabase/seed.sql`, which takes under a second. That wipes whatever you changed in the local database, including logins. Tests run one at a time because they share that database. A test fails if the page logs a console error that the test did not expect.
 
