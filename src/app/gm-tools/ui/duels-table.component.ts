@@ -1,4 +1,10 @@
-import { Component, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DuelTableAvatarsComponent } from '../../shared/ui/duel-table-avatars.component';
 import { RouterLink } from '@angular/router';
 import { StatusTagComponent } from './status-tag.component';
@@ -62,6 +68,7 @@ import { CanCancelDuelPipe } from './can-cancel-duel.pipe';
       </tr>
     </ng-template>
   </p-table>`,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     AvatarModule,
     FormsModule,

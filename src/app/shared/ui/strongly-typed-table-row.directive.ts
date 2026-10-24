@@ -14,9 +14,9 @@ export class StronglyTypedTableRowDirective<TItem extends object> {
   @Input('joshiesStronglyTypedTableRow') data!: TItem[];
 
   static ngTemplateContextGuard<TContextItem extends object>(
-    dir: StronglyTypedTableRowDirective<TContextItem>,
-    ctx: unknown,
-  ): ctx is TableRowTemplateContext<TContextItem> {
+    _dir: StronglyTypedTableRowDirective<TContextItem>,
+    _ctx: unknown,
+  ): _ctx is TableRowTemplateContext<TContextItem> {
     return true;
   }
 }

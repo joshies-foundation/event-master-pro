@@ -6,6 +6,7 @@ import {
   linkedSignal,
   output,
   signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CardComponent } from '../../shared/ui/card.component';
 import { Select } from '@openng/optimus-ui/select';
@@ -110,6 +111,7 @@ import { ActivatedRoute, Router } from '@angular/router';
       [loading]="submitting()"
     />
   </div>`,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CardComponent,
     Select,

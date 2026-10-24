@@ -1,4 +1,9 @@
-import { Component, inject, model } from '@angular/core';
+import {
+  Component,
+  inject,
+  model,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Select } from '@openng/optimus-ui/select';
 import {
@@ -11,6 +16,7 @@ import { GameboardService } from '../../../shared/data-access/gameboard.service'
 @Component({
   selector: 'joshies-gameboard-bet',
   imports: [Select, FormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <div class="flex flex-col gap-4">
       <!-- Bet Player Dropdown -->
