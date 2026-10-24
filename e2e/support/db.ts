@@ -3,11 +3,14 @@ import postgres from 'postgres';
 
 const seed = readFileSync('supabase/seed.sql', 'utf8');
 
-export const sql = postgres(
+const url =
   process.env['E2E_DB_URL'] ??
-    'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
-  { onnotice: () => undefined, max: 1 },
-);
+  'postgresql://postgres:postgres@127.0.0.1:55322/postgres';
+if (!['127.0.0.1', 'localhost'].includes(new URL(url).hostname)) {
+  throw new Error(`E2E_DB_URL must point at a local database, not ${url}`);
+}
+
+export const sql = postgres(url, { onnotice: () => undefined, max: 1 });
 
 export async function resetDatabase(): Promise<void> {
   const tables = await sql<{ name: string }[]>`
