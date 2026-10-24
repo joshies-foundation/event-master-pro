@@ -25,15 +25,13 @@ export const previousSessionsResolver: ResolveFn<
         of([]),
         analyticsService.getAllScoresFromSession(mostRecentSessionId),
       ).pipe(
-        map(
-          (mostRecentSessionPlayers): AnalyticsPreviousResolvedData => ({
-            previousSessions,
-            mostRecentSessionId,
-            mostRecentSessionPlayers: addRankingInfoToPlayers(
-              mostRecentSessionPlayers,
-            ),
-          }),
-        ),
+        map((mostRecentSessionPlayers): AnalyticsPreviousResolvedData => ({
+          previousSessions,
+          mostRecentSessionId,
+          mostRecentSessionPlayers: addRankingInfoToPlayers(
+            mostRecentSessionPlayers,
+          ),
+        })),
       );
     }),
   );

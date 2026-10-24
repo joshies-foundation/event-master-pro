@@ -236,14 +236,12 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
       pointsGained:
         (
           originalGameboardSpace?.effect_data as
-            | GainPointsSpaceEffectData
-            | undefined
+            GainPointsSpaceEffectData | undefined
         )?.pointsGained ?? 0,
       alternativeActivity:
         (
           originalGameboardSpace?.effect_data as
-            | GainPointsOrDoActivitySpaceEffectData
-            | undefined
+            GainPointsOrDoActivitySpaceEffectData | undefined
         )?.alternativeActivity ?? '',
       duelGames:
         (
@@ -252,14 +250,12 @@ export default class EditGameboardSpaceTypePageComponent implements OnInit {
       specialSpaceEventTemplateIds:
         (
           originalGameboardSpace?.effect_data as
-            | SpecialSpaceEffectData
-            | undefined
+            SpecialSpaceEffectData | undefined
         )?.specialSpaceEventTemplateIds ?? [],
       chaosSpaceEventTemplateIds:
         (
           originalGameboardSpace?.effect_data as
-            | ChaosSpaceEffectData
-            | undefined
+            ChaosSpaceEffectData | undefined
         )?.chaosSpaceEventTemplateIds ?? [],
     });
   }

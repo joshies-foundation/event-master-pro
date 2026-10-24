@@ -200,13 +200,11 @@ export default class OverridePointsCardComponent {
     }),
   );
 
-  readonly confirmDialogModel = computed(
-    (): ConfirmOverrideDialogModel => ({
-      ...this.overrideDefinitionTableMode(),
-      player: this.player()!,
-      comment: this.comment(),
-    }),
-  );
+  readonly confirmDialogModel = computed((): ConfirmOverrideDialogModel => ({
+    ...this.overrideDefinitionTableMode(),
+    player: this.player()!,
+    comment: this.comment(),
+  }));
 
   constructor() {
     // initialize replacement value to be the old score

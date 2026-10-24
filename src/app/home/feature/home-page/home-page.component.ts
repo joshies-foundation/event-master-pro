@@ -125,14 +125,12 @@ export default class HomePageComponent {
                   (new Date(session.start_date).getTime() - Date.now()) / 1000,
               ),
               takeWhile((secondsRemaining) => secondsRemaining >= 0),
-              map(
-                (secondsRemaining): Countdown => ({
-                  days: Math.floor(secondsRemaining / (3600 * 24)),
-                  hours: Math.floor((secondsRemaining % (3600 * 24)) / 3600),
-                  minutes: Math.floor((secondsRemaining % 3600) / 60),
-                  seconds: Math.floor(secondsRemaining % 60),
-                }),
-              ),
+              map((secondsRemaining): Countdown => ({
+                days: Math.floor(secondsRemaining / (3600 * 24)),
+                hours: Math.floor((secondsRemaining % (3600 * 24)) / 3600),
+                minutes: Math.floor((secondsRemaining % 3600) / 60),
+                seconds: Math.floor(secondsRemaining % 60),
+              })),
             ),
             of(null),
           ),
