@@ -58,7 +58,8 @@ export interface OverrideDefinitionTableModel {
           >
             @if (showChangeInput()) {
               <p-input-number
-                [(ngModel)]="userDefinedChangeValue"
+                [ngModel]="userDefinedChangeValue()"
+                (ngModelChange)="userDefinedChangeValue.set(toNumber($event))"
                 [showButtons]="true"
                 buttonLayout="horizontal"
                 [step]="1"
@@ -89,7 +90,10 @@ export interface OverrideDefinitionTableModel {
           >
             @if (showReplaceInput()) {
               <p-input-number
-                [(ngModel)]="userDefinedReplacementValue"
+                [ngModel]="userDefinedReplacementValue()"
+                (ngModelChange)="
+                  userDefinedReplacementValue.set(toNumber($event))
+                "
                 [showButtons]="true"
                 buttonLayout="horizontal"
                 [step]="1"
@@ -146,4 +150,9 @@ export class OverrideDefinitionTableComponent {
   readonly newScorePaddingClass = computed(() =>
     this.model().readonly ? '' : this.showReplaceInput() ? ' pr-0' : 'pr-12',
   );
+
+  /** p-input-number emits '-' while only a minus sign is typed, and null when empty. */
+  protected toNumber(value: number | string | null): number {
+    return typeof value === 'number' ? value : 0;
+  }
 }

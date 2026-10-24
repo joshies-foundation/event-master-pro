@@ -19,7 +19,8 @@
     "reset-supabase": "supabase db reset",
     "create-migration": "supabase db diff --use-migra -f",
     "save-seed": "supabase db dump --data-only --local -x storage.buckets -x auth.audit_log_entries -x auth.sessions -x auth.refresh_tokens -x auth.mfa_amr_claims -x auth.one_time_tokens -x auth.flow_state -x public.user_notifications_subscription > supabase/seed.sql",
-    "serve-edge-functions": "supabase functions serve"
+    "serve-edge-functions": "supabase functions serve",
+    "e2e": "playwright test"
   },
   "private": true,
   "prettier": {
@@ -74,11 +75,13 @@
     "@angular/compiler-cli": "^21.1.2",
     "@eslint/js": "^9.39.2",
     "@ngx-env/builder": "^21.0.1",
+    "@playwright/test": "^1.64.1",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "eslint": "^9.39.2",
     "hono": "^4.11.7",
     "lint-staged": "^16.2.7",
+    "postgres": "^3.4.9",
     "pre-commit": "^1.0.10",
     "prettier": "3.8.1",
     "prettier-plugin-tailwindcss": "0.7.2",
