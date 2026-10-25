@@ -117,15 +117,26 @@ test('Roll History orders players by name under every join plan', async () => {
   ]);
 });
 
-test('Space Stats orders players by name under every plan', async () => {
+test('Space Stats lists only the session players, by name, under every plan', async () => {
   const [first, ...others] = await playerOrderUnderEachPlan(
     `select display_name, user_id::text, player_id::text
      from get_space_stats_for_session(${seed.sessionId})
        as (user_id uuid, player_id bigint, display_name text, avatar_url text, space_stats json)`,
   );
   for (const order of others) expect(order).toEqual(first);
-  const names = first.map((row) => row.display_name);
-  expect(names).toEqual([...names].sort());
+  expect(first.map((row) => row.display_name)).toEqual([
+    'Alyssa',
+    'Brittany',
+    'Colin',
+    'Dan',
+    'Ellie',
+    'Josh',
+    'Leo',
+    'Leo',
+    'Molly',
+    'Olivia',
+    'Tim',
+  ]);
 });
 
 test('Player Duel Stats lists players by name under every plan', async () => {
