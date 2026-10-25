@@ -5,8 +5,10 @@ import { editGameStateResolver } from '../data-access/edit-game-state.resolver';
 import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
 import { editSessionResolver } from '../data-access/edit-session.resolver';
 import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
-import { roundPhaseIs } from '../data-access/round-phase.guard';
-import { RoundPhase } from '../../shared/util/supabase-helpers';
+import {
+  eventResultsDraftResolver,
+  gameboardMovesDraftResolver,
+} from '../data-access/review-draft.resolvers';
 
 const gmToolsRoutes: Routes = [
   {
@@ -25,7 +27,7 @@ const gmToolsRoutes: Routes = [
     path: 'end-round/review',
     loadComponent: () => import('./review-score-changes-page.component'),
     data: { pageAnimationLayer: 2 },
-    canActivate: [roundPhaseIs(RoundPhase.Event)],
+    resolve: { draft: eventResultsDraftResolver },
   },
   {
     path: 'space-entry',
@@ -37,7 +39,7 @@ const gmToolsRoutes: Routes = [
     loadComponent: () =>
       import('./review-gameboard-space-entry-page.component'),
     data: { pageAnimationLayer: 2 },
-    canActivate: [roundPhaseIs(RoundPhase.GameboardMoves)],
+    resolve: { draft: gameboardMovesDraftResolver },
   },
   {
     path: 'resolve-special-space-events',

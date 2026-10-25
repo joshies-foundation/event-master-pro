@@ -125,13 +125,16 @@ export class GameStateService {
       .eq('id', 1);
   }
 
-  async fetchRoundPhase(): Promise<RoundPhase | undefined> {
-    const { data } = await this.supabase
+  fetchGameState(): PromiseLike<
+    PostgrestSingleResponse<
+      Pick<GameStateModel, 'session_id' | 'round_number' | 'round_phase'>
+    >
+  > {
+    return this.supabase
       .from(Table.GameState)
-      .select('round_phase')
+      .select('session_id, round_number, round_phase')
       .eq('id', 1)
       .single();
-    return data?.round_phase as RoundPhase | undefined;
   }
 
   roundPhaseOrderIndex(roundPhase: RoundPhase): number {

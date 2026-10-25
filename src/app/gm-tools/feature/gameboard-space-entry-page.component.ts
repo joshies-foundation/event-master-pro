@@ -32,6 +32,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
 import {
+  combineLatest,
   concat,
   map,
   Observable,
@@ -41,10 +42,11 @@ import {
   take,
 } from 'rxjs';
 import {
-  getRecordFromLocalStorage,
-  LocalStorageRecord,
-  saveRecordToLocalStorage,
-} from '../../shared/util/local-storage-helpers';
+  DraftRound,
+  roundDraftEntries,
+  RoundDraftKey,
+  saveRoundDraft,
+} from '../data-access/round-draft';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
 import {
@@ -308,50 +310,61 @@ export default class GameboardSpaceEntryPageComponent {
   protected readonly overridePointsDialogVisible = signal(false);
   protected readonly overridePointsDialogPlayerId = signal<number | null>(null);
 
-  private readonly initialFormValue: Partial<GameboardSpaceEntryFormModel> =
-    getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
+  private readonly draftRound$: Observable<DraftRound> =
+    this.gameStateService.gameState$.pipe(
+      map((gameState) => ({
+        sessionId: gameState.session_id,
+        roundNumber: gameState.round_number,
+      })),
+    );
+
+  private readonly draftRound = toSignal(this.draftRound$.pipe(take(1)));
 
   private readonly formGroup$: Observable<
     ModelFormGroup<GameboardSpaceEntryFormModel>
-  > = this.playerService.players$.pipe(
-    defined(),
+  > = combineLatest([
+    this.playerService.players$.pipe(defined()),
+    this.draftRound$,
+  ]).pipe(
     take(1), // take 1 so a player changing their name or picture doesn't reset the form
-    map((players): FormGroup =>
-      this.formBuilder.nonNullable.group(
-        players!.reduce(
+    map(([players, draftRound]): FormGroup => {
+      const initialFormValue = roundDraftEntries(
+        RoundDraftKey.GameboardMoves,
+        draftRound,
+      ) as Partial<GameboardSpaceEntryFormModel>;
+      return this.formBuilder.nonNullable.group(
+        players.reduce(
           (prev, player) => ({
             ...prev,
             [player.player_id]: this.formBuilder.group({
               distanceTraveled: [
-                this.initialFormValue?.[player.player_id]?.distanceTraveled,
+                initialFormValue[player.player_id]?.distanceTraveled,
                 Validators.required,
               ],
               gameboardSpaceId: [
-                this.initialFormValue?.[player.player_id]?.gameboardSpaceId,
+                initialFormValue[player.player_id]?.gameboardSpaceId,
                 Validators.required,
               ],
               decision: [
-                this.initialFormValue?.[player.player_id]?.decision ?? 'points',
+                initialFormValue[player.player_id]?.decision ?? 'points',
                 Validators.required,
               ],
               triggersDuel: [
-                this.initialFormValue?.[player.player_id]?.triggersDuel ??
-                  false,
+                initialFormValue[player.player_id]?.triggersDuel ?? false,
               ],
               triggeredDuelCreated: [
-                this.initialFormValue?.[player.player_id]
-                  ?.triggeredDuelCreated ?? false,
+                initialFormValue[player.player_id]?.triggeredDuelCreated ??
+                  false,
               ],
               chancePointsAmount: [
-                this.initialFormValue?.[player.player_id]?.chancePointsAmount ??
-                  0,
+                initialFormValue[player.player_id]?.chancePointsAmount ?? 0,
               ],
             }),
           }),
           {},
         ),
-      ),
-    ),
+      );
+    }),
     shareReplay(1),
   );
 
@@ -398,15 +411,19 @@ export default class GameboardSpaceEntryPageComponent {
   );
 
   private readonly saveFormUpdatesToLocalStorage = effect(() => {
-    if (this.formValueChanges()) {
-      saveRecordToLocalStorage(
-        LocalStorageRecord.GameboardSpaceEntryFormValue,
-        this.formValueChanges()!,
-      );
-    }
+    const entries = this.formValueChanges();
+    if (entries) this.saveDraft(entries);
   });
 
+  private saveDraft(entries: Partial<GameboardSpaceEntryFormModel>): void {
+    saveRoundDraft(RoundDraftKey.GameboardMoves, {
+      ...this.draftRound()!,
+      entries,
+    });
+  }
+
   reviewGameboardSpaces(): void {
+    this.saveDraft(this.formGroup()!.getRawValue());
     this.router.navigate(['review'], {
       relativeTo: this.activatedRoute,
     });
