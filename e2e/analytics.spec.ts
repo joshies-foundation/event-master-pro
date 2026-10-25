@@ -48,10 +48,11 @@ test('the stats pages open from Analytics and lead back', async ({
   }
 });
 
-const joinPlans = [
+const plans = [
   ['enable_mergejoin', 'enable_nestloop'],
   ['enable_hashjoin', 'enable_nestloop'],
   ['enable_hashjoin', 'enable_mergejoin'],
+  ['enable_sort'],
 ];
 
 interface PlayerRow {
@@ -59,11 +60,9 @@ interface PlayerRow {
   user_id: string;
 }
 
-async function playerOrderUnderEachJoinPlan(
-  query: string,
-): Promise<PlayerRow[][]> {
+async function playerOrderUnderEachPlan(query: string): Promise<PlayerRow[][]> {
   const orders: PlayerRow[][] = [];
-  for (const disabled of joinPlans) {
+  for (const disabled of plans) {
     const rows = await sql.begin(async (tx) => {
       await tx`discard plans`;
       for (const setting of disabled) {
@@ -77,7 +76,7 @@ async function playerOrderUnderEachJoinPlan(
 }
 
 test('Previous Session Rankings orders tied players by name under every join plan', async () => {
-  const [first, ...others] = await playerOrderUnderEachJoinPlan(
+  const [first, ...others] = await playerOrderUnderEachPlan(
     `select display_name, user_id::text
      from get_all_scores_from_session(37)
        as (user_id uuid, score bigint, display_name text, avatar_url text)`,
@@ -98,9 +97,41 @@ test('Previous Session Rankings orders tied players by name under every join pla
 });
 
 test('Roll History orders players by name under every join plan', async () => {
-  const [first, ...others] = await playerOrderUnderEachJoinPlan(
+  const [first, ...others] = await playerOrderUnderEachPlan(
     `select r->>'display_name' as display_name, r->>'user_id' as user_id
      from get_roll_history_for_session(${seed.sessionId}) as r`,
+  );
+  for (const order of others) expect(order).toEqual(first);
+  expect(first.map((row) => row.display_name)).toEqual([
+    'Alyssa',
+    'Brittany',
+    'Colin',
+    'Dan',
+    'Ellie',
+    'Josh',
+    'Leo',
+    'Leo',
+    'Molly',
+    'Olivia',
+    'Tim',
+  ]);
+});
+
+test('Space Stats orders players by name under every plan', async () => {
+  const [first, ...others] = await playerOrderUnderEachPlan(
+    `select display_name, user_id::text, player_id::text
+     from get_space_stats_for_session(${seed.sessionId})
+       as (user_id uuid, player_id bigint, display_name text, avatar_url text, space_stats json)`,
+  );
+  for (const order of others) expect(order).toEqual(first);
+  const names = first.map((row) => row.display_name);
+  expect(names).toEqual([...names].sort());
+});
+
+test('Player Duel Stats lists players by name under every plan', async () => {
+  const [first, ...others] = await playerOrderUnderEachPlan(
+    `select s->>'display_name' as display_name, s->>'user_id' as user_id
+     from get_player_duel_stats_for_session(${seed.sessionId}) as s`,
   );
   for (const order of others) expect(order).toEqual(first);
   expect(first.map((row) => row.display_name)).toEqual([

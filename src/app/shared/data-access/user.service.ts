@@ -14,6 +14,7 @@ import { whenNotUndefined } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Database } from '../util/schema';
 import { UserModel } from '../util/supabase-types';
+import { compareIds, compareNames } from '../util/sort-helpers';
 
 @Injectable({
   providedIn: 'root',
@@ -40,7 +41,10 @@ export class UserService {
   readonly allUsers$: Observable<UserModel[]> = realtimeUpdatesFromTable(
     this.supabase,
     Table.User,
-  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  ).pipe(
+    map((users) => users.sort(compareUsersBy('real_name'))),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 
   readonly allUsersExceptCurrentUser$: Observable<UserModel[] | undefined> =
     this.authService.user$.pipe(
@@ -49,7 +53,7 @@ export class UserService {
           this.supabase,
           Table.User,
           `id=neq.${authUser.id}`,
-        ),
+        ).pipe(map((users) => users.sort(compareUsersBy('display_name')))),
       ),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
@@ -131,4 +135,9 @@ export class UserService {
       .update({ can_toggle_squidward_mode: canToggleSquidwardMode })
       .eq('id', userId);
   }
+}
+
+function compareUsersBy(name: 'real_name' | 'display_name') {
+  return (a: UserModel, b: UserModel) =>
+    compareNames(a[name], b[name]) || compareIds(a.id, b.id);
 }

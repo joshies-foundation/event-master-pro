@@ -22,7 +22,10 @@ import { AuthService } from '../../auth/data-access/auth.service';
 import { PlayerModel, SessionModel, UserModel } from '../util/supabase-types';
 import { Database } from '../util/schema';
 import { GameStateService } from './game-state.service';
-import { addRankingInfoToPlayers } from '../util/ranking-helpers';
+import {
+  addRankingInfoToPlayers,
+  comparePlayersByRank,
+} from '../util/ranking-helpers';
 
 export interface PlayerWithUserInfo {
   player_id: number;
@@ -105,7 +108,7 @@ export class PlayerService {
               can_toggle_squidward_mode: user.can_toggle_squidward_mode,
             };
           })
-          .sort((a, b) => b.score - a.score),
+          .sort(comparePlayersByRank),
       ),
       shareReplay(1),
     );

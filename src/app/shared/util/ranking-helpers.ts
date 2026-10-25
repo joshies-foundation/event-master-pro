@@ -2,6 +2,18 @@ import {
   PlayerWithUserAndRankInfo,
   PlayerWithUserInfo,
 } from '../data-access/player.service';
+import { compareIds, compareNames } from './sort-helpers';
+
+export function comparePlayersByRank(
+  a: PlayerWithUserInfo,
+  b: PlayerWithUserInfo,
+): number {
+  return (
+    b.score - a.score ||
+    compareNames(a.display_name, b.display_name) ||
+    compareIds(a.user_id, b.user_id)
+  );
+}
 
 export function addRankingInfoToPlayers(
   playersWithUserInfo: PlayerWithUserInfo[],
@@ -10,14 +22,18 @@ export function addRankingInfoToPlayers(
   const players = filterOnlyEnabled
     ? playersWithUserInfo.filter((player) => player.enabled)
     : playersWithUserInfo;
-  let currentRank = 1;
-  let previousScore = players[0]?.score;
+  const ranks: number[] = [];
+  players.forEach((player, index) => {
+    ranks.push(
+      index > 0 && player.score === players[index - 1].score
+        ? ranks[index - 1]
+        : index + 1,
+    );
+  });
+  const lastRank = ranks.at(-1);
 
   return players.map((player, index) => {
-    if (player.score !== previousScore) {
-      currentRank = index + 1;
-    }
-    previousScore = player.score;
+    const rank = ranks[index];
     return {
       enabled: player.enabled,
       user_id: player.user_id,
@@ -27,13 +43,8 @@ export function addRankingInfoToPlayers(
       score: player.score,
       prize_tokens: player.prize_tokens,
       avatar_url: player.avatar_url,
-      rank: currentRank,
-      rankEmoji:
-        currentRank === 1
-          ? '👑'
-          : currentRank === players.length
-            ? '💩'
-            : undefined,
+      rank,
+      rankEmoji: rank === 1 ? '👑' : rank === lastRank ? '💩' : undefined,
       can_edit_profile: player.can_edit_profile,
       can_place_bets: player.can_place_bets,
       squidward_mode: player.squidward_mode,

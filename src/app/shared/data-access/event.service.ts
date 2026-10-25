@@ -112,6 +112,10 @@ export class EventService {
         this.supabase,
         Table.EventTeam,
         `event_id=in.(${eventIds})`,
+      ).pipe(
+        map((teams) =>
+          teams.sort((a, b) => (a.seed ?? 0) - (b.seed ?? 0) || a.id - b.id),
+        ),
       ),
     ),
     shareReplay(1),

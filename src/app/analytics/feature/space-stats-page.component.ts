@@ -38,9 +38,6 @@ import { GameboardService } from '../../shared/data-access/gameboard.service';
       <!-- Lifetime Rankings Table -->
       <p-table
         [value]="spaceStats"
-        [defaultSortOrder]="-1"
-        sortField="lifetime_score"
-        [sortOrder]="-1"
         [scrollable]="true"
         [rowTrackBy]="trackByPlayerId"
       >
