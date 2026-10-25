@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { score, sql } from './support/db';
 import {
   confirmDialog,
@@ -14,12 +15,7 @@ async function roundPhase() {
   return row.round_phase;
 }
 
-test('the GM enters a turn of moves and the game moves to special space events', async ({
-  page,
-  login,
-  secondPhone,
-}) => {
-  await login();
+async function reviewThreeBlueSpacesForEveryone(page: Page) {
   await openTab(page, 'GM Tools');
   await page.getByRole('link', { name: 'Enter Gameboard Moves' }).tap();
   await expect(
@@ -42,12 +38,24 @@ test('the GM enters a turn of moves and the game moves to special space events',
   }
   await page.getByRole('button', { name: 'Review Moves' }).tap();
   await expect(page.getByRole('row', { name: 'Colin 3' })).toBeVisible();
+}
 
+async function submitMoves(page: Page, answer: 'Yes' | 'No') {
   await page.getByRole('button', { name: 'Submit Moves for Round 1' }).tap();
   await expect(confirmDialog(page)).toContainText(
     'Are you sure you want to submit moves for round 1?',
   );
-  await confirmDialog(page).getByRole('button', { name: 'Yes' }).tap();
+  await confirmDialog(page).getByRole('button', { name: answer }).tap();
+}
+
+test('the GM enters a turn of moves and the game moves to special space events', async ({
+  page,
+  login,
+  secondPhone,
+}) => {
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page);
+  await submitMoves(page, 'Yes');
 
   await expect(page).toHaveURL(/\/home$/);
   await expect(
@@ -64,6 +72,40 @@ test('the GM enters a turn of moves and the game moves to special space events',
   await expect(
     leo.getByRole('table').last().getByRole('row').nth(1),
   ).toHaveText(/Leo\s*80/);
+});
+
+test('Back after submitting the moves returns the GM to GM Tools', async ({
+  page,
+  login,
+}) => {
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page);
+  await submitMoves(page, 'Yes');
+  await expect(page).toHaveURL(/\/home$/);
+
+  await page.goBack();
+
+  await expect(page).toHaveURL(/\/gm-tools$/);
+  await expect(
+    page.getByRole('link', { name: 'Resolve Special Space Events' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Submit Moves for Round 1' }),
+  ).toHaveCount(0);
+});
+
+test('cancelling the submit keeps the moves the GM entered', async ({
+  page,
+  login,
+}) => {
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page);
+  await submitMoves(page, 'No');
+
+  await page.reload();
+
+  await expect(page.getByRole('row', { name: 'Colin 3' })).toBeVisible();
+  await expect.poll(roundPhase).toBe('gameboard_moves');
 });
 
 async function roundScoreRows(playerId: number) {
