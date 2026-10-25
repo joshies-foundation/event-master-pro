@@ -193,9 +193,11 @@ export function realtimeUpdatesFromTable<
         } else if (realtime.isConnected()) {
           subscriber.error(error);
         } else {
-          // Phoenix buffers the join of a channel made while the socket is
-          // down and sends it on reconnect even if the channel is gone, so
-          // keep this channel until the socket opens.
+          // Keep this channel until the socket opens. A channel made while
+          // the socket is down buffers its join, and phoenix sends it on
+          // reconnect even after the channel closes, so retrying now would
+          // flood the server. Closing it to wait also fails, because after
+          // 50 s with no channels realtime-js disconnects for good.
           waitForSocket.add(
             socketOpens.subscribe(() => subscriber.error(error)),
           );
