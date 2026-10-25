@@ -1,12 +1,8 @@
 import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import {
-  FunctionsHttpError,
-  RealtimeChannelSendResponse,
-  SupabaseClient,
-} from '@supabase/supabase-js';
+import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from '@openng/optimus-ui/api';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, retry, switchMap } from 'rxjs';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 import { RealtimeFilter, liveTable } from './supabase-live-table';
@@ -167,29 +163,6 @@ export enum BetSubtype {
 
 export type TTable = keyof Database['public']['Tables'];
 
-function subscribeToLiveTable<Table extends TTable, Row extends Tables<Table>>(
-  supabase: SupabaseClient<Database>,
-  table: Table,
-  callback: (rows: readonly Row[]) => void,
-  filter?: RealtimeFilter<Database, Table>,
-): () => Promise<RealtimeChannelSendResponse> {
-  const channel = liveTable(supabase, {
-    table,
-    filter,
-    callback: (error, rows: readonly Row[]) => {
-      if (error) {
-        channel
-          .unsubscribe()
-          .then(() => subscribeToLiveTable(supabase, table, callback, filter));
-        return;
-      }
-      callback(rows);
-    },
-  });
-
-  return () => channel?.unsubscribe();
-}
-
 export function realtimeUpdatesFromTable<
   Table extends TTable,
   Row extends Tables<Table>,
@@ -198,14 +171,17 @@ export function realtimeUpdatesFromTable<
   table: Table,
   filter?: RealtimeFilter<Database, Table>,
 ): Observable<Row[]> {
-  return new Observable((subscriber) =>
-    subscribeToLiveTable(
-      supabase,
+  return new Observable<Row[]>((subscriber) => {
+    const channel = liveTable(supabase, {
       table,
-      (rows) => subscriber.next(rows as Row[]),
       filter,
-    ),
-  );
+      callback: (error, rows: readonly Row[]) => {
+        if (error) subscriber.error(error);
+        else subscriber.next(rows as Row[]);
+      },
+    });
+    return () => channel.unsubscribe();
+  }).pipe(retry());
 }
 
 export function realtimeUpdatesFromTableAsSignal<
