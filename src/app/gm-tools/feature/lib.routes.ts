@@ -5,6 +5,10 @@ import { editGameStateResolver } from '../data-access/edit-game-state.resolver';
 import { editGameboardSpaceTypeResolver } from '../data-access/edit-gameboard-space-type.resolver';
 import { editSessionResolver } from '../data-access/edit-session.resolver';
 import { editSpecialSpaceEventTemplateResolver } from '../data-access/edit-special-space-event-template.resolver';
+import {
+  eventResultsDraftResolver,
+  gameboardMovesDraftResolver,
+} from '../data-access/review-draft.resolvers';
 
 const gmToolsRoutes: Routes = [
   {
@@ -23,6 +27,7 @@ const gmToolsRoutes: Routes = [
     path: 'end-round/review',
     loadComponent: () => import('./review-score-changes-page.component'),
     data: { pageAnimationLayer: 2 },
+    resolve: { draft: eventResultsDraftResolver },
   },
   {
     path: 'space-entry',
@@ -34,6 +39,7 @@ const gmToolsRoutes: Routes = [
     loadComponent: () =>
       import('./review-gameboard-space-entry-page.component'),
     data: { pageAnimationLayer: 2 },
+    resolve: { draft: gameboardMovesDraftResolver },
   },
   {
     path: 'resolve-special-space-events',

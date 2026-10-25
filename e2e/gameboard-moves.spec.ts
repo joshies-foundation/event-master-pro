@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { score, sql } from './support/db';
 import {
   confirmDialog,
@@ -14,40 +15,73 @@ async function roundPhase() {
   return row.round_phase;
 }
 
-test('the GM enters a turn of moves and the game moves to special space events', async ({
-  page,
-  login,
-  secondPhone,
-}) => {
-  await login();
+function playerRows(page: Page) {
+  return page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row');
+}
+
+async function enterThreeBlueSpacesForEveryone(
+  page: Page,
+  players: number = seed.playersInSession,
+) {
   await openTab(page, 'GM Tools');
   await page.getByRole('link', { name: 'Enter Gameboard Moves' }).tap();
   await expect(
     page.getByText('Enter gameboard moves for turn 1'),
   ).toBeVisible();
 
-  const players = page
-    .getByRole('table')
-    .getByRole('rowgroup')
-    .nth(1)
-    .getByRole('row');
-  await expect(players).toHaveCount(seed.playersInSession);
+  await expect(playerRows(page)).toHaveCount(players);
   await expect(
     page.getByRole('button', { name: 'Review Moves' }),
   ).toBeDisabled();
-  for (const player of await players.all()) {
+  for (const player of await playerRows(page).all()) {
     await typeNumber(player.getByRole('spinbutton', { name: 'Dice Roll' }), 3);
     const blueSpace = player.getByRole('group').getByRole('button').first();
     await blueSpace.tap();
   }
+}
+
+async function reviewThreeBlueSpacesForEveryone(
+  page: Page,
+  players: number = seed.playersInSession,
+) {
+  await enterThreeBlueSpacesForEveryone(page, players);
   await page.getByRole('button', { name: 'Review Moves' }).tap();
   await expect(page.getByRole('row', { name: 'Colin 3' })).toBeVisible();
+}
 
+function logRoundMovesRequests(page: Page): { roundnumber: number }[] {
+  const bodies: { roundnumber: number }[] = [];
+  page.on('request', (request) => {
+    if (request.url().includes('/rpc/log_round_moves')) {
+      bodies.push(request.postDataJSON());
+    }
+  });
+  return bodies;
+}
+
+async function expectMoveEntry(page: Page, turn: number) {
+  await expect(page).toHaveURL(/\/gm-tools\/space-entry$/);
+  await expect(
+    page.getByText(`Enter gameboard moves for turn ${turn}`),
+  ).toBeVisible();
+}
+
+async function submitMoves(page: Page, answer: 'Yes' | 'No') {
   await page.getByRole('button', { name: 'Submit Moves for Round 1' }).tap();
   await expect(confirmDialog(page)).toContainText(
     'Are you sure you want to submit moves for round 1?',
   );
-  await confirmDialog(page).getByRole('button', { name: 'Yes' }).tap();
+  await confirmDialog(page).getByRole('button', { name: answer }).tap();
+}
+
+test('the GM enters a turn of moves and the game moves to special space events', async ({
+  page,
+  login,
+  secondPhone,
+}) => {
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page);
+  await submitMoves(page, 'Yes');
 
   await expect(page).toHaveURL(/\/home$/);
   await expect(
@@ -64,6 +98,126 @@ test('the GM enters a turn of moves and the game moves to special space events',
   await expect(
     leo.getByRole('table').last().getByRole('row').nth(1),
   ).toHaveText(/Leo\s*80/);
+});
+
+test('Back after submitting the moves returns the GM to GM Tools', async ({
+  page,
+  login,
+}) => {
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page);
+  await submitMoves(page, 'Yes');
+  await expect(page).toHaveURL(/\/home$/);
+
+  await page.goBack();
+
+  await expect(page).toHaveURL(/\/gm-tools$/);
+  await expect(
+    page.getByRole('link', { name: 'Resolve Special Space Events' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Submit Moves for Round 1' }),
+  ).toHaveCount(0);
+});
+
+test('cancelling the submit keeps the moves the GM entered', async ({
+  page,
+  login,
+}) => {
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page);
+  await submitMoves(page, 'No');
+
+  await page.reload();
+
+  await expect(playerRows(page)).toHaveCount(seed.playersInSession);
+  await expect(playerRows(page).locator('td:nth-child(2)')).toHaveText(
+    Array(seed.playersInSession).fill('3'),
+  );
+  await expect.poll(roundPhase).toBe('gameboard_moves');
+});
+
+test('the moves review with no saved moves sends the GM to move entry', async ({
+  page,
+  login,
+}) => {
+  await login();
+
+  await page.goto('/gm-tools/space-entry/review');
+
+  await expectMoveEntry(page, 1);
+  await expect(
+    page.getByRole('button', { name: 'Submit Moves for Round 1' }),
+  ).toHaveCount(0);
+});
+
+test('the moves review sends the GM to move entry when a player joined after the moves were saved', async ({
+  page,
+  login,
+}) => {
+  await sql`update player set enabled = false where id = 115`;
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page, seed.playersInSession - 1);
+
+  await sql`update player set enabled = true where id = 115`;
+  await page.reload();
+
+  await expectMoveEntry(page, 1);
+  await expect(playerRows(page)).toHaveCount(seed.playersInSession);
+  await expect(
+    page.getByRole('button', { name: 'Review Moves' }),
+  ).toBeDisabled();
+});
+
+test('moves left from a rejected submit are not offered for the next turn', async ({
+  page,
+  login,
+  consoleGuard,
+}) => {
+  consoleGuard.allow(/Failed to load resource.*400/);
+  const submits = logRoundMovesRequests(page);
+  await login();
+  await reviewThreeBlueSpacesForEveryone(page);
+  await sql`select log_round_moves(${sql.json({
+    [seed.colin.playerId]: { gameboardSpaceId: 32, distanceTraveled: 1 },
+  })}::json, 1)`;
+  await submitMoves(page, 'Yes');
+  await expect(
+    page.getByText('Round 1 is not waiting for gameboard moves'),
+  ).toBeVisible();
+  await sql`update game_state
+    set round_number = 2, round_phase = 'gameboard_moves' where id = 1`;
+
+  await page.goto('/gm-tools/space-entry');
+  await expectMoveEntry(page, 2);
+  await expect(
+    playerRows(page).first().getByRole('spinbutton', { name: 'Dice Roll' }),
+  ).toHaveValue('');
+  await expect(
+    page.getByRole('button', { name: 'Review Moves' }),
+  ).toBeDisabled();
+
+  await page.goto('/gm-tools/space-entry/review');
+  await expectMoveEntry(page, 2);
+  expect(submits.map((body) => body.roundnumber)).toEqual([1]);
+});
+
+test('the moves review stays put with an error when the round cannot be read', async ({
+  page,
+  login,
+  consoleGuard,
+}) => {
+  consoleGuard.allow(
+    /Failed to load resource|access control checks|net::ERR_FAILED/,
+  );
+  await login();
+  await enterThreeBlueSpacesForEveryone(page);
+  await page.route('**/rest/v1/game_state?*', (route) => route.abort());
+
+  await page.getByRole('button', { name: 'Review Moves' }).tap();
+
+  await expect(page.getByText('Error', { exact: true })).toBeVisible();
+  await expectMoveEntry(page, 1);
 });
 
 async function roundScoreRows(playerId: number) {

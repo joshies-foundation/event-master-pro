@@ -11,10 +11,11 @@ import { ButtonModule } from '@openng/optimus-ui/button';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  getRecordFromLocalStorage,
-  LocalStorageRecord,
-  saveRecordToLocalStorage,
-} from '../../shared/util/local-storage-helpers';
+  DraftRound,
+  roundDraftEntries,
+  RoundDraftKey,
+  saveRoundDraft,
+} from '../data-access/round-draft';
 import { EventService } from '../../shared/data-access/event.service';
 import { AvatarGroupModule } from '@openng/optimus-ui/avatargroup';
 import { AvatarModule } from '@openng/optimus-ui/avatar';
@@ -120,7 +121,7 @@ import { ParticipantListPipe } from '../../shared/ui/participant-list.pipe';
           label="Review Score Changes"
           styleClass="mt-6 w-full"
           (onClick)="reviewScoreChanges()"
-          [disabled]="formGroup().invalid"
+          [disabled]="formGroup().invalid || !vm.teams.length"
           icon="pi pi-chevron-right"
           iconPos="right"
         />
@@ -155,8 +156,13 @@ export default class EndRoundPageComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly eventService = inject(EventService);
 
-  private readonly initialFormValue: Record<string, number> =
-    getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
+  private readonly draftRound = computed((): DraftRound | undefined => {
+    const sessionId = this.gameStateService.sessionId();
+    const roundNumber = this.gameStateService.roundNumber();
+    return sessionId === undefined || roundNumber === undefined
+      ? undefined
+      : { sessionId, roundNumber };
+  });
 
   private readonly scoresForThisEvent = computed(() => {
     const eventTeamsForThisRound = this.eventService
@@ -262,11 +268,15 @@ export default class EndRoundPageComponent {
   }
 
   readonly formGroup = computed(() => {
+    const draftRound = this.draftRound();
+    const initialFormValue = draftRound
+      ? roundDraftEntries(RoundDraftKey.EventResults, draftRound)
+      : {};
     return this.formBuilder.nonNullable.group(
       this.eventTeams()?.reduce((prev, team) => {
         return {
           ...prev,
-          [team.id]: [this.initialFormValue[team.id] ?? 0, Validators.required],
+          [team.id]: [initialFormValue[team.id] ?? 0, Validators.required],
         };
       }, {}) ?? {},
     );
@@ -291,7 +301,15 @@ export default class EndRoundPageComponent {
     }),
   );
 
+  private saveDraft(entries: Partial<Record<string, number>>): void {
+    saveRoundDraft(RoundDraftKey.EventResults, {
+      ...this.draftRound()!,
+      entries,
+    });
+  }
+
   reviewScoreChanges(): void {
+    this.saveDraft(this.formGroup().getRawValue());
     this.router.navigate(['review'], {
       relativeTo: this.activatedRoute,
     });
@@ -299,12 +317,8 @@ export default class EndRoundPageComponent {
 
   constructor() {
     effect(() => {
-      if (this.formValueChanges()) {
-        saveRecordToLocalStorage(
-          LocalStorageRecord.RoundScoreFormValue,
-          this.formValueChanges()!,
-        );
-      }
+      const entries = this.formValueChanges();
+      if (entries) this.saveDraft(entries);
     });
   }
 }
