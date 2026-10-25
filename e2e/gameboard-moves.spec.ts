@@ -119,7 +119,7 @@ async function transactions(playerId: number, description: string) {
   return rows.map((row) => Number(row.num_points));
 }
 
-test('a GM replay of the gameboard moves replaces the earlier move', async () => {
+test('a GM replay of the gameboard moves replaces the earlier move and its points', async () => {
   await logMoves({
     [seed.colin.playerId]: { gameboardSpaceId: 32, distanceTraveled: 3 },
   });
@@ -134,11 +134,11 @@ test('a GM replay of the gameboard moves replaces the earlier move', async () =>
 
   expect(
     await transactions(seed.colin.playerId, 'Blue Space on turn 1'),
-  ).toEqual([10]);
+  ).toEqual([]);
   expect(
     await transactions(seed.colin.playerId, 'Test Space on turn 1'),
   ).toEqual([7]);
-  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 17);
+  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 7);
   const moves = await sql`
     select gameboard_space_id, distance_traveled from gameboard_move
     where player_id = ${seed.colin.playerId} and round_number = 1`;
@@ -147,7 +147,7 @@ test('a GM replay of the gameboard moves replaces the earlier move', async () =>
   ]);
 });
 
-test('a GM replay of the event results replaces the earlier round score', async () => {
+test('a GM replay of the event results replaces the earlier event points and round score', async () => {
   await setRoundPhase('event');
   await endRound({ 1349: 10, 1350: 0 });
   await setRoundPhase('event');
@@ -155,12 +155,12 @@ test('a GM replay of the event results replaces the earlier round score', async 
 
   expect(
     await transactions(seed.colin.playerId, 'Points earned from Magic school'),
-  ).toEqual([30, 10, 5]);
-  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 15);
+  ).toEqual([30, 5]);
+  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 5);
   const roundScores = await sql`
     select score from player_round_score
     where player_id = ${seed.colin.playerId} and round_number = 1`;
-  expect([...roundScores]).toEqual([{ score: String(seed.colin.score + 15) }]);
+  expect([...roundScores]).toEqual([{ score: String(seed.colin.score + 5) }]);
 });
 
 test('a GM replay of the gameboard moves settles a bet placed after the first submit', async () => {
