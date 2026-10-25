@@ -2,7 +2,7 @@ import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from '@openng/optimus-ui/api';
-import { Observable, retry, switchMap } from 'rxjs';
+import { Observable, retry, switchMap, timer } from 'rxjs';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 import { RealtimeFilter, liveTable } from './supabase-live-table';
@@ -181,7 +181,12 @@ export function realtimeUpdatesFromTable<
       },
     });
     return () => channel.unsubscribe();
-  }).pipe(retry());
+  }).pipe(
+    retry({
+      delay: (_, attempt) => timer(supabase.realtime.reconnectAfterMs(attempt)),
+      resetOnSuccess: true,
+    }),
+  );
 }
 
 export function realtimeUpdatesFromTableAsSignal<
