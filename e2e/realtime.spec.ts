@@ -1,11 +1,12 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { AddressInfo, connect as connectTcp, createServer } from 'node:net';
+import { firstValueFrom } from 'rxjs';
 import { Database } from '../src/app/shared/util/schema';
 import {
   realtimeUpdatesFromTable,
   Table,
 } from '../src/app/shared/util/supabase-helpers';
-import { sql } from './support/db';
+import { resetDatabase, sql } from './support/db';
 import { expect, test } from './support/fixtures';
 import { seed } from './support/seed';
 
@@ -308,6 +309,65 @@ test('a live subscription whose socket cannot open retries later without an erro
     subscription.unsubscribe();
     expect(errors).toEqual([]);
     expect(sockets).toBeLessThanOrEqual(2);
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+async function realtimeHasMatchedEveryChange(): Promise<boolean> {
+  const [{ busy }] = await sql<{ busy: boolean }[]>`
+    select exists (
+      select from pg_replication_slots
+      where slot_name like 'supabase_realtime_replication_slot%'
+        and confirmed_flush_lsn < pg_current_wal_lsn()
+    ) or exists (
+      select from pg_stat_activity
+      where state = 'active'
+        and query like '%realtime.list_changes%'
+        and pid <> pg_backend_pid()
+    ) as busy`;
+  return !busy;
+}
+
+test('a change still arrives after resets that follow closed phones', async ({
+  baseURL,
+}) => {
+  // Realtime matches a change against the subscriptions that exist when it
+  // reads the change. These clients subscribe faster than a browser logs in,
+  // so wait until realtime has read this test's own reset.
+  await expect.poll(realtimeHasMatchedEveryChange).toBe(true);
+  const largeTables = [
+    Table.Transaction,
+    Table.GameboardMove,
+    Table.PlayerRoundScore,
+    Table.Bet,
+    Table.Player,
+    Table.EventParticipant,
+  ];
+  const closedPhones = await Promise.all(
+    [1, 2, 3].map(() => signInAsColin(baseURL!)),
+  );
+  await Promise.all(
+    closedPhones.flatMap((phone) =>
+      largeTables.map((table) =>
+        firstValueFrom(realtimeUpdatesFromTable(phone, table)),
+      ),
+    ),
+  );
+  await Promise.all(closedPhones.map((phone) => phone.removeAllChannels()));
+
+  for (let reset = 0; reset < 3; reset++) await resetDatabase();
+  // Realtime checks its rate limit every 5 seconds and drops every change
+  // while over it. Wait past one check, so that resets that went over the
+  // limit make the change below go missing.
+  await new Promise((resolve) => setTimeout(resolve, 6_000));
+
+  const supabase = await signInAsColin(baseURL!);
+  try {
+    const watcher = watchColinsScore(supabase);
+    await expect.poll(() => watcher.seen.score).toBe(seed.colin.score);
+    await setColinsScore(34);
+    await expect.poll(() => watcher.seen.score).toBe(34);
   } finally {
     await supabase.removeAllChannels();
   }
