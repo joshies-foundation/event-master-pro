@@ -68,7 +68,7 @@ import { EventModel } from '../../shared/util/supabase-types';
       <div
         cdkDropList
         (cdkDropListDropped)="onEventDrop($event)"
-        [cdkDropListSortPredicate]="sortPredicate()"
+        [cdkDropListSortPredicate]="canDropIntoUnplayedRound"
       >
         @for (
           event of sortedEvents;
@@ -76,19 +76,20 @@ import { EventModel } from '../../shared/util/supabase-types';
           let first = $first;
           let index = $index
         ) {
+          @let roundNumber = roundNumbers()[index];
           <div
             class="flex h-24 w-full border-b border-neutral-100 bg-neutral-0 pt-4 pr-4 pb-4"
             [class.mt-2]="first"
             cdkDrag
             [cdkDragDisabled]="
-              !userIsGameMaster() || index + 1 < currentRoundNumber()
+              !userIsGameMaster() || roundNumber < currentRoundNumber()
             "
           >
             <div
               class="flex flex-col items-center justify-center text-center text-sm"
             >
-              {{ index + 1 }}
-              @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
+              {{ roundNumber }}
+              @if (userIsGameMaster() && roundNumber >= currentRoundNumber()) {
                 <i
                   class="pi pi-bars self-center pr-4 pl-2 text-neutral-300"
                   cdkDragHandle
@@ -116,8 +117,7 @@ import { EventModel } from '../../shared/util/supabase-types';
               </p>
             </div>
 
-            <!-- Event Edit Links -->
-            @if (userIsGameMaster() && index + 1 >= currentRoundNumber()) {
+            @if (userIsGameMaster() && roundNumber >= currentRoundNumber()) {
               <div class="flex flex-col">
                 <a
                   class="mb-2 rounded-md bg-primary px-2 py-1 text-center text-primary-contrast"
@@ -166,6 +166,10 @@ export default class ManageEventsPageComponent {
     () => this.gameStateService.roundNumber() ?? -1,
   );
 
+  readonly roundNumbers = computed(
+    () => this.databaseEvents()?.map((event) => event.round_number) ?? [],
+  );
+
   readonly localSortedEvents = signal(this.databaseEvents()?.slice());
   private readonly submitting = signal(false);
 
@@ -191,17 +195,16 @@ export default class ManageEventsPageComponent {
     this.localSortedEvents.set(this.databaseEvents()?.slice()),
   );
 
-  // prevent user from dragging an event into a round that is already over
-  sortPredicate(): (index: number) => boolean {
-    return (index: number) => index + 1 >= this.currentRoundNumber();
-  }
+  readonly canDropIntoUnplayedRound = (index: number): boolean =>
+    this.roundNumbers()[index] >= this.currentRoundNumber();
 
   saveChanges(localEvents: EventModel[]): void {
+    const roundNumbers = this.roundNumbers();
     const eventsWithNewRoundNumber = localEvents.reduce<Record<number, number>>(
-      (prev, event, index) => ({
-        ...prev,
-        ...(event.round_number === index + 1 ? {} : { [event.id]: index + 1 }),
-      }),
+      (prev, event, index) =>
+        event.round_number === roundNumbers[index]
+          ? prev
+          : { ...prev, [event.id]: roundNumbers[index] },
       {},
     );
 
