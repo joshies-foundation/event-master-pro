@@ -39,7 +39,7 @@ const numTransactionsToShow = 3;
     <joshies-page-header headerText="Analytics" />
 
     @if (sessionIsInProgressOrFinished()) {
-      @if (numRounds()) {
+      @if (lastScoredRound()) {
         <!-- Points Over Time Chart -->
         <joshies-card
           padded
@@ -188,7 +188,8 @@ export default class AnalyticsTabComponent {
   //   ),
   // );
 
-  readonly pointsOverTimeChartOptions: ChartOptions = {
+  readonly pointsOverTimeChartOptions: ChartOptions<'line'> = {
+    spanGaps: true,
     plugins: {
       legend: {
         position: 'bottom',
@@ -227,19 +228,37 @@ export default class AnalyticsTabComponent {
     },
   };
 
-  readonly numRounds = computed(
-    () => this.playerRoundScoresResponse()?.data?.[0]?.scores.length ?? 0,
+  readonly lastScoredRound = computed(() =>
+    Math.max(
+      0,
+      ...(this.playerRoundScoresResponse()?.data?.flatMap(
+        (player) => player.round_numbers,
+      ) ?? []),
+    ),
   );
 
-  readonly pointsOverTimeChartData: Signal<ChartData> = computed(() => ({
-    labels: Array.from(Array(this.numRounds() + 1).keys()),
-    datasets:
-      this.playerRoundScoresResponse()?.data?.map((player) => ({
-        label: player.display_name,
-        data: [0, ...player.scores],
-        fill: false,
-      })) ?? [],
-  }));
+  readonly pointsOverTimeChartData: Signal<ChartData<'line'>> = computed(() => {
+    const rounds = Array.from(Array(this.lastScoredRound() + 1).keys());
+    return {
+      labels: rounds,
+      datasets:
+        this.playerRoundScoresResponse()?.data?.map((player) => {
+          const totalAfterRound = new Map(
+            player.round_numbers.map((round, index) => [
+              round,
+              player.scores[index],
+            ]),
+          );
+          return {
+            label: player.display_name,
+            data: rounds.map((round) =>
+              round === 0 ? 0 : (totalAfterRound.get(round) ?? null),
+            ),
+            fill: false,
+          };
+        }) ?? [],
+    };
+  });
 
   readonly userIsAPlayer = computed(() => !!this.playerService.userPlayerId());
 

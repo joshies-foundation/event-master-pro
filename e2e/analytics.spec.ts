@@ -1,3 +1,4 @@
+import type { Chart, LineElement, PointElement } from 'chart.js';
 import { sql } from './support/db';
 import { expect, openTab, test } from './support/fixtures';
 import { seed } from './support/seed';
@@ -190,6 +191,71 @@ test('Points Over Time has one point per round when a round was replayed', async
       select count(distinct round_number)
       from player_round_score where player_id = r.player_id)`;
   expect(misaligned).toEqual([]);
+});
+
+test('Points Over Time plots each total at its round when players skip rounds', async ({
+  page,
+  login,
+}) => {
+  await sql`update game_state set session_id = 19`;
+  await sql`
+    delete from player_round_score
+    where round_number in (3, 10) and player_id = (
+      select p.id from player p join "user" u on u.id = p.user_id
+      where p.session_id = 19 and u.display_name = 'Josh')`;
+  await login();
+  await openTab(page, 'Analytics');
+  await expect(page.locator('p-chart canvas')).toBeVisible();
+
+  const plotted = await page.locator('p-chart').evaluate((element) => {
+    const { ng } = window as unknown as {
+      ng: { getComponent(element: Element): { chart: Chart<'line'> } };
+    };
+    const { chart } = ng.getComponent(element);
+    const labels = chart.data.labels as number[];
+    return {
+      labels,
+      players: chart.data.datasets.map((dataset, index) => {
+        const meta = chart.getDatasetMeta(index);
+        const points = meta.data as PointElement[];
+        return {
+          name: dataset.label,
+          points: points.flatMap((point, round) =>
+            point.skip ? [] : [[labels[round], dataset.data[round]]],
+          ),
+          lines: (meta.dataset as LineElement).segments.length,
+        };
+      }),
+    };
+  });
+
+  expect(plotted.labels).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  expect(plotted.players[0]).toEqual({
+    name: 'Josh',
+    points: [
+      [0, 0],
+      [1, 0],
+      [2, 9],
+      [4, 100],
+      [5, 100],
+      [7, -1],
+    ],
+    lines: 1,
+  });
+  expect(plotted.players[1]).toEqual({
+    name: 'Dan',
+    points: [
+      [0, 0],
+      [1, -2],
+      [2, 1],
+      [3, 160],
+      [4, 0],
+      [5, 0],
+      [7, 1],
+      [10, 180],
+    ],
+    lines: 1,
+  });
 });
 
 test('Space Stats counts the latest landing of a replayed round', async ({

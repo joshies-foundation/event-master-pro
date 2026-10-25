@@ -1226,6 +1226,7 @@ export type Database = {
           avatar_url: string;
           display_name: string;
           player_id: number;
+          round_numbers: number[];
           scores: number[];
         }[];
       };
