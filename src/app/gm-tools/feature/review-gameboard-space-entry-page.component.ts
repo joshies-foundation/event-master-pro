@@ -191,8 +191,18 @@ export default class ReviewGameboardSpaceEntryPageComponent {
     playerSpaceChanges: GameboardSpaceEntryFormModel,
   ): Promise<void> {
     confirmBackendAction({
-      action: async () =>
-        this.gameboardService.logRoundMoves(roundNumber, playerSpaceChanges),
+      action: async () => {
+        const response = await this.gameboardService.logRoundMoves(
+          roundNumber,
+          playerSpaceChanges,
+        );
+        if (!response.error) {
+          removeRecordFromLocalStorage(
+            LocalStorageRecord.GameboardSpaceEntryFormValue,
+          );
+        }
+        return response;
+      },
       confirmationMessageText: `Are you sure you want to submit moves for round ${roundNumber}?`,
       successMessageText: 'Moves submitted successfully!',
       successNavigation: '/',
@@ -202,10 +212,6 @@ export default class ReviewGameboardSpaceEntryPageComponent {
       router: this.router,
       activatedRoute: this.activatedRoute,
     });
-
-    removeRecordFromLocalStorage(
-      LocalStorageRecord.GameboardSpaceEntryFormValue,
-    );
   }
 
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;

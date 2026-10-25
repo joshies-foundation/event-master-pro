@@ -125,6 +125,15 @@ export class GameStateService {
       .eq('id', 1);
   }
 
+  async fetchRoundPhase(): Promise<RoundPhase | undefined> {
+    const { data } = await this.supabase
+      .from(Table.GameState)
+      .select('round_phase')
+      .eq('id', 1)
+      .single();
+    return data?.round_phase as RoundPhase | undefined;
+  }
+
   roundPhaseOrderIndex(roundPhase: RoundPhase): number {
     switch (roundPhase) {
       case RoundPhase.GameboardMoves:
