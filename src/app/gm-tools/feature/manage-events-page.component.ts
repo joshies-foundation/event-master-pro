@@ -50,7 +50,7 @@ import { EventModel } from '../../shared/util/supabase-types';
             <p-button
               [text]="true"
               class="mr-4"
-              (onClick)="saveChanges(databaseEvents()!, localSortedEvents()!)"
+              (onClick)="saveChanges(localSortedEvents()!)"
             >
               <i class="pi pi-save text-xl text-primary"></i>
             </p-button>
@@ -196,11 +196,11 @@ export default class ManageEventsPageComponent {
     return (index: number) => index + 1 >= this.currentRoundNumber();
   }
 
-  saveChanges(dbEvents: EventModel[], localEvents: EventModel[]): void {
+  saveChanges(localEvents: EventModel[]): void {
     const eventsWithNewRoundNumber = localEvents.reduce<Record<number, number>>(
       (prev, event, index) => ({
         ...prev,
-        ...(event.id === dbEvents[index].id ? {} : { [event.id]: index + 1 }), // only add entries for events that have a different round number
+        ...(event.round_number === index + 1 ? {} : { [event.id]: index + 1 }),
       }),
       {},
     );
