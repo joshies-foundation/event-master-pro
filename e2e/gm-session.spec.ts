@@ -1,5 +1,11 @@
 import { sql } from './support/db';
-import { confirmDialog, expect, openTab, test } from './support/fixtures';
+import {
+  acceptNextDialog,
+  confirmDialog,
+  expect,
+  openTab,
+  test,
+} from './support/fixtures';
 import { seed } from './support/seed';
 
 test('the GM renames the session and every phone sees it', async ({
@@ -42,4 +48,41 @@ test('the GM renames the session and every phone sees it', async ({
   await expect(
     leo.getByRole('heading', { name: 'Summer Jaybies', level: 1 }),
   ).toBeVisible();
+});
+
+test('a session the GM creates starts with the previous session rules', async ({
+  page,
+  login,
+}) => {
+  await login();
+  await openTab(page, 'GM Tools');
+  await page.getByRole('link', { name: 'End Session' }).tap();
+  const endPrompt = acceptNextDialog(page, 'END SESSION');
+  await page.getByRole('button', { name: 'End Session' }).tap();
+  await endPrompt;
+  await expect(page.getByText('Session ended')).toBeVisible();
+
+  await openTab(page, 'GM Tools');
+  await page.getByRole('link', { name: 'Create Session' }).tap();
+  await page
+    .getByRole('textbox', { name: 'Session Name' })
+    .fill('Fall Jaybies');
+  await page.locator('.p-multiselect').tap();
+  await page.getByRole('option', { name: 'Colin', exact: true }).tap();
+  await page.getByRole('option', { name: 'Josh', exact: true }).tap();
+  await page.getByText('Number of Rounds', { exact: true }).tap();
+  await page.getByRole('button', { name: 'Create Session' }).tap();
+  await confirmDialog(page).getByRole('button', { name: 'Yes' }).tap();
+  await expect(page.getByText('Session created')).toBeVisible();
+
+  const [{ sessionId }] = await sql<{ sessionId: string }[]>`
+    select session_id as "sessionId" from game_state where id = 1`;
+  expect(Number(sessionId)).toBeGreaterThan(seed.sessionId);
+  expect(
+    await sql`select events from rules where session_id = ${sessionId}`,
+  ).toEqual([{ events: '<p>These are the events!</p>' }]);
+
+  await openTab(page, 'Rules');
+  await expect(page.getByText('These are the events!')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ping Pong' })).toBeVisible();
 });
