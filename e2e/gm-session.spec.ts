@@ -93,6 +93,42 @@ test('a session the GM creates starts with the previous session rules', async ({
   await expect(page.getByRole('heading', { name: 'Ping Pong' })).toBeVisible();
 });
 
+test('a session the GM creates keeps the previous session events in order from round 1', async ({
+  page,
+  login,
+  secondPhone,
+}) => {
+  const eventsInOrder = [
+    'Magic school',
+    'Ping Pong',
+    'Kickball',
+    'Cornhole',
+    'Mini Golf',
+    'Bowling',
+  ];
+  await login();
+  const sessionId = await endSessionAndCreateAnother(page);
+  expect(
+    await sql`
+      select round_number, name from event
+      where session_id = ${sessionId} order by round_number`,
+  ).toEqual(
+    eventsInOrder.map((name, index) => ({ round_number: index + 1, name })),
+  );
+
+  const freshPhone = await secondPhone(seed.colin);
+  await openTab(freshPhone, 'Rules');
+  await expect(
+    freshPhone.getByRole('heading', { name: 'Bowling' }),
+  ).toBeVisible();
+  const eventHeadings = freshPhone
+    .getByRole('heading', { level: 3 })
+    .filter({ hasText: new RegExp(eventsInOrder.join('|')) });
+  await expect(eventHeadings).toHaveText(
+    eventsInOrder.map((name) => new RegExp(name)),
+  );
+});
+
 test('a session created after one without rules gets blank rules the GM can edit', async ({
   page,
   login,
