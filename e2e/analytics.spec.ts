@@ -159,3 +159,35 @@ test('Player Duel Stats lists players by name under every plan', async () => {
     'Tim',
   ]);
 });
+
+const replayedSession = 35;
+
+test('Roll History shows the latest move of a replayed round', async ({
+  page,
+  login,
+}) => {
+  await sql`update game_state set session_id = ${replayedSession}`;
+  await login();
+  await openTab(page, 'Analytics');
+  await page.getByRole('link', { name: 'Roll History' }).tap();
+  await expect(
+    page.getByRole('row').filter({ hasText: 'Olivia' }).getByRole('cell'),
+  ).toHaveText(['Olivia', '4', '3', '3', '1', '3']);
+});
+
+test('Points Over Time has one point per round when a round was replayed', async () => {
+  const series = await sql<{ display_name: string; scores: string[] }[]>`
+    select display_name, scores
+    from get_player_round_scores_from_session(${replayedSession})`;
+  const olivia = series.find((row) => row.display_name === 'Olivia');
+  expect(olivia?.scores.map(Number)).toEqual([50, 32, 21, 102, 124]);
+
+  const misaligned = await sql`
+    select v.session_id, r.display_name
+    from unnest(array[19, 35]) as v(session_id)
+    cross join lateral get_player_round_scores_from_session(v.session_id) r
+    where array_length(r.scores, 1) <> (
+      select count(distinct round_number)
+      from player_round_score where player_id = r.player_id)`;
+  expect(misaligned).toEqual([]);
+});
