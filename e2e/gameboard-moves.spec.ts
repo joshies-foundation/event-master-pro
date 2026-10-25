@@ -65,3 +65,31 @@ test('the GM enters a turn of moves and the game moves to special space events',
     leo.getByRole('table').last().getByRole('row').nth(1),
   ).toHaveText(/Leo\s*80/);
 });
+
+async function roundScoreRows(playerId: number) {
+  const [row] = await sql<{ count: string }[]>`
+    select count(*) from player_round_score
+    where player_id = ${playerId} and round_number = 1`;
+  return Number(row.count);
+}
+
+test('a second submit of the same round is rejected and logs nothing', async () => {
+  const moves = {
+    [seed.colin.playerId]: { gameboardSpaceId: 32, distanceTraveled: 3 },
+  };
+  await sql`select log_round_moves(${sql.json(moves)}::json, 1)`;
+  await expect(
+    sql`select log_round_moves(${sql.json(moves)}::json, 1)`,
+  ).rejects.toThrow('Round 1 is not waiting for gameboard moves');
+  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 10);
+
+  await sql`update game_state set round_phase = 'event'`;
+  const before = await roundScoreRows(seed.colin.playerId);
+  const teamScores = { 1349: 10, 1350: 0 };
+  await sql`select end_round(1, ${sql.json(teamScores)})`;
+  await expect(
+    sql`select end_round(1, ${sql.json(teamScores)})`,
+  ).rejects.toThrow('Round 1 is not waiting for event results');
+  expect(await roundScoreRows(seed.colin.playerId)).toBe(before + 1);
+  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 20);
+});
