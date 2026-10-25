@@ -21,6 +21,7 @@ export type Database = {
           requester_player_id: number;
           requester_wager: number;
           session_id: number;
+          settled_by_round_submit_id: number | null;
           status: Database['public']['Enums']['bet_status'];
           updated_at: string;
         };
@@ -36,6 +37,7 @@ export type Database = {
           requester_player_id: number;
           requester_wager: number;
           session_id: number;
+          settled_by_round_submit_id?: number | null;
           status: Database['public']['Enums']['bet_status'];
           updated_at?: string;
         };
@@ -50,6 +52,7 @@ export type Database = {
           requester_player_id?: number;
           requester_wager?: number;
           session_id?: number;
+          settled_by_round_submit_id?: number | null;
           status?: Database['public']['Enums']['bet_status'];
           updated_at?: string;
         };
@@ -73,6 +76,13 @@ export type Database = {
             columns: ['session_id'];
             isOneToOne: false;
             referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bet_settled_by_round_submit_id_fkey';
+            columns: ['settled_by_round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
         ];
@@ -761,6 +771,88 @@ export type Database = {
           },
         ];
       };
+      prize_token_award: {
+        Row: {
+          already_spent: boolean;
+          created_at: string;
+          id: number;
+          player_id: number;
+          round_submit_id: number;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          already_spent?: boolean;
+          created_at?: string;
+          id?: number;
+          player_id: number;
+          round_submit_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          already_spent?: boolean;
+          created_at?: string;
+          id?: number;
+          player_id?: number;
+          round_submit_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'prize_token_award_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prize_token_award_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      round_submit: {
+        Row: {
+          bank_paid_out: number;
+          created_at: string;
+          id: number;
+          phase: Database['public']['Enums']['round_phase'];
+          round_number: number;
+          session_id: number;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          bank_paid_out?: number;
+          created_at?: string;
+          id?: number;
+          phase: Database['public']['Enums']['round_phase'];
+          round_number: number;
+          session_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          bank_paid_out?: number;
+          created_at?: string;
+          id?: number;
+          phase?: Database['public']['Enums']['round_phase'];
+          round_number?: number;
+          session_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'round_submit_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       rules: {
         Row: {
           chaos_space_events: string | null;
@@ -959,8 +1051,11 @@ export type Database = {
           created_at: string;
           description: string | null;
           id: number;
+          lost_to_bank: boolean;
           num_points: number;
           player_id: number;
+          round_submit_id: number | null;
+          settles_bet_id: number | null;
           updated_at: string;
         };
         ComputedFields: never;
@@ -968,16 +1063,22 @@ export type Database = {
           created_at?: string;
           description?: string | null;
           id?: number;
+          lost_to_bank?: boolean;
           num_points: number;
           player_id: number;
+          round_submit_id?: number | null;
+          settles_bet_id?: number | null;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
           description?: string | null;
           id?: number;
+          lost_to_bank?: boolean;
           num_points?: number;
           player_id?: number;
+          round_submit_id?: number | null;
+          settles_bet_id?: number | null;
           updated_at?: string;
         };
         Relationships: [
@@ -986,6 +1087,20 @@ export type Database = {
             columns: ['player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'transaction_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'transaction_settles_bet_id_fkey';
+            columns: ['settles_bet_id'];
+            isOneToOne: false;
+            referencedRelation: 'bet';
             referencedColumns: ['id'];
           },
         ];
@@ -1207,6 +1322,14 @@ export type Database = {
       end_round: {
         Args: { _round_number: number; team_score_changes: Json };
         Returns: Json;
+      };
+      find_round_submit_id: {
+        Args: {
+          _phase: Database['public']['Enums']['round_phase'];
+          _round_number: number;
+          _session_id: number;
+        };
+        Returns: number;
       };
       get_all_scores_from_session: {
         Args: { sessionid: number };
