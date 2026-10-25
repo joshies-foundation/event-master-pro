@@ -50,7 +50,8 @@ export class NotificationsService {
     await showMessageOnError(
       this.supabase.from(Table.UserNotificationsSubscription).insert({
         user_id: userId,
-        notifications_subscription: pushSubscription as unknown as Json,
+        notifications_subscription:
+          pushSubscription as unknown as NonNullable<Json>,
       }),
       this.messageService,
     );

@@ -7,11 +7,6 @@ export type Json =
   | Json[];
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: '12.2.3 (519615d)';
-  };
   public: {
     Tables: {
       bet: {
@@ -29,6 +24,7 @@ export type Database = {
           status: Database['public']['Enums']['bet_status'];
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           bet_type?: Database['public']['Enums']['bet_type'] | null;
           created_at?: string;
@@ -89,6 +85,7 @@ export type Database = {
           id: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           data?: string | null;
@@ -111,13 +108,6 @@ export type Database = {
             referencedRelation: 'event';
             referencedColumns: ['id'];
           },
-          {
-            foreignKeyName: 'bracket_event_id_fkey';
-            columns: ['event_id'];
-            isOneToOne: true;
-            referencedRelation: 'event_team_with_player_info';
-            referencedColumns: ['event_id'];
-          },
         ];
       };
       chaos_space_event: {
@@ -133,6 +123,7 @@ export type Database = {
           template_id: number | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           chaos_space_id: number;
           created_at?: string;
@@ -192,17 +183,18 @@ export type Database = {
         Row: {
           created_at: string;
           description: string;
-          details: Json;
+          details: NonNullable<Json>;
           id: number;
           name: string;
           session_id: number;
           type: Database['public']['Enums']['chaos_space_event_type'];
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           description: string;
-          details: Json;
+          details: NonNullable<Json>;
           id?: number;
           name: string;
           session_id: number;
@@ -212,7 +204,7 @@ export type Database = {
         Update: {
           created_at?: string;
           description?: string;
-          details?: Json;
+          details?: NonNullable<Json>;
           id?: number;
           name?: string;
           session_id?: number;
@@ -244,6 +236,7 @@ export type Database = {
           updated_at: string;
           wager_percentage: number | null;
         };
+        ComputedFields: never;
         Insert: {
           challenger_player_id: number;
           created_at?: string;
@@ -320,6 +313,7 @@ export type Database = {
           team_size: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           description?: string | null;
@@ -369,6 +363,7 @@ export type Database = {
           id: Database['public']['Enums']['event_format'];
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           formula: string;
@@ -388,21 +383,22 @@ export type Database = {
           created_at: string;
           id: number;
           player_id: number;
-          team_id: number;
+          team_id: number | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: number;
           player_id: number;
-          team_id: number;
+          team_id?: number | null;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
           id?: number;
           player_id?: number;
-          team_id?: number;
+          team_id?: number | null;
           updated_at?: string;
         };
         Relationships: [
@@ -420,13 +416,6 @@ export type Database = {
             referencedRelation: 'event_team';
             referencedColumns: ['id'];
           },
-          {
-            foreignKeyName: 'event_participant_team_id_fkey';
-            columns: ['team_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team_with_player_info';
-            referencedColumns: ['team_id'];
-          },
         ];
       };
       event_team: {
@@ -438,6 +427,7 @@ export type Database = {
           seed: number | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           event_id: number;
@@ -462,13 +452,6 @@ export type Database = {
             referencedRelation: 'event';
             referencedColumns: ['id'];
           },
-          {
-            foreignKeyName: 'event_team_event_id_fkey';
-            columns: ['event_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team_with_player_info';
-            referencedColumns: ['event_id'];
-          },
         ];
       };
       event_team_round_score: {
@@ -480,6 +463,7 @@ export type Database = {
           team_id: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: number;
@@ -504,13 +488,6 @@ export type Database = {
             referencedRelation: 'event_team';
             referencedColumns: ['id'];
           },
-          {
-            foreignKeyName: 'event_team_round_score_team_id_fkey';
-            columns: ['team_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team_with_player_info';
-            referencedColumns: ['team_id'];
-          },
         ];
       };
       game_state: {
@@ -524,6 +501,7 @@ export type Database = {
           session_status: Database['public']['Enums']['session_status'];
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           game_master_user_id: string;
@@ -571,6 +549,7 @@ export type Database = {
           round_number: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at: string;
           distance_traveled: number;
@@ -618,6 +597,7 @@ export type Database = {
           session_id: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           color?: string;
           created_at?: string;
@@ -661,6 +641,7 @@ export type Database = {
           updated_at: string;
           user_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           enabled?: boolean;
@@ -707,6 +688,7 @@ export type Database = {
           score: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: number;
@@ -743,6 +725,7 @@ export type Database = {
           won_at: string | null;
           won_by_player_id: number | null;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: number;
@@ -790,6 +773,7 @@ export type Database = {
           special_space_events: string | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           chaos_space_events?: string | null;
           created_at?: string;
@@ -834,6 +818,7 @@ export type Database = {
           start_date: string;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           bank_balance?: number;
           created_at?: string;
@@ -871,6 +856,7 @@ export type Database = {
           template_id: number | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: number;
@@ -930,17 +916,18 @@ export type Database = {
         Row: {
           created_at: string;
           description: string;
-          details: Json;
+          details: NonNullable<Json>;
           id: number;
           name: string;
           session_id: number;
           type: Database['public']['Enums']['special_space_event_type'];
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           description: string;
-          details: Json;
+          details: NonNullable<Json>;
           id?: number;
           name: string;
           session_id: number;
@@ -950,7 +937,7 @@ export type Database = {
         Update: {
           created_at?: string;
           description?: string;
-          details?: Json;
+          details?: NonNullable<Json>;
           id?: number;
           name?: string;
           session_id?: number;
@@ -967,105 +954,6 @@ export type Database = {
           },
         ];
       };
-      tournament_match: {
-        Row: {
-          created_at: string;
-          event_id: number;
-          id: number;
-          predecessor_match1_id: number | null;
-          predecessor_match2_id: number | null;
-          team1_id: number | null;
-          team2_id: number | null;
-          updated_at: string;
-          use_match1_winner: boolean;
-          use_match2_winner: boolean;
-          winning_team_id: number | null;
-        };
-        Insert: {
-          created_at: string;
-          event_id: number;
-          id?: number;
-          predecessor_match1_id?: number | null;
-          predecessor_match2_id?: number | null;
-          team1_id?: number | null;
-          team2_id?: number | null;
-          updated_at: string;
-          use_match1_winner: boolean;
-          use_match2_winner: boolean;
-          winning_team_id?: number | null;
-        };
-        Update: {
-          created_at?: string;
-          event_id?: number;
-          id?: number;
-          predecessor_match1_id?: number | null;
-          predecessor_match2_id?: number | null;
-          team1_id?: number | null;
-          team2_id?: number | null;
-          updated_at?: string;
-          use_match1_winner?: boolean;
-          use_match2_winner?: boolean;
-          winning_team_id?: number | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'tournament_match_event_id_fkey';
-            columns: ['event_id'];
-            isOneToOne: false;
-            referencedRelation: 'event';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tournament_match_event_id_fkey';
-            columns: ['event_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team_with_player_info';
-            referencedColumns: ['event_id'];
-          },
-          {
-            foreignKeyName: 'tournament_match_predecessor_match1_id_fkey';
-            columns: ['predecessor_match1_id'];
-            isOneToOne: false;
-            referencedRelation: 'tournament_match';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tournament_match_predecessor_match2_id_fkey';
-            columns: ['predecessor_match2_id'];
-            isOneToOne: false;
-            referencedRelation: 'tournament_match';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tournament_match_team1_id_fkey';
-            columns: ['team1_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tournament_match_team1_id_fkey';
-            columns: ['team1_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team_with_player_info';
-            referencedColumns: ['team_id'];
-          },
-          {
-            foreignKeyName: 'tournament_match_team2_id_fkey';
-            columns: ['team2_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tournament_match_team2_id_fkey';
-            columns: ['team2_id'];
-            isOneToOne: false;
-            referencedRelation: 'event_team_with_player_info';
-            referencedColumns: ['team_id'];
-          },
-        ];
-      };
       transaction: {
         Row: {
           created_at: string;
@@ -1075,6 +963,7 @@ export type Database = {
           player_id: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           description?: string | null;
@@ -1114,6 +1003,7 @@ export type Database = {
           squidward_mode: boolean;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           avatar_url?: string;
           can_edit_profile?: boolean;
@@ -1144,21 +1034,22 @@ export type Database = {
         Row: {
           created_at: string;
           id: number;
-          notifications_subscription: Json;
+          notifications_subscription: NonNullable<Json>;
           updated_at: string;
           user_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: number;
-          notifications_subscription: Json;
+          notifications_subscription: NonNullable<Json>;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           created_at?: string;
           id?: number;
-          notifications_subscription?: Json;
+          notifications_subscription?: NonNullable<Json>;
           updated_at?: string;
           user_id?: string;
         };
@@ -1174,25 +1065,16 @@ export type Database = {
       };
     };
     Views: {
-      event_team_with_player_info: {
-        Row: {
-          avatar_url: string | null;
-          display_name: string | null;
-          event_id: number | null;
-          seed: number | null;
-          team_id: number | null;
-        };
-        Relationships: [];
-      };
       lifetime_user_stats: {
         Row: {
-          avatar_url: string | null;
+          avatar_url: string;
           average_score: number | null;
-          display_name: string | null;
+          display_name: string;
           lifetime_score: number | null;
           num_sessions: number | null;
-          user_id: string | null;
+          user_id: string;
         };
+        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: 'player_user_id_fkey';
@@ -1205,11 +1087,12 @@ export type Database = {
       };
       moves_for_current_round: {
         Row: {
-          avatar_url: string | null;
-          display_name: string | null;
-          gameboard_space_id: number | null;
-          player_id: number | null;
+          avatar_url: string;
+          display_name: string;
+          gameboard_space_id: number;
+          player_id: number;
         };
+        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: 'gameboard_move_gameboard_space_id_fkey';
@@ -1229,14 +1112,15 @@ export type Database = {
       };
       special_space_events_for_current_round: {
         Row: {
-          avatar_url: string | null;
-          display_name: string | null;
-          id: number | null;
-          player_id: number | null;
-          status: Database['public']['Enums']['space_event_status'] | null;
+          avatar_url: string;
+          display_name: string;
+          id: number;
+          player_id: number;
+          status: Database['public']['Enums']['space_event_status'];
           template_id: number | null;
           template_name: string | null;
         };
+        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: 'special_space_event_player_id_fkey';
@@ -1256,18 +1140,26 @@ export type Database = {
       };
       user_prize: {
         Row: {
-          created_at: string | null;
-          id: number | null;
-          image_url: string | null;
-          session_end_date: string | null;
-          session_id: number | null;
-          session_name: string | null;
-          updated_at: string | null;
-          user_id: string | null;
+          created_at: string;
+          id: number;
+          image_url: string;
+          session_end_date: string;
+          session_id: number;
+          session_name: string;
+          updated_at: string;
+          user_id: string;
           won_at: string | null;
           won_by_player_id: number | null;
         };
+        ComputedFields: never;
         Relationships: [
+          {
+            foreignKeyName: 'player_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'prize_session_id_fkey';
             columns: ['session_id'];
@@ -1345,7 +1237,7 @@ export type Database = {
         Args: { sessionid: number };
         Returns: Record<string, unknown>[];
       };
-      hello_world: { Args: never; Returns: string };
+      hello_world: { Args: Record<PropertyKey, never>; Returns: string };
       log_round_moves: {
         Args: { playermoves: Json; roundnumber: number };
         Returns: undefined;
@@ -1373,6 +1265,12 @@ export type Database = {
           updated_at: string;
           won_at: string | null;
           won_by_player_id: number | null;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'prize';
+          isOneToOne: true;
+          isSetofReturn: false;
         };
       };
       start_session_early: { Args: { now: string }; Returns: undefined };

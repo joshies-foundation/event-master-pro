@@ -145,15 +145,15 @@ export class EventService {
     map(([participants, players]) => ({ participants, players })),
     whenAllValuesNotNull(({ participants, players }) =>
       of(
-        participants.map((participant) => {
-          const player = players.find(
-            (p) => p.player_id === participant.player_id,
-          )!;
+        participants.flatMap(({ id, team_id, player_id }) => {
+          if (team_id === null) return [];
+
+          const player = players.find((p) => p.player_id === player_id)!;
 
           return {
-            participant_id: participant.id,
-            team_id: participant.team_id,
-            player_id: participant.player_id,
+            participant_id: id,
+            team_id,
+            player_id,
             display_name: player.display_name,
             avatar_url: player.avatar_url,
             score: player.score,
