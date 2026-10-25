@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { AddressInfo, connect as connectTcp, createServer } from 'node:net';
 import { Database } from '../src/app/shared/util/schema';
 import {
   realtimeUpdatesFromTable,
@@ -29,6 +30,7 @@ async function setColinsScore(score: number): Promise<void> {
 class DroppableWebSocket extends WebSocket {
   static latest: DroppableWebSocket | undefined;
   static joins = 0;
+  static onJoin: (topic: string) => void = () => {};
 
   constructor(...args: ConstructorParameters<typeof WebSocket>) {
     super(...args);
@@ -36,7 +38,11 @@ class DroppableWebSocket extends WebSocket {
   }
 
   override send(data: Parameters<WebSocket['send']>[0]): void {
-    if (String(data).includes('"phx_join"')) DroppableWebSocket.joins++;
+    const join = String(data).match(/"([^"]+)","phx_join"/);
+    if (join) {
+      DroppableWebSocket.joins++;
+      DroppableWebSocket.onJoin(join[1]);
+    }
     super.send(data);
   }
 }
@@ -50,9 +56,11 @@ function connect(
   {
     fetch,
     transport = DroppableWebSocket,
+    timeout,
   }: {
     fetch?: typeof globalThis.fetch;
     transport?: typeof WebSocket;
+    timeout?: number;
   } = {},
 ): SupabaseClient<Database> {
   return createClient<Database>(
@@ -61,16 +69,16 @@ function connect(
     {
       auth: { persistSession: false },
       global: { fetch },
-      realtime: { transport },
+      realtime: { transport, timeout },
     },
   );
 }
 
 async function signInAsColin(
   baseURL: string,
-  fetch?: typeof globalThis.fetch,
+  options?: Parameters<typeof connect>[1],
 ): Promise<SupabaseClient<Database>> {
-  const supabase = connect(baseURL, { fetch });
+  const supabase = connect(baseURL, options);
   await supabase.auth.signInWithPassword({
     email: `${seed.colin.username}@joshies.app`,
     password: seed.password,
@@ -129,6 +137,71 @@ test('a live subscription that reconnects after a dropped connection closes its 
   }
 });
 
+async function holdableProxyTo(baseURL: string) {
+  const target = new URL(baseURL);
+  let release = () => {};
+  let released = Promise.resolve();
+  const server = createServer(async (client) => {
+    await released;
+    const upstream = connectTcp(Number(target.port), target.hostname);
+    client.on('error', () => upstream.destroy());
+    upstream.on('error', () => client.destroy());
+    client.pipe(upstream).pipe(client);
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const { port } = server.address() as AddressInfo;
+  return {
+    transport: class extends DroppableWebSocket {
+      constructor(url: string | URL, protocols?: string | string[]) {
+        const proxied = new URL(url);
+        proxied.port = String(port);
+        super(proxied, protocols);
+      }
+    },
+    hold: () => (released = new Promise((resolve) => (release = resolve))),
+    release: () => release(),
+    close: () => new Promise((resolve) => server.close(resolve)),
+  };
+}
+
+test('a live subscription catches up as soon as a slow connection opens, without joining closed channels', async ({
+  baseURL,
+}) => {
+  const network = await holdableProxyTo(baseURL!);
+  const supabase = await signInAsColin(baseURL!, {
+    transport: network.transport,
+    timeout: 2_000,
+  });
+
+  try {
+    const { seen } = watchColinsScore(supabase);
+    await expect
+      .poll(() => seen.score, { timeout: 30_000 })
+      .toBe(seed.colin.score);
+
+    const closedChannelJoins: string[] = [];
+    DroppableWebSocket.onJoin = (topic) => {
+      if (!supabase.getChannels().some((channel) => channel.topic === topic)) {
+        closedChannelJoins.push(topic);
+      }
+    };
+    network.hold();
+    DroppableWebSocket.latest!.close();
+    // Long enough for retries at 1, 2, 5 and 10 s with 2 s join timeouts to
+    // reach the 10 s step.
+    await sleep(17_000);
+    network.release();
+    await expect.poll(() => supabase.realtime.isConnected()).toBe(true);
+    expect(closedChannelJoins).toEqual([]);
+    await setColinsScore(38);
+    await expect.poll(() => seen.score, { timeout: 3_000 }).toBe(38);
+  } finally {
+    DroppableWebSocket.onJoin = () => {};
+    await supabase.removeAllChannels();
+    await network.close();
+  }
+});
+
 test('a channel whose first read fails after it was retried opens no second channel', async ({
   baseURL,
 }) => {
@@ -137,14 +210,16 @@ test('a channel whose first read fails after it was retried opens no second chan
     (resolve) => (failFirstRead = resolve),
   );
   let reads = 0;
-  const supabase = await signInAsColin(baseURL!, async (input, init) => {
-    if (String(input).includes('/rest/v1/player?') && reads++ === 0) {
-      await firstReadFails;
-      return new Response('{"message":"Internal Server Error"}', {
-        status: 500,
-      });
-    }
-    return fetch(input, init);
+  const supabase = await signInAsColin(baseURL!, {
+    fetch: async (input, init) => {
+      if (String(input).includes('/rest/v1/player?') && reads++ === 0) {
+        await firstReadFails;
+        return new Response('{"message":"Internal Server Error"}', {
+          status: 500,
+        });
+      }
+      return fetch(input, init);
+    },
   });
 
   try {
