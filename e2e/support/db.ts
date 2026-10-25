@@ -24,6 +24,12 @@ export async function resetDatabase(): Promise<void> {
   for (let attempt = 1; ; attempt++) {
     try {
       await sql.begin(async (tx) => {
+        // Closed pages leave realtime subscriptions behind for up to 15 s.
+        // Realtime counts each row below once per matching subscription, and
+        // past its limit of 100 per second it discards changes for good. A
+        // page or client still subscribed during a reset loses its
+        // subscription here too, and then gets no changes and no error.
+        await tx`delete from realtime.subscription`;
         await tx.unsafe(`truncate ${names.join(', ')} cascade`);
         await tx.unsafe(seed);
       });
