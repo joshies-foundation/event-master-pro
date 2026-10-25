@@ -2,7 +2,15 @@ import { Signal, TrackByFunction } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from '@openng/optimus-ui/api';
-import { Observable, retry, switchMap, timer } from 'rxjs';
+import {
+  Observable,
+  Subscription,
+  first,
+  interval,
+  retry,
+  switchMap,
+  timer,
+} from 'rxjs';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 import { RealtimeFilter, liveTable } from './supabase-live-table';
@@ -171,19 +179,36 @@ export function realtimeUpdatesFromTable<
   table: Table,
   filter?: RealtimeFilter<Database, Table>,
 ): Observable<Row[]> {
+  const { realtime } = supabase;
+  const socketOpens = interval(100).pipe(first(() => realtime.isConnected()));
+
   return new Observable<Row[]>((subscriber) => {
+    const waitForSocket = new Subscription();
     const channel = liveTable(supabase, {
       table,
       filter,
       callback: (error, rows: readonly Row[]) => {
-        if (error) subscriber.error(error);
-        else subscriber.next(rows as Row[]);
+        if (!error) {
+          subscriber.next(rows as Row[]);
+        } else if (realtime.isConnected()) {
+          subscriber.error(error);
+        } else {
+          // Phoenix buffers the join of a channel made while the socket is
+          // down and sends it on reconnect even if the channel is gone, so
+          // keep this channel until the socket opens.
+          waitForSocket.add(
+            socketOpens.subscribe(() => subscriber.error(error)),
+          );
+        }
       },
     });
-    return () => channel.unsubscribe();
+    return () => {
+      waitForSocket.unsubscribe();
+      channel.unsubscribe();
+    };
   }).pipe(
     retry({
-      delay: (_, attempt) => timer(supabase.realtime.reconnectAfterMs(attempt)),
+      delay: (_, attempt) => timer(realtime.reconnectAfterMs(attempt)),
       resetOnSuccess: true,
     }),
   );
