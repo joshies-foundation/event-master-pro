@@ -191,3 +191,26 @@ test('Points Over Time has one point per round when a round was replayed', async
       from player_round_score where player_id = r.player_id)`;
   expect(misaligned).toEqual([]);
 });
+
+test('Space Stats counts the latest landing of a replayed round', async ({
+  page,
+  login,
+}) => {
+  await sql`update game_state set session_id = ${replayedSession}`;
+  await login();
+  await openTab(page, 'Analytics');
+  await page.getByRole('link', { name: 'Space Stats' }).tap();
+  await expect(
+    page.getByRole('row').filter({ hasText: 'Olivia' }).getByRole('cell'),
+  ).toHaveText(['Olivia', '3', '2', '–', '–', '–', '–', '–', '–']);
+
+  const miscounted = await sql`
+    select v.session_id, s.display_name
+    from unnest(array[19, 35]) as v(session_id)
+    cross join lateral get_space_stats_for_session(v.session_id)
+      as s(user_id uuid, player_id bigint, display_name text, avatar_url text, space_stats json)
+    where (select sum(value::text::int) from json_each(s.space_stats)) <> (
+      select count(distinct round_number)
+      from gameboard_move where player_id = s.player_id)`;
+  expect(miscounted).toEqual([]);
+});
