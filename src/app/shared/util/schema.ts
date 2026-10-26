@@ -128,6 +128,7 @@ export type Database = {
           player_id: number;
           results: Json | null;
           round_number: number;
+          round_submit_id: number | null;
           session_id: number;
           status: Database['public']['Enums']['space_event_status'];
           template_id: number | null;
@@ -141,6 +142,7 @@ export type Database = {
           player_id: number;
           results?: Json | null;
           round_number: number;
+          round_submit_id?: number | null;
           session_id: number;
           status: Database['public']['Enums']['space_event_status'];
           template_id?: number | null;
@@ -153,6 +155,7 @@ export type Database = {
           player_id?: number;
           results?: Json | null;
           round_number?: number;
+          round_submit_id?: number | null;
           session_id?: number;
           status?: Database['public']['Enums']['space_event_status'];
           template_id?: number | null;
@@ -171,6 +174,13 @@ export type Database = {
             columns: ['player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
           {
@@ -241,6 +251,7 @@ export type Database = {
           opponent_player_id: number | null;
           points_gained_by_winner: number | null;
           round_number: number;
+          round_submit_id: number | null;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
           updated_at: string;
@@ -256,6 +267,7 @@ export type Database = {
           opponent_player_id?: number | null;
           points_gained_by_winner?: number | null;
           round_number: number;
+          round_submit_id?: number | null;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
           updated_at?: string;
@@ -270,6 +282,7 @@ export type Database = {
           opponent_player_id?: number | null;
           points_gained_by_winner?: number | null;
           round_number?: number;
+          round_submit_id?: number | null;
           session_id?: number;
           status?: Database['public']['Enums']['duel_status'];
           updated_at?: string;
@@ -295,6 +308,13 @@ export type Database = {
             columns: ['opponent_player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
           {
@@ -942,6 +962,7 @@ export type Database = {
           player_id: number;
           results: Json | null;
           round_number: number;
+          round_submit_id: number | null;
           session_id: number;
           special_space_id: number;
           status: Database['public']['Enums']['space_event_status'];
@@ -955,6 +976,7 @@ export type Database = {
           player_id: number;
           results?: Json | null;
           round_number: number;
+          round_submit_id?: number | null;
           session_id: number;
           special_space_id: number;
           status: Database['public']['Enums']['space_event_status'];
@@ -967,6 +989,7 @@ export type Database = {
           player_id?: number;
           results?: Json | null;
           round_number?: number;
+          round_submit_id?: number | null;
           session_id?: number;
           special_space_id?: number;
           status?: Database['public']['Enums']['space_event_status'];
@@ -979,6 +1002,13 @@ export type Database = {
             columns: ['player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'special_space_event_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
           {
