@@ -31,6 +31,7 @@ function installedPwaOn(name: string) {
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/support/keep-local-stack-awake.ts',
   workers: 1,
   fullyParallel: false,
   forbidOnly: !!process.env['CI'],
