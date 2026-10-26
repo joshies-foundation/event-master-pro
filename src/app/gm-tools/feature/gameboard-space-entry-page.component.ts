@@ -22,6 +22,7 @@ import OverridePointsCardComponent from '../ui/override-points-card.component';
 import { DialogModule } from '@openng/optimus-ui/dialog';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
+import { DuelService } from '../../shared/data-access/duel.service';
 import {
   FormBuilder,
   FormGroup,
@@ -32,6 +33,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
 import {
+  combineLatest,
   concat,
   map,
   Observable,
@@ -296,6 +298,7 @@ export default class GameboardSpaceEntryPageComponent {
   private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly gameboardService = inject(GameboardService);
+  private readonly duelService = inject(DuelService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -313,13 +316,20 @@ export default class GameboardSpaceEntryPageComponent {
 
   private readonly formGroup$: Observable<
     ModelFormGroup<GameboardSpaceEntryFormModel>
-  > = this.playerService.players$.pipe(
-    defined(),
+  > = combineLatest([
+    this.playerService.players$.pipe(defined()),
+    this.duelService.nonCanceledDuelsForThisTurn$,
+  ]).pipe(
     take(1), // take 1 so a player changing their name or picture doesn't reset the form
-    map((players): FormGroup =>
+    map(([players, duels]): FormGroup =>
       this.formBuilder.nonNullable.group(
-        players!.reduce(
-          (prev, player) => ({
+        players!.reduce((prev, player) => {
+          const handMadeDuelExists = duels.some(
+            (duel) =>
+              duel.challenger_player_id === player.player_id &&
+              duel.round_submit_id === null,
+          );
+          return {
             ...prev,
             [player.player_id]: this.formBuilder.group({
               distanceTraveled: [
@@ -335,21 +345,23 @@ export default class GameboardSpaceEntryPageComponent {
                 Validators.required,
               ],
               triggersDuel: [
-                this.initialFormValue?.[player.player_id]?.triggersDuel ??
-                  false,
+                (this.initialFormValue?.[player.player_id]?.triggersDuel ??
+                  false) ||
+                  handMadeDuelExists,
               ],
               triggeredDuelCreated: [
-                this.initialFormValue?.[player.player_id]
-                  ?.triggeredDuelCreated ?? false,
+                (this.initialFormValue?.[player.player_id]
+                  ?.triggeredDuelCreated ??
+                  false) ||
+                  handMadeDuelExists,
               ],
               chancePointsAmount: [
                 this.initialFormValue?.[player.player_id]?.chancePointsAmount ??
                   0,
               ],
             }),
-          }),
-          {},
-        ),
+          };
+        }, {}),
       ),
     ),
     shareReplay(1),

@@ -21,6 +21,7 @@ export type Database = {
           requester_player_id: number;
           requester_wager: number;
           session_id: number;
+          settled_by_round_submit_id: number | null;
           status: Database['public']['Enums']['bet_status'];
           updated_at: string;
         };
@@ -36,6 +37,7 @@ export type Database = {
           requester_player_id: number;
           requester_wager: number;
           session_id: number;
+          settled_by_round_submit_id?: number | null;
           status: Database['public']['Enums']['bet_status'];
           updated_at?: string;
         };
@@ -50,6 +52,7 @@ export type Database = {
           requester_player_id?: number;
           requester_wager?: number;
           session_id?: number;
+          settled_by_round_submit_id?: number | null;
           status?: Database['public']['Enums']['bet_status'];
           updated_at?: string;
         };
@@ -73,6 +76,13 @@ export type Database = {
             columns: ['session_id'];
             isOneToOne: false;
             referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bet_settled_by_round_submit_id_fkey';
+            columns: ['settled_by_round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
         ];
@@ -118,6 +128,7 @@ export type Database = {
           player_id: number;
           results: Json | null;
           round_number: number;
+          round_submit_id: number | null;
           session_id: number;
           status: Database['public']['Enums']['space_event_status'];
           template_id: number | null;
@@ -131,6 +142,7 @@ export type Database = {
           player_id: number;
           results?: Json | null;
           round_number: number;
+          round_submit_id?: number | null;
           session_id: number;
           status: Database['public']['Enums']['space_event_status'];
           template_id?: number | null;
@@ -143,6 +155,7 @@ export type Database = {
           player_id?: number;
           results?: Json | null;
           round_number?: number;
+          round_submit_id?: number | null;
           session_id?: number;
           status?: Database['public']['Enums']['space_event_status'];
           template_id?: number | null;
@@ -161,6 +174,13 @@ export type Database = {
             columns: ['player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chaos_space_event_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
           {
@@ -231,6 +251,7 @@ export type Database = {
           opponent_player_id: number | null;
           points_gained_by_winner: number | null;
           round_number: number;
+          round_submit_id: number | null;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
           updated_at: string;
@@ -246,6 +267,7 @@ export type Database = {
           opponent_player_id?: number | null;
           points_gained_by_winner?: number | null;
           round_number: number;
+          round_submit_id?: number | null;
           session_id: number;
           status: Database['public']['Enums']['duel_status'];
           updated_at?: string;
@@ -260,6 +282,7 @@ export type Database = {
           opponent_player_id?: number | null;
           points_gained_by_winner?: number | null;
           round_number?: number;
+          round_submit_id?: number | null;
           session_id?: number;
           status?: Database['public']['Enums']['duel_status'];
           updated_at?: string;
@@ -285,6 +308,13 @@ export type Database = {
             columns: ['opponent_player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'duel_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
           {
@@ -761,6 +791,88 @@ export type Database = {
           },
         ];
       };
+      prize_token_award: {
+        Row: {
+          already_spent: boolean;
+          created_at: string;
+          id: number;
+          player_id: number;
+          round_submit_id: number;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          already_spent?: boolean;
+          created_at?: string;
+          id?: number;
+          player_id: number;
+          round_submit_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          already_spent?: boolean;
+          created_at?: string;
+          id?: number;
+          player_id?: number;
+          round_submit_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'prize_token_award_player_id_fkey';
+            columns: ['player_id'];
+            isOneToOne: false;
+            referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prize_token_award_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      round_submit: {
+        Row: {
+          bank_paid_out: number;
+          created_at: string;
+          id: number;
+          phase: Database['public']['Enums']['round_phase'];
+          round_number: number;
+          session_id: number;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          bank_paid_out?: number;
+          created_at?: string;
+          id?: number;
+          phase: Database['public']['Enums']['round_phase'];
+          round_number: number;
+          session_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          bank_paid_out?: number;
+          created_at?: string;
+          id?: number;
+          phase?: Database['public']['Enums']['round_phase'];
+          round_number?: number;
+          session_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'round_submit_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'session';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       rules: {
         Row: {
           chaos_space_events: string | null;
@@ -850,6 +962,7 @@ export type Database = {
           player_id: number;
           results: Json | null;
           round_number: number;
+          round_submit_id: number | null;
           session_id: number;
           special_space_id: number;
           status: Database['public']['Enums']['space_event_status'];
@@ -863,6 +976,7 @@ export type Database = {
           player_id: number;
           results?: Json | null;
           round_number: number;
+          round_submit_id?: number | null;
           session_id: number;
           special_space_id: number;
           status: Database['public']['Enums']['space_event_status'];
@@ -875,6 +989,7 @@ export type Database = {
           player_id?: number;
           results?: Json | null;
           round_number?: number;
+          round_submit_id?: number | null;
           session_id?: number;
           special_space_id?: number;
           status?: Database['public']['Enums']['space_event_status'];
@@ -887,6 +1002,13 @@ export type Database = {
             columns: ['player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'special_space_event_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
             referencedColumns: ['id'];
           },
           {
@@ -959,8 +1081,11 @@ export type Database = {
           created_at: string;
           description: string | null;
           id: number;
+          lost_to_bank: boolean;
           num_points: number;
           player_id: number;
+          round_submit_id: number | null;
+          settles_bet_id: number | null;
           updated_at: string;
         };
         ComputedFields: never;
@@ -968,16 +1093,22 @@ export type Database = {
           created_at?: string;
           description?: string | null;
           id?: number;
+          lost_to_bank?: boolean;
           num_points: number;
           player_id: number;
+          round_submit_id?: number | null;
+          settles_bet_id?: number | null;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
           description?: string | null;
           id?: number;
+          lost_to_bank?: boolean;
           num_points?: number;
           player_id?: number;
+          round_submit_id?: number | null;
+          settles_bet_id?: number | null;
           updated_at?: string;
         };
         Relationships: [
@@ -986,6 +1117,20 @@ export type Database = {
             columns: ['player_id'];
             isOneToOne: false;
             referencedRelation: 'player';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'transaction_round_submit_id_fkey';
+            columns: ['round_submit_id'];
+            isOneToOne: false;
+            referencedRelation: 'round_submit';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'transaction_settles_bet_id_fkey';
+            columns: ['settles_bet_id'];
+            isOneToOne: false;
+            referencedRelation: 'bet';
             referencedColumns: ['id'];
           },
         ];
@@ -1208,6 +1353,14 @@ export type Database = {
         Args: { _round_number: number; team_score_changes: Json };
         Returns: Json;
       };
+      find_round_submit_id: {
+        Args: {
+          _phase: Database['public']['Enums']['round_phase'];
+          _round_number: number;
+          _session_id: number;
+        };
+        Returns: number;
+      };
       get_all_scores_from_session: {
         Args: { sessionid: number };
         Returns: Record<string, unknown>[];
@@ -1241,6 +1394,14 @@ export type Database = {
       log_round_moves: {
         Args: { playermoves: Json; roundnumber: number };
         Returns: undefined;
+      };
+      open_round_submit: {
+        Args: {
+          _phase: Database['public']['Enums']['round_phase'];
+          _round_number: number;
+          _session_id: number;
+        };
+        Returns: number;
       };
       override_bank_balance: { Args: { data: Json }; Returns: undefined };
       override_points: {
@@ -1307,6 +1468,10 @@ export type Database = {
       };
       submit_special_space_event_score: {
         Args: { score: number; special_space_event_id: number };
+        Returns: undefined;
+      };
+      take_back_event_results: {
+        Args: { _submit_id: number; _winners: number[] };
         Returns: undefined;
       };
       update_event_team_seeds: { Args: { updates: Json }; Returns: undefined };
