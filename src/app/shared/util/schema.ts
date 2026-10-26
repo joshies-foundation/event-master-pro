@@ -1395,6 +1395,14 @@ export type Database = {
         Args: { playermoves: Json; roundnumber: number };
         Returns: undefined;
       };
+      open_round_submit: {
+        Args: {
+          _phase: Database['public']['Enums']['round_phase'];
+          _round_number: number;
+          _session_id: number;
+        };
+        Returns: number;
+      };
       override_bank_balance: { Args: { data: Json }; Returns: undefined };
       override_points: {
         Args: { add_lost_points_to_bank_balance: boolean; data: Json };
@@ -1460,6 +1468,10 @@ export type Database = {
       };
       submit_special_space_event_score: {
         Args: { score: number; special_space_event_id: number };
+        Returns: undefined;
+      };
+      take_back_event_results: {
+        Args: { _submit_id: number; _winners: number[] };
         Returns: undefined;
       };
       update_event_team_seeds: { Args: { updates: Json }; Returns: undefined };

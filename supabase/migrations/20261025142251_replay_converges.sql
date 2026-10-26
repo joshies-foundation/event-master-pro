@@ -16,6 +16,8 @@ create table public.round_submit (
 
 alter table public.round_submit enable row level security;
 
+revoke delete, truncate on public.round_submit from anon, authenticated;
+
 create policy "Enable all for authenticated users only"
 on public.round_submit as permissive for all
 to authenticated
@@ -105,24 +107,24 @@ create function public.apply_transaction()
 as $function$
 begin
     if tg_op in ('UPDATE', 'DELETE') then
-        update public.player set score = score - old.num_points
-        where id = old.player_id;
-
         if old.lost_to_bank then
             update public.session
             set bank_balance = bank_balance + old.num_points
             where id = (select session_id from public.player where id = old.player_id);
         end if;
+
+        update public.player set score = score - old.num_points
+        where id = old.player_id;
     end if;
 
     if tg_op in ('INSERT', 'UPDATE') then
-        update public.player set score = score + new.num_points
-        where id = new.player_id;
-
         if new.lost_to_bank then
             update public.session set bank_balance = bank_balance - new.num_points
             where id = (select session_id from public.player where id = new.player_id);
         end if;
+
+        update public.player set score = score + new.num_points
+        where id = new.player_id;
     end if;
 
     return null;
@@ -147,6 +149,87 @@ as $function$
     where session_id = _session_id
       and round_number = _round_number
       and phase = _phase;
+$function$;
+
+create function public.open_round_submit (
+  _session_id   bigint,
+  _round_number integer,
+  _phase        public.round_phase
+)
+  returns bigint
+  language plpgsql
+as $function$
+declare
+    _moves_id bigint := public.find_round_submit_id(_session_id, _round_number, 'gameboard_moves');
+    _event_id bigint := public.find_round_submit_id(_session_id, _round_number, 'event');
+    _scored boolean := exists (
+        select 1 from public.player_round_score s
+        join public.player p on p.id = s.player_id
+        where p.session_id = _session_id and s.round_number = _round_number);
+    _later_round int4;
+    _submit_id bigint;
+begin
+    if (_phase = 'gameboard_moves' and _moves_id is null and exists (
+            select 1 from public.gameboard_move gm
+            join public.player p on p.id = gm.player_id
+            where p.session_id = _session_id and gm.round_number = _round_number))
+       or (_phase = 'event' and _event_id is null and _scored) then
+        raise exception 'Round % was submitted before replays were tracked, so it cannot be replayed. Correct points with Override Points, and set the phase with Override Game State.', _round_number;
+    end if;
+
+    select max(round_number) into _later_round from public.round_submit
+    where session_id = _session_id and round_number > _round_number;
+    if _later_round is not null
+       and ((_phase = 'gameboard_moves' and _moves_id is not null)
+            or (_event_id is not null and _scored)) then
+        raise exception 'Round % cannot be replayed, because round % has been played since. Correct points with Override Points, and set the phase with Override Game State.', _round_number, _later_round;
+    end if;
+
+    insert into public.round_submit (session_id, round_number, phase)
+    values (_session_id, _round_number, _phase)
+    on conflict on constraint round_submit_session_id_round_number_phase_key
+    do update set updated_at = now()
+    returning id into _submit_id;
+
+    return _submit_id;
+end;
+$function$;
+
+create function public.take_back_event_results (
+  _submit_id bigint,
+  _winners   bigint[]
+)
+  returns void
+  language plpgsql
+as $function$
+declare
+    _player_id int8;
+begin
+    delete from public.transaction where round_submit_id = _submit_id;
+
+    delete from public.player_round_score s
+    using public.round_submit r, public.player p
+    where r.id = _submit_id and p.id = s.player_id
+      and p.session_id = r.session_id and s.round_number = r.round_number;
+
+    for _player_id in
+        select player_id from public.prize_token_award
+        where round_submit_id = _submit_id and not already_spent
+          and not (player_id = any (_winners))
+    loop
+        update public.player
+        set prize_tokens = prize_tokens - 1,
+            updated_at = now()
+        where id = _player_id and prize_tokens > 0;
+        if found then
+            delete from public.prize_token_award
+            where round_submit_id = _submit_id and player_id = _player_id;
+        else
+            update public.prize_token_award set already_spent = true
+            where round_submit_id = _submit_id and player_id = _player_id;
+        end if;
+    end loop;
+end;
 $function$;
 
 CREATE OR REPLACE FUNCTION public.submit_bet_requester_won(bet_id bigint)
@@ -581,6 +664,7 @@ CREATE OR REPLACE FUNCTION public.log_round_moves (
     _submit_id BIGINT;
     _paid_out BIGINT;
     _bet_id BIGINT;
+    _event_submit_id BIGINT;
 BEGIN
     PERFORM 1 FROM game_state
     WHERE id = 1 AND round_phase = 'gameboard_moves' AND round_number = roundnumber
@@ -590,19 +674,10 @@ BEGIN
     END IF;
 
     SELECT session_id INTO _session_id FROM game_state WHERE id = 1;
+    PERFORM 1 FROM session WHERE id = _session_id FOR NO KEY UPDATE;
 
-    IF find_round_submit_id(_session_id, roundnumber, 'gameboard_moves') IS NULL
-       AND EXISTS (
-           SELECT 1 FROM gameboard_move gm JOIN player p ON p.id = gm.player_id
-           WHERE p.session_id = _session_id AND gm.round_number = roundnumber) THEN
-        RAISE EXCEPTION 'Round % was submitted before replays were tracked, so it cannot be replayed. Correct points with Override Points, and set the phase with Override Game State.', roundnumber;
-    END IF;
-
-    INSERT INTO round_submit (session_id, round_number, phase)
-    VALUES (_session_id, roundnumber, 'gameboard_moves')
-    ON CONFLICT ON CONSTRAINT round_submit_session_id_round_number_phase_key
-    DO UPDATE SET updated_at = now()
-    RETURNING id, bank_paid_out INTO _submit_id, _paid_out;
+    _submit_id := open_round_submit(_session_id, roundnumber, 'gameboard_moves');
+    SELECT bank_paid_out INTO _paid_out FROM round_submit WHERE id = _submit_id;
 
     FOR _bet_id IN
         SELECT b.id FROM bet b
@@ -618,6 +693,11 @@ BEGIN
     LOOP
         PERFORM submit_bet_canceled_by_gm(_bet_id);
     END LOOP;
+
+    _event_submit_id := find_round_submit_id(_session_id, roundnumber, 'event');
+    IF _event_submit_id IS NOT NULL THEN
+        PERFORM take_back_event_results(_event_submit_id, '{}');
+    END IF;
 
     IF _paid_out > 0 THEN
         UPDATE session SET bank_balance = bank_balance + _paid_out WHERE id = _session_id;
@@ -746,19 +826,7 @@ begin
 
     select session_id into _session_id from game_state where id = 1;
 
-    if public.find_round_submit_id(_session_id, _round_number, 'event') is null
-       and exists (
-           select 1 from public.player_round_score s
-           join public.player p on p.id = s.player_id
-           where p.session_id = _session_id and s.round_number = _round_number) then
-        raise exception 'Round % was submitted before replays were tracked, so it cannot be replayed. Correct points with Override Points, and set the phase with Override Game State.', _round_number;
-    end if;
-
-    insert into public.round_submit (session_id, round_number, phase)
-    values (_session_id, _round_number, 'event')
-    on conflict on constraint round_submit_session_id_round_number_phase_key
-    do update set updated_at = now()
-    returning id into _submit_id;
+    _submit_id := public.open_round_submit(_session_id, _round_number, 'event');
 
     select name into event_name from event
     where session_id = _session_id and round_number = _round_number;
@@ -777,29 +845,7 @@ begin
         where t.team_points::int8 = _max_points;
     end if;
 
-    delete from public.transaction where round_submit_id = _submit_id;
-
-    delete from public.player_round_score s using public.player p
-    where p.id = s.player_id and p.session_id = _session_id
-      and s.round_number = _round_number;
-
-    for _player_id in
-        select player_id from public.prize_token_award
-        where round_submit_id = _submit_id and not already_spent
-          and not (player_id = any (_winners))
-    loop
-        update public.player
-        set prize_tokens = prize_tokens - 1,
-            updated_at = now()
-        where id = _player_id and prize_tokens > 0;
-        if found then
-            delete from public.prize_token_award
-            where round_submit_id = _submit_id and player_id = _player_id;
-        else
-            update public.prize_token_award set already_spent = true
-            where round_submit_id = _submit_id and player_id = _player_id;
-        end if;
-    end loop;
+    perform public.take_back_event_results(_submit_id, _winners);
 
     for event_team_id, points in select * from jsonb_each_text(team_score_changes) loop
         for team_player_id in
