@@ -1,5 +1,5 @@
-import { resetDatabase, sql } from './support/db';
-import { expect, test } from './support/fixtures';
+import { connect, resetDatabase, sql } from './support/db';
+import { confirmDialog, expect, openTab, test } from './support/fixtures';
 import { seed } from './support/seed';
 
 const round = 2;
@@ -8,9 +8,9 @@ const firstUnseededId = { transaction: 989, bet: 159 };
 const colin = seed.colin.playerId;
 const leo = seed.leo.playerId;
 const josh = seed.josh.playerId;
-const maddie = 110;
-const ben = 111;
-const kyle = 112;
+const olivia = 110;
+const molly = 111;
+const leo2 = 112;
 
 type Moves = Record<number, { gameboardSpaceId: number }>;
 type BetDetails = Record<string, number | string | boolean>;
@@ -86,8 +86,8 @@ async function addEventTeams() {
     where session_id = ${seed.sessionId} and round_number = ${round}`;
   const teams: number[] = [];
   for (const members of [
-    [colin, leo, kyle],
-    [josh, maddie],
+    [colin, leo, leo2],
+    [josh, olivia],
   ]) {
     const [team] = await sql<{ id: string }[]>`
       insert into event_team (event_id) values (${event[0].id}) returning id`;
@@ -171,13 +171,13 @@ test('a GM replay of the gameboard moves ends as if the GM had submitted the rep
   ): Moves => {
     const firstSubmitOnly: Moves = replayed
       ? {}
-      : { [kyle]: { gameboardSpaceId: space.blue } };
+      : { [leo2]: { gameboardSpaceId: space.blue } };
     return {
       [colin]: { gameboardSpaceId: replayed ? space.blue : space.duel },
       [leo]: { gameboardSpaceId: star },
       [josh]: { gameboardSpaceId: replayed ? space.duel : chaos },
-      [maddie]: { gameboardSpaceId: replayed ? space.bank : space.red },
-      [ben]: { gameboardSpaceId: space.red },
+      [olivia]: { gameboardSpaceId: replayed ? space.bank : space.red },
+      [molly]: { gameboardSpaceId: space.red },
       ...firstSubmitOnly,
     };
   };
@@ -192,8 +192,8 @@ test('a GM replay of the gameboard moves ends as if the GM had submitted the rep
       space.duel,
     );
     await placeMoveBet(
-      'Kyle will land on a(n) Blue space next',
-      kyle,
+      'Leo 2 will land on a(n) Blue space next',
+      leo2,
       space.blue,
     );
     return { star, chaos };
@@ -212,8 +212,8 @@ test('a GM replay of the gameboard moves ends as if the GM had submitted the rep
   const replay = await sessionState();
 
   expect(playerChanges(replay, before)).toEqual({
-    [maddie]: { score: 25, tokens: 0 },
-    [ben]: { score: -10, tokens: 0 },
+    [olivia]: { score: 25, tokens: 0 },
+    [molly]: { score: -10, tokens: 0 },
     [josh]: { score: 10, tokens: 0 },
     [colin]: { score: 10, tokens: 0 },
   });
@@ -239,7 +239,7 @@ test('a GM replay of the gameboard moves ends as if the GM had submitted the rep
       status: 'opponent_won',
     },
     {
-      description: 'Kyle will land on a(n) Blue space next',
+      description: 'Leo 2 will land on a(n) Blue space next',
       status: 'active',
     },
   ]);
@@ -266,17 +266,105 @@ test('a GM replay of the event results ends as if the GM had submitted the repla
   const replay = await sessionState();
 
   expect(playerChanges(replay, before)).toEqual({
-    [maddie]: { score: 10, tokens: 1 },
+    [olivia]: { score: 10, tokens: 1 },
     [josh]: { score: 10, tokens: 1 },
   });
   expect(replay.roundScores).toHaveLength(5);
   expect(replay.transactions).toHaveLength(5);
   const winners = await sql<{ user_id: string }[]>`
-    select user_id from player where id in (${josh}, ${maddie})
+    select user_id from player where id in (${josh}, ${olivia})
     order by user_id`;
   expect(replayRecipients).toEqual(winners.map((row) => row.user_id));
   expect(replayRecipients).toEqual(onceRecipients);
   expect(replay).toEqual(once);
+});
+
+test('a GM replay of the gameboard moves after the event takes the duel wager from the scores before the round', async ({
+  page,
+  login,
+}) => {
+  test.slow();
+  await setRoundPhase('gameboard_moves');
+  const [first, second] = await addEventTeams();
+  const before = await sessionState();
+  await login();
+
+  const submitMoves = async () => {
+    await setRoundPhase('gameboard_moves');
+    await logMoves({
+      [colin]: { gameboardSpaceId: space.duel },
+      [molly]: { gameboardSpaceId: space.blue },
+    });
+  };
+  const resolveDuel = async (expectedRows: RegExp[]) => {
+    await sql`update duel set opponent_player_id = ${molly},
+      wager_percentage = 20, game_name = 'Ping Pong', status = 'in_progress'
+      where session_id = ${seed.sessionId} and round_number = ${round}`;
+    await setRoundPhase('duels');
+    await openTab(page, 'GM Tools');
+    await page.getByRole('link', { name: 'Resolve Duels' }).tap();
+    await page.getByRole('row').filter({ hasText: 'In Progress' }).tap();
+    await page
+      .locator('label')
+      .filter({ hasText: 'Winner:' })
+      .getByText('Molly')
+      .tap();
+    const rows = page
+      .getByRole('table')
+      .getByRole('rowgroup')
+      .nth(1)
+      .getByRole('row');
+    await expect.soft(rows).toHaveText(expectedRows);
+    await page.getByRole('button', { name: 'Submit Results' }).tap();
+    await confirmDialog(page).getByRole('button', { name: 'Yes' }).tap();
+    await expect(page).toHaveURL(/\/resolve-duels$/);
+    await setRoundPhase('event');
+    await endRound({ [first]: 30, [second]: 0 });
+  };
+
+  await submitMoves();
+  await resolveDuel([/Colin\s*33\s*-7/, /Molly\s*50\s*\+7/]);
+  await submitMoves();
+  const midReplay = await sessionState();
+  expect
+    .soft(
+      playerChanges(midReplay, before),
+      'event points and tokens taken back',
+    )
+    .toEqual({ [molly]: { score: 10, tokens: 0 } });
+  expect.soft(midReplay.roundScores).toEqual([]);
+  await page.reload();
+  await resolveDuel([/Colin\s*33\s*-7/, /Molly\s*50\s*\+7/]);
+  const replay = await sessionState();
+
+  expect(playerChanges(replay, before)).toEqual({
+    [leo]: { score: 30, tokens: 1 },
+    [molly]: { score: 17, tokens: 0 },
+    [leo2]: { score: 30, tokens: 1 },
+    [colin]: { score: 23, tokens: 1 },
+  });
+  expect(
+    pointsByPlayer(replay).filter(([player]) =>
+      [colin, molly].includes(player),
+    ),
+  ).toEqual([
+    [molly, 10],
+    [molly, 7],
+    [colin, -7],
+    [colin, 30],
+  ]);
+  expect(replay.roundScores).toEqual(
+    [
+      [leo, 100],
+      [olivia, 51],
+      [leo2, 20],
+      [josh, 40],
+      [colin, 56],
+    ].map(([player, score]) => ({
+      player_id: String(player),
+      score: String(score),
+    })),
+  );
 });
 
 test('a GM replay of the gameboard moves takes back a finished duel and refunds the bet on it', async () => {
@@ -289,7 +377,7 @@ test('a GM replay of the gameboard moves takes back a finished duel and refunds 
   await setRoundPhase('gameboard_moves');
   await logMoves({ [josh]: { gameboardSpaceId: space.duel } });
   const [duel] = await sql<{ id: string }[]>`
-    update duel set opponent_player_id = ${ben}, game_name = 'Ping Pong',
+    update duel set opponent_player_id = ${molly}, game_name = 'Ping Pong',
       status = 'waiting_to_begin'
     where session_id = ${seed.sessionId} and round_number = ${round}
     returning id`;
@@ -302,7 +390,7 @@ test('a GM replay of the gameboard moves takes back a finished duel and refunds 
     returning id`;
   await sql`select submit_bet_accepted(${bet.id})`;
   await sql`select submit_duel_results(${duel.id}, true,
-    ${sql.json({ [josh]: 10, [ben]: -10 })}::json)`;
+    ${sql.json({ [josh]: 10, [molly]: -10 })}::json)`;
   await sql`select submit_bet_requester_won(${bet.id})`;
   await setRoundPhase('gameboard_moves');
   await logMoves({ [josh]: { gameboardSpaceId: space.blue } });
@@ -338,30 +426,30 @@ test('a replay takes back an unspent prize token and leaves a spent one and its 
   const [first, second] = await addEventTeams();
   await endRound({ [first]: 10, [second]: 0 });
   const [prize] = await sql<{ id: string }[]>`
-    select (spin_prize_machine(${kyle})).id`;
+    select (spin_prize_machine(${leo2})).id`;
 
   await setRoundPhase('event');
   expect(await endRound({ [first]: 10, [second]: 0 })).toEqual([]);
   const tokensAfterSameWinners = await sql`
-    select id, prize_tokens from player where id in (${colin}, ${kyle})
+    select id, prize_tokens from player where id in (${colin}, ${leo2})
     order by id`;
   expect([...tokensAfterSameWinners]).toEqual([
-    { id: String(kyle), prize_tokens: 0 },
+    { id: String(leo2), prize_tokens: 0 },
     { id: String(colin), prize_tokens: 2 },
   ]);
 
   await setRoundPhase('event');
   await endRound({ [first]: 0, [second]: 10 });
   const tokens = await sql`
-    select id, prize_tokens from player where id in (${colin}, ${kyle})
+    select id, prize_tokens from player where id in (${colin}, ${leo2})
     order by id`;
   expect([...tokens]).toEqual([
-    { id: String(kyle), prize_tokens: 0 },
+    { id: String(leo2), prize_tokens: 0 },
     { id: String(colin), prize_tokens: 1 },
   ]);
   const [won] = await sql<{ won_by_player_id: string }[]>`
     select won_by_player_id from prize where id = ${prize.id}`;
-  expect(won.won_by_player_id).toBe(String(kyle));
+  expect(won.won_by_player_id).toBe(String(leo2));
 });
 
 test('a GM replay of the gameboard moves puts back the bank the first submit paid out', async () => {
@@ -372,8 +460,8 @@ test('a GM replay of the gameboard moves puts back the bank the first submit pai
   };
   const replayMoves: Moves = {
     [leo]: { gameboardSpaceId: space.blue },
-    [maddie]: { gameboardSpaceId: space.red },
-    [ben]: { gameboardSpaceId: space.red },
+    [olivia]: { gameboardSpaceId: space.red },
+    [molly]: { gameboardSpaceId: space.red },
   };
 
   await start();
@@ -385,8 +473,8 @@ test('a GM replay of the gameboard moves puts back the bank the first submit pai
   const star = await start();
   await logMoves({
     [leo]: { gameboardSpaceId: star },
-    [maddie]: { gameboardSpaceId: space.bank },
-    [ben]: { gameboardSpaceId: space.red },
+    [olivia]: { gameboardSpaceId: space.bank },
+    [molly]: { gameboardSpaceId: space.red },
   });
   const [event] = await sql<{ id: string }[]>`
     select id from special_space_event
@@ -400,8 +488,8 @@ test('a GM replay of the gameboard moves puts back the bank the first submit pai
   expect(replay.bankBalance).toBe('45');
   expect(playerChanges(replay, before)).toEqual({
     [leo]: { score: 10, tokens: 0 },
-    [maddie]: { score: -10, tokens: 0 },
-    [ben]: { score: -10, tokens: 0 },
+    [olivia]: { score: -10, tokens: 0 },
+    [molly]: { score: -10, tokens: 0 },
   });
   expect(replay.spaceEvents).toEqual([]);
   expect(replay.transactions).toHaveLength(3);
@@ -412,11 +500,11 @@ test('a GM replay of the gameboard moves leaves a bet the GM canceled canceled',
   await setRoundPhase('gameboard_moves');
   const before = await sessionState();
   await placeMoveBet(
-    'Kyle will land on a(n) Blue space next',
-    kyle,
+    'Leo 2 will land on a(n) Blue space next',
+    leo2,
     space.blue,
   );
-  await logMoves({ [kyle]: { gameboardSpaceId: space.blue } });
+  await logMoves({ [leo2]: { gameboardSpaceId: space.blue } });
   await sql`select submit_bet_canceled_by_gm(id) from bet
     where id >= ${firstUnseededId.bet}`;
 
@@ -426,7 +514,7 @@ test('a GM replay of the gameboard moves leaves a bet the GM canceled canceled',
 
   expect(replay.bets).toEqual([
     {
-      description: 'Kyle will land on a(n) Blue space next',
+      description: 'Leo 2 will land on a(n) Blue space next',
       status: 'canceled_by_gm',
     },
   ]);
@@ -446,38 +534,38 @@ test('a GM replay of the gameboard moves pays out a move bet that the first subm
   await setRoundPhase('gameboard_moves');
   const before = await sessionState();
   await placeMoveBet(
-    'Kyle will land on a(n) Blue space next',
-    kyle,
+    'Leo 2 will land on a(n) Blue space next',
+    leo2,
     space.blue,
   );
-  await logMoves({ [kyle]: { gameboardSpaceId: space.red } });
+  await logMoves({ [leo2]: { gameboardSpaceId: space.red } });
   expect((await sessionState()).bets).toEqual([
     {
-      description: 'Kyle will land on a(n) Blue space next',
+      description: 'Leo 2 will land on a(n) Blue space next',
       status: 'opponent_won',
     },
   ]);
 
   await setRoundPhase('gameboard_moves');
-  await logMoves({ [kyle]: { gameboardSpaceId: space.blue } });
+  await logMoves({ [leo2]: { gameboardSpaceId: space.blue } });
   const replay = await sessionState();
 
   expect(replay.bets).toEqual([
     {
-      description: 'Kyle will land on a(n) Blue space next',
+      description: 'Leo 2 will land on a(n) Blue space next',
       status: 'requester_won',
     },
   ]);
   expect(playerChanges(replay, before)).toEqual({
     [leo]: { score: 5, tokens: 0 },
-    [kyle]: { score: 10, tokens: 0 },
+    [leo2]: { score: 10, tokens: 0 },
     [josh]: { score: -5, tokens: 0 },
   });
   expect(replay.bankBalance).toBe('0');
   expect(pointsByPlayer(replay)).toEqual([
     [leo, -5],
     [leo, 10],
-    [kyle, 10],
+    [leo2, 10],
     [josh, -5],
   ]);
 });
@@ -487,7 +575,7 @@ test('a GM replay of the gameboard moves cancels the open bets on a duel it take
   const before = await sessionState();
   await logMoves({ [josh]: { gameboardSpaceId: space.duel } });
   const [duel] = await sql<{ id: string }[]>`
-    update duel set opponent_player_id = ${ben}, game_name = 'Ping Pong',
+    update duel set opponent_player_id = ${molly}, game_name = 'Ping Pong',
       status = 'waiting_to_begin'
     where session_id = ${seed.sessionId} and round_number = ${round}
     returning id`;
@@ -500,9 +588,9 @@ test('a GM replay of the gameboard moves cancels the open bets on a duel it take
     accept: true,
   });
   await placeBet({
-    requester: kyle,
-    opponent: maddie,
-    description: 'Ben will win the duel',
+    requester: leo2,
+    opponent: olivia,
+    description: 'Molly will win the duel',
     betType: 'duel',
     details: { duelId: Number(duel.id), challengerWins: false },
     accept: false,
@@ -515,7 +603,7 @@ test('a GM replay of the gameboard moves cancels the open bets on a duel it take
   expect(replay.spaceEvents).toEqual([]);
   expect(replay.bets).toEqual([
     { description: 'Josh will win the duel', status: 'canceled_by_gm' },
-    { description: 'Ben will win the duel', status: 'canceled_by_gm' },
+    { description: 'Molly will win the duel', status: 'canceled_by_gm' },
   ]);
   expect(playerChanges(replay, before)).toEqual({
     [josh]: { score: 10, tokens: 0 },
@@ -547,8 +635,8 @@ test('a GM replay of the gameboard moves cancels an open special space bet and t
     select id from chaos_space_event
     where session_id = ${seed.sessionId} and round_number = ${round}`;
   await placeBet({
-    requester: kyle,
-    opponent: maddie,
+    requester: leo2,
+    opponent: olivia,
     description: 'Leo will score over 3',
     betType: 'special_space_event',
     details: {
@@ -560,7 +648,7 @@ test('a GM replay of the gameboard moves cancels an open special space bet and t
   });
   await placeBet({
     requester: colin,
-    opponent: ben,
+    opponent: molly,
     description: 'Over 0.5 players will lose points',
     betType: 'chaos_space_event',
     details: {
@@ -572,7 +660,7 @@ test('a GM replay of the gameboard moves cancels an open special space bet and t
     accept: true,
   });
   await sql`select submit_space_event_player_score_changes(${chaosEvent.id}, 10,
-    ${sql.json({ [ben]: -5 })}::json, 'Fell over', true, true)`;
+    ${sql.json({ [molly]: -5 })}::json, 'Fell over', true, true)`;
   expect((await sessionState()).bets.map((bet) => bet['status'])).toEqual([
     'active',
     'requester_won',
@@ -601,12 +689,12 @@ test('a GM replay of the gameboard moves cancels an open special space bet and t
   expect(replay.bankBalance).toBe('25');
   expect(pointsByPlayer(replay)).toEqual([
     [leo, 10],
-    [maddie, 5],
-    [maddie, -5],
-    [ben, 5],
-    [ben, -5],
-    [kyle, 5],
-    [kyle, -5],
+    [olivia, 5],
+    [olivia, -5],
+    [molly, 5],
+    [molly, -5],
+    [leo2, 5],
+    [leo2, -5],
     [josh, 10],
     [colin, 5],
     [colin, -5],
@@ -619,13 +707,13 @@ test('duels the GM creates by hand survive the first submit and a replay of the 
   const [current] = await sql<{ id: string }[]>`
     insert into duel (session_id, round_number, challenger_player_id,
       opponent_player_id, duel_space_id, game_name, status)
-    values (${seed.sessionId}, ${round}, ${colin}, ${ben}, ${space.duel},
+    values (${seed.sessionId}, ${round}, ${colin}, ${molly}, ${space.duel},
       'Ping Pong', 'waiting_to_begin')
     returning id`;
   const [next] = await sql<{ id: string }[]>`
     insert into duel (session_id, round_number, challenger_player_id,
       opponent_player_id, duel_space_id, status)
-    values (${seed.sessionId}, ${round + 1}, ${josh}, ${kyle}, ${space.duel},
+    values (${seed.sessionId}, ${round + 1}, ${josh}, ${leo2}, ${space.duel},
       'wager_not_selected')
     returning id`;
   await placeBet({
@@ -637,16 +725,16 @@ test('duels the GM creates by hand survive the first submit and a replay of the 
     accept: true,
   });
 
-  await logMoves({ [maddie]: { gameboardSpaceId: space.blue } });
+  await logMoves({ [olivia]: { gameboardSpaceId: space.blue } });
   expect((await sessionState()).bets).toEqual([
     { description: 'Colin will win the duel', status: 'active' },
   ]);
   await sql`select submit_duel_results(${current.id}, true,
-    ${sql.json({ [colin]: 10, [ben]: -10 })}::json)`;
+    ${sql.json({ [colin]: 10, [molly]: -10 })}::json)`;
   await setRoundPhase('gameboard_moves');
-  await logMoves({ [maddie]: { gameboardSpaceId: space.red } });
+  await logMoves({ [olivia]: { gameboardSpaceId: space.red } });
   await setRoundPhase('gameboard_moves', round + 1);
-  await logMoves({ [kyle]: { gameboardSpaceId: space.blue } }, round + 1);
+  await logMoves({ [leo2]: { gameboardSpaceId: space.blue } }, round + 1);
   const after = await sessionState();
 
   expect(after.spaceEvents).toEqual([
@@ -665,14 +753,17 @@ test('duels the GM creates by hand survive the first submit and a replay of the 
   ]);
   expect(playerChanges(after, before)).toEqual({
     [leo]: { score: 5, tokens: 0 },
-    [maddie]: { score: -10, tokens: 0 },
-    [ben]: { score: -10, tokens: 0 },
-    [kyle]: { score: 10, tokens: 0 },
+    [olivia]: { score: -10, tokens: 0 },
+    [molly]: { score: -10, tokens: 0 },
+    [leo2]: { score: 10, tokens: 0 },
     [josh]: { score: -5, tokens: 0 },
     [colin]: { score: 10, tokens: 0 },
   });
   expect(after.bankBalance).toBe('10');
 });
+
+const laterRoundRefusal =
+  'Round 2 cannot be replayed, because round 3 has been played since. Correct points with Override Points, and set the phase with Override Game State.';
 
 const legacyRoundRefusal =
   'Round 1 was submitted before replays were tracked, so it cannot be replayed. Correct points with Override Points, and set the phase with Override Game State.';
@@ -707,9 +798,9 @@ test('a GM replay of the gameboard moves keeps a bank balance the GM set after t
   await sql`update session set bank_balance = 10 where id = ${seed.sessionId}`;
   const before = await sessionState();
   const reds: Moves = {
-    [maddie]: { gameboardSpaceId: space.red },
-    [ben]: { gameboardSpaceId: space.red },
-    [kyle]: { gameboardSpaceId: space.red },
+    [olivia]: { gameboardSpaceId: space.red },
+    [molly]: { gameboardSpaceId: space.red },
+    [leo2]: { gameboardSpaceId: space.red },
   };
   await logMoves(reds);
   expect((await sessionState()).bankBalance).toBe('40');
@@ -725,9 +816,9 @@ test('a GM replay of the gameboard moves keeps a bank balance the GM set after t
 
   expect(replay.bankBalance).toBe('5');
   expect(playerChanges(replay, before)).toEqual({
-    [maddie]: { score: -10, tokens: 0 },
-    [ben]: { score: -10, tokens: 0 },
-    [kyle]: { score: -10, tokens: 0 },
+    [olivia]: { score: -10, tokens: 0 },
+    [molly]: { score: -10, tokens: 0 },
+    [leo2]: { score: -10, tokens: 0 },
   });
   expect(replay.transactions).toHaveLength(3);
 
@@ -738,42 +829,94 @@ test('a GM replay of the gameboard moves keeps a bank balance the GM set after t
   await setRoundPhase('gameboard_moves');
   await expect(
     logMoves({
-      [maddie]: { gameboardSpaceId: space.blue },
-      [ben]: { gameboardSpaceId: space.blue },
-      [kyle]: { gameboardSpaceId: space.blue },
+      [olivia]: { gameboardSpaceId: space.blue },
+      [molly]: { gameboardSpaceId: space.blue },
+      [leo2]: { gameboardSpaceId: space.blue },
     }),
   ).rejects.toThrow(shortfall);
   await expect(
-    logMoves({ ...reds, [maddie]: { gameboardSpaceId: space.bank } }),
+    logMoves({ ...reds, [olivia]: { gameboardSpaceId: space.bank } }),
   ).rejects.toThrow(bankSpaceShortfall);
   expect(await sessionState()).toEqual(replay);
 });
 
-test('a GM replay of a round does not refill the bank that a later round paid out', async () => {
+test('a GM replay of a round is refused once a later round has been played', async () => {
   await setRoundPhase('gameboard_moves');
-  const before = await sessionState();
-  await logMoves({ [ben]: { gameboardSpaceId: space.red } });
+  const [first, second] = await addEventTeams();
+  await logMoves({ [molly]: { gameboardSpaceId: space.red } });
+  await setRoundPhase('event');
+  await endRound({ [first]: 10, [second]: 0 });
   await setRoundPhase('gameboard_moves', round + 1);
-  await logMoves({ [maddie]: { gameboardSpaceId: space.bank } }, round + 1);
-  expect((await sessionState()).bankBalance).toBe('0');
+  await logMoves({ [olivia]: { gameboardSpaceId: space.bank } }, round + 1);
+  const played = await sessionState();
 
   await setRoundPhase('gameboard_moves');
-  await logMoves({ [ben]: { gameboardSpaceId: space.red } });
-  const replay = await sessionState();
+  await expect(
+    logMoves({ [molly]: { gameboardSpaceId: space.blue } }),
+  ).rejects.toThrow(laterRoundRefusal);
+  await setRoundPhase('event');
+  await expect(endRound({ [first]: 0, [second]: 10 })).rejects.toThrow(
+    laterRoundRefusal,
+  );
 
-  expect(replay.bankBalance).toBe('0');
-  expect(playerChanges(replay, before)).toEqual({
-    [maddie]: { score: 10, tokens: 0 },
-    [ben]: { score: -10, tokens: 0 },
+  expect(await sessionState()).toEqual(played);
+});
+
+test('a GM replay of the gameboard moves of a round with no event results is refused once a later round has been played', async () => {
+  await setRoundPhase('gameboard_moves');
+  await logMoves({ [molly]: { gameboardSpaceId: space.red } });
+  await setRoundPhase('gameboard_moves', round + 1);
+  await logMoves({ [olivia]: { gameboardSpaceId: space.blue } }, round + 1);
+  const played = await sessionState();
+
+  await setRoundPhase('gameboard_moves');
+  await expect(
+    logMoves({ [molly]: { gameboardSpaceId: space.blue } }),
+  ).rejects.toThrow(laterRoundRefusal);
+  expect(await sessionState()).toEqual(played);
+});
+
+test('a first submit of an earlier round is allowed after a later round, and a replay of it is refused', async () => {
+  await setRoundPhase('gameboard_moves', round + 1);
+  await logMoves({ [olivia]: { gameboardSpaceId: space.blue } }, round + 1);
+  await setRoundPhase('event');
+  const [first, second] = await addEventTeams();
+  const before = await sessionState();
+
+  await endRound({ [first]: 10, [second]: 0 });
+  const played = await sessionState();
+  expect(playerChanges(played, before)).toEqual({
+    [colin]: { score: 10, tokens: 1 },
+    [leo]: { score: 10, tokens: 1 },
+    [leo2]: { score: 10, tokens: 1 },
   });
 
   await setRoundPhase('gameboard_moves');
   await expect(
-    logMoves({ [ben]: { gameboardSpaceId: space.blue } }),
-  ).rejects.toThrow(
-    'Replaying round 2 would take the bank to -10 points. Raise the bank with Override Bank Balance, then submit again.',
-  );
-  expect(await sessionState()).toEqual(replay);
+    logMoves({ [molly]: { gameboardSpaceId: space.red } }),
+  ).rejects.toThrow(laterRoundRefusal);
+  expect(await sessionState()).toEqual(played);
+});
+
+test('event results that a moves replay took back can be submitted after a later round', async () => {
+  await setRoundPhase('gameboard_moves');
+  const [first, second] = await addEventTeams();
+  await logMoves({ [molly]: { gameboardSpaceId: space.red } });
+  await setRoundPhase('event');
+  await endRound({ [first]: 10, [second]: 0 });
+  await setRoundPhase('gameboard_moves');
+  await logMoves({ [molly]: { gameboardSpaceId: space.red } });
+  await setRoundPhase('gameboard_moves', round + 1);
+  await logMoves({ [olivia]: { gameboardSpaceId: space.blue } }, round + 1);
+  const before = await sessionState();
+
+  await setRoundPhase('event');
+  await endRound({ [first]: 0, [second]: 10 });
+
+  expect(playerChanges(await sessionState(), before)).toEqual({
+    [josh]: { score: 10, tokens: 1 },
+    [olivia]: { score: 10, tokens: 1 },
+  });
 });
 
 test('a bet on a duel or space event that a GM replay took back cannot be accepted', async () => {
@@ -827,8 +970,8 @@ test('a bet on a duel or space event that a GM replay took back cannot be accept
   ];
   for (const bet of staleBets) {
     const betId = await placeBet({
-      requester: kyle,
-      opponent: maddie,
+      requester: leo2,
+      opponent: olivia,
       description: `Stale ${bet.betType} bet`,
       ...bet,
       accept: false,
@@ -885,7 +1028,7 @@ test('results for a duel or space event that a GM replay took back are refused',
         and round_number = ${round}) as special,
       (select id from chaos_space_event where session_id = ${seed.sessionId}
         and round_number = ${round}) as chaos`;
-  await sql`update duel set opponent_player_id = ${maddie},
+  await sql`update duel set opponent_player_id = ${olivia},
     game_name = 'Ping Pong', status = 'in_progress' where id = ${ids.duel}`;
   await setRoundPhase('gameboard_moves');
   await logMoves({
@@ -894,7 +1037,7 @@ test('results for a duel or space event that a GM replay took back are refused',
     [colin]: { gameboardSpaceId: space.blue },
   });
   const before = await sessionState();
-  const scoreChanges = sql.json({ [josh]: 5, [maddie]: -5 });
+  const scoreChanges = sql.json({ [josh]: 5, [olivia]: -5 });
 
   await expect(
     sql`select submit_duel_results(${ids.duel}, true, ${scoreChanges}::json)`,
@@ -959,7 +1102,7 @@ test("a player on two event teams gets both teams' points and one round score, a
 
 test('the bank cannot go below 0 outside a replay either', async () => {
   await sql`select override_points(${sql.json({
-    playerId: ben,
+    playerId: molly,
     change: -10,
     replace: false,
   })}::json, true)`;
@@ -972,7 +1115,7 @@ test('the bank cannot go below 0 outside a replay either', async () => {
   expect(before.bankBalance).toBe('0');
 
   await expect(
-    sql`delete from transaction where player_id = ${ben}
+    sql`delete from transaction where player_id = ${molly}
       and id >= ${firstUnseededId.transaction} and lost_to_bank`,
   ).rejects.toThrow('The bank balance cannot go below 0');
   await expect(
@@ -982,5 +1125,59 @@ test('the bank cannot go below 0 outside a replay either', async () => {
       replace: true,
     })}::json)`,
   ).rejects.toThrow('The bank balance cannot go below 0');
+  expect(await sessionState()).toEqual(before);
+});
+
+test('a bank space submit pays out a bank balance the GM changes at the same time', async () => {
+  await setRoundPhase('gameboard_moves');
+  await sql`update session set bank_balance = 20 where id = ${seed.sessionId}`;
+  const gm = connect();
+  const [{ pid }] = await gm<{ pid: number }[]>`select pg_backend_pid() as pid`;
+  let submit: Promise<unknown> = Promise.resolve();
+  await sql.begin(async (tx) => {
+    await tx`select override_bank_balance(${tx.json({
+      sessionId: seed.sessionId,
+      change: 50,
+      replace: false,
+    })}::json)`;
+    submit = gm`select log_round_moves(${gm.json({
+      [olivia]: { gameboardSpaceId: space.bank, distanceTraveled: 4 },
+    })}::json, ${round})`.execute();
+    await expect
+      .poll(async () => {
+        const [row] = await tx<{ blocked: boolean }[]>`
+          select pg_backend_pid() = any (pg_blocking_pids(${pid})) as blocked`;
+        return row.blocked;
+      })
+      .toBe(true);
+  });
+  await submit;
+  await gm.end();
+
+  const state = await sessionState();
+  expect(state.bankBalance).toBe('0');
+  expect(pointsByPlayer(state)).toEqual([[olivia, 70]]);
+});
+
+test('a submitted round cannot be deleted from the app', async () => {
+  await setRoundPhase('gameboard_moves');
+  await sql`update session set bank_balance = 20 where id = ${seed.sessionId}`;
+  await logMoves({ [olivia]: { gameboardSpaceId: space.bank } });
+  const before = await sessionState();
+
+  for (const role of ['authenticated', 'anon']) {
+    for (const statement of [
+      'delete from round_submit',
+      'truncate round_submit',
+    ]) {
+      await expect(
+        sql.begin(async (tx) => {
+          await tx.unsafe(`set local role ${role}`);
+          await tx.unsafe(statement);
+        }),
+      ).rejects.toThrow('permission denied for table round_submit');
+    }
+  }
+
   expect(await sessionState()).toEqual(before);
 });
