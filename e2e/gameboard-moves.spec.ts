@@ -8,6 +8,12 @@ import {
 } from './support/fixtures';
 import { seed } from './support/seed';
 
+const round = 2;
+
+test.beforeEach(async () => {
+  await sql`update game_state set round_number = ${round} where id = 1`;
+});
+
 async function roundPhase() {
   const [row] = await sql<{ round_phase: string }[]>`
     select round_phase from game_state`;
@@ -23,7 +29,7 @@ test('the GM enters a turn of moves and the game moves to special space events',
   await openTab(page, 'GM Tools');
   await page.getByRole('link', { name: 'Enter Gameboard Moves' }).tap();
   await expect(
-    page.getByText('Enter gameboard moves for turn 1'),
+    page.getByText(`Enter gameboard moves for turn ${round}`),
   ).toBeVisible();
 
   const players = page
@@ -43,9 +49,11 @@ test('the GM enters a turn of moves and the game moves to special space events',
   await page.getByRole('button', { name: 'Review Moves' }).tap();
   await expect(page.getByRole('row', { name: 'Colin 3' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Submit Moves for Round 1' }).tap();
+  await page
+    .getByRole('button', { name: `Submit Moves for Round ${round}` })
+    .tap();
   await expect(confirmDialog(page)).toContainText(
-    'Are you sure you want to submit moves for round 1?',
+    `Are you sure you want to submit moves for round ${round}?`,
   );
   await confirmDialog(page).getByRole('button', { name: 'Yes' }).tap();
 
@@ -66,29 +74,75 @@ test('the GM enters a turn of moves and the game moves to special space events',
   ).toHaveText(/Leo\s*80/);
 });
 
+test('Move Entry shows a duel the GM made by hand as already created', async ({
+  page,
+  login,
+}) => {
+  await sql`select log_round_moves(${sql.json({
+    [seed.josh.playerId]: { gameboardSpaceId: 34, distanceTraveled: 3 },
+  })}::json, ${round})`;
+  await sql`update game_state set round_phase = 'gameboard_moves' where id = 1`;
+  await sql`
+    insert into duel (session_id, round_number, challenger_player_id,
+      opponent_player_id, duel_space_id, status)
+    values (${seed.sessionId}, ${round}, ${seed.colin.playerId},
+      ${seed.leo.playerId}, 34, 'wager_not_selected')`;
+
+  await login();
+  await openTab(page, 'GM Tools');
+  await page.getByRole('link', { name: 'Enter Gameboard Moves' }).tap();
+  const row = (name: string) =>
+    page
+      .getByRole('table')
+      .getByRole('rowgroup')
+      .nth(1)
+      .getByRole('row')
+      .filter({ has: page.getByRole('cell', { name, exact: true }) });
+  await expect(
+    row('Colin').getByRole('checkbox', { name: 'Duel?' }),
+  ).toBeChecked();
+  await expect(page.locator('joshies-new-duel')).toHaveCount(0);
+  await expect(
+    row('Josh').getByRole('checkbox', { name: 'Duel?' }),
+  ).not.toBeChecked();
+});
+
 async function roundScoreRows(playerId: number) {
   const [row] = await sql<{ count: string }[]>`
     select count(*) from player_round_score
-    where player_id = ${playerId} and round_number = 1`;
+    where player_id = ${playerId} and round_number = ${round}`;
   return Number(row.count);
+}
+
+async function addEventTeam(playerIds: number[]) {
+  const [team] = await sql<{ id: string }[]>`
+    insert into event_team (event_id)
+    select id from event
+    where session_id = ${seed.sessionId} and round_number = ${round}
+    returning id`;
+  for (const playerId of playerIds) {
+    await sql`insert into event_participant (team_id, player_id)
+      values (${team.id}, ${playerId})`;
+  }
+  return Number(team.id);
 }
 
 test('a second submit of the same round is rejected and logs nothing', async () => {
   const moves = {
     [seed.colin.playerId]: { gameboardSpaceId: 32, distanceTraveled: 3 },
   };
-  await sql`select log_round_moves(${sql.json(moves)}::json, 1)`;
+  await sql`select log_round_moves(${sql.json(moves)}::json, ${round})`;
   await expect(
-    sql`select log_round_moves(${sql.json(moves)}::json, 1)`,
-  ).rejects.toThrow('Round 1 is not waiting for gameboard moves');
+    sql`select log_round_moves(${sql.json(moves)}::json, ${round})`,
+  ).rejects.toThrow(`Round ${round} is not waiting for gameboard moves`);
   expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 10);
 
   await sql`update game_state set round_phase = 'event'`;
-  const teamScores = { 1349: 10, 1350: 0 };
-  await sql`select end_round(1, ${sql.json(teamScores)})`;
+  const teamScores = { [await addEventTeam([seed.colin.playerId])]: 10 };
+  await sql`select end_round(${round}, ${sql.json(teamScores)})`;
   await expect(
-    sql`select end_round(1, ${sql.json(teamScores)})`,
-  ).rejects.toThrow('Round 1 is not waiting for event results');
+    sql`select end_round(${round}, ${sql.json(teamScores)})`,
+  ).rejects.toThrow(`Round ${round} is not waiting for event results`);
   expect(await roundScoreRows(seed.colin.playerId)).toBe(1);
   expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 20);
 });
@@ -104,11 +158,11 @@ type Move = {
 };
 
 async function logMoves(moves: Record<number, Move>) {
-  await sql`select log_round_moves(${sql.json(moves)}::json, 1)`;
+  await sql`select log_round_moves(${sql.json(moves)}::json, ${round})`;
 }
 
 async function endRound(teamScores: Record<number, number>) {
-  await sql`select end_round(1, ${sql.json(teamScores)})`;
+  await sql`select end_round(${round}, ${sql.json(teamScores)})`;
 }
 
 async function transactions(playerId: number, description: string) {
@@ -119,7 +173,7 @@ async function transactions(playerId: number, description: string) {
   return rows.map((row) => Number(row.num_points));
 }
 
-test('a GM replay of the gameboard moves replaces the earlier move', async () => {
+test('a GM replay of the gameboard moves replaces the earlier move and its points', async () => {
   await logMoves({
     [seed.colin.playerId]: { gameboardSpaceId: 32, distanceTraveled: 3 },
   });
@@ -133,34 +187,35 @@ test('a GM replay of the gameboard moves replaces the earlier move', async () =>
   });
 
   expect(
-    await transactions(seed.colin.playerId, 'Blue Space on turn 1'),
-  ).toEqual([10]);
+    await transactions(seed.colin.playerId, `Blue Space on turn ${round}`),
+  ).toEqual([]);
   expect(
-    await transactions(seed.colin.playerId, 'Test Space on turn 1'),
+    await transactions(seed.colin.playerId, `Test Space on turn ${round}`),
   ).toEqual([7]);
-  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 17);
+  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 7);
   const moves = await sql`
     select gameboard_space_id, distance_traveled from gameboard_move
-    where player_id = ${seed.colin.playerId} and round_number = 1`;
+    where player_id = ${seed.colin.playerId} and round_number = ${round}`;
   expect([...moves]).toEqual([
     { gameboard_space_id: '36', distance_traveled: 5 },
   ]);
 });
 
-test('a GM replay of the event results replaces the earlier round score', async () => {
+test('a GM replay of the event results replaces the earlier event points and round score', async () => {
+  const team = await addEventTeam([seed.colin.playerId]);
   await setRoundPhase('event');
-  await endRound({ 1349: 10, 1350: 0 });
+  await endRound({ [team]: 10 });
   await setRoundPhase('event');
-  await endRound({ 1349: 5, 1350: 0 });
+  await endRound({ [team]: 5 });
 
   expect(
-    await transactions(seed.colin.playerId, 'Points earned from Magic school'),
-  ).toEqual([30, 10, 5]);
-  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 15);
+    await transactions(seed.colin.playerId, 'Points earned from Ping Pong'),
+  ).toEqual([5]);
+  expect(await score(seed.colin.playerId)).toBe(seed.colin.score + 5);
   const roundScores = await sql`
     select score from player_round_score
-    where player_id = ${seed.colin.playerId} and round_number = 1`;
-  expect([...roundScores]).toEqual([{ score: String(seed.colin.score + 15) }]);
+    where player_id = ${seed.colin.playerId} and round_number = ${round}`;
+  expect([...roundScores]).toEqual([{ score: String(seed.colin.score + 5) }]);
 });
 
 test('a GM replay of the gameboard moves settles a bet placed after the first submit', async () => {
