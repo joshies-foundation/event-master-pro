@@ -196,7 +196,7 @@ export type ParseTimestamp = (timestamp: string) => number;
 
 export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
   private readonly recordById = new Map<ID, Row>();
-  private readonly bufferedEvents: LiveTableEvent<Row>[] = [];
+  private bufferedEvents: LiveTableEvent<Row>[] = [];
 
   private snapshotTimestamp: number | undefined;
 
@@ -274,6 +274,7 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
 
   processSnapshot(records: readonly Row[]) {
     this.snapshotTimestamp = 0;
+    this.recordById.clear();
     for (const record of records) {
       const recordTimestamp = this.parseTimestamp(
         record.updated_at || record.created_at,
@@ -283,7 +284,9 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
       }
       this.recordById.set(record.id, record);
     }
-    for (const event of this.bufferedEvents) {
+    const events = this.bufferedEvents;
+    this.bufferedEvents = [];
+    for (const event of events) {
       this.processEvent(event);
     }
   }

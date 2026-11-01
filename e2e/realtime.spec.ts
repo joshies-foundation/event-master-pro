@@ -1,4 +1,8 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+  createClient,
+  REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 import { AddressInfo, connect as connectTcp, createServer } from 'node:net';
 import { firstValueFrom } from 'rxjs';
 import { Database } from '../src/app/shared/util/schema';
@@ -6,8 +10,9 @@ import {
   realtimeUpdatesFromTable,
   Table,
 } from '../src/app/shared/util/supabase-helpers';
+import { LiveTable, LiveRow } from '../src/app/shared/util/supabase-live-table';
 import { resetDatabase, sql } from './support/db';
-import { expect, test } from './support/fixtures';
+import { expect, test, waitForWebKitToFinishLoading } from './support/fixtures';
 import { seed } from './support/seed';
 
 function watchColinsScore(supabase: SupabaseClient<Database>) {
@@ -111,6 +116,163 @@ test('two live subscriptions to the same table and filter both receive changes',
   } finally {
     await supabase.removeAllChannels();
   }
+});
+
+test('two subscribers to the same table and filter share one channel, and a different client gets its own', async ({
+  baseURL,
+}) => {
+  const phone = await signInAsColin(baseURL!);
+  const otherPhone = await signInAsColin(baseURL!);
+
+  try {
+    const first = watchColinsScore(phone);
+    const second = watchColinsScore(phone);
+    const other = watchColinsScore(otherPhone);
+    await expect
+      .poll(() => [first.seen.score, second.seen.score, other.seen.score])
+      .toEqual([seed.colin.score, seed.colin.score, seed.colin.score]);
+
+    expect(phone.getChannels()).toHaveLength(1);
+    expect(otherPhone.getChannels()).toHaveLength(1);
+  } finally {
+    await phone.removeAllChannels();
+    await otherPhone.removeAllChannels();
+  }
+});
+
+test('a subscriber that reorders its rows leaves the next subscriber a sorted list', async ({
+  baseURL,
+}) => {
+  const supabase = await signInAsColin(baseURL!);
+  const players = () =>
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.Player,
+      `session_id=eq.${seed.sessionId}`,
+    );
+
+  try {
+    let reversed = false;
+    const first = players().subscribe((rows) => {
+      rows.reverse();
+      reversed = true;
+    });
+    await expect.poll(() => reversed).toBe(true);
+
+    const rows = await firstValueFrom(players());
+    first.unsubscribe();
+
+    const ids = rows.map((row) => row.id);
+    expect(ids).toEqual([...ids].sort((a, b) => a - b));
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('a reconnect that finds the same rows emits nothing new', async ({
+  baseURL,
+}) => {
+  const supabase = await signInAsColin(baseURL!);
+
+  try {
+    let emissions = 0;
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.Player,
+      `session_id=eq.${seed.sessionId}`,
+    ).subscribe(() => emissions++);
+    await expect.poll(() => emissions).toBe(1);
+    const [firstChannel] = supabase.getChannels();
+
+    DroppableWebSocket.latest!.close();
+    await expect
+      .poll(() => supabase.getChannels()[0]?.topic)
+      .not.toBe(firstChannel.topic);
+    await expect.poll(() => supabase.getChannels()[0]?.state).toBe('joined');
+    await setColinsScore(40);
+    await expect.poll(() => emissions).toBe(2);
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('a row deleted while the socket is down is gone after reconnect', async ({
+  baseURL,
+}) => {
+  const [{ id, team_id }] = await sql<{ id: number; team_id: number }[]>`
+    select min(id)::int as id, team_id::int
+    from event_participant
+    group by team_id
+    having count(*) > 1
+    limit 1`;
+  const network = await holdableProxyTo(baseURL!);
+  const supabase = await signInAsColin(baseURL!, {
+    transport: network.transport,
+  });
+
+  try {
+    let participantIds: number[] = [];
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.EventParticipant,
+      `team_id=eq.${team_id}`,
+    ).subscribe((rows) => (participantIds = rows.map((row) => row.id)));
+    await expect.poll(() => participantIds).toContain(id);
+
+    network.hold();
+    DroppableWebSocket.latest!.close();
+    await sql`delete from event_participant where id = ${id}`;
+    network.release();
+
+    await expect.poll(() => participantIds).not.toContain(id);
+    expect(participantIds.length).toBeGreaterThan(0);
+  } finally {
+    await supabase.removeAllChannels();
+    await network.close();
+  }
+});
+
+test('a second read drops rows the first one had and replays each buffered event once', () => {
+  const row = (id: number, name: string) =>
+    ({
+      id,
+      name,
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: null,
+    }) satisfies LiveRow;
+  const table = new LiveTable<ReturnType<typeof row>>((timestamp) =>
+    new Date(timestamp).getTime(),
+  );
+  table.processEvent({
+    type: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
+    record: row(3, 'inserted before the read'),
+    timestamp: '2026-01-02T00:00:00Z',
+  });
+
+  table.processSnapshot([row(1, 'kept'), row(2, 'deleted')]);
+  table.processSnapshot([row(1, 'kept')]);
+
+  expect(table.records.map(({ id }) => id)).toEqual([1]);
+});
+
+test('one score write joins no channels', async ({ page, login }) => {
+  let joins = 0;
+  page.on('websocket', (socket) =>
+    socket.on('framesent', ({ payload }) => {
+      if (String(payload).includes('"phx_join"')) joins++;
+    }),
+  );
+  await login();
+  const colin = page.getByRole('row', { name: /Colin/ });
+  await expect(colin.getByRole('cell').last()).toHaveText('33');
+  await waitForWebKitToFinishLoading(page);
+  const joinsAfterOpening = joins;
+
+  await setColinsScore(34);
+
+  await expect(colin.getByRole('cell').last()).toHaveText('34');
+  await sleep(1_000);
+  expect(joins - joinsAfterOpening).toBe(0);
 });
 
 test('a live subscription that reconnects after a dropped connection closes its channel on unsubscribe', async ({
