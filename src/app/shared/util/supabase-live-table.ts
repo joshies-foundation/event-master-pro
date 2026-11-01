@@ -77,6 +77,31 @@ export function liveTable<
 
   const { table, filter, callback, schema = 'public' } = params;
 
+  const readRows = (): PromiseLike<PostgrestResponse<Row>> => {
+    if (filter) {
+      const [, filterColumn, filterOperator, filterValue] =
+        filter.match(/^(.+)=([^.]+)\.(.+)$/)!;
+
+      return supabase
+        .from(table)
+        .select('*')
+        .filter(filterColumn, filterOperator, filterValue)
+        .overrideTypes<Row[], { merge: false }>();
+    }
+
+    return supabase
+      .from(table)
+      .select('*')
+      .overrideTypes<Row[], { merge: false }>();
+  };
+
+  let joined = false;
+
+  readRows().then(({ error, data }) => {
+    if (error || joined) return;
+    callback(undefined, sortedById(data));
+  });
+
   return (
     supabase
       .channel(`${table}-${filter}-${channelCount++}`)
@@ -134,25 +159,8 @@ export function liveTable<
       // @ts-ignore
       .on('system', {}, (payload) => {
         if (payload.extension === REALTIME_LISTEN_TYPES.POSTGRES_CHANGES) {
-          let snapshot: PromiseLike<PostgrestResponse<Row>>;
-
-          if (filter) {
-            const [, filterColumn, filterOperator, filterValue] =
-              filter.match(/^(.+)=([^.]+)\.(.+)$/)!;
-
-            snapshot = supabase
-              .from(table)
-              .select('*')
-              .filter(filterColumn, filterOperator, filterValue)
-              .overrideTypes<Row[], { merge: false }>();
-          } else {
-            snapshot = supabase
-              .from(table)
-              .select('*')
-              .overrideTypes<Row[], { merge: false }>();
-          }
-
-          snapshot.then(({ error, data }) => {
+          joined = true;
+          readRows().then(({ error, data }) => {
             if (error) {
               callback(new Error(error.message), []);
             } else {
@@ -193,6 +201,10 @@ export type ILiveTable<Row extends LiveRow> = {
 };
 
 export type ParseTimestamp = (timestamp: string) => number;
+
+function sortedById<Row extends LiveRow>(rows: Iterable<Row>): Row[] {
+  return [...rows].sort((a, b) => compareIds(a.id, b.id));
+}
 
 export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
   private readonly recordById = new Map<ID, Row>();
@@ -292,7 +304,7 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
   }
 
   get records(): readonly Row[] {
-    return [...this.recordById.values()].sort((a, b) => compareIds(a.id, b.id));
+    return sortedById(this.recordById.values());
   }
 }
 
