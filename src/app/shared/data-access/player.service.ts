@@ -10,11 +10,11 @@ import { SessionService } from './session.service';
 import {
   combineLatest,
   distinctUntilChanged,
+  filter,
   map,
   Observable,
   shareReplay,
   switchMap,
-  withLatestFrom,
 } from 'rxjs';
 import { defined, distinctUntilIdChanged } from '../util/rxjs-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -71,25 +71,26 @@ export class PlayerService {
 
   private readonly playerUsers$: Observable<UserModel[]> =
     this.playersWithoutDisplayNames$.pipe(
-      distinctUntilChanged(
-        (a, b) =>
-          (a === null && b === null) ||
-          (a !== null && a.every((val, idx) => val === b?.[idx])),
-      ),
-      switchMap((players) =>
+      map((players) => players.map((player) => player.user_id).join()),
+      distinctUntilChanged(),
+      switchMap((userIds) =>
         realtimeUpdatesFromTable(
           this.supabase,
           Table.User,
-          `id=in.(${players.map((player) => player.user_id)})`,
+          `id=in.(${userIds})`,
         ),
       ),
       shareReplay(1),
     );
 
   readonly playersIncludingDisabled$: Observable<PlayerWithUserInfo[]> =
-    this.playerUsers$.pipe(
-      withLatestFrom(this.playersWithoutDisplayNames$),
-      map(([users, players]) =>
+    combineLatest([this.playersWithoutDisplayNames$, this.playerUsers$]).pipe(
+      filter(([players, users]) =>
+        players.every((player) =>
+          users.some((user) => user.id === player.user_id),
+        ),
+      ),
+      map(([players, users]) =>
         players
           .map((player) => {
             const user = users.find((user) => user.id === player.user_id)!;

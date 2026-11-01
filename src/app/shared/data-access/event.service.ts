@@ -106,7 +106,8 @@ export class EventService {
   readonly events = toSignal(this.events$);
 
   readonly eventTeams$: Observable<EventTeamModel[] | null> = this.events$.pipe(
-    map((events) => events?.map((ev) => ev.id) ?? null),
+    map((events) => events?.map((ev) => ev.id).join() ?? null),
+    distinctUntilChanged(),
     whenNotNull((eventIds) =>
       realtimeUpdatesFromTable(
         this.supabase,
