@@ -57,13 +57,23 @@ async function expectAssignSessionPoints(page: Page, event: string) {
   ).toHaveCount(0);
 }
 
+async function startRoundTwoEvent() {
+  await sql`update event set format = 'score_based_single_round' where id = 72`;
+  await sql`insert into event_team (id, event_id, seed, name)
+    values (1351, 72, 1, 'Team 1'), (1352, 72, 2, 'Team 2')`;
+  await sql`insert into event_participant (team_id, player_id)
+    values (1351, 119), (1352, 109)`;
+  await sql`update game_state
+    set round_number = 2, round_phase = 'event' where id = 1`;
+}
+
 test('Back after submitting the event results returns the GM to GM Tools', async ({
   page,
   login,
   consoleGuard,
 }) => {
   consoleGuard.allow(pushFailure);
-  await setRoundPhase('event');
+  await startRoundTwoEvent();
   await login();
   await reviewTenPointsForTheFirstTeam(page);
   await page.getByRole('button', { name: 'Submit Session Points' }).tap();
@@ -124,13 +134,7 @@ test('event results saved in one round are not offered in the next', async ({
   await login();
   await reviewTenPointsForTheFirstTeam(page);
 
-  await sql`select end_round(1, ${sql.json({ 1349: 10, 1350: 0 })})`;
-  await sql`insert into event_team (id, event_id, seed, name)
-    values (1351, 72, 1, 'Team 1'), (1352, 72, 2, 'Team 2')`;
-  await sql`insert into event_participant (team_id, player_id)
-    values (1351, 119), (1352, 109)`;
-  await sql`update game_state
-    set round_number = 2, round_phase = 'event' where id = 1`;
+  await startRoundTwoEvent();
   await page.goto('/gm-tools/end-round/review');
 
   await expectAssignSessionPoints(page, 'Ping Pong');
