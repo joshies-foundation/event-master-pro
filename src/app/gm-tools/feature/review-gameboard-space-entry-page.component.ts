@@ -1,8 +1,7 @@
-import { Component, computed, inject, Signal, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
-import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { TableModule } from '@openng/optimus-ui/table';
 import {
@@ -14,10 +13,10 @@ import { ButtonModule } from '@openng/optimus-ui/button';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { StronglyTypedTableRowDirective } from '../../shared/ui/strongly-typed-table-row.directive';
 import {
-  getRecordFromLocalStorage,
-  LocalStorageRecord,
-  removeRecordFromLocalStorage,
-} from '../../shared/util/local-storage-helpers';
+  removeRoundDraft,
+  RoundDraft,
+  RoundDraftKey,
+} from '../data-access/round-draft';
 import { GameboardSpaceComponent } from '../ui/gameboard-space.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
@@ -120,7 +119,7 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
         [label]="'Submit Moves for Round ' + vm.roundNumber"
         severity="success"
         styleClass="mt-6 w-full"
-        (onClick)="submitPlayerSpaceChanges(roundNumber()!, playerSpaceChanges)"
+        (onClick)="submitPlayerSpaceChanges()"
         [loading]="submittingInProgress()"
       />
     } @else {
@@ -142,57 +141,61 @@ import { LoseOrGainPipe } from '../ui/lose-or-gain.pipe';
 })
 export default class ReviewGameboardSpaceEntryPageComponent {
   private readonly router = inject(Router);
-  private readonly gameStateService = inject(GameStateService);
   private readonly playerService = inject(PlayerService);
   private readonly gameboardService = inject(GameboardService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  readonly roundNumber: Signal<number | null | undefined> =
-    this.gameStateService.roundNumber;
-
-  readonly playerSpaceChanges: GameboardSpaceEntryFormModel =
-    getRecordFromLocalStorage(LocalStorageRecord.GameboardSpaceEntryFormValue);
+  readonly draft =
+    input.required<RoundDraft<GameboardSpaceEntryFormModel[string]>>();
 
   protected readonly trackByPlayerId = trackByPlayerId;
 
-  private readonly players = computed(() =>
-    this.playerService.players()?.map((player) => ({
-      ...player,
-      distanceTraveled:
-        this.playerSpaceChanges[player.player_id].distanceTraveled,
-      gameboardSpace: this.gameboardService
-        .gameboardSpaces()
-        ?.find(
-          (gameboardSpace) =>
-            gameboardSpace.id ===
-            this.playerSpaceChanges[player.player_id].gameboardSpaceId,
-        ),
-      decision: this.playerSpaceChanges[player.player_id].decision,
-      chancePointsAmount:
-        this.playerSpaceChanges[player.player_id].chancePointsAmount,
-    })),
-  );
+  private readonly players = computed(() => {
+    const moves = this.draft().entries;
+    return this.playerService
+      .players()
+      ?.filter((player) => player.player_id in moves)
+      .map((player) => {
+        const move = moves[player.player_id];
+        return {
+          ...player,
+          distanceTraveled: move.distanceTraveled,
+          gameboardSpace: this.gameboardService
+            .gameboardSpaces()
+            ?.find(
+              (gameboardSpace) => gameboardSpace.id === move.gameboardSpaceId,
+            ),
+          decision: move.decision,
+          chancePointsAmount: move.chancePointsAmount,
+        };
+      });
+  });
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
-      roundNumber: this.roundNumber(),
+      roundNumber: this.draft().roundNumber,
       players: this.players(),
       gameboardSpaces: this.gameboardService.gameboardSpaces(),
-      playerSpaceChanges: this.playerSpaceChanges,
     }),
   );
 
   readonly submittingInProgress = signal(false);
 
-  async submitPlayerSpaceChanges(
-    roundNumber: number,
-    playerSpaceChanges: GameboardSpaceEntryFormModel,
-  ): Promise<void> {
+  submitPlayerSpaceChanges(): void {
+    const { roundNumber, entries } = this.draft();
     confirmBackendAction({
-      action: async () =>
-        this.gameboardService.logRoundMoves(roundNumber, playerSpaceChanges),
+      action: async () => {
+        const response = await this.gameboardService.logRoundMoves(
+          roundNumber,
+          entries,
+        );
+        if (!response.error) {
+          removeRoundDraft(RoundDraftKey.GameboardMoves);
+        }
+        return response;
+      },
       confirmationMessageText: `Are you sure you want to submit moves for round ${roundNumber}?`,
       successMessageText: 'Moves submitted successfully!',
       successNavigation: '/',
@@ -202,10 +205,6 @@ export default class ReviewGameboardSpaceEntryPageComponent {
       router: this.router,
       activatedRoute: this.activatedRoute,
     });
-
-    removeRecordFromLocalStorage(
-      LocalStorageRecord.GameboardSpaceEntryFormValue,
-    );
   }
 
   protected readonly GameboardSpaceEffect = GameboardSpaceEffect;

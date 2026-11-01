@@ -125,6 +125,18 @@ export class GameStateService {
       .eq('id', 1);
   }
 
+  fetchGameState(): PromiseLike<
+    PostgrestSingleResponse<
+      Pick<GameStateModel, 'session_id' | 'round_number' | 'round_phase'>
+    >
+  > {
+    return this.supabase
+      .from(Table.GameState)
+      .select('session_id, round_number, round_phase')
+      .eq('id', 1)
+      .single();
+  }
+
   roundPhaseOrderIndex(roundPhase: RoundPhase): number {
     switch (roundPhase) {
       case RoundPhase.GameboardMoves:
