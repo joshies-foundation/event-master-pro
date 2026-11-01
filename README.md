@@ -63,7 +63,7 @@ The local Supabase project must be running. Each test resets the local database 
 cp .env.example .env
 ```
 
-A push to `main` that passes CI deploys to `joshies.app`. To deploy by hand, point `.env` at PROD, sign in with `npx cf auth login`, and run `npm run deploy`.
+A push to `main` that passes CI deploys to `joshies.app`. If migrations are pending on PROD, the run first waits for approval of the `production-database` environment, then applies them to TEST and PROD. To deploy by hand, point `.env` at PROD, sign in with `npx cf auth login`, and run `npm run deploy`.
 
 ## Authors
 
