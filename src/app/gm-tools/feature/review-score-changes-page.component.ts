@@ -1,19 +1,18 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { HeaderLinkComponent } from '../../shared/ui/header-link.component';
 import { Router } from '@angular/router';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { TableModule } from '@openng/optimus-ui/table';
-import { GameStateService } from '../../shared/data-access/game-state.service';
 import { SessionService } from '../../shared/data-access/session.service';
 import { undefinedUntilAllPropertiesAreDefined } from '../../shared/util/signal-helpers';
 import { SkeletonModule } from '@openng/optimus-ui/skeleton';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import {
-  getRecordFromLocalStorage,
-  LocalStorageRecord,
-  removeRecordFromLocalStorage,
-} from '../../shared/util/local-storage-helpers';
+  removeRoundDraft,
+  RoundDraft,
+  RoundDraftKey,
+} from '../data-access/round-draft';
 import { MessageService } from '@openng/optimus-ui/api';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
@@ -108,9 +107,7 @@ import { EventService } from '../../shared/data-access/event.service';
 
       <p-button
         label="Submit Session Points"
-        (onClick)="
-          submitSessionPointsForEvent(vm.roundNumber!, vm.teamScoreChanges)
-        "
+        (onClick)="submitSessionPointsForEvent()"
         severity="success"
         styleClass="mt-6 w-full"
         [loading]="submittingInProgress()"
@@ -122,7 +119,6 @@ import { EventService } from '../../shared/data-access/event.service';
 })
 export default class ReviewScoreChangesPageComponent {
   private readonly router = inject(Router);
-  private readonly gameStateService = inject(GameStateService);
   private readonly sessionService = inject(SessionService);
   private readonly messageService = inject(MessageService);
   private readonly eventService = inject(EventService);
@@ -130,48 +126,32 @@ export default class ReviewScoreChangesPageComponent {
 
   protected readonly trackByPlayerId = trackByPlayerId;
 
-  private readonly teamScoreChanges: Record<string, number> =
-    getRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
-
-  readonly databaseEventTeams = computed(() =>
-    this.eventService
-      .eventTeams()
-      ?.filter(
-        (eventTeam) =>
-          eventTeam.event_id === this.eventService.eventForThisRound()?.id,
-      )
-      ?.sort((a, b) => (a.seed ?? 0) - (b.seed ?? 0)),
-  );
+  readonly draft = input.required<RoundDraft<number>>();
 
   private readonly players = computed(() => {
-    let participants = this.eventService.eventParticipantsWithPlayerInfo();
-    participants = participants?.filter((eventParticipant) =>
-      this.databaseEventTeams()
-        ?.map((eventTeam) => eventTeam.id)
-        .includes(eventParticipant.team_id),
-    );
-    return participants?.map((player) => ({
-      ...player,
-      change: this.teamScoreChanges[player.team_id],
-      new_score: player.score + this.teamScoreChanges[player.team_id],
-    }));
+    const teamScoreChanges = this.draft().entries;
+    return this.eventService
+      .eventParticipantsWithPlayerInfo()
+      ?.filter((participant) => participant.team_id in teamScoreChanges)
+      .map((participant) => ({
+        ...participant,
+        change: teamScoreChanges[participant.team_id],
+        new_score: participant.score + teamScoreChanges[participant.team_id],
+      }));
   });
 
   readonly viewModel = computed(() =>
     undefinedUntilAllPropertiesAreDefined({
       players: this.players(),
-      roundNumber: this.gameStateService.roundNumber(),
+      roundNumber: this.draft().roundNumber,
       numRounds: this.sessionService.session()?.num_rounds,
-      teamScoreChanges: this.teamScoreChanges,
     }),
   );
 
   readonly submittingInProgress = signal(false);
 
-  async submitSessionPointsForEvent(
-    roundNumber: number,
-    teamScoreChanges: Record<string, number>,
-  ): Promise<void> {
+  async submitSessionPointsForEvent(): Promise<void> {
+    const { roundNumber, entries: teamScoreChanges } = this.draft();
     this.submittingInProgress.set(true);
 
     const { error, data } = await showMessageOnError(
@@ -194,7 +174,7 @@ export default class ReviewScoreChangesPageComponent {
       });
     }
 
-    removeRecordFromLocalStorage(LocalStorageRecord.RoundScoreFormValue);
+    removeRoundDraft(RoundDraftKey.EventResults);
     showSuccessMessage('Scores saved successfully!', this.messageService);
     this.router.navigate(['/']);
   }
