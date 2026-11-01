@@ -4,6 +4,7 @@ import {
   type BrowserContext,
   type Locator,
   type Page,
+  type Request,
 } from '@playwright/test';
 import { resetDatabase } from './db';
 import { seed, type SeedUser } from './seed';
@@ -28,12 +29,52 @@ async function logIn(page: Page, user: SeedUser): Promise<void> {
   await waitForWebKitToFinishLoading(page);
 }
 
-/** WebKit logs every request that a navigation cuts off as an access control error. */
+interface Network {
+  inFlight: Set<Request>;
+  lastActivity: number;
+}
+
+const networks = new WeakMap<Page, Network>();
+
+function trackNetwork(page: Page): void {
+  const network: Network = { inFlight: new Set(), lastActivity: Date.now() };
+  networks.set(page, network);
+  page.on('request', (request) => {
+    network.inFlight.add(request);
+    network.lastActivity = Date.now();
+  });
+  const settle = (request: Request) => {
+    network.inFlight.delete(request);
+    network.lastActivity = Date.now();
+  };
+  page.on('requestfinished', settle);
+  page.on('requestfailed', settle);
+}
+
+/**
+ * WebKit logs every request that a navigation cuts off as an access control
+ * error. Unlike `networkidle`, which only covers a page that is still loading,
+ * this also waits for requests the page starts after it loaded.
+ */
 export async function waitForWebKitToFinishLoading(page: Page): Promise<void> {
-  await page.waitForLoadState('networkidle');
+  const network = networks.get(page);
+  if (!network)
+    throw new Error('Open pages with the page or secondPhone fixture');
+  await expect
+    .poll(
+      () =>
+        network.inFlight.size === 0 && Date.now() - network.lastActivity >= 500,
+      { message: 'no request in flight for 500 ms', intervals: [100] },
+    )
+    .toBe(true);
 }
 
 export const test = base.extend<Fixtures & { freshDatabase: void }>({
+  page: async ({ page }, use) => {
+    trackNetwork(page);
+    await use(page);
+  },
+
   freshDatabase: [
     // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {
@@ -99,6 +140,7 @@ export const test = base.extend<Fixtures & { freshDatabase: void }>({
       });
       contexts.push(context);
       const page = await context.newPage();
+      trackNetwork(page);
       consoleGuard.watch(page);
       await logIn(page, user);
       return page;

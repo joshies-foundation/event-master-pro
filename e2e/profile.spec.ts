@@ -1,4 +1,10 @@
-import { test, expect, acceptNextDialog, openTab } from './support/fixtures';
+import {
+  test,
+  expect,
+  acceptNextDialog,
+  openTab,
+  waitForWebKitToFinishLoading,
+} from './support/fixtures';
 import { sql } from './support/db';
 import { seed } from './support/seed';
 
@@ -72,6 +78,7 @@ test('Squidward Mode stays on after a reload', async ({ page, login }) => {
   await openTab(page, 'Profile');
   const toggle = page.getByRole('switch');
   await expect(toggle).not.toBeChecked();
+  const walkSoundsRequested = page.waitForRequest(/\/audio\/squidward-walk-/);
   await toggle.tap();
   await expect(toggle).toBeChecked();
   await expect
@@ -81,6 +88,8 @@ test('Squidward Mode stays on after a reload', async ({ page, login }) => {
       return row.squidward_mode;
     })
     .toBe(true);
+  await walkSoundsRequested;
+  await waitForWebKitToFinishLoading(page);
   await page.reload();
   await expect(page.getByRole('switch')).toBeChecked();
 });
