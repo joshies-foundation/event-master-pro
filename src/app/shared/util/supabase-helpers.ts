@@ -211,6 +211,7 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
 
   return defer(() => {
     let lastJson: string | undefined;
+    let failures = 0;
 
     return new Observable<Row[]>((subscriber) => {
       const waitForSocket = new Subscription();
@@ -220,6 +221,7 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
         callback: (error, rows: readonly Row[]) => {
           if (subscriber.closed) return;
           if (!error) {
+            failures = 0;
             const json = JSON.stringify(rows);
             if (json !== lastJson) {
               lastJson = json;
@@ -243,10 +245,7 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
         channel.unsubscribe();
       };
     }).pipe(
-      retry({
-        delay: (_, attempt) => timer(realtime.reconnectAfterMs(attempt)),
-        resetOnSuccess: true,
-      }),
+      retry({ delay: () => timer(realtime.reconnectAfterMs(++failures)) }),
     );
   }).pipe(
     share({
