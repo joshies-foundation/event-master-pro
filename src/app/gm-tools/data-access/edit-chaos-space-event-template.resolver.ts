@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { ChaosSpaceEventTemplateModel } from '../../shared/util/supabase-types';
 import { map } from 'rxjs';
+import { onceConfirmed } from '../../shared/util/supabase-helpers';
 
 export const editChaosSpaceEventTemplateResolver: ResolveFn<
   ChaosSpaceEventTemplateModel | null
@@ -12,7 +13,7 @@ export const editChaosSpaceEventTemplateResolver: ResolveFn<
     route.params['chaosSpaceEventTemplateId'],
   );
 
-  return gameboardService.chaosSpaceEventTemplates$.pipe(
+  return onceConfirmed(gameboardService.chaosSpaceEventTemplates$).pipe(
     map(
       (spaces) =>
         spaces?.find((space) => space.id === chaosSpaceEventTemplateId) ?? null,

@@ -267,17 +267,29 @@ test('an expired token with a failing refresh keeps the saved rows', async ({
     const session = JSON.parse(localStorage.getItem(key)!);
     localStorage.setItem(key, JSON.stringify({ ...session, expires_at: 1 }));
   }, authTokenKey);
-  const emptyRead = page.waitForResponse(
-    async (response) =>
-      response.url().includes('/rest/v1/game_state') &&
-      (await response.json()).length === 0,
-    { timeout: 45_000 },
+  const { access_token: accessToken } = await page.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)!),
+    authTokenKey,
   );
+  const readsWithoutTheUsersToken: string[] = [];
+  page.on('request', (request) => {
+    if (
+      request.url().includes('/rest/v1/') &&
+      request.url().includes('select=*') &&
+      request.headers()['authorization'] !== `Bearer ${accessToken}`
+    ) {
+      readsWithoutTheUsersToken.push(request.url());
+    }
+  });
+  const failedRefresh = page.waitForRequest(refreshRequest, {
+    timeout: 45_000,
+  });
   await Promise.all(sockets.map((socket) => socket.close()));
 
-  await emptyRead;
-  await page.waitForTimeout(1_000);
+  await failedRefresh;
+  await page.waitForTimeout(30_000);
 
+  expect(readsWithoutTheUsersToken).toEqual([]);
   await expect(colinsRow(page)).toBeVisible();
   expect(await savedEntries(page)).toEqual(entries);
 });
@@ -324,6 +336,56 @@ test('a throwing setItem deletes saved rows and leaves the page working', async 
 
   await expect(colinsRow(page)).toContainText('999');
   await expect.poll(() => savedRowKeys(page)).toEqual([]);
+});
+
+test('an edit form opened after the app was closed starts from the server row', async ({
+  page,
+  login,
+}) => {
+  await login();
+  await expect(colinsRow(page)).toBeVisible();
+  await expect
+    .poll(async () => (await savedRowKeys(page)).join())
+    .toContain(':event:');
+  await page.goto('about:blank');
+  await sql`update event set description = 'Changed on another phone' where id = 72`;
+
+  await page.goto('/gm-tools/events/edit/72');
+
+  await expect(page.getByRole('textbox', { name: 'Description' })).toHaveValue(
+    'Changed on another phone',
+  );
+});
+
+test('a saved participant from an older session does not break the event pages', async ({
+  page,
+  login,
+}) => {
+  await login();
+  await expect(colinsRow(page)).toBeVisible();
+  await expect
+    .poll(async () => (await savedRowKeys(page)).join())
+    .toContain(':event_participant:');
+  await page.evaluate(() => {
+    for (const key of Object.keys(localStorage)) {
+      if (!key.includes(':event_participant:')) continue;
+      const rows: { player_id: number }[] = JSON.parse(
+        localStorage.getItem(key)!,
+      );
+      localStorage.setItem(
+        key,
+        JSON.stringify(rows.map((row) => ({ ...row, player_id: 999999 }))),
+      );
+    }
+  });
+  const participants = await hold(page, '**/rest/v1/event_participant*');
+
+  await page.goto('/gm-tools/events/teams/72');
+  await expect.poll(() => participants.held.length).toBeGreaterThan(0);
+  await page.waitForTimeout(1_000);
+  await participants.release();
+
+  await expect(page.getByText('Colin').first()).toBeVisible();
 });
 
 test('the schema version matches the newest migration', () => {

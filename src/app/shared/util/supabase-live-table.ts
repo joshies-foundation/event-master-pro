@@ -1,6 +1,5 @@
 import {
   PostgrestError,
-  PostgrestResponse,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   REALTIME_SUBSCRIBE_STATES,
@@ -78,37 +77,30 @@ export function liveTable<
 
   const { table, filter, callback, schema = 'public' } = params;
 
-  const readRows = (): PromiseLike<PostgrestResponse<Row>> => {
-    if (filter) {
-      const [, filterColumn, filterOperator, filterValue] =
-        filter.match(/^(.+)=([^.]+)\.(.+)$/)!;
-
-      return supabase
-        .from(table)
-        .select('*')
-        .filter(filterColumn, filterOperator, filterValue)
-        .overrideTypes<Row[], { merge: false }>();
-    }
-
-    return supabase
-      .from(table)
-      .select('*')
-      .overrideTypes<Row[], { merge: false }>();
-  };
-
-  // After a failed refresh, supabase-js sends the anon key. Every policy is
-  // `to authenticated`, so REST answers 200 with no rows.
+  // With no session, supabase-js sends the anon key. Every policy is
+  // `to authenticated`, so REST answers 200 with no rows, which is not an
+  // empty table. Pinning the token means no refresh can land between a check
+  // and the read.
   const readRowsAsUser = async (): Promise<
     | { error: null; data: Row[] }
     | { error: Pick<PostgrestError, 'message'>; data: null }
   > => {
-    const response = await readRows();
-    if (response.error || response.data.length > 0) return response;
-
     const { data } = await supabase.auth.getSession();
-    return data.session
-      ? response
-      : { error: { message: 'No session for this read' }, data: null };
+    if (!data.session) {
+      return { error: { message: 'No session for this read' }, data: null };
+    }
+
+    const everyRow = supabase.from(table).select('*');
+    const [, filterColumn, filterOperator, filterValue] =
+      filter?.match(/^(.+)=([^.]+)\.(.+)$/) ?? [];
+
+    return (
+      filter
+        ? everyRow.filter(filterColumn, filterOperator, filterValue)
+        : everyRow
+    )
+      .setHeader('Authorization', `Bearer ${data.session.access_token}`)
+      .overrideTypes<Row[], { merge: false }>();
   };
 
   let joined = false;
