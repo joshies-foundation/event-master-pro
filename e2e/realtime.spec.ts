@@ -175,7 +175,7 @@ test('a live subscription catches up as soon as a slow connection opens, without
   });
 
   try {
-    const { seen } = watchColinsScore(supabase);
+    const { seen, subscription } = watchColinsScore(supabase);
     await expect
       .poll(() => seen.score, { timeout: 30_000 })
       .toBe(seed.colin.score);
@@ -196,6 +196,7 @@ test('a live subscription catches up as soon as a slow connection opens, without
     expect(closedChannelJoins).toEqual([]);
     await setColinsScore(38);
     await expect.poll(() => seen.score, { timeout: 3_000 }).toBe(38);
+    subscription.unsubscribe();
   } finally {
     DroppableWebSocket.onJoin = () => {};
     await supabase.removeAllChannels();
