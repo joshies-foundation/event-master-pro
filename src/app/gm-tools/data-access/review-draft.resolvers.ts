@@ -9,6 +9,7 @@ import { defined } from '../../shared/util/rxjs-helpers';
 import {
   RoundPhase,
   showMessageOnError,
+  onceConfirmed,
 } from '../../shared/util/supabase-helpers';
 import { GameboardSpaceEntryFormModel } from '../feature/gameboard-space-entry-page.component';
 import {
@@ -79,7 +80,7 @@ export const gameboardMovesDraftResolver: ResolveFn<
     entryPage: '/gm-tools/space-entry',
     isEntry: isGameboardMove,
     requiredIds: async () =>
-      (await firstValueFrom(players$)).map((player) =>
+      (await firstValueFrom(onceConfirmed(players$))).map((player) =>
         String(player.player_id),
       ),
   });
@@ -94,8 +95,8 @@ export const eventResultsDraftResolver: ResolveFn<RoundDraft<number>> = () => {
     isEntry: (value): value is number => typeof value === 'number',
     requiredIds: async ({ roundNumber }) => {
       const [events, eventTeams] = await Promise.all([
-        firstValueFrom(eventService.events$),
-        firstValueFrom(eventService.eventTeams$),
+        firstValueFrom(onceConfirmed(eventService.events$)),
+        firstValueFrom(onceConfirmed(eventService.eventTeams$)),
       ]);
       const event = events.find((event) => event.round_number === roundNumber);
       return (eventTeams ?? [])

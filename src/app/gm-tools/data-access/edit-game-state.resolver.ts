@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
+import { onceConfirmed } from '../../shared/util/supabase-helpers';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { GameStateModel, SessionModel } from '../../shared/util/supabase-types';
 import { firstValueFrom } from 'rxjs';
@@ -15,7 +16,7 @@ export const editGameStateResolver: ResolveFn<
   EditGameStateResolverData
 > = async () => {
   const [gameState, allSessionsResponse] = await Promise.all([
-    firstValueFrom(inject(GameStateService).gameState$),
+    firstValueFrom(onceConfirmed(inject(GameStateService).gameState$)),
     inject(SessionService).getAllSessions(),
   ]);
 

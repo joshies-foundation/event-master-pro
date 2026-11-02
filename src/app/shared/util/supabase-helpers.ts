@@ -3,10 +3,15 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from '@openng/optimus-ui/api';
 import {
+  BehaviorSubject,
   Observable,
   ReplaySubject,
   Subscription,
+  combineLatest,
+  debounceTime,
   defer,
+  distinctUntilChanged,
+  finalize,
   first,
   interval,
   map,
@@ -180,6 +185,23 @@ const liveStreams = new WeakMap<
   Map<string, Observable<unknown[]>>
 >();
 
+const streamsWithoutServerRows = new BehaviorSubject(0);
+
+export const serverRowsPending$: Observable<boolean> =
+  streamsWithoutServerRows.pipe(
+    map((count) => count > 0),
+    distinctUntilChanged(),
+  );
+
+const settledStreamCount$ = streamsWithoutServerRows.pipe(debounceTime(0));
+
+export function onceConfirmed<T>(source: Observable<T>): Observable<T> {
+  return combineLatest([source, settledStreamCount$]).pipe(
+    first(([, count]) => count === 0),
+    map(([value]) => value),
+  );
+}
+
 export function realtimeUpdatesFromTable<
   Table extends TTable,
   Row extends Tables<Table>,
@@ -211,6 +233,16 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
 
   return defer(() => {
     let lastJson: string | undefined;
+    let waitingForServerRows = false;
+    const waitForServerRows = (waiting: boolean) => {
+      if (waiting === waitingForServerRows) return;
+      waitingForServerRows = waiting;
+      streamsWithoutServerRows.next(
+        streamsWithoutServerRows.value + (waiting ? 1 : -1),
+      );
+    };
+
+    waitForServerRows(true);
 
     return new Observable<Row[]>((subscriber) => {
       const waitForSocket = new Subscription();
@@ -225,7 +257,12 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
               lastJson = json;
               subscriber.next(rows as Row[]);
             }
-          } else if (realtime.isConnected()) {
+            waitForServerRows(false);
+            return;
+          }
+
+          waitForServerRows(true);
+          if (realtime.isConnected()) {
             subscriber.error(error);
           } else {
             // Keep this channel until the socket opens. A channel made while
@@ -247,6 +284,7 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
         delay: (_, attempt) => timer(realtime.reconnectAfterMs(attempt)),
         resetOnSuccess: true,
       }),
+      finalize(() => waitForServerRows(false)),
     );
   }).pipe(
     share({
