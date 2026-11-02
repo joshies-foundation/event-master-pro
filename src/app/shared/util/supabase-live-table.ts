@@ -134,6 +134,7 @@ export function liveTable<
       // @ts-ignore
       .on('system', {}, (payload) => {
         if (payload.extension === REALTIME_LISTEN_TYPES.POSTGRES_CHANGES) {
+          liveTable.awaitSnapshot();
           let snapshot: PromiseLike<PostgrestResponse<Row>>;
 
           if (filter) {
@@ -155,10 +156,15 @@ export function liveTable<
           snapshot.then(({ error, data }) => {
             if (error) {
               callback(new Error(error.message), []);
-            } else {
-              liveTable.processSnapshot(data);
-              callback(undefined, liveTable.records);
+              return;
             }
+            try {
+              liveTable.processSnapshot(data);
+            } catch (replayError) {
+              callback(replayError as Error, []);
+              return;
+            }
+            callback(undefined, liveTable.records);
           });
         }
       })
@@ -187,6 +193,7 @@ export type LiveTableEvent<Row extends LiveRow> =
   Insert<Row> | Update<Row> | Delete<Row>;
 
 export type ILiveTable<Row extends LiveRow> = {
+  awaitSnapshot(): void;
   processSnapshot(records: readonly Row[]): void;
   processEvent(event: LiveTableEvent<Row>): void;
   readonly records: readonly Row[];
@@ -270,6 +277,10 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
         break;
       }
     }
+  }
+
+  awaitSnapshot() {
+    this.snapshotTimestamp = undefined;
   }
 
   processSnapshot(records: readonly Row[]) {
