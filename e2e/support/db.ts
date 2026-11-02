@@ -37,11 +37,31 @@ export async function resetDatabase(): Promise<void> {
         await tx.unsafe(`truncate ${names.join(', ')} cascade`);
         await tx.unsafe(seed);
       });
+      await waitForRealtimeToReadTheReset();
       return;
     } catch (error) {
       const deadlock = (error as { code?: string }).code === '40P01';
       if (!deadlock || attempt === 3) throw error;
     }
+  }
+}
+
+// A page that subscribes while Realtime is still reading the WAL also receives
+// what the previous test changed. Those rows then collide with the seed rows
+// inserted over them, and LiveTable throws.
+async function waitForRealtimeToReadTheReset(): Promise<void> {
+  const [{ lsn }] = await sql<{ lsn: string }[]>`
+    select pg_current_wal_lsn() as lsn`;
+  const deadline = Date.now() + 10_000;
+  while (Date.now() < deadline) {
+    const [{ behind }] = await sql<{ behind: boolean }[]>`
+      select exists (
+        select from pg_replication_slots
+        where slot_name like 'supabase_realtime_replication_slot%'
+          and confirmed_flush_lsn < ${lsn}::pg_lsn
+      ) as behind`;
+    if (!behind) return;
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
 }
 

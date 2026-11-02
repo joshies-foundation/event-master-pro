@@ -1,5 +1,5 @@
 import {
-  PostgrestResponse,
+  PostgrestError,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
   REALTIME_SUBSCRIBE_STATES,
@@ -77,6 +77,39 @@ export function liveTable<
 
   const { table, filter, callback, schema = 'public' } = params;
 
+  // With no session, supabase-js sends the anon key. Every policy is
+  // `to authenticated`, so REST answers 200 with no rows, which is not an
+  // empty table. Pinning the token means no refresh can land between a check
+  // and the read.
+  const readRowsAsUser = async (): Promise<
+    | { error: null; data: Row[] }
+    | { error: Pick<PostgrestError, 'message'>; data: null }
+  > => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      return { error: { message: 'No session for this read' }, data: null };
+    }
+
+    const everyRow = supabase.from(table).select('*');
+    const [, filterColumn, filterOperator, filterValue] =
+      filter?.match(/^(.+)=([^.]+)\.(.+)$/) ?? [];
+
+    return (
+      filter
+        ? everyRow.filter(filterColumn, filterOperator, filterValue)
+        : everyRow
+    )
+      .setHeader('Authorization', `Bearer ${data.session.access_token}`)
+      .overrideTypes<Row[], { merge: false }>();
+  };
+
+  let joined = false;
+
+  readRowsAsUser().then(({ error, data }) => {
+    if (error || joined) return;
+    callback(undefined, sortedById(data));
+  });
+
   return (
     supabase
       .channel(`${table}-${filter}-${channelCount++}`)
@@ -134,31 +167,20 @@ export function liveTable<
       // @ts-ignore
       .on('system', {}, (payload) => {
         if (payload.extension === REALTIME_LISTEN_TYPES.POSTGRES_CHANGES) {
-          let snapshot: PromiseLike<PostgrestResponse<Row>>;
-
-          if (filter) {
-            const [, filterColumn, filterOperator, filterValue] =
-              filter.match(/^(.+)=([^.]+)\.(.+)$/)!;
-
-            snapshot = supabase
-              .from(table)
-              .select('*')
-              .filter(filterColumn, filterOperator, filterValue)
-              .overrideTypes<Row[], { merge: false }>();
-          } else {
-            snapshot = supabase
-              .from(table)
-              .select('*')
-              .overrideTypes<Row[], { merge: false }>();
-          }
-
-          snapshot.then(({ error, data }) => {
+          joined = true;
+          liveTable.awaitSnapshot();
+          readRowsAsUser().then(({ error, data }) => {
             if (error) {
               callback(new Error(error.message), []);
-            } else {
-              liveTable.processSnapshot(data);
-              callback(undefined, liveTable.records);
+              return;
             }
+            try {
+              liveTable.processSnapshot(data);
+            } catch (replayError) {
+              callback(replayError as Error, []);
+              return;
+            }
+            callback(undefined, liveTable.records);
           });
         }
       })
@@ -187,6 +209,7 @@ export type LiveTableEvent<Row extends LiveRow> =
   Insert<Row> | Update<Row> | Delete<Row>;
 
 export type ILiveTable<Row extends LiveRow> = {
+  awaitSnapshot(): void;
   processSnapshot(records: readonly Row[]): void;
   processEvent(event: LiveTableEvent<Row>): void;
   readonly records: readonly Row[];
@@ -194,9 +217,13 @@ export type ILiveTable<Row extends LiveRow> = {
 
 export type ParseTimestamp = (timestamp: string) => number;
 
+function sortedById<Row extends LiveRow>(rows: Iterable<Row>): Row[] {
+  return [...rows].sort((a, b) => compareIds(a.id, b.id));
+}
+
 export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
   private readonly recordById = new Map<ID, Row>();
-  private readonly bufferedEvents: LiveTableEvent<Row>[] = [];
+  private bufferedEvents: LiveTableEvent<Row>[] = [];
 
   private snapshotTimestamp: number | undefined;
 
@@ -272,8 +299,13 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
     }
   }
 
+  awaitSnapshot() {
+    this.snapshotTimestamp = undefined;
+  }
+
   processSnapshot(records: readonly Row[]) {
     this.snapshotTimestamp = 0;
+    this.recordById.clear();
     for (const record of records) {
       const recordTimestamp = this.parseTimestamp(
         record.updated_at || record.created_at,
@@ -283,13 +315,15 @@ export class LiveTable<Row extends LiveRow> implements ILiveTable<Row> {
       }
       this.recordById.set(record.id, record);
     }
-    for (const event of this.bufferedEvents) {
+    const events = this.bufferedEvents;
+    this.bufferedEvents = [];
+    for (const event of events) {
       this.processEvent(event);
     }
   }
 
   get records(): readonly Row[] {
-    return [...this.recordById.values()].sort((a, b) => compareIds(a.id, b.id));
+    return sortedById(this.recordById.values());
   }
 }
 

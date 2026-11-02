@@ -16,10 +16,12 @@ import { RadioButtonModule } from '@openng/optimus-ui/radiobutton';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { defined } from '../../shared/util/rxjs-helpers';
-import { take } from 'rxjs';
 import { ConfirmationService, MessageService } from '@openng/optimus-ui/api';
 import { InputTextModule } from '@openng/optimus-ui/inputtext';
-import { showMessageOnError } from '../../shared/util/supabase-helpers';
+import {
+  onceConfirmed,
+  showMessageOnError,
+} from '../../shared/util/supabase-helpers';
 import { showSuccessMessage } from '../../shared/util/message-helpers';
 import {
   confirmOverrideDialogKey,
@@ -207,11 +209,7 @@ export default class OverridePointsCardComponent {
   constructor() {
     // initialize replacement value to be the old score
     toObservable(this.player)
-      .pipe(
-        defined(),
-        take(1), // take 1 so a user changing their name or avatar does not reset the form
-        takeUntilDestroyed(),
-      )
+      .pipe(defined(), onceConfirmed, takeUntilDestroyed())
       .subscribe((player) =>
         this.userDefinedReplacementValue.set(player.score),
       );

@@ -5,6 +5,7 @@ import { SessionModel, UserModel } from '../../shared/util/supabase-types';
 import { PlayerService } from '../../shared/data-access/player.service';
 import { SessionService } from '../../shared/data-access/session.service';
 import { UserService } from '../../shared/data-access/user.service';
+import { onceConfirmed } from '../../shared/util/supabase-helpers';
 
 export const editSessionResolver: ResolveFn<{
   session: SessionModel;
@@ -14,7 +15,7 @@ export const editSessionResolver: ResolveFn<{
   const sessionService = inject(SessionService);
   const playerService = inject(PlayerService);
 
-  return combineLatest({
+  const sessionAndUsers$ = combineLatest({
     session: sessionService.session$,
     allNonPlayerUsers: combineLatest({
       playerUserIds: playerService.playersIncludingDisabled$.pipe(
@@ -27,4 +28,5 @@ export const editSessionResolver: ResolveFn<{
       ),
     ),
   });
+  return onceConfirmed(sessionAndUsers$);
 };

@@ -106,7 +106,8 @@ export class EventService {
   readonly events = toSignal(this.events$);
 
   readonly eventTeams$: Observable<EventTeamModel[] | null> = this.events$.pipe(
-    map((events) => events?.map((ev) => ev.id) ?? null),
+    map((events) => events?.map((ev) => ev.id).join() ?? null),
+    distinctUntilChanged(),
     whenNotNull((eventIds) =>
       realtimeUpdatesFromTable(
         this.supabase,
@@ -148,7 +149,10 @@ export class EventService {
         participants.flatMap(({ id, team_id, player_id }) => {
           if (team_id === null) return [];
 
-          const player = players.find((p) => p.player_id === player_id)!;
+          // Saved participants can outlast their session's players until the
+          // new session's rows arrive.
+          const player = players.find((p) => p.player_id === player_id);
+          if (!player) return [];
 
           return {
             participant_id: id,
@@ -378,7 +382,10 @@ export class EventService {
       return response;
     }
 
-    return this.gameStateService.setRoundPhase(RoundPhase.WaitingForNextRound);
+    return this.gameStateService.setRoundPhase({
+      from: RoundPhase.Event,
+      to: RoundPhase.WaitingForNextRound,
+    });
   }
 }
 

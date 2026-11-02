@@ -40,7 +40,6 @@ import {
   of,
   shareReplay,
   switchMap,
-  take,
 } from 'rxjs';
 import {
   DraftRound,
@@ -53,6 +52,7 @@ import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
 import {
   GameboardSpaceEffect,
   trackByPlayerId,
+  onceConfirmed,
 } from '../../shared/util/supabase-helpers';
 import { ModelFormGroup } from '../../shared/util/form-helpers';
 import { InputNumberModule } from '@openng/optimus-ui/inputnumber';
@@ -320,7 +320,7 @@ export default class GameboardSpaceEntryPageComponent {
       })),
     );
 
-  private readonly draftRound = toSignal(this.draftRound$.pipe(take(1)));
+  private readonly draftRound = toSignal(this.draftRound$.pipe(onceConfirmed));
 
   private readonly formGroup$: Observable<
     ModelFormGroup<GameboardSpaceEntryFormModel>
@@ -329,7 +329,7 @@ export default class GameboardSpaceEntryPageComponent {
     this.draftRound$,
     this.duelService.nonCanceledDuelsForThisTurn$,
   ]).pipe(
-    take(1), // take 1 so a player changing their name or picture doesn't reset the form
+    onceConfirmed,
     map(([players, draftRound, duels]): FormGroup => {
       const initialFormValue = roundDraftEntries(
         RoundDraftKey.GameboardMoves,

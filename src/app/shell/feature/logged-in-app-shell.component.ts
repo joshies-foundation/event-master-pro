@@ -6,16 +6,27 @@ import { PlayerService } from '../../shared/data-access/player.service';
 import { FooterService } from '../../shared/data-access/footer.service';
 import { layerPages } from '../../route-animations';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { map, of, switchMap, timer } from 'rxjs';
 import { preventGlitchySwipeBackAnimation } from '../../shared/util/animation-helpers';
 import { ConfirmDialogModule } from '@openng/optimus-ui/confirmdialog';
 import { BetService } from '../../shared/data-access/bet.service';
 import { GameStateService } from '../../shared/data-access/game-state.service';
 import { PrizeService } from '../../shared/data-access/prize.service';
+import { serverRowsPending$ } from '../../shared/util/supabase-helpers';
 
 @Component({
   selector: 'joshies-logged-in-app-shell',
   imports: [RouterOutlet, FooterComponent, ConfirmDialogModule],
   template: `
+    @if (showReconnecting()) {
+      <p
+        role="status"
+        class="sticky top-[env(safe-area-inset-top)] z-10 rounded-md bg-neutral-800 px-4 py-1 text-center text-xs text-white"
+      >
+        Reconnecting. You may be seeing older data.
+      </p>
+    }
+
     <!-- Pages -->
     <div [@routeAnimations]="pageAnimationLayer()" class="flex-1">
       <router-outlet />
@@ -47,6 +58,15 @@ export default class LoggedInAppShellComponent {
   readonly routerOutlet = viewChild.required(RouterOutlet);
 
   readonly footerDisabled = this.footerService.footerDisabled;
+
+  readonly showReconnecting = toSignal(
+    serverRowsPending$.pipe(
+      switchMap((pending) =>
+        pending ? timer(3_000).pipe(map(() => true)) : of(false),
+      ),
+    ),
+    { initialValue: false },
+  );
 
   readonly pageAnimationLayer: Signal<number | undefined> = toSignal(
     preventGlitchySwipeBackAnimation(

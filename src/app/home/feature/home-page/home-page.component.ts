@@ -245,7 +245,11 @@ export default class HomePageComponent {
     confirmBackendAction({
       confirmationMessageText: 'Proceed to the Duel phase?',
       successMessageText: "We're now in the Duel phase",
-      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
+      action: async () =>
+        this.gameStateService.setRoundPhase({
+          from: RoundPhase.SpecialSpaceEvents,
+          to: RoundPhase.Duels,
+        }),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToNextPhase,
@@ -258,7 +262,10 @@ export default class HomePageComponent {
       confirmationMessageText: 'Proceed to the Chaos Space Events phase?',
       successMessageText: "We're now in the Chaos Space Events phase",
       action: async () =>
-        this.gameStateService.setRoundPhase(RoundPhase.ChaosSpaceEvents),
+        this.gameStateService.setRoundPhase({
+          from: RoundPhase.Duels,
+          to: RoundPhase.ChaosSpaceEvents,
+        }),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToNextPhase,
@@ -270,7 +277,11 @@ export default class HomePageComponent {
     confirmBackendAction({
       confirmationMessageText: 'Proceed to the Event phase?',
       successMessageText: "We're now in the Event phase",
-      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Event),
+      action: async () =>
+        this.gameStateService.setRoundPhase({
+          from: RoundPhase.ChaosSpaceEvents,
+          to: RoundPhase.Event,
+        }),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToNextPhase,
@@ -283,10 +294,16 @@ export default class HomePageComponent {
       confirmationMessageText: 'Proceed to the Gameboard Moves phase?',
       successMessageText: "We're now in the Gameboard Moves phase",
       action: async () =>
-        this.gameStateService.setRoundNumberAndPhase(
-          nextRoundNumber,
-          RoundPhase.GameboardMoves,
-        ),
+        this.gameStateService.setRoundNumberAndPhase({
+          from: {
+            round_number: nextRoundNumber - 1,
+            round_phase: RoundPhase.WaitingForNextRound,
+          },
+          to: {
+            round_number: nextRoundNumber,
+            round_phase: RoundPhase.GameboardMoves,
+          },
+        }),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToNextPhase,

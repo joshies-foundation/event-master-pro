@@ -85,7 +85,10 @@ export default class ResolveDuelsPageComponent {
       confirmationMessageText: 'Proceed to the Chaos Space Event phase?',
       successMessageText: "We're in the Chaos Space Event phase",
       action: async () =>
-        this.gameStateService.setRoundPhase(RoundPhase.ChaosSpaceEvents),
+        this.gameStateService.setRoundPhase({
+          from: RoundPhase.Duels,
+          to: RoundPhase.ChaosSpaceEvents,
+        }),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToNextPhase,

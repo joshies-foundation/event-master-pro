@@ -3,14 +3,27 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from '@openng/optimus-ui/api';
 import {
+  BehaviorSubject,
+  EMPTY,
   Observable,
+  ReplaySubject,
   Subscription,
+  combineLatest,
+  concat,
+  debounceTime,
+  defer,
+  distinctUntilChanged,
+  finalize,
   first,
   interval,
+  map,
+  of,
   retry,
+  share,
   switchMap,
   timer,
 } from 'rxjs';
+import { liveRowsKey, readLiveRows, saveLiveRows } from './live-rows-cache';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 import { RealtimeFilter, liveTable } from './supabase-live-table';
@@ -171,6 +184,28 @@ export enum BetSubtype {
 
 export type TTable = keyof Database['public']['Tables'];
 
+const liveStreams = new WeakMap<
+  SupabaseClient<Database>,
+  Map<string, Observable<unknown[]>>
+>();
+
+const streamsWithoutServerRows = new BehaviorSubject(0);
+
+export const serverRowsPending$: Observable<boolean> =
+  streamsWithoutServerRows.pipe(
+    map((count) => count > 0),
+    distinctUntilChanged(),
+  );
+
+const settledStreamCount$ = streamsWithoutServerRows.pipe(debounceTime(0));
+
+export function onceConfirmed<T>(source: Observable<T>): Observable<T> {
+  return combineLatest([source, settledStreamCount$]).pipe(
+    first(([, count]) => count === 0),
+    map(([value]) => value),
+  );
+}
+
 export function realtimeUpdatesFromTable<
   Table extends TTable,
   Row extends Tables<Table>,
@@ -179,39 +214,91 @@ export function realtimeUpdatesFromTable<
   table: Table,
   filter?: RealtimeFilter<Database, Table>,
 ): Observable<Row[]> {
+  const streams = liveStreams.get(supabase) ?? new Map();
+  liveStreams.set(supabase, streams);
+
+  const key = `${table}:${filter ?? ''}`;
+  const stream: Observable<Row[]> =
+    streams.get(key) ?? liveStream<Table, Row>(supabase, table, filter);
+  streams.set(key, stream);
+
+  return stream.pipe(map((rows) => [...rows]));
+}
+
+const keepChannelForOneTick = () => timer(0);
+
+function liveStream<Table extends TTable, Row extends Tables<Table>>(
+  supabase: SupabaseClient<Database>,
+  table: Table,
+  filter?: RealtimeFilter<Database, Table>,
+): Observable<Row[]> {
   const { realtime } = supabase;
   const socketOpens = interval(100).pipe(first(() => realtime.isConnected()));
 
-  return new Observable<Row[]>((subscriber) => {
-    const waitForSocket = new Subscription();
-    const channel = liveTable(supabase, {
-      table,
-      filter,
-      callback: (error, rows: readonly Row[]) => {
-        if (!error) {
-          subscriber.next(rows as Row[]);
-        } else if (realtime.isConnected()) {
-          subscriber.error(error);
-        } else {
-          // Keep this channel until the socket opens. A channel made while
-          // the socket is down buffers its join, and phoenix sends it on
-          // reconnect even after the channel closes, so retrying now would
-          // flood the server. Closing it to wait also fails, because after
-          // 50 s with no channels realtime-js disconnects for good.
-          waitForSocket.add(
-            socketOpens.subscribe(() => subscriber.error(error)),
-          );
-        }
-      },
-    });
-    return () => {
-      waitForSocket.unsubscribe();
-      channel.unsubscribe();
+  return defer(() => {
+    const savedRowsKey = liveRowsKey(table, filter);
+    const savedRows = readLiveRows<Row>(savedRowsKey);
+    let lastJson = savedRows && JSON.stringify(savedRows);
+    let failures = 0;
+    let waitingForServerRows = false;
+    const waitForServerRows = (waiting: boolean) => {
+      if (waiting === waitingForServerRows) return;
+      waitingForServerRows = waiting;
+      streamsWithoutServerRows.next(
+        streamsWithoutServerRows.value + (waiting ? 1 : -1),
+      );
     };
+
+    waitForServerRows(true);
+
+    const serverRows = new Observable<Row[]>((subscriber) => {
+      const waitForSocket = new Subscription();
+      const channel = liveTable(supabase, {
+        table,
+        filter,
+        callback: (error, rows: readonly Row[]) => {
+          if (subscriber.closed) return;
+          if (!error) {
+            failures = 0;
+            const json = JSON.stringify(rows);
+            if (json !== lastJson) {
+              lastJson = json;
+              saveLiveRows(savedRowsKey, json);
+              subscriber.next(rows as Row[]);
+            }
+            waitForServerRows(false);
+            return;
+          }
+
+          waitForServerRows(true);
+          if (realtime.isConnected()) {
+            subscriber.error(error);
+          } else {
+            // Keep this channel until the socket opens. A channel made while
+            // the socket is down buffers its join, and phoenix sends it on
+            // reconnect even after the channel closes, so retrying now would
+            // flood the server.
+            waitForSocket.add(
+              socketOpens.subscribe(() => subscriber.error(error)),
+            );
+          }
+        },
+      });
+      return () => {
+        waitForSocket.unsubscribe();
+        channel.unsubscribe();
+      };
+    }).pipe(
+      retry({ delay: () => timer(realtime.reconnectAfterMs(++failures)) }),
+    );
+
+    return concat(savedRows ? of(savedRows) : EMPTY, serverRows).pipe(
+      finalize(() => waitForServerRows(false)),
+    );
   }).pipe(
-    retry({
-      delay: (_, attempt) => timer(realtime.reconnectAfterMs(attempt)),
-      resetOnSuccess: true,
+    share({
+      connector: () => new ReplaySubject<Row[]>(1),
+      resetOnRefCountZero: keepChannelForOneTick,
     }),
   );
 }

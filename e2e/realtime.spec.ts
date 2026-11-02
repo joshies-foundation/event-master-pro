@@ -1,4 +1,8 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+  createClient,
+  REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 import { AddressInfo, connect as connectTcp, createServer } from 'node:net';
 import { firstValueFrom } from 'rxjs';
 import { Database } from '../src/app/shared/util/schema';
@@ -6,8 +10,9 @@ import {
   realtimeUpdatesFromTable,
   Table,
 } from '../src/app/shared/util/supabase-helpers';
+import { LiveTable, LiveRow } from '../src/app/shared/util/supabase-live-table';
 import { resetDatabase, sql } from './support/db';
-import { expect, test } from './support/fixtures';
+import { expect, test, waitForWebKitToFinishLoading } from './support/fixtures';
 import { seed } from './support/seed';
 
 function watchColinsScore(supabase: SupabaseClient<Database>) {
@@ -58,10 +63,12 @@ function connect(
     fetch,
     transport = DroppableWebSocket,
     timeout,
+    reconnectAfterMs,
   }: {
     fetch?: typeof globalThis.fetch;
     transport?: typeof WebSocket;
     timeout?: number;
+    reconnectAfterMs?: (attempt: number) => number;
   } = {},
 ): SupabaseClient<Database> {
   return createClient<Database>(
@@ -70,7 +77,7 @@ function connect(
     {
       auth: { persistSession: false },
       global: { fetch },
-      realtime: { transport, timeout },
+      realtime: { transport, timeout, reconnectAfterMs },
     },
   );
 }
@@ -111,6 +118,251 @@ test('two live subscriptions to the same table and filter both receive changes',
   } finally {
     await supabase.removeAllChannels();
   }
+});
+
+test('two subscribers to the same table and filter share one channel, and a different client gets its own', async ({
+  baseURL,
+}) => {
+  const phone = await signInAsColin(baseURL!);
+  const otherPhone = await signInAsColin(baseURL!);
+
+  try {
+    const first = watchColinsScore(phone);
+    const second = watchColinsScore(phone);
+    const other = watchColinsScore(otherPhone);
+    await expect
+      .poll(() => [first.seen.score, second.seen.score, other.seen.score])
+      .toEqual([seed.colin.score, seed.colin.score, seed.colin.score]);
+
+    expect(phone.getChannels()).toHaveLength(1);
+    expect(otherPhone.getChannels()).toHaveLength(1);
+  } finally {
+    await phone.removeAllChannels();
+    await otherPhone.removeAllChannels();
+  }
+});
+
+test('a subscriber that reorders its rows leaves the next subscriber a sorted list', async ({
+  baseURL,
+}) => {
+  const supabase = await signInAsColin(baseURL!);
+  const players = () =>
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.Player,
+      `session_id=eq.${seed.sessionId}`,
+    );
+
+  try {
+    let reversed = false;
+    const first = players().subscribe((rows) => {
+      rows.reverse();
+      reversed = true;
+    });
+    await expect.poll(() => reversed).toBe(true);
+
+    const rows = await firstValueFrom(players());
+    first.unsubscribe();
+
+    const ids = rows.map((row) => row.id);
+    expect(ids).toEqual([...ids].sort((a, b) => a - b));
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('a reconnect that finds the same rows emits nothing new', async ({
+  baseURL,
+}) => {
+  const supabase = await signInAsColin(baseURL!);
+
+  try {
+    let emissions = 0;
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.Player,
+      `session_id=eq.${seed.sessionId}`,
+    ).subscribe(() => emissions++);
+    await expect.poll(() => emissions).toBe(1);
+    const [firstChannel] = supabase.getChannels();
+
+    DroppableWebSocket.latest!.close();
+    await expect
+      .poll(() => supabase.getChannels()[0]?.topic)
+      .not.toBe(firstChannel.topic);
+    await expect.poll(() => supabase.getChannels()[0]?.state).toBe('joined');
+    await setColinsScore(40);
+    await expect.poll(() => emissions).toBe(2);
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('a row deleted while the socket is down is gone after reconnect', async ({
+  baseURL,
+}) => {
+  const [{ id, team_id }] = await sql<{ id: number; team_id: number }[]>`
+    select min(id)::int as id, team_id::int
+    from event_participant
+    group by team_id
+    having count(*) > 1
+    limit 1`;
+  const network = await holdableProxyTo(baseURL!);
+  const supabase = await signInAsColin(baseURL!, {
+    transport: network.transport,
+  });
+
+  try {
+    let participantIds: number[] = [];
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.EventParticipant,
+      `team_id=eq.${team_id}`,
+    ).subscribe((rows) => (participantIds = rows.map((row) => row.id)));
+    await expect.poll(() => participantIds).toContain(id);
+
+    network.hold();
+    DroppableWebSocket.latest!.close();
+    await sql`delete from event_participant where id = ${id}`;
+    network.release();
+
+    await expect.poll(() => participantIds).not.toContain(id);
+    expect(participantIds.length).toBeGreaterThan(0);
+  } finally {
+    await supabase.removeAllChannels();
+    await network.close();
+  }
+});
+
+test('a second read drops rows the first one had and replays each buffered event once', () => {
+  const row = (id: number, name: string) =>
+    ({
+      id,
+      name,
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: null,
+    }) satisfies LiveRow;
+  const table = new LiveTable<ReturnType<typeof row>>((timestamp) =>
+    new Date(timestamp).getTime(),
+  );
+  table.processEvent({
+    type: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
+    record: row(3, 'inserted before the read'),
+    timestamp: '2026-01-02T00:00:00Z',
+  });
+
+  table.processSnapshot([row(1, 'kept'), row(2, 'deleted')]);
+  table.processSnapshot([row(1, 'kept')]);
+
+  expect(table.records.map(({ id }) => id)).toEqual([1]);
+});
+
+test('an event that lands during a later read survives that read', () => {
+  const row = (id: number) =>
+    ({
+      id,
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: null,
+    }) satisfies LiveRow;
+  const table = new LiveTable<ReturnType<typeof row>>((timestamp) =>
+    new Date(timestamp).getTime(),
+  );
+  table.processSnapshot([row(1)]);
+
+  table.awaitSnapshot();
+  table.processEvent({
+    type: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
+    record: row(2),
+    timestamp: '2026-01-02T00:00:00Z',
+  });
+  table.processSnapshot([row(1)]);
+
+  expect(table.records.map(({ id }) => id)).toEqual([1, 2]);
+});
+
+test('a read that cannot replay its buffered events retries instead of stalling', async ({
+  baseURL,
+}) => {
+  let failedJoinRead = false;
+  const supabase = await signInAsColin(baseURL!, {
+    fetch: async (input, init) => {
+      const isJoinRead =
+        String(input).includes('/rest/v1/player') &&
+        supabase.getChannels()[0]?.state === 'joined';
+      if (!isJoinRead || failedJoinRead) return fetch(input, init);
+
+      failedJoinRead = true;
+      await setColinsScore(41);
+      await sleep(1_500);
+      const players: { id: number }[] = await (await fetch(input, init)).json();
+      return Response.json(
+        players.filter((player) => player.id !== seed.colin.playerId),
+      );
+    },
+  });
+
+  try {
+    const { seen } = watchColinsScore(supabase);
+    await expect.poll(() => seen.score).toBe(41);
+    expect(failedJoinRead).toBe(true);
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('a reconnect that finds the same rows resets the wait before the next retry', async ({
+  baseURL,
+}) => {
+  const attempts: number[] = [];
+  const supabase = await signInAsColin(baseURL!, {
+    reconnectAfterMs: (attempt) => {
+      attempts.push(attempt);
+      return 10;
+    },
+  });
+
+  try {
+    let emissions = 0;
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.Player,
+      `session_id=eq.${seed.sessionId}`,
+    ).subscribe(() => emissions++);
+    await expect.poll(() => emissions).toBe(1);
+
+    for (let drop = 0; drop < 3; drop++) {
+      const { topic } = supabase.getChannels()[0];
+      DroppableWebSocket.latest!.close();
+      await expect.poll(() => supabase.getChannels()[0]?.topic).not.toBe(topic);
+      await expect.poll(() => supabase.getChannels()[0]?.state).toBe('joined');
+      await sleep(500);
+    }
+
+    expect(attempts.length).toBeGreaterThanOrEqual(3);
+    expect(Math.max(...attempts)).toBe(1);
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('one score write joins no channels', async ({ page, login }) => {
+  let joins = 0;
+  page.on('websocket', (socket) =>
+    socket.on('framesent', ({ payload }) => {
+      if (String(payload).includes('"phx_join"')) joins++;
+    }),
+  );
+  await login();
+  const colin = page.getByRole('row', { name: /Colin/ });
+  await expect(colin.getByRole('cell').last()).toHaveText('33');
+  await waitForWebKitToFinishLoading(page);
+  const joinsAfterOpening = joins;
+
+  await setColinsScore(34);
+
+  await expect(colin.getByRole('cell').last()).toHaveText('34');
+  await sleep(1_000);
+  expect(joins - joinsAfterOpening).toBe(0);
 });
 
 test('a live subscription that reconnects after a dropped connection closes its channel on unsubscribe', async ({
@@ -175,7 +427,7 @@ test('a live subscription catches up as soon as a slow connection opens, without
   });
 
   try {
-    const { seen } = watchColinsScore(supabase);
+    const { seen, subscription } = watchColinsScore(supabase);
     await expect
       .poll(() => seen.score, { timeout: 30_000 })
       .toBe(seed.colin.score);
@@ -196,6 +448,7 @@ test('a live subscription catches up as soon as a slow connection opens, without
     expect(closedChannelJoins).toEqual([]);
     await setColinsScore(38);
     await expect.poll(() => seen.score, { timeout: 3_000 }).toBe(38);
+    subscription.unsubscribe();
   } finally {
     DroppableWebSocket.onJoin = () => {};
     await supabase.removeAllChannels();
@@ -213,7 +466,7 @@ test('a channel whose first read fails after it was retried opens no second chan
   let reads = 0;
   const supabase = await signInAsColin(baseURL!, {
     fetch: async (input, init) => {
-      if (String(input).includes('/rest/v1/player?') && reads++ === 0) {
+      if (String(input).includes('/rest/v1/player?') && reads++ === 1) {
         await firstReadFails;
         return new Response('{"message":"Internal Server Error"}', {
           status: 500,
@@ -225,7 +478,7 @@ test('a channel whose first read fails after it was retried opens no second chan
 
   try {
     const { seen, subscription } = watchColinsScore(supabase);
-    await expect.poll(() => reads).toBe(1);
+    await expect.poll(() => reads).toBe(2);
 
     DroppableWebSocket.latest!.close();
     await expect.poll(() => seen.score).toBe(seed.colin.score);
@@ -237,6 +490,146 @@ test('a channel whose first read fails after it was retried opens no second chan
     await expect.poll(() => supabase.getChannels()).toHaveLength(0);
   } finally {
     await supabase.removeAllChannels();
+  }
+});
+
+test('rows arrive before the socket opens', async ({ baseURL }) => {
+  const network = await holdableProxyTo(baseURL!);
+  network.hold();
+  const supabase = await signInAsColin(baseURL!, {
+    transport: network.transport,
+  });
+
+  try {
+    const { seen } = watchColinsScore(supabase);
+    await expect.poll(() => seen.score).toBe(seed.colin.score);
+    expect(supabase.realtime.isConnected()).toBe(false);
+  } finally {
+    network.release();
+    await supabase.removeAllChannels();
+    await network.close();
+  }
+});
+
+test('a failed read before the join does not reopen the channel', async ({
+  baseURL,
+}) => {
+  let reads = 0;
+  const supabase = await signInAsColin(baseURL!, {
+    fetch: async (input, init) => {
+      if (String(input).includes('/rest/v1/player?') && reads++ === 0) {
+        return new Response('{"message":"Internal Server Error"}', {
+          status: 500,
+        });
+      }
+      return fetch(input, init);
+    },
+  });
+  const errors: unknown[] = [];
+
+  try {
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.Player,
+      `session_id=eq.${seed.sessionId}`,
+    ).subscribe({ error: (error) => errors.push(error) });
+    const [channel] = supabase.getChannels();
+    await expect.poll(() => reads).toBe(2);
+    await sleep(1_500);
+
+    expect(supabase.getChannels().map(({ topic }) => topic)).toEqual([
+      channel.topic,
+    ]);
+    expect(errors).toEqual([]);
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('a slow read from before the join cannot replace newer rows', async ({
+  baseURL,
+}) => {
+  let releaseFirstRead!: () => void;
+  const firstReadReturns = new Promise<void>(
+    (resolve) => (releaseFirstRead = resolve),
+  );
+  let reads = 0;
+  const supabase = await signInAsColin(baseURL!, {
+    fetch: async (input, init) => {
+      const response = await fetch(input, init);
+      if (String(input).includes('/rest/v1/player?') && reads++ === 0) {
+        await firstReadReturns;
+      }
+      return response;
+    },
+  });
+
+  try {
+    const { seen } = watchColinsScore(supabase);
+    await expect.poll(() => seen.score).toBe(seed.colin.score);
+    await setColinsScore(34);
+    await expect.poll(() => seen.score).toBe(34);
+
+    releaseFirstRead();
+    await sleep(500);
+
+    expect(seen.score).toBe(34);
+  } finally {
+    await supabase.removeAllChannels();
+  }
+});
+
+test('an update to a row added since the first read waits for the read after the join', async ({
+  baseURL,
+}) => {
+  const teamId = 1351;
+  await sql`insert into event_team (id, event_id, seed, name)
+    values (${teamId}, 76, 3, 'Team 3')`;
+  const network = await holdableProxyTo(baseURL!);
+  network.hold();
+  let releaseJoinRead!: () => void;
+  const joinReadMayStart = new Promise<void>(
+    (resolve) => (releaseJoinRead = resolve),
+  );
+  let reads = 0;
+  const supabase = await signInAsColin(baseURL!, {
+    transport: network.transport,
+    fetch: async (input, init) => {
+      if (
+        String(input).includes('/rest/v1/event_participant?') &&
+        reads++ === 1
+      ) {
+        await joinReadMayStart;
+      }
+      return fetch(input, init);
+    },
+  });
+
+  try {
+    let playerIds: number[] | undefined;
+    realtimeUpdatesFromTable(
+      supabase,
+      Table.EventParticipant,
+      `team_id=eq.${teamId}`,
+    ).subscribe((rows) => (playerIds = rows.map((row) => row.player_id)));
+    await expect.poll(() => playerIds).toEqual([]);
+
+    const [{ id }] = await sql<{ id: number }[]>`
+      insert into event_participant (team_id, player_id)
+      values (${teamId}, ${seed.colin.playerId})
+      returning id::int`;
+    await expect.poll(realtimeHasMatchedEveryChange).toBe(true);
+    network.release();
+    await expect.poll(() => reads).toBe(2);
+    await sql`update event_participant
+      set player_id = ${seed.leo.playerId} where id = ${id}`;
+    await sleep(500);
+    releaseJoinRead();
+
+    await expect.poll(() => playerIds).toEqual([seed.leo.playerId]);
+  } finally {
+    await supabase.removeAllChannels();
+    await network.close();
   }
 });
 

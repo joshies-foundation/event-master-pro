@@ -131,7 +131,11 @@ export default class ResolveSpecialSpaceEventsPageComponent {
     confirmBackendAction({
       confirmationMessageText: 'Proceed to the Duel phase?',
       successMessageText: "We're now in the Duel phase",
-      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Duels),
+      action: async () =>
+        this.gameStateService.setRoundPhase({
+          from: RoundPhase.SpecialSpaceEvents,
+          to: RoundPhase.Duels,
+        }),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToDuelPhase,
