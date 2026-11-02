@@ -379,7 +379,10 @@ export class EventService {
       return response;
     }
 
-    return this.gameStateService.setRoundPhase(RoundPhase.WaitingForNextRound);
+    return this.gameStateService.setRoundPhase({
+      from: RoundPhase.Event,
+      to: RoundPhase.WaitingForNextRound,
+    });
   }
 }
 

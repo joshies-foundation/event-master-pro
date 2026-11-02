@@ -128,7 +128,11 @@ export default class ResolveChaosSpaceEventsPageComponent {
     confirmBackendAction({
       confirmationMessageText: 'Proceed to the Event phase?',
       successMessageText: "We're now in the Event phase",
-      action: async () => this.gameStateService.setRoundPhase(RoundPhase.Event),
+      action: async () =>
+        this.gameStateService.setRoundPhase({
+          from: RoundPhase.ChaosSpaceEvents,
+          to: RoundPhase.Event,
+        }),
       messageService: this.messageService,
       confirmationService: this.confirmationService,
       submittingSignal: this.proceedingToEventPhase,

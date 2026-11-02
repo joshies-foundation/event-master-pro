@@ -12,6 +12,12 @@ import {
 } from '../util/supabase-helpers';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GameStateModel } from '../util/supabase-types';
+import { LocalErrorResponse } from '../util/dialog-helpers';
+
+type RoundPosition = Pick<GameStateModel, 'round_number' | 'round_phase'>;
+
+type RoundMoveResponse =
+  PostgrestSingleResponse<GameStateModel[]> | LocalErrorResponse;
 
 @Injectable({
   providedIn: 'root',
@@ -97,23 +103,46 @@ export class GameStateService {
     );
   }
 
-  async setRoundPhase(
-    roundPhase: RoundPhase,
-  ): Promise<PostgrestSingleResponse<null>> {
-    return this.supabase
-      .from(Table.GameState)
-      .update({ round_phase: roundPhase })
-      .eq('id', 1);
+  async setRoundPhase({
+    from,
+    to,
+  }: {
+    from: RoundPhase;
+    to: RoundPhase;
+  }): Promise<RoundMoveResponse> {
+    return this.moveRound({ round_phase: from }, { round_phase: to });
   }
 
-  async setRoundNumberAndPhase(
-    roundNumber: number,
-    roundPhase: RoundPhase,
-  ): Promise<PostgrestSingleResponse<null>> {
-    return this.supabase
+  async setRoundNumberAndPhase({
+    from,
+    to,
+  }: {
+    from: RoundPosition;
+    to: RoundPosition;
+  }): Promise<RoundMoveResponse> {
+    return this.moveRound(from, to);
+  }
+
+  private async moveRound(
+    from: Partial<RoundPosition>,
+    to: Partial<RoundPosition>,
+  ): Promise<RoundMoveResponse> {
+    const response = await this.supabase
       .from(Table.GameState)
-      .update({ round_phase: roundPhase, round_number: roundNumber })
-      .eq('id', 1);
+      .update(to)
+      .eq('id', 1)
+      .match(from)
+      .select();
+
+    if (!response.error && response.data.length === 0) {
+      return {
+        error: {
+          message:
+            'The round already moved on. Check the current phase and try again.',
+        },
+      };
+    }
+    return response;
   }
 
   async updateGameState(
