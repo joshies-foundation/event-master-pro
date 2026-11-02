@@ -66,6 +66,26 @@ test('a GM on an old round cannot start a turn when the same phase came round ag
   });
 });
 
+test('a GM on an old round cannot advance the same phase of a newer round', async ({
+  page,
+  login,
+}) => {
+  await setGameState(1, 'special_space_events');
+  await login();
+  await expect(
+    page.getByRole('button', { name: 'Proceed to Duel Phase' }),
+  ).toBeVisible();
+
+  await moveOnWithoutTellingThePhone(2, 'special_space_events');
+  await tapAndConfirm(page, 'Proceed to Duel Phase');
+
+  await expect(page.getByText(roundMovedOn)).toBeVisible();
+  expect(await gameState()).toEqual({
+    round_number: 2,
+    round_phase: 'special_space_events',
+  });
+});
+
 test('a GM on the current phase still advances the round', async ({
   page,
   login,
