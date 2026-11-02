@@ -1,4 +1,5 @@
 import {
+  PostgrestError,
   PostgrestResponse,
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
@@ -95,9 +96,24 @@ export function liveTable<
       .overrideTypes<Row[], { merge: false }>();
   };
 
+  // After a failed refresh, supabase-js sends the anon key. Every policy is
+  // `to authenticated`, so REST answers 200 with no rows.
+  const readRowsAsUser = async (): Promise<
+    | { error: null; data: Row[] }
+    | { error: Pick<PostgrestError, 'message'>; data: null }
+  > => {
+    const response = await readRows();
+    if (response.error || response.data.length > 0) return response;
+
+    const { data } = await supabase.auth.getSession();
+    return data.session
+      ? response
+      : { error: { message: 'No session for this read' }, data: null };
+  };
+
   let joined = false;
 
-  readRows().then(({ error, data }) => {
+  readRowsAsUser().then(({ error, data }) => {
     if (error || joined) return;
     callback(undefined, sortedById(data));
   });
@@ -160,7 +176,7 @@ export function liveTable<
       .on('system', {}, (payload) => {
         if (payload.extension === REALTIME_LISTEN_TYPES.POSTGRES_CHANGES) {
           joined = true;
-          readRows().then(({ error, data }) => {
+          readRowsAsUser().then(({ error, data }) => {
             if (error) {
               callback(new Error(error.message), []);
             } else {

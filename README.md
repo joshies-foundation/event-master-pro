@@ -37,7 +37,7 @@ Each checkout and git branch gets its own local Supabase project, so run `npm ru
 | ---------------------------------- | ------------------------------------------------------------------------ |
 | `npm run reset-supabase`           | Rebuilds the local database from the migrations and `supabase/seed.sql`. |
 | `npm run create-migration <name>`  | Writes the local schema changes to a new migration.                      |
-| `npm run generate-db-types`        | Regenerates `src/app/shared/util/schema.ts` from the local database.     |
+| `npm run generate-db-types`        | Regenerates `schema.ts` and `schema-version.ts` from the local database. |
 | `npm run save-seed`                | Overwrites `supabase/seed.sql` with the local data.                      |
 | `npm run edge-function-logs`       | Follows the edge function logs.                                          |
 | `npm run stop-supabase`            | Stops the local project and keeps its data.                              |

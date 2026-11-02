@@ -8,11 +8,17 @@ import {
   map,
   Observable,
   shareReplay,
+  tap,
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { showMessageOnError } from '../../shared/util/supabase-helpers';
 import { MessageService } from '@openng/optimus-ui/api';
 import { Database } from '../../shared/util/schema';
+import {
+  claimLiveRows,
+  deleteOtherSchemaVersions,
+  forgetLiveRows,
+} from '../../shared/util/live-rows-cache';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +38,9 @@ export class AuthService {
       ).data.subscription.unsubscribe,
     })),
   ).pipe(
+    tap((user) => {
+      if (user) claimLiveRows(user);
+    }),
     distinctUntilChanged((a, b) => a?.id === b?.id),
     shareReplay(1),
   );
@@ -41,6 +50,14 @@ export class AuthService {
   readonly loginUsername: Signal<string | undefined> = computed(
     () => this.user()?.email?.split('@')[0],
   );
+
+  constructor() {
+    deleteOtherSchemaVersions();
+
+    this.supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') forgetLiveRows();
+    });
+  }
 
   signIn(username: string, password: string): void {
     showMessageOnError(

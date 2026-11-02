@@ -13,12 +13,13 @@ import {
 import {
   Observable,
   concat,
+  interval,
   map,
   of,
   shareReplay,
+  startWith,
   switchMap,
   takeWhile,
-  timer,
 } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SessionModel } from '../util/supabase-types';
@@ -58,7 +59,8 @@ export class SessionService {
     this.session$.pipe(
       whenNotNull((session) =>
         concat(
-          timer(0, 1000).pipe(
+          interval(1000).pipe(
+            startWith(0),
             map(
               () =>
                 (new Date(session.start_date).getTime() - Date.now()) / 1000,

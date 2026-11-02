@@ -1,0 +1,1 @@
+export const SCHEMA_VERSION = '20261101175851';

@@ -14,7 +14,7 @@
     "postinstall": "patch-package",
     "lint": "ng lint",
     "lint-staged": "lint-staged",
-    "generate-db-types": "supabase gen types typescript --local --schema public > src/app/shared/util/schema.ts && prettier --write src/app/shared/util/schema.ts",
+    "generate-db-types": "supabase gen types typescript --local --schema public > src/app/shared/util/schema.ts && prettier --write src/app/shared/util/schema.ts && node supabase/scripts/write-schema-version.mjs",
     "start-supabase": "node supabase/scripts/local-stack.mjs start",
     "stop-supabase": "supabase stop",
     "reset-supabase": "node supabase/scripts/local-stack.mjs reset",

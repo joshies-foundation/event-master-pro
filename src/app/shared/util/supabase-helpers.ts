@@ -4,10 +4,12 @@ import { FunctionsHttpError, SupabaseClient } from '@supabase/supabase-js';
 import { MessageService } from '@openng/optimus-ui/api';
 import {
   BehaviorSubject,
+  EMPTY,
   Observable,
   ReplaySubject,
   Subscription,
   combineLatest,
+  concat,
   debounceTime,
   defer,
   distinctUntilChanged,
@@ -15,11 +17,13 @@ import {
   first,
   interval,
   map,
+  of,
   retry,
   share,
   switchMap,
   timer,
 } from 'rxjs';
+import { liveRowsKey, readLiveRows, saveLiveRows } from './live-rows-cache';
 import { showErrorMessage } from './message-helpers';
 import { Database, Tables } from './schema';
 import { RealtimeFilter, liveTable } from './supabase-live-table';
@@ -232,7 +236,9 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
   const socketOpens = interval(100).pipe(first(() => realtime.isConnected()));
 
   return defer(() => {
-    let lastJson: string | undefined;
+    const savedRowsKey = liveRowsKey(table, filter);
+    const savedRows = readLiveRows<Row>(savedRowsKey);
+    let lastJson = savedRows && JSON.stringify(savedRows);
     let waitingForServerRows = false;
     const waitForServerRows = (waiting: boolean) => {
       if (waiting === waitingForServerRows) return;
@@ -244,7 +250,7 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
 
     waitForServerRows(true);
 
-    return new Observable<Row[]>((subscriber) => {
+    const serverRows = new Observable<Row[]>((subscriber) => {
       const waitForSocket = new Subscription();
       const channel = liveTable(supabase, {
         table,
@@ -255,6 +261,7 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
             const json = JSON.stringify(rows);
             if (json !== lastJson) {
               lastJson = json;
+              saveLiveRows(savedRowsKey, json);
               subscriber.next(rows as Row[]);
             }
             waitForServerRows(false);
@@ -284,6 +291,9 @@ function liveStream<Table extends TTable, Row extends Tables<Table>>(
         delay: (_, attempt) => timer(realtime.reconnectAfterMs(attempt)),
         resetOnSuccess: true,
       }),
+    );
+
+    return concat(savedRows ? of(savedRows) : EMPTY, serverRows).pipe(
       finalize(() => waitForServerRows(false)),
     );
   }).pipe(
