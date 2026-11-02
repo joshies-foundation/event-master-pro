@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { GameboardService } from '../../shared/data-access/gameboard.service';
 import { SpecialSpaceEventTemplateModel } from '../../shared/util/supabase-types';
 import { map } from 'rxjs';
+import { onceConfirmed } from '../../shared/util/supabase-helpers';
 
 export const editSpecialSpaceEventTemplateResolver: ResolveFn<
   SpecialSpaceEventTemplateModel | null
@@ -12,7 +13,7 @@ export const editSpecialSpaceEventTemplateResolver: ResolveFn<
     route.params['specialSpaceEventTemplateId'],
   );
 
-  return gameboardService.specialSpaceEventTemplates$.pipe(
+  return onceConfirmed(gameboardService.specialSpaceEventTemplates$).pipe(
     map(
       (spaces) =>
         spaces?.find((space) => space.id === specialSpaceEventTemplateId) ??

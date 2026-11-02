@@ -149,7 +149,10 @@ export class EventService {
         participants.flatMap(({ id, team_id, player_id }) => {
           if (team_id === null) return [];
 
-          const player = players.find((p) => p.player_id === player_id)!;
+          // Saved participants can outlast their session's players until the
+          // new session's rows arrive.
+          const player = players.find((p) => p.player_id === player_id);
+          if (!player) return [];
 
           return {
             participant_id: id,

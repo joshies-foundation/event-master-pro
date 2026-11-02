@@ -110,7 +110,10 @@ export class GameStateService {
     from: RoundPhase;
     to: RoundPhase;
   }): Promise<RoundMoveResponse> {
-    return this.moveRound({ round_phase: from }, { round_phase: to });
+    return this.moveRound(
+      { round_number: this.roundNumber(), round_phase: from },
+      { round_phase: to },
+    );
   }
 
   async setRoundNumberAndPhase({
