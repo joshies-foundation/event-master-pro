@@ -32,10 +32,12 @@ export function liveRowsKey(table: string, filter?: string): string {
   return `${THIS_VERSION_PREFIX}${table}:${filter ?? ''}`;
 }
 
+export function liveRowsOwner(): User | undefined {
+  return parse<User>(storage()?.getItem(OWNER_KEY));
+}
+
 export function claimLiveRows(user: User): void {
-  if (parse<User>(storage()?.getItem(OWNER_KEY))?.id !== user.id) {
-    forgetLiveRows();
-  }
+  if (liveRowsOwner()?.id !== user.id) forgetLiveRows();
   try {
     storage()?.setItem(OWNER_KEY, JSON.stringify(user));
   } catch {
