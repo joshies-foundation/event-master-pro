@@ -74,7 +74,10 @@ export class AuthService {
     deleteOtherSchemaVersions();
 
     this.supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') forgetLiveRows();
+      if (event === 'SIGNED_OUT') {
+        forgetLiveRows();
+        void this.router.navigate(['/auth/login']);
+      }
     });
   }
 

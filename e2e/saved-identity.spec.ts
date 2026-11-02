@@ -108,6 +108,44 @@ test('a network failure during refresh stays on home with the saved rows', async
   ).toBeVisible();
 });
 
+test('a session revoked during an offline open ends on the login page once online', async ({
+  page,
+  login,
+  consoleGuard,
+}) => {
+  test.setTimeout(150_000);
+  consoleGuard.allow(failedRequest);
+  await login();
+  await expect(colinsRow(page)).toBeVisible();
+  await expireToken(page);
+  let attempts = 0;
+  await page.route(refreshRequest, (route) => {
+    attempts++;
+    return route.abort();
+  });
+  await page.reload();
+  await expect(colinsRow(page)).toBeVisible();
+  await expect
+    .poll(() => attempts, { timeout: 40_000, message: 'supabase-js gave up' })
+    .toBeGreaterThanOrEqual(8);
+  await page.waitForTimeout(1_000);
+  await expect(page).toHaveURL(/\/home$/);
+
+  await page.unroute(refreshRequest);
+  await page.route(refreshRequest, (route) =>
+    route.fulfill({
+      status: 400,
+      json: {
+        code: 'refresh_token_not_found',
+        message: 'Invalid Refresh Token',
+      },
+    }),
+  );
+
+  await expect(page).toHaveURL(/\/auth\/login$/, { timeout: 120_000 });
+  expect(await savedKeys(page)).toEqual([]);
+});
+
 test('an offline open shows saved rows instead of the login page', async ({
   page,
   login,
